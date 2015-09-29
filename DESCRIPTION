@@ -13,7 +13,8 @@ Authors@R: c(
 	person("Forrest", "Stevens", role = "ctb"),
 	person("Steven", "Mosher", role = "ctb"),
 	person("Bradley", "Evans", role = "ctb"),
-	person("Agustin", "Lobo", role = "ctb"))
+	person("Agustin", "Lobo", role = "ctb"), 
+	person("Florian", "Detsch", role = "ctb"))
 Maintainer: Matteo Mattiuzzi <matteo@mattiuzzi.com>
 Description: Download and processing functionalities for the Moderate Resolution Imaging Spectroradiometer (MODIS). The package provides automated access to the global online data archives (LPDAAC and LAADS) and processing capabilities such as file conversion, mosaicking, subsetting and time series filtering. 
 License: GPL (>=3)

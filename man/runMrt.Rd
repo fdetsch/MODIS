@@ -7,7 +7,8 @@
 \title{Run Modis Reprojection Tool ('MRT-grid') with specified parameters}
 
 \description{
-Specifying input parameters this function, gets MODIS grid data from archive (HTTP/FTP or local) and processes the files with the 'MRT-grid' tool.}
+Specifying input parameters this function, gets MODIS grid data from archive (HTTP/FTP or local) and processes the files with the 'MRT-grid' tool. See also 'MRT' manual 
+(available online: \url{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}) for further information.}
 
 \usage{runMrt(...)}
 

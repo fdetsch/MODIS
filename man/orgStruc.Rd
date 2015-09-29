@@ -19,7 +19,8 @@
 
  \item{pattern}{Regular expression passed to \code{?list.files}. Insert a pattern if you want to extract specific files from your archiv.}
 
- \item{move}{Logical. Default is \code{TRUE}, this means that files are moved and multiple files are deleted. If \code{FALSE}, files are just copied and remain in origin folder!}
+ \item{move}{Logical. Default is \code{TRUE}, this means that files are moved and multiple files are deleted. If \code{FALSE}, files are just copied and remain in origin folder! Note that the copying process performs rather slowly when dealing with large 
+ file sizes, e.g. 250-m 'MOD13Q1' files.}
  
   \item{quiet}{Logical. Default is \code{FALSE}}
 }
@@ -34,15 +35,16 @@
 
 \examples{
 \dontrun{
-# MOVE all MODIS grid data to the directory and structure how defined in the '~/.MODIS_opts.R' file
-# (Please check before running: \code{options("MODIS_localArcPath")})
-orgStruc()
+# MOVE all MODIS grid data to the directory and structure as defined in 
+# '~/.MODIS_opts.R' file; see also
+# options("MODIS_localArcPath", "MODIS_arcStructure")
+orgStruc(move = TRUE)
 
 # COPY all MOD13Q1 from 2001 to folder "~/MyFiles/MOD13Q1.collection/"
-orgStruc(pattern="MOD13Q1.A2001*.",to="~/MyFiles",structure="PRODUCT.CCC",move=FALSE)
+orgStruc(pattern="MOD13Q1.A2001*.",to="~/MyFiles",structure="PRODUCT.CCC")
 
 # COPY all MOD13Q1 to folder "~/MyFiles/"
-orgStruc(pattern="MOD13Q1.*.",to="~/MyFiles",structure="",move=FALSE) 
+orgStruc(pattern="MOD13Q1.*.",to="~/MyFiles",structure="") 
 }
 }
 

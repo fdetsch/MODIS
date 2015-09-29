@@ -18,6 +18,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     {
         stop("Unknown product")
     }
+    
     # load aux
 #    if (!file.exists(paste0(opts$auxPath,"collections.RData"))) # on the very first call use the delivered pre-updated version    
 #    {
@@ -35,8 +36,20 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 #        invisible(file.copy(file.path(find.package("MODIS"), "/external","collections"), paste0(opts$auxPath,"collections")))
 #    }
 #    MODIScollection <- read.table(paste0(opts$auxPath,"collections"))
-     
-    # clean file
+    
+    ## if 'collections' dataset does not exist in opts$auxPath, copy it from 
+    ## 'inst/external', then import data
+    ch_dir_aux <- opts$auxPath
+    ch_fls_col <- paste0(ch_dir_aux, "/collections.rds")
+    
+    if (!file.exists(ch_fls_col))
+      invisible(
+        file.copy(system.file("external", "collections.rds", package = "MODIS"), 
+                  ch_fls_col)
+      )
+
+    MODIScollection <- readRDS(ch_fls_col)
+    
     MODIS <- MODIScollection[,grep(colnames(MODIScollection),pattern="M.D")]
     SRTM  <- MODIScollection[,grep(colnames(MODIScollection),pattern="SRTM")]
     MODIScollection <- cbind(MODIS,SRTM)
@@ -61,7 +74,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     			  try(dirs <- filesUrl(ftp))
     				if(exists("dirs"))
     				{
-    				  if(dirs != FALSE)
+    				  if(all(dirs != FALSE))
     				  {
     				    break
     				  }
@@ -89,9 +102,16 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     					basemtr[1:length(mtr[[u]]),u] <- mtr[[u]]
     				}
     				
+    				## if new collections are available, 
+    				## add additional rows to 'MODIScollection'
     				if (nrow(MODIScollection) < maxrow & nrow(MODIScollection) > 0) 
     				{
-    					MODIScollection <- rbind(MODIScollection,as.data.frame(NA,nrow=(maxrow-nrow(MODIScollection)), ncol=ncol(MODIScollection)))
+    				  new_rows <- matrix(data = NA, nrow = maxrow-nrow(MODIScollection), 
+    				                     ncol = ncol(MODIScollection))
+    				  new_rows <- data.frame(new_rows)
+    				  names(new_rows) <- names(MODIScollection)
+    				  
+    					MODIScollection <- rbind(MODIScollection, new_rows)
     				}
     					
     				if (ncol(MODIScollection)==0)
@@ -170,6 +190,11 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     {
 	    res <- lapply(res,function(x){sprintf("%03d",x)})	
     }
+    
+    ## make changes permanent by saving updated 'collections' dataset in 
+    ## opts$auxPath
+    saveRDS(MODIScollection, ch_fls_col)
+    
 return(res)
 }
 

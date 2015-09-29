@@ -18,7 +18,7 @@ forceCheck=FALSE, as="character", quiet=TRUE)}
     
   \item{newest}{Logical. Default \code{TRUE}, return only the number of the newest collection. or \code{FALSE} all available collections}
  
-  \item{forceCheck}{Logical. Default \code{FALSE}, if \code{TRUE} the function connects to the 'LP DAAC'-FTP and gets available collections. Since the collections doesn't change very frequently this check once done it is rarely needed.}
+  \item{forceCheck}{Logical. Default \code{FALSE}, if \code{TRUE} the function connects to the 'LP DAAC'-FTP and gets available collections, of which an updated version is permanently stored in \code{MODIS:::combineOptions()$auxPath}. Since the collections don't change very frequently, this check once done is rarely needed.}
 
   \item{as}{character. Default \code{'character'}, and returns the typical 3 digits long collection number ie: \code{"005"}. Other possibility is to set it to \code{'numeric'} what would give as a result the numeric \code{5}}
 

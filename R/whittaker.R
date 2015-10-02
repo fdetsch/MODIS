@@ -145,7 +145,11 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     }
     nameL <- "yL"
   }
+  
+  if (is.character(inlam)) 
+    inlam <- as.numeric(inlam)
   inlam  <- round(inlam) #from here on used only in outputfilename
+  
   lambda <- as.numeric(lambda)
 
   if(!inherits(vi,"Raster")) 

@@ -40,18 +40,18 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     ## if 'collections' dataset does not exist in opts$auxPath, copy it from 
     ## 'inst/external', then import data
     ch_dir_aux <- opts$auxPath
-    ch_fls_col <- paste0(ch_dir_aux, "/collections.rds")
+    ch_fls_col <- paste0(ch_dir_aux, "/collections.RData")
     
     if (!file.exists(ch_fls_col))
       invisible(
-        file.copy(system.file("external", "collections.rds", package = "MODIS"), 
+        file.copy(system.file("external", "collections.RData", package = "MODIS"), 
                   ch_fls_col)
       )
 
-    MODIScollection <- readRDS(ch_fls_col)
+    load(ch_fls_col)
     
-    MODIS <- MODIScollection[,grep(colnames(MODIScollection),pattern="M.D")]
-    SRTM  <- MODIScollection[,grep(colnames(MODIScollection),pattern="SRTM")]
+    MODIS <- MODIScollection[, grep(colnames(MODIScollection), pattern="M.D")]
+    SRTM  <- MODIScollection[, grep(colnames(MODIScollection), pattern="SRTM")]
     MODIScollection <- cbind(MODIS,SRTM)
 
     if (productN$SENSOR[1] !="C-Band-RADAR")
@@ -61,13 +61,18 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         sturheit <- stubborn(level=opts$stubbornness)
 		    
     		for (i in seq_along(unique(productN$PF1))) 
-    		{		
-    		  ftp <- paste0(MODIS_FTPinfo$ftpstring1$basepath,"/",unique(productN$PF1)[i],"/")
-    			cat("Updating collections from LPDAAC for platform:",unique(productN$PLATFORM)[i],"\n")
+    		{	
+    		  ## retrieve ftp server address based on product source information
+    		  server <- unlist(productN$SOURCE)
+    		  ftp_id <- sapply(MODIS_FTPinfo, function(i) i$name %in% server)
+    		  ftp_id <- which(ftp_id)[1]
+    		  
+    		  ftp <- paste0(MODIS_FTPinfo[[ftp_id]]$basepath,"/",unique(productN$PF1)[i],"/")
+    			cat("Updating collections from", server, "for platform:",unique(productN$PLATFORM)[i],"\n")
     
     			if(exists("dirs")) 
     			{
-    			    rm(dirs)
+    			    suppressWarnings(rm(dirs))
     			}
     			for (g in 1:sturheit)
     			{
@@ -86,9 +91,25 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     				cat("FTP is not available, using stored information from previous calls (this should be mostly fine)\n")
     			} else 
     			{
-    				prod <- sapply(dirs,function(x){strsplit(x, "\\.")[[1]][1]})
-    				coll <- sapply(dirs,function(x){strsplit(x, "\\.")[[1]][2]})
-    		
+    			  ## if 'product' is hosted on NTSG server, remove non-product folders 
+    			  ## and files
+    			  if (productN$SOURCE == "NTSG") {
+    			    dirs <- dirs[grep("^MOD16", dirs)]
+    			  
+    			    # remove .pdf files  
+    			    if (length(grep(".pdf$", dirs)) > 0)
+    			      dirs <- dirs[-grep(".pdf$", dirs)]
+    			    
+    			    # remove '_MERRAGMAO' extension
+    			    dirs <- dirs[grep("_MERRAGMAO", dirs)]
+    			    dirs <- gsub("_MERRAGMAO", "", dirs)
+    			  }
+
+    			  ## information about products and collections    			  
+    			  ls_prod_col <- sapply(dirs, function(x) {strsplit(x, "\\.")})
+    			  prod <- sapply(ls_prod_col, "[[", 1)
+    			  coll <- sapply(ls_prod_col, "[[", 2)
+    			  
     				mtr  <- cbind(prod,coll)
     				mtr  <- tapply(INDEX=mtr[,1],X=mtr[,2],function(x){x})
     		
@@ -193,7 +214,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     
     ## make changes permanent by saving updated 'collections' dataset in 
     ## opts$auxPath
-    saveRDS(MODIScollection, ch_fls_col)
+    save(MODIScollection, file = ch_fls_col)
     
 return(res)
 }

@@ -2,7 +2,8 @@
 #' 
 #' @description 
 #' \code{addProduct} is a non-exported helper function to add a new entry to the 
-#' list of satellite products featured by \strong{MODIS}.
+#' list of satellite products featured by \strong{MODIS} (see 
+#' \code{MODIS:::MODIS_Products}).
 #' 
 #' @param product Character. Name of the product that should be added to the 
 #' inventory, see \code{\link{getProduct}}.
@@ -25,11 +26,14 @@
 #' in 'path_ext' will be overwritten.
 #' @param ... Currently not used.
 #' 
+#' @return 
+#' A 'list' holding the updated contents of file 'MODIS_Products.RData'.
+#' 
 #' @author 
 #' Florian Detsch
 #' 
 #' @seealso 
-#' \code{\link{getProduct}}.
+#' \code{MODIS:::MODIS_Products}, \code{\link{getProduct}}.
 #' 
 #' @examples 
 #' addProduct(product = "MOD16A2", sensor = "MODIS", platform = "Combined", 

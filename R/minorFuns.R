@@ -580,7 +580,6 @@ listPather <- function(x,index)
 # list files in a Url
 filesUrl <- function(url)
 {
-    require(RCurl)
 
     if (substr(url,nchar(url),nchar(url))!="/")
     {
@@ -591,7 +590,7 @@ filesUrl <- function(url)
     options(warn=-1)
     on.exit(options(warn=iw))
 
-    try(co <- getURLContent(url),silent=TRUE)
+    try(co <- RCurl::getURLContent(url),silent=TRUE)
     
     if (!exists("co")) {return(FALSE)}
     
@@ -674,7 +673,21 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
             out[a] <- system(paste0("aria2c -x 3 --file-allocation=none ",paste(path$remotePath[which(names(path$remotePath)==opts$MODISserverOrder[hv[g]])],x[a],sep="/",collapse="")," -d ", dirname(destfile)))
           } else
           {
-            out[a] <- try(download.file(url=paste(path$remotePath[which(names(path$remotePath)==opts$MODISserverOrder[hv[g]])],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=FALSE),silent=TRUE)
+
+            ## if server is 'LPDAAC' or 'LAADS', consider MODISserverOrder
+            if (any(names(path$remotePath) %in% opts$MODISserverOrder[hv[g]])) {
+              id_remotepath <- which(names(path$remotePath) == opts$MODISserverOrder[hv[g]])
+            
+            ## if not (e.g. when server is 'NTSG'), simply take the first `path$remotePath` entry
+            } else {
+              id_remotepath <- 1
+            }
+              
+              
+            if (length(server) > 1)
+              server <- server[which(server %in% opts$MODISserverOrder[hv[g]])]
+              
+            out[a] <- try(download.file(url=paste(path$remotePath[1],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=FALSE),silent=TRUE)
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!
           if (out[a]!=0 & !quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 

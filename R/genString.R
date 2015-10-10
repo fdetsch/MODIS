@@ -111,7 +111,11 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                     tmp[[u]] <- getPart(x=product,s[u])
                   }
                 }                                
-                string[[l]] <- paste0(unlist(tmp),collapse=".")    
+                string[[l]] <- paste0(unlist(tmp),collapse=".")
+                
+                ## append '_MERRAGMAO' if product is hosted at NTSG
+                if ("NTSG" %in% unlist(product$SOURCE) & i == 2)
+                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
               }
             }
           remotePath[[n]] <- path.expand(paste(stringX$basepath,paste0(unlist(string),collapse="/"),sep="/"))
@@ -183,6 +187,22 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                 tmp[[u]] <- getPart(x=product,s[u])
               }
               string[[l]] <- paste0(unlist(tmp),collapse=".")
+              
+              ## if working on NTSG server
+              if ("NTSG" %in% unlist(product$SOURCE)) {
+                # add '_MERRAGMAO' suffix
+                if (i == 2)
+                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
+                
+                # add leading 'Y' to year
+                if (i == 3) 
+                  string[[l]] <- paste0("Y", string[[l]])
+                  
+                # add leading 'D' to day of year 
+                if (i == 4)
+                  string[[l]] <- paste0("D", string[[l]])
+              }
+
             }
           }
           n=n+1

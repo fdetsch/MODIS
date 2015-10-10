@@ -50,7 +50,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
     # check if missing collection, else bilieve it
     if(is.null(collection)) 
     {
-      product$CCC <- getCollection(product=product,collection=collection,quiet=TRUE)[[1]]
+      product$CCC <- getCollection(product=product,quiet=TRUE)[[1]]
     } else
     {
       product$CCC <- sprintf("%03d",as.numeric(unlist(collection)[1]))
@@ -202,7 +202,16 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
           ntiles <- length(tileID)
         }
         
-        onlineInfo <- getStruc(product=product$PRODUCT[z],collection=product$CCC,server=opts$MODISserverOrder[1],begin=tLimits$begin,end=tLimits$end,wait=0)
+        ## ensure compatibility with servers other than those specified in 
+        ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
+        server <- unlist(product$SOURCE)
+        
+        if (length(server) > 1)
+          server <- server[which(server == opts$MODISserverOrder[1])]
+          
+        onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
+                               collection = product$CCC, begin = tLimits$begin, 
+                               end = tLimits$end, wait = 0)
         if(!is.na(onlineInfo$online))
         {
           if (!onlineInfo$online & length(opts$MODISserverOrder)==2)

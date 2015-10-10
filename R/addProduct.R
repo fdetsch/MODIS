@@ -36,9 +36,9 @@
 #' \code{MODIS:::MODIS_Products}, \code{\link{getProduct}}.
 #' 
 #' @examples 
-#' addProduct(product = "MOD16A2", sensor = "MODIS", platform = "Combined", 
-#'            pf1 = "MOLT", pf2 = "MOD", res = "1000m", temp_res = "8 Day", 
-#'            topic = "Global Terrestrial Evapotranspiration", server = "NTSG")
+#' MODIS:::addProduct(product = "MOD16A2", sensor = "MODIS", platform = "Combined", 
+#'                    pf1 = "MOLT", pf2 = "MOD", res = "1000m", temp_res = "8 Day", 
+#'                    topic = "Global Terrestrial Evapotranspiration", server = "NTSG")
 #'            
 #' @name addProduct
 addProduct <- function(product, sensor = "MODIS", platform = c("Terra", "Aqua"), 

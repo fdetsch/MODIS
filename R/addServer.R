@@ -16,6 +16,7 @@
 #' usually defaults to 'inst/external'.
 #' @param overwrite Logical. If \code{TRUE}, the initial '.RData' file located 
 #' in 'path_ext' will be overwritten.
+#' @param ... Currently not used.
 #' 
 #' @return 
 #' A 'list' holding the updated contents of 'MODIS_FTPinfo.RData'.
@@ -27,9 +28,9 @@
 #' Florian Detsch
 #' 
 #' @examples 
-#' addServer(name = "NTSG", sensor = "MODIS",
-#'           basepath = "ftp://ftp.ntsg.umt.edu/pub/MODIS/NTSG_Products/MOD16/",
-#'           varpath = "PRODUCT.CCC/YYYY/DDD/")
+#' MODIS:::addServer(name = "NTSG", sensor = "MODIS",
+#'                   basepath = "ftp://ftp.ntsg.umt.edu/pub/MODIS/NTSG_Products/MOD16/",
+#'                   varpath = "PRODUCT.CCC/YYYY/DDD/")
 #'           
 #' @name addServer
 addServer <- function(name, sensor = "MODIS", basepath, varpath, 

@@ -211,11 +211,13 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
     output$online <- TRUE
   }
   
-  if(!readonly)
-  {
-    unlink(list.files(path=opts$auxPath, pattern=paste0(basnam,".*.txt"), full.names=TRUE))
-    unlink(lockfile)
-    write.table(output$dates, paste0(opts$auxPath,basnam,".",todoy,".txt"), row.names=FALSE, col.names=FALSE)  
+  if (exists("readonly")) {
+    if(!readonly)
+    {
+      unlink(list.files(path=opts$auxPath, pattern=paste0(basnam,".*.txt"), full.names=TRUE))
+      unlink(lockfile)
+      write.table(output$dates, paste0(opts$auxPath,basnam,".",todoy,".txt"), row.names=FALSE, col.names=FALSE)  
+    }
   }
   
   return(output)

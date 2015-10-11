@@ -206,18 +206,26 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
         server <- unlist(product$SOURCE)
         
-        if (length(server) > 1)
+        if (length(server) > 1) {
+          # alternative server, i.e. when priority is not reachable
+          server_alt <- server[which(server != opts$MODISserverOrder[1])]
+          # priority server from which structure will be tried to retrieve first
           server <- server[which(server == opts$MODISserverOrder[1])]
+        }
           
         onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
                                collection = product$CCC, begin = tLimits$begin, 
                                end = tLimits$end, wait = 0)
+        
         if(!is.na(onlineInfo$online))
         {
-          if (!onlineInfo$online & length(opts$MODISserverOrder)==2)
+          if (!onlineInfo$online & length(opts$MODISserverOrder)==2 & 
+              server %in% c("LPDAAC", "LAADS"))
           {
-            cat(opts$MODISserverOrder[1]," seams not online, trying on '",opts$MODISserverOrder[2],"':\n",sep="")
-            onlineInfo <- getStruc(product=product$PRODUCT[z],collection=product$CCC,begin=tLimits$begin,end=tLimits$end,wait=0,server=opts$MODISserverOrder[2])
+            cat(server," seams not online, trying on '",server_alt,"':\n",sep="")
+            onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC,
+                                   begin = tLimits$begin, end = tLimits$end, 
+                                   wait = 0, server = server_alt)
           }
           if(is.null(onlineInfo$dates))
           {

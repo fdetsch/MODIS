@@ -101,7 +101,7 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
       for (g in 1:sturheit)
       {
         cat("Try:",g," \r")
-        FtpDayDirs <- try(MODIS:::filesUrl(startPath))
+        FtpDayDirs <- try(filesUrl(startPath))
         cat("             \r")
         if(exists("FtpDayDirs"))
         {    
@@ -192,18 +192,17 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
         Ypath <- paste0(startPath,years,"/")
         
         ouou <- vector(length=length(years),mode="list")
+        cat("Downloading structure from", years_new[1], "to", years_new[length(years_new)], "from", server, "file server.\n")
         for(ix in seq_along(Ypath))
         {
-          cat("Downloading structure of '",years_new[ix],"' from '",server,"'-server.\n",sep="")
           ouou[[ix]] <- paste(years[ix], filesUrl(Ypath[ix]), sep = "/")
-          Sys.sleep(90)
         }
         cat("                                                                    \r")
         FtpDayDirs <- as.Date(unlist(ouou),"Y%Y/D%j")
       
       ## if product is 'MOD16A3', no daily sub-folders exist    
       } else {
-        FtpDayDirs <- paste(years_new, "12", "31", sep = "-")
+        FtpDayDirs <- as.Date(paste(years_new, "12", "31", sep = "-"))
       }
     }
   }

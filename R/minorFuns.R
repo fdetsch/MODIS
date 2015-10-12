@@ -590,38 +590,66 @@ filesUrl <- function(url)
     options(warn=-1)
     on.exit(options(warn=iw))
 
-    try(co <- RCurl::getURLContent(url),silent=TRUE)
-    
-    if (!exists("co")) {return(FALSE)}
-    
-    if (substring(url,1,4)=="http")
-    {
+    ## default method (e.g. LPDAAC, LAADS)
+    if (length(grep("ntsg", url)) == 0) {
+      
+      try(co <- RCurl::getURLContent(url),silent=TRUE)
+      
+      if (!exists("co")) {return(FALSE)}
+      
+      if (substring(url,1,4)=="http")
+      {
         if(!require(XML))
         {
-            stop("Missing dependency, please install the 'XML' package.")
+          stop("Missing dependency, please install the 'XML' package.")
         }
-             
+        
         co     <- htmlTreeParse(co)
         co     <- co$children[[1]][[2]][[2]]
         co     <- sapply(co$children, function(el) xmlGetAttr(el, "href"))
         co     <- as.character(unlist(co))
         co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
         fnames <- co[-1] 
-         
-     } else 
-     {
+        
+      } else 
+      {
         co <- strsplit(co, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
-       
+        
         co   <- strsplit(co," ")
         elim <- grep(co,pattern="total")
         if(length(elim)==1)
         {
-            co <- co[-elim]
+          co <- co[-elim]
         }
         fnames <- basename(sapply(co,function(x){x[length(x)]}))
-     }
-     fnames <- gsub(fnames,pattern="/",replacement="")
+      }
+      
+    ## NTSG method; if not used, connection breakdowns are likely to occur  
+    } else {
+      
+      # 'MODIS' options
+      opts <- combineOptions()
+      
+      # download website to opts$auxPath
+      file_out_dn <- opts$auxPath
+      file_out_bn <- unlist(strsplit(url, "/"))
+      file_out <- paste(file_out_dn, file_out_bn[length(file_out_bn)], sep = "/")
+      download.file(url = url, destfile = file_out, quiet = TRUE)
+      
+      # extract information from website content
+      content <- readLines(file_out)
+      
+      fnames <- sapply(content, function(i) {
+        unlist(strsplit(i, " "))[length(unlist(strsplit(i, " ")))]
+      })
+      names(fnames) <- NULL
 
+      # remove temporary file and return output
+      invisible(file.remove(file_out))
+    }
+
+    ## format and return    
+    fnames <- gsub(fnames,pattern="/",replacement="")
     return(fnames)
 }
 

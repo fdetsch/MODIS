@@ -16,7 +16,7 @@
 }
 
 \usage{getHdf(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, 
-collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE, ...)}
+collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE, forceDownload=FALSE, ...)}
 
 \arguments{
 
@@ -41,6 +41,8 @@ collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE, ...)}
   \item{wait}{Numeric. Inserts a break (in seconds) after every internal \code{download.file()} or \code{getURL()} call. It reduces the chance of FTP connection error that often occurs after many requests. (Hopefully a temporary solution!)}
 
   \item{quiet}{Logical. Refers to all internal \code{download.file()} actions. Default \code{FALSE}, if \code{TRUE} the \code{getHdf()} becomes really boring.}
+  
+  \item{forceDownload}{Logical. If \code{TRUE}, try to download data irrespective of whether online information could be retrieved via \code{MODIS:::getStruc} or not.}
 
   \item{...}{Arguments found in MODISoptions, sections 'STORAGE' and 'DOWNLOAD'}
 

@@ -3,7 +3,7 @@
 # Licence GPL v3
   
 
-getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE,...) 
+getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE,forceDownload=FALSE,...) 
 {
   # product="MOD13Q1"; begin="2010001"; end="2010005"; tileH=NULL; tileV=NULL; extent=NULL; collection=NULL; quiet=FALSE; wait=0.5; checkIntegrity=FALSE; z=1;u=1
   opts <- combineOptions(...)
@@ -286,7 +286,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
               }
             }
             
-            if (sum(mtr)!=0 & (onlineInfo$online | is.na(onlineInfo$online))) 
+            if (sum(mtr)!=0 & (onlineInfo$online | is.na(onlineInfo$online) | forceDownload)) 
             { # if one or more of the tiles in the given date is missing, its necessary to go online
 
               if(exists("ftpfiles")) 

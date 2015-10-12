@@ -164,8 +164,13 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
       {
         cat("Downloading structure from 'NTSG'-server! Try:", g, "\n")
         years <- try(filesUrl(startPath))
-        years_new <- gsub("^Y", "", years)
         
+        ## remove 'Geotiff' folder; applies for 'MOD16A3' only
+        if (length(grep("Geotiff", years) > 0))
+          years <- years[-grep("Geotiff", years)]
+        
+        years_new <- gsub("^Y", "", years)
+
         if(g < (sturheit/2))
         {
           Sys.sleep(wait)
@@ -183,17 +188,23 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
       }
       options("warn"=opt$warn)
       
-      Ypath <- paste0(startPath,years,"/")
+      if (product$PRODUCT != "MOD16A3") {
+        Ypath <- paste0(startPath,years,"/")
+        
+        ouou <- vector(length=length(years),mode="list")
+        for(ix in seq_along(Ypath))
+        {
+          cat("Downloading structure of '",years_new[ix],"' from '",server,"'-server.\n",sep="")
+          ouou[[ix]] <- paste(years[ix], filesUrl(Ypath[ix]), sep = "/")
+          Sys.sleep(90)
+        }
+        cat("                                                                    \r")
+        FtpDayDirs <- as.Date(unlist(ouou),"Y%Y/D%j")
       
-      ouou <- vector(length=length(years),mode="list")
-      for(ix in seq_along(Ypath))
-      {
-        cat("Downloading structure of '",years_new[ix],"' from '",server,"'-server.\n",sep="")
-        ouou[[ix]] <- paste(years[ix], filesUrl(Ypath[ix]), sep = "/")
-        Sys.sleep(90)
+      ## if product is 'MOD16A3', no daily sub-folders exist    
+      } else {
+        FtpDayDirs <- paste(years_new, "12", "31", sep = "-")
       }
-      cat("                                                                    \r")
-      FtpDayDirs <- as.Date(unlist(ouou),"Y%Y/D%j")
     }
   }
   

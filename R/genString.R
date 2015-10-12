@@ -200,7 +200,12 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                   
                 # add leading 'D' to day of year 
                 if (i == 4)
-                  string[[l]] <- paste0("D", string[[l]])
+                  
+                  # MOD16A2
+                  if (product$PRODUCT == "MOD16A2")
+                    string[[l]] <- paste0("D", string[[l]])
+                  else 
+                    string[[l]] <- ""
               }
 
             }

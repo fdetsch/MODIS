@@ -3,7 +3,7 @@
 # Licence GPL v3
   
 
-getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE,forceDownload=FALSE,...) 
+getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE,forceDownload=TRUE,...) 
 {
   # product="MOD13Q1"; begin="2010001"; end="2010005"; tileH=NULL; tileV=NULL; extent=NULL; collection=NULL; quiet=FALSE; wait=0.5; checkIntegrity=FALSE; z=1;u=1
   opts <- combineOptions(...)
@@ -213,9 +213,12 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
           server <- server[which(server == opts$MODISserverOrder[1])]
         }
           
-        onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
-                               collection = product$CCC, begin = tLimits$begin, 
-                               end = tLimits$end, wait = 0)
+        ## this time, suppress console output from `getStruc`
+        jnk <- capture.output(
+          onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
+                                 collection = product$CCC, begin = tLimits$begin, 
+                                 end = tLimits$end, wait = 0)
+        )
         
         if(!is.na(onlineInfo$online))
         {
@@ -233,9 +236,9 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
           }
           if(!is.na(onlineInfo$online))
           {
-            if(!onlineInfo$online)
+            if(!onlineInfo$online & !forceDownload)
             {
-              cat("Could not connect to server(s), data download disabled!\n")
+              cat("Could not connect to server(s), data download disabled! Try to set 'forceDownload = TRUE' in order to enable online file download...\n")
             }
           }
         }

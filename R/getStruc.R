@@ -209,7 +209,7 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
   
   if(!exists("FtpDayDirs"))
   {
-    cat("Couldn't get structure from",server,"server. Using offline information!\n")
+    cat("Offline structure is still up-to-date. Use 'forceCheck = TRUE' to retrieve online structure nonetheless!\n")
     output$online <- FALSE
   } else if (FtpDayDirs[1]==FALSE)
   {

@@ -711,7 +711,7 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
               id_remotepath <- 1
             }
               
-              
+            server <- names(path$remotePath)
             if (length(server) > 1)
               server <- server[which(server %in% opts$MODISserverOrder[hv[g]])]
               

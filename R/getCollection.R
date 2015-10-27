@@ -68,7 +68,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     		  ftp_id <- which(ftp_id)[1]
     		  
     		  ftp <- paste0(MODIS_FTPinfo[[ftp_id]]$basepath,"/",unique(productN$PF1)[i],"/")
-    			cat("Updating collections from", server, "for platform:",unique(productN$PLATFORM)[i],"\n")
+    			cat("Updating collections from", server[1], "for platform:",unique(productN$PLATFORM)[i],"\n")
     
     			if(exists("dirs")) 
     			{

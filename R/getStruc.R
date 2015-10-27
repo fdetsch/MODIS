@@ -40,22 +40,34 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
   output <- list(dates=NULL,source=server,online=NA)
   class(output) <- "MODISonlineFolderInfo" 
   
-  if (is.na(info))
-  {
+  ## no local structure
+  if (is.na(info)) {
     getIT <- TRUE
-  } else
-  {
+    online <- TRUE
+    
+  ## if local structure exists, check if  
+  } else {
     lastcheck    <- as.Date(strsplit(basename(info),"\\.")[[1]][4],"%Y%j")
     output$dates <- na.omit(as.Date(read.table(info,stringsAsFactors=FALSE)[,1]))
-    if (max(output$dates,na.rm=TRUE) > dates$end)
-    { 
+    
+    # end date in local structure is younger than user-defined end date
+    if (max(output$dates,na.rm=TRUE) > dates$end) {
       getIT <- FALSE
-    } else if (lastcheck < as.Date(todoy,"%Y%j"))
-    {
-      getIT <- TRUE
-    } else
-    {
-      getIT <- FALSE
+      online <- "up-to-date"
+      
+    } else {
+      
+      # last check is older than 24 hours  
+      if (lastcheck < as.Date(todoy,"%Y%j")) {
+        getIT <- TRUE
+        online <- TRUE
+        
+      # last check is not older than 24 hours, but end date in local structure 
+      # is older than user-defined end date
+      } else {
+        getIT <- FALSE
+        online <- "up-to-date"
+      }
     }
   }
   
@@ -209,11 +221,17 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
   
   if(!exists("FtpDayDirs"))
   {
-    cat("Couldn't get structure from",server,"server. Using offline information!\n")
-    output$online <- FALSE
+    if (online == "up-to-date") {
+      cat("Local structure is up-to-date. Using offline information!\n")
+      output$online <- TRUE
+    } else {
+      cat("Couldn't get structure from", server, "server. Using offline information!\n")
+      output$online <- FALSE
+    }
+    
   } else if (FtpDayDirs[1]==FALSE)
   {
-    cat("Couldn't get structure from",server,"server. Using offline information!\n")
+    cat("Couldn't get structure from", server, "server. Using offline information!\n")
     output$online <- FALSE
   } else
   {

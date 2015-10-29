@@ -634,7 +634,7 @@ filesUrl <- function(url)
       file_out_dn <- opts$auxPath
       file_out_bn <- unlist(strsplit(url, "/"))
       file_out <- paste(file_out_dn, file_out_bn[length(file_out_bn)], sep = "/")
-      download.file(url = url, destfile = file_out, quiet = TRUE)
+      download.file(url = url, destfile = file_out, quiet = TRUE, method = "libcurl")
       
       # extract information from website content
       content <- readLines(file_out)

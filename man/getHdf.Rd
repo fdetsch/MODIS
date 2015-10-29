@@ -16,7 +16,7 @@
 }
 
 \usage{getHdf(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, 
-collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE, forceDownload=FALSE, ...)}
+collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE, forceDownload=TRUE, ...)}
 
 \arguments{
 

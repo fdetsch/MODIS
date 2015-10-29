@@ -221,6 +221,7 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
   
   if(!exists("FtpDayDirs"))
   {
+
     if (online == "up-to-date") {
       cat("Local structure is up-to-date. Using offline information!\n")
       output$online <- TRUE

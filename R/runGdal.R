@@ -1,5 +1,5 @@
 
-runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, tileH=NULL, tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, quiet=FALSE,...)
+runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, tileH=NULL, tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, quiet=FALSE,forceDownload=TRUE,...)
 {
     opts <- combineOptions(...)
     # debug:
@@ -240,7 +240,8 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
             files <- unlist(
               getHdf(product=prodname, collection=coll, begin=avDates[l], end=avDates[l],
                tileH=extent$tileH, tileV=extent$tileV, checkIntegrity=checkIntegrity, 
-               stubbornness=opts$stubbornness, MODISserverOrder=opts$MODISserverOrder)
+               stubbornness=opts$stubbornness, MODISserverOrder=opts$MODISserverOrder, 
+               forceDownload = forceDownload)
             )
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()

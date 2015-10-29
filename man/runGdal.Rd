@@ -11,7 +11,7 @@ Downloads MODIS grid data from archive (FTP or local) and processes the files.}
 
 \usage{runGdal(product, collection=NULL, begin=NULL, end=NULL, extent=NULL, tileH=NULL, 
 tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5,
-quiet=FALSE,...)}
+quiet=FALSE,forceDownload=TRUE,...)}
 
 \arguments{
   \item{product}{See: \code{?getProduct}}
@@ -27,6 +27,7 @@ quiet=FALSE,...)}
   \item{checkIntegrity}{Default \code{TRUE}. Check if the file is 'healthy' (and download it again if not) before doing further processings with it. This consumes also a littel bit of time to do the check.}
   \item{wait}{Numeric. Time to wait to re-try a un-successful online connection (URL listenting or 'download.file()' process). Keep it small, max ~1 sec.}
   \item{quiet}{Logical, Default \code{FALSE}. Some progress informations.}
+  \item{forceDownload}{Logical. If \code{TRUE}, try to download data irrespective of whether online information were retrieved via \code{MODIS:::getStruc} or not.}
   \item{...}{See section 'Methods'.}
 
 } 

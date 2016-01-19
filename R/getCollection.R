@@ -54,14 +54,14 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     
     			if(exists("dirs")) 
     			{
-    			    rm(dirs)
+    			    rm('dirs')
     			}
     			for (g in 1:sturheit)
     			{
     			  try(dirs <- filesUrl(ftp))
     				if(exists("dirs"))
     				{
-    				  if(dirs != FALSE)
+    				  if(dirs[1] != FALSE)
     				  {
     				    break
     				  }

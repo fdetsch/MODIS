@@ -90,9 +90,11 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     				}
     				
     				if (nrow(MODIScollection) < maxrow & nrow(MODIScollection) > 0) 
-    				{
-    					MODIScollection <- rbind(MODIScollection,as.data.frame(NA,nrow=(maxrow-nrow(MODIScollection)), ncol=ncol(MODIScollection)))
-    				}
+				{
+  					newadd <- matrix(NA,nrow=(maxrow-nrow(MODIScollection)), ncol=ncol(MODIScollection))
+  					colnames(newadd) <- colnames(MODIScollection)
+  					MODIScollection <- rbind(MODIScollection,as.data.frame(newadd))
+				}
     					
     				if (ncol(MODIScollection)==0)
     				{ # relevant only for time

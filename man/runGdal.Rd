@@ -25,7 +25,7 @@ quiet=FALSE, forceDownload=TRUE, ...)}
   \item{SDSstring}{Default is extract all SDS (layers). See: \code{?getSds}.}
   \item{job}{Character name. Name of the current job for the creation of the output folder. If not specified it is created: 'PRODUCT.COLLECTION_DATETIME'.}
   \item{checkIntegrity}{Default \code{TRUE}. Check if the file is 'healthy' (and download it again if not) before doing further processings with it. The check requires a small amount of additional time.}
-  \item{wait}{Numeric. Time to wait before retrying a unsuccessful online connection (URL listenting or 'download.file()' process). Keep it small, max ~1 sec.}
+  \item{wait}{Numeric. Time to wait before retrying an unsuccessful online connection (URL listenting or 'download.file()' process). Keep it small, max ~1 sec.}
   \item{quiet}{Logical, Default \code{FALSE}. Some progress information.}
   \item{forceDownload}{Logical. If \code{TRUE}, try to download data irrespective of whether online information were retrieved via \code{MODIS:::getStruc} or not.}
   \item{...}{See section 'Methods'.}

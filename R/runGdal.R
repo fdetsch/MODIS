@@ -1,5 +1,5 @@
 
-runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, tileH=NULL, tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, quiet=FALSE,forceDownload=TRUE,...)
+runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, tileH=NULL, tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, quiet=FALSE, overwrite=FALSE, ...)
 {
     opts <- combineOptions(...)
     # debug:
@@ -209,17 +209,7 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
       for(u in seq_along(todo))
       { # u=1
         ftpdirs      <- list()
-        
-        if (length(unlist(product$SOURCE)) > 1) {
-          server <- unlist(product$SOURCE)[which(unlist(product$SOURCE) == opts$MODISserverOrder[1])]
-        } else {
-          server <- unlist(product$SOURCE)
-        }
-          
-        ftpdirs[[1]] <- as.Date(getStruc(product = strsplit(todo[u], "\\.")[[1]][1],
-                                         collection = strsplit(todo[u], "\\.")[[1]][2],
-                                         begin = tLimits$begin, end = tLimits$end,
-                                         server = server)$dates)
+        ftpdirs[[1]] <- as.Date(getStruc(product=strsplit(todo[u],"\\.")[[1]][1],collection=strsplit(todo[u],"\\.")[[1]][2],begin=tLimits$begin,end=tLimits$end,server=opts$MODISserverOrder[1])$dates)
         
         prodname <- strsplit(todo[u],"\\.")[[1]][1] 
         coll     <- strsplit(todo[u],"\\.")[[1]][2]
@@ -240,8 +230,7 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
             files <- unlist(
               getHdf(product=prodname, collection=coll, begin=avDates[l], end=avDates[l],
                tileH=extent$tileH, tileV=extent$tileV, checkIntegrity=checkIntegrity, 
-               stubbornness=opts$stubbornness, MODISserverOrder=opts$MODISserverOrder, 
-               forceDownload = forceDownload)
+               stubbornness=opts$stubbornness, MODISserverOrder=opts$MODISserverOrder)
             )
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()
@@ -312,27 +301,29 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
                 {
                   ifile <- paste0(gdalSDS,collapse="' '")
                   ofile <- paste0(outDir, '/', outname)
-                  cmd   <- paste0(opts$gdalPath,
-                        "gdalwarp",
-                            s_srs,
-                            t_srs,
-                            of,
-                            te,
-                            tr,
-                            cp,
-                            bs,
-                            rt,
-                            q,
-                            srcnodata,
-                            dstnodata,
-                            " -overwrite",
-                            " -multi",
-                            " \'", ifile,"\'",
-                            " ",
-                            ofile
-                            )
-                  cmd <- gsub(x=cmd,pattern="\"",replacement="'")
-                  system(cmd)
+                  if ((overwrite == TRUE) | (file.exists(ofile) == FALSE)) {
+                    cmd   <- paste0(opts$gdalPath,
+                          "gdalwarp",
+                              s_srs,
+                              t_srs,
+                              of,
+                              te,
+                              tr,
+                              cp,
+                              bs,
+                              rt,
+                              q,
+                              srcnodata,
+                              dstnodata,
+                              " -overwrite",
+                              " -multi",
+                              " \'", ifile,"\'",
+                              " ",
+                              ofile
+                              )
+                    cmd <- gsub(x=cmd,pattern="\"",replacement="'")
+                    system(cmd)
+                  }
                 } else # windows
                 {
                   cmd <- paste0(opts$gdalPath,"gdalwarp")

@@ -297,78 +297,72 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
                   gdalSDS <- randomName
 
                 } 
-                if (.Platform$OS=="unix")
-                {
-                  ifile <- paste0(gdalSDS,collapse="' '")
-                  ofile <- paste0(outDir, '/', outname)
+                
+                ifile <- paste0(gdalSDS,collapse = "' '")
+                ofile <- paste0(outDir, '/', outname)
+                
+                if (.Platform$OS == "unix") {
                   if ((overwrite == TRUE) | (file.exists(ofile) == FALSE)) {
-                    cmd   <- paste0(opts$gdalPath,
-                          "gdalwarp",
-                              s_srs,
-                              t_srs,
-                              of,
-                              te,
-                              tr,
-                              cp,
-                              bs,
-                              rt,
-                              q,
-                              srcnodata,
-                              dstnodata,
-                              " -overwrite",
-                              " -multi",
-                              " \'", ifile,"\'",
-                              " ",
-                              ofile
-                              )
-                    cmd <- gsub(x=cmd,pattern="\"",replacement="'")
+                    cmd <- paste0(opts$gdalPath, 
+                                  "gdalwarp", 
+                                  s_srs, 
+                                  t_srs, 
+                                  of, 
+                                  te, 
+                                  tr, 
+                                  cp, 
+                                  bs, 
+                                  rt, 
+                                  q, 
+                                  srcnodata, 
+                                  dstnodata, 
+                                  " -overwrite", 
+                                  " -multi", 
+                                  " \'", ifile, "\'", 
+                                  " ", 
+                                  ofile
+                    )
+                    cmd <- gsub(x = cmd, pattern = "\"", replacement = "'")
                     system(cmd)
                   }
-                } else # windows
-                {
-                  cmd <- paste0(opts$gdalPath,"gdalwarp")
-               
-                  # ifile <- paste(shortPathName(gdalSDS),collapse='\" \"',sep=' ')
-                  # ofile <- shortPathName(paste0(normalizePath(outDir), '\\', outname))
-                  ofile <- paste0(outDir, '/', outname)      
-                  ifile <- paste0(gdalSDS,collapse='" "')
+                } else {  
+                  # windows
+                  cmd <- paste0(opts$gdalPath, "gdalwarp")
+                  cmd_shell <- paste(cmd, 
+                                     s_srs, 
+                                     t_srs, 
+                                     of, 
+                                     te, 
+                                     tr, 
+                                     cp, 
+                                     bs, 
+                                     rt, 
+                                     q, 
+                                     srcnodata, 
+                                     dstnodata, 
+                                     ' -multi', 
+                                     ' \"', ifile, '\"', 
+                                     ' \"', ofile, '\"', 
+                                     sep = '')
                   
                   # GDAL < 1.8.0 doesn't support ' -overwrite' 
-                  if(file.exists(ofile))
-                  {
+                  if (file.exists(ofile) & (overwrite)) {
                     invisible(file.remove(ofile))
+                    shell(cmd_shell)
+                  } else if (file.exists(ofile) == FALSE) {
+                    shell(cmd_shell)
                   }
-                    shell(
-                       paste(cmd,
-                        s_srs,
-                        t_srs,
-                        of,
-                        te,
-                        tr,
-                        cp,
-                        bs,
-                        rt,
-                        q,
-                        srcnodata,
-                        dstnodata,
-                        ' -multi',
-                        ' \"', ifile,'\"',
-                        ' \"', ofile,'\"',
-                       sep = '')
-                      ) 
-                   }
-                    if(length(grep(todo,pattern="M.D13C2\\.005"))>0)
-                    {
-                      unlink(list.files(path=outDir,pattern=ranpat,full.names=TRUE),recursive=TRUE)
-                    }
-                  }
-                } else
-                {
-                  warning(paste0("No file found for date: ",avDates[l]))
                 }
-               }
+                if(length(grep(todo, pattern = "M.D13C2\\.005")) > 0) {
+                  unlink(list.files(path = outDir, pattern = ranpat, full.names = TRUE), recursive = TRUE)
+                }
+              }
+            } else {
+              warning(paste0("No file found for date: ", avDates[l]))
             }
+          }
         }
+      }
     }
 }
 

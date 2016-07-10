@@ -11,7 +11,7 @@ Downloads MODIS grid data from archive (FTP or local) and processes the files.}
 
 \usage{runGdal(product, collection=NULL, begin=NULL, end=NULL, extent=NULL, tileH=NULL, 
 tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5,
-quiet=FALSE,forceDownload=TRUE,...)}
+quiet=FALSE, forceDownload=TRUE, overwrite=TRUE, ...)}
 
 \arguments{
   \item{product}{See: \code{?getProduct}}
@@ -28,6 +28,7 @@ quiet=FALSE,forceDownload=TRUE,...)}
   \item{wait}{Numeric. Time to wait to re-try a un-successful online connection (URL listenting or 'download.file()' process). Keep it small, max ~1 sec.}
   \item{quiet}{Logical, Default \code{FALSE}. Some progress informations.}
   \item{forceDownload}{Logical. If \code{TRUE}, try to download data irrespective of whether online information were retrieved via \code{MODIS:::getStruc} or not.}
+  \item{overwrite}{Logical. If \code{TRUE}, overwrite existing files when applying changes with \code{gdal_warp}.}
   \item{...}{See section 'Methods'.}
 
 } 

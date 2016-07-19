@@ -3,8 +3,6 @@ Type: Package
 Title: MODIS Acquisition and Processing
 Version: 0.10-34
 Date: 2016-05-24
-Depends: R (>= 2.10), utils, raster
-Suggests: RCurl, rgeos, rgdal, bitops, mapdata, XML, parallel, ptw
 Authors@R: c(
 	person("Matteo", "Mattiuzzi", role = c("cre", "aut"),  email = "matteo@mattiuzzi.com"),
 	person("Jan", "Verbesselt", role = "ctb"),
@@ -16,7 +14,30 @@ Authors@R: c(
 	person("Agustin", "Lobo", role = "ctb"), 
 	person("Florian", "Detsch", role = "ctb"))
 Maintainer: Matteo Mattiuzzi <matteo@mattiuzzi.com>
-Description: Download and processing functionalities for the Moderate Resolution Imaging Spectroradiometer (MODIS). The package provides automated access to the global online data archives (LPDAAC and LAADS) and processing capabilities such as file conversion, mosaicking, subsetting and time series filtering. 
-License: GPL (>=3)
-URL: http://r-forge.r-project.org/projects/modis/
+Description: Download and processing functionalities for the Moderate Resolution
+    Imaging Spectroradiometer (MODIS). The package provides automated access to the
+    global online data archives (LPDAAC and LAADS) and processing capabilities such
+    as file conversion, mosaicking, subsetting and time series filtering.
+License: GPL (>= 3) | file LICENSE
+LazyData: TRUE
+Depends:
+    R (>= 2.10),
+    raster
+Imports:
+    grDevices,
+    graphics,
+    methods,
+    stats,
+    utils
+Suggests:
+    RCurl,
+    rgeos,
+    rgdal,
+    bitops,
+    mapdata,
+    XML,
+    parallel,
+    ptw
+URL: https://github.com/MatMatt/MODIS
 ByteCompile: TRUE
+RoxygenNote: 5.0.1

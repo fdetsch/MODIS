@@ -21,7 +21,6 @@
 #' @importFrom stats na.omit smooth.spline
 #' @importFrom utils capture.output download.file installed.packages read.table vi write.csv write.table
 #'
-#' @useDynLib MODIS
 #' @keywords package
 #'
 NULL

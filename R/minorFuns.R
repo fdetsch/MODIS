@@ -688,7 +688,7 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
             if (length(server) > 1)
               server <- server[which(server %in% opts$MODISserverOrder[hv[g]])]
               
-            out[a] <- try(download.file(url=paste(path$remotePath[1],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=FALSE),silent=TRUE)
+            out[a] <- try(download.file(url=paste(path$remotePath[id_remotepath],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=FALSE),silent=TRUE)
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!
           if (out[a]!=0 & !quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 

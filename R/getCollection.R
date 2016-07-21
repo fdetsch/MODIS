@@ -41,16 +41,18 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     
     ## if 'collections' dataset does not exist in opts$auxPath, copy it from 
     ## 'inst/external', then import data
-    ch_dir_aux <- opts$auxPath
-    ch_fls_col <- paste0(ch_dir_aux, "/collections.RData")
+    dir_aux <- opts$auxPath
+    if (!dir.exists(dir_aux)) dir.create(dir_aux)
+    
+    fls_col <- paste0(dir_aux, "/collections.RData")
     
     if (!file.exists(ch_fls_col))
       invisible(
         file.copy(system.file("external", "collections.RData", package = "MODIS"), 
-                  ch_fls_col)
+                  fls_col)
       )
 
-    load(ch_fls_col)
+    load(fls_col)
     
     MODIS <- MODIScollection[, grep(colnames(MODIScollection), pattern="M.D")]
     SRTM  <- MODIScollection[, grep(colnames(MODIScollection), pattern="SRTM")]
@@ -216,7 +218,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     
     ## make changes permanent by saving updated 'collections' dataset in 
     ## opts$auxPath
-    save(MODIScollection, file = ch_fls_col)
+    save(MODIScollection, file = fls_col)
     
 return(res)
 }

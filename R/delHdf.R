@@ -2,7 +2,8 @@
 # Date: August 2012
 # Licence GPL v3
 
-
+#' @export delHdf
+#' @name delHdf
 delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=NULL, begin=NULL, end=NULL, ask=TRUE,...)
 {
     if (!ask)
@@ -71,7 +72,7 @@ delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=
                     path      <- strsplit(path,"/")[[1]]
                     path      <- paste0(path[-length(path)],collapse="/")
                     allLocal  <- list.files(path,recursive=TRUE)
-                    summaries <- file.size(allLocal,units="MB") + sum(summaries)
+                    summaries <- fileSize(allLocal,units="MB") + sum(summaries)
                     unlink(path,recursive=TRUE)
                 }
             }
@@ -119,13 +120,13 @@ delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=
                         
                         if (useExt=="global")
                         {
-                            summaries <- file.size(allLocal,units="MB") + sum(summaries)
+                            summaries <- fileSize(allLocal,units="MB") + sum(summaries)
                             unlink(allLocal,recursive=TRUE)
                         } else {
                         
                             for(i in seq_along(useExt))
                             {
-                                summaries <- file.size(allLocal,units="MB") + sum(summaries)
+                                summaries <- fileSize(allLocal,units="MB") + sum(summaries)
                                 unlink(grep(allLocal,pattern=useExt[i],value=TRUE),recursive=TRUE)
                             }
                         }

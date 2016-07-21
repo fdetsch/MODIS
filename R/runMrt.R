@@ -2,6 +2,8 @@
 # Date : August 2011
 # Licence GPL v3
 
+#' @export runMrt
+#' @name runMrt
 runMrt <- function(...)
 {
     MODISoptions(save=FALSE,quiet=TRUE)

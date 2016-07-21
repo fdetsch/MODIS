@@ -1,7 +1,98 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2012
-# Licence GPL v3
-
+#' Filter time series imagery with a cubic spline
+#' 
+#' @description 
+#' This function uses the \code{\link{smooth.spline}} function to filter a 
+#' vegetation index time serie of satellite data.
+#' 
+#' @param x \code{RasterBrick} (or \code{RasterStack}) or \code{character} vector 
+#' of filenames, sorted 'Vegetation index'.
+#' @param w \code{RasterBrick} (or \code{RasterStack}) with weighting 
+#' information, e.g. derived from \code{\link{makeWeights}}.
+#' @param t In case of MODIS composite, the corresponding 
+#' 'composite_day_of_the_year' \code{RasterBrick} (or \code{RasterStack}).
+#' @param groupYears \code{logical}. If \code{TRUE}, output files are grouped by 
+#' years. 
+#' @param timeInfo Result from \code{\link{orgTime}}.
+#' @param df \code{numeric}, yearly degree of freedom value passed to 
+#' \code{\link{smooth.spline}}. If set as \code{character} (i.e., \code{df = "6"}), 
+#' it is not adapted to the time serie length but used as a fixed value (see 
+#' Details).
+#' @param outDirPath Output path, defaults to the current working directory.
+#' @param ... Arguments passed to \code{\link{writeRaster}}. Note that 
+#' \code{filename} is created automatically.
+#' 
+#' @return 
+#' The filtered data and a text file with the dates of the output layers.
+#'
+#' @details 
+#' \code{numeric} values of \code{df} (e.g., \code{df = 6)} are treated as 
+#' yearly degrees of freedom. Here, the length of the input time series is not 
+#' relevant since \code{df} is adapted to it with: 
+#' \code{df*('length of _input_ timeserie in days'/365)}. The input length can 
+#' differ from the output because of the \code{pillow} argument in 
+#' \code{orgTime}. 
+#' 
+#' \code{character} values of \code{df} (e.g., \code{df = "6"}), on the other 
+#' hand, are not adopted to the length of the input time series.  
+#'
+#' @details 
+#' Currently tested on MODIS and Landsat data. Using M*D13 data, it is also 
+#' possible to use the 'composite_day_of_the_year' layer and the 'VI_Quality' 
+#' layer. This function is currently under heavy development and a lot of 
+#' changes are expected to come soon.
+#' 
+#' @seealso 
+#' \code{\link{whittaker.raster}}, \code{\link{raster}}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' # The full capacity of the following functions is currently avaliable only with M*D13 data.
+#' # !! The function is very new, double check the result!!
+#' 
+#' # You need to extract the: 'vegetation index', 'VI_Quality layer', 
+#' # and 'composite day of the year' layer.
+#' # runGdal(product="MOD13A2",begin="2004340",extent="sicily",end="2006070",
+#' # job="fullCapa",SDSstring="101000000010")
+#' # Afterward extract it to: 
+#' options("MODIS_outDirPath")
+#' 
+#' # the only obligatory dataset is "x" (vegetatino index), get the 'vi' data on the source directory: 
+#' path <- paste0(options("MODIS_outDirPath"),"/fullCapa")
+#' vi <- preStack(path=path, pattern="*_NDVI.tif$")
+#' 
+#' # "orgTime" detects timing information of the input data and generates based on the arguments
+#' # the output date information. For spline functions (in general) the beginning and
+#' # the end of the time series is always problematic. 
+#' # So there is the argument "pillow" (default 75 days) that adds
+#' # (if available) some more layers on the two endings.
+#' 
+#' timeInfo <- orgTime(vi,nDays=16,begin="2005001",end="2005365",pillow=40)
+#' 
+#' # now re-run "preStack" with two diferences, 'files' (output of the first 'preStack' call)
+#' # and the 'timeInfo'.
+#' # Here only the data needed for the filtering is extractet:
+#' vi <- preStack(files=vi,timeInfo=timeInfo)
+#' 
+#' # For speedup try (Sometimes problematic on Win7): 
+#' beginCluster(type="SOCK",exclude="MODIS") # See: ?beginCluster
+#' system.time(smooth.spline.raster(x=vi,timeInfo=timeInfo))
+#' 
+#' # Filter with weighting and time information:
+#' # if the files are M*D13 you can use also Quality layers and the composite day of the year:
+#' w <- stack(preStack(path=path, pattern="*_VI_Quality.tif$", timeInfo=timeInfo))
+#' w <- makeWeights(w,bitShift=2,bitMask=15,threshold=6)
+#' # you can also pass only the names
+#' t <- preStack(path=path, pattern="*_composite_day_of_the_year.tif$", timeInfo=timeInfo)
+#' 
+#' beginCluster(type="SOCK",exclude="MODIS") # See: ?beginCluster
+#' system.time(smooth.spline.raster(x=vi,w=w,t=t,timeInfo=timeInfo))
+#' }
+#' 
+#' @export smooth.spline.raster
+#' @name smooth.spline.raster
 smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = orgTime(x), df = 6,outDirPath = "./",...)
 {
     
@@ -11,10 +102,10 @@ smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = 
     outDirPath <- normalizePath(opt$outDirPath, winslash = "/", mustWork = TRUE)
 
     outDirPath <- setPath(outDirPath)
-    bitShift   <- opts$bitShift
-    bitMask    <- opts$bitMask
-    threshold  <- opts$threshold
-
+    # bitShift   <- opts$bitShift
+    # bitMask    <- opts$bitMask
+    # threshold  <- opts$threshold
+    
     dataFormat <- opts$dataFormat
     rasterOut  <- toupper(writeFormats())
 
@@ -89,8 +180,8 @@ smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = 
 
         for (i in 1:nodes) 
         {
-            sendCall(cl[[i]], clF, i, tag=i)
-            recvOneData(cl)
+            parallel:::sendCall(cl[[i]], clF, i, tag=i)
+            parallel:::recvOneData(cl)
         }
         
         # better to be save than sorry:
@@ -180,12 +271,12 @@ return(r)
     {
         for (i in 1:nodes) 
         {
-            sendCall(cl[[i]], clFun, i, tag=i)
+            parallel:::sendCall(cl[[i]], clFun, i, tag=i)
         }
     
         for (i in 1:tr$n)
         {
-            d <- recvOneData(cl)
+            d <- parallel:::recvOneData(cl)
     
             if (!d$value$success)
             {

@@ -22,7 +22,7 @@ end=NULL, ask=TRUE,...)}
     
   \item{tileV}{Default NULL, numeric or character vector. Vertical tile number(s) (for MODIS between 0 and 17). I.e.: \code{tileV = 9:17}. If provided \code{extent} is ignored.}
 
-  \item{tileH}{Default NULL, numeric or character vector. Horizontal tile number(s) (for MODIS between 0 and 35). I.e.: \code{tileH = 1:5}. Refer to \url{http://modis-land.gsfc.nasa.gov/MODLAND_grid.htm} to find your area. If provided \code{extent} is ignored.}
+  \item{tileH}{Default NULL, numeric or character vector. Horizontal tile number(s) (for MODIS between 0 and 35). I.e.: \code{tileH = 1:5}. Refer to \url{http://modis-land.gsfc.nasa.gov/MODLAND_grid.html} to find your area. If provided \code{extent} is ignored.}
 
   \item{begin}{Start date,default is from the beginning. Every file \code{'>='} than this date up to \code{end} will be deleted  See: \code{?transDate} for formatting.}
 

@@ -2,13 +2,11 @@
 # Date : October 2012
 # Licence GPL v3
 
+#' @describeIn makeWeights Extract bit-encoded information from Raster* file
+#' @aliases extractBits
+#' @export extractBits
 extractBits <- function(x, bitShift=2, bitMask=15, filename='',...)
 {
-    if(!require(bitops))
-    {
-        stop("You need to install the 'bitops' package: install.package('bitopts')")
-    }
-    
     if (inherits(x,"Raster"))
     {
         out <- brick(x, values=FALSE)
@@ -61,13 +59,10 @@ extractBits <- function(x, bitShift=2, bitMask=15, filename='',...)
 }    
 
 
+#' @export makeWeights
+#' @name makeWeights
 makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', decodeOnly=FALSE,...)
 {
-    if(!require(bitops))
-    {
-        stop("You need to install the 'bitops' package: install.package('bitopts')")
-    }
-    
     if (inherits(x,"Raster"))
     {
         out <- brick(x, values=FALSE)
@@ -148,6 +143,9 @@ makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', 
 }    
 
 ### maskWater (experimental)
+#' @describeIn makeWeights Masks water (additional information required)
+#' @aliases maskWater
+#' @export maskWater
 maskWater <- function(X, bitShift=NULL, bitMask = NULL, keep = NULL, datatype="INT1U",...)
 {
     if (!inherits(X,"Raster"))
@@ -182,51 +180,6 @@ maskWater <- function(X, bitShift=NULL, bitMask = NULL, keep = NULL, datatype="I
         NAvalue(result) <- 0  
     }
 return(result)
-}
-
-### detectBitInfo
-detectBitInfo <- function(product, what='all',warn=TRUE)
-{
-    
-    if(inherits(product,"Raster"))
-    {
-        product <- basename(names(product)[1])
-    } else if(inherits(product,"character"))
-    {
-        product <- basename(product)
-    } else
-    {
-        stop("Unknown input in detectBitInfo!")
-    }
-    
-    product  <- strsplit(product,"\\.")[[1]][1]
-    prodinfo <- getProduct(product,quiet=TRUE)$PRODUCT[1]
-    if(is.null(prodinfo))
-    {
-        stop()
-    } 
-          
-    try(info <- eval(parse(text=paste("",prodinfo,"_QC",sep=""))),silent=TRUE)
-    
-    if(exists("info"))
-    {
-        if(what!='all')
-        {
-            index <- grep(info$LongName,pattern=what, ignore.case = TRUE)
-            res  <- list(bitShift=info[index,"bitShift"],bitMask=info[index,"bitMask"])
-        } else 
-        {
-            res <- info
-        }
-    } else
-    {
-        if(warn)
-        {
-            warning("Could not detect 'bit' information, please provide me (matteo@mattiuzzi.com) the product name you have used so I can enable it, or add it manually see '?extractBits'!")
-        }
-        res <- NULL
-    }
-return(res)    
 }
 
 

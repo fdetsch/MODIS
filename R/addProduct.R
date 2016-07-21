@@ -36,10 +36,14 @@
 #' \code{MODIS:::MODIS_Products}, \code{\link{getProduct}}.
 #' 
 #' @examples 
+#' \dontrun{
+#' ## E.g., add MODIS evapotranspiration product
 #' MODIS:::addProduct(product = "MOD16A2", sensor = "MODIS", platform = "Combined", 
 #'                    pf1 = "MOLT", pf2 = "MOD", res = "1000m", temp_res = "8 Day", 
 #'                    topic = "Global Terrestrial Evapotranspiration", server = "NTSG")
-#'            
+#' }
+#'      
+#' @export addProduct                   
 #' @name addProduct
 addProduct <- function(product, sensor = "MODIS", platform = c("Terra", "Aqua"), 
                        pf1, pf2, topic, type = c("Tile", "Swath", "CMG"), res, 

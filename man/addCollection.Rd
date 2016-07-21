@@ -39,8 +39,11 @@ column to the product collections managed by \strong{MODIS} (see
 tracked and, if required, kept up-to-date by \code{\link{getCollection}}.
 }
 \examples{
+\dontrun{
+## E.g., add collection of MODIS evapotranspiration product
 MODIS:::addCollection(product = "MOD16A2", collection = 105)
-          
+}
+
 }
 \author{
 Florian Detsch

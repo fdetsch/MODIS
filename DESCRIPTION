@@ -1,6 +1,6 @@
 Package: MODIS
 Type: Package
-Title: MODIS Acquisition and Processing
+Title: Acquisition and Processing of MODIS Products
 Version: 0.10-34
 Date: 2016-05-24
 Authors@R: c(
@@ -24,20 +24,21 @@ Depends:
     R (>= 2.10),
     raster
 Imports:
+    bitops, 
     grDevices,
     graphics,
+    mapdata, 
+    maps,
     methods,
-    stats,
-    utils
-Suggests:
-    RCurl,
-    rgeos,
-    rgdal,
-    bitops,
-    mapdata,
-    XML,
     parallel,
-    ptw
+    ptw, 
+    RCurl,
+    rgdal,
+    rgeos,
+    sp,
+    stats,
+    utils, 
+    XML
 URL: https://github.com/MatMatt/MODIS
 ByteCompile: TRUE
 RoxygenNote: 5.0.1

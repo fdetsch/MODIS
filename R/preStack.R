@@ -2,6 +2,8 @@
 # Date : August 2012
 # Licence GPL v3
 
+#' @export preStack
+#' @name preStack
 preStack <- function(pattern = "*", path = "./", files = NULL, timeInfo = NULL)
 {
     if (is.null(files))

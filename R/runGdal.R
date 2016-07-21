@@ -1,4 +1,6 @@
 
+#' @export runGdal
+#' @name runGdal
 runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, tileH=NULL, tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, quiet=FALSE,forceDownload=TRUE,...)
 {
     opts <- combineOptions(...)

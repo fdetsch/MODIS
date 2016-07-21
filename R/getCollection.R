@@ -3,6 +3,8 @@
 # Licence GPL v3
 
 
+#' @export getCollection
+#' @name getCollection
 getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,as="character",quiet=TRUE)
 {
     opts <- combineOptions()

@@ -52,10 +52,13 @@ list of satellite products featured by \strong{MODIS} (see
 \code{MODIS:::MODIS_Products}).
 }
 \examples{
+\dontrun{
+## E.g., add MODIS evapotranspiration product
 MODIS:::addProduct(product = "MOD16A2", sensor = "MODIS", platform = "Combined", 
                    pf1 = "MOLT", pf2 = "MOD", res = "1000m", temp_res = "8 Day", 
                    topic = "Global Terrestrial Evapotranspiration", server = "NTSG")
-           
+}
+     
 }
 \author{
 Florian Detsch

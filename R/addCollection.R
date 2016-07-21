@@ -33,8 +33,12 @@
 #' Florian Detsch
 #' 
 #' @examples 
+#' \dontrun{
+#' ## E.g., add collection of MODIS evapotranspiration product
 #' MODIS:::addCollection(product = "MOD16A2", collection = 105)
-#'           
+#' }
+#' 
+#' @export addCollection                     
 #' @name addCollection
 addCollection <- function(product, collection = NA, 
                           path_ext = "inst/external", overwrite = FALSE, ...) {

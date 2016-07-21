@@ -2,6 +2,8 @@
 # Date: August 2011
 # Licence GPL v3
 
+#' @export orgStruc
+#' @name orgStruc
 orgStruc <- function(from,to,structure, pattern, move=FALSE, quiet=FALSE)
 {	
 	

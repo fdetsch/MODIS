@@ -1,8 +1,96 @@
-# Author: Matteo Mattiuzzi, Anja Klisch, matteo.mattiuzzi@boku.ac.at
-# Date : July 2011
-# Licence GPL v3
-  
-
+#' Create or update a local subset of global online MODIS grid data pool
+#' 
+#' @description 
+#' Create or update a local user-defined subset of the global MODIS grid data 
+#' archive. Based on user-specific parameters the function checks in the local 
+#' archive for available data and downloads missing data from the online MODIS 
+#' data pool. When run in a schedule job, the function manage the continuous 
+#' update of the local MODIS data archive.
+#' 
+#' @param product \code{character}. MODIS grid product to be downloaded, see 
+#' \code{\link{getProduct}}. Use dot notation to address Terra and Aqua products 
+#' (e.g. \code{M.D13Q1}). 
+#' @param begin \code{character}. Begin date of MODIS time series, see 
+#' \code{\link{transDate}} for formatting. 
+#' @param end \code{character}. End date, compatible with future dates for 
+#' continuous updates via scheduled jobs. 
+#' @param tileH \code{character}. Horizontal tile number(s; e.g. 
+#' \code{tileH = 1:5}), see \url{http://modis-land.gsfc.nasa.gov/MODLAND_grid.html}.
+#' @param tileV Character vector. Vertical tile number(s), see \code{tileH}.
+#' @param extent See Details in \code{\link{getTile}}.
+#' @param collection \code{character} or \code{integer}. Desired MODIS product 
+#' collection, see MODIS pages or \code{\link{getCollection}} for more information.
+#' @param HdfName \code{character} vector or \code{list}. Full HDF file name(s) 
+#' to download a small set of files. If specified, other file-related parameters 
+#' (i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored. 
+#' @param quiet \code{logical}, defaults to \code{FALSE}. Refers to all internal 
+#' \code{\link{download.file}} calls. If \code{TRUE}, \code{\link{getHdf}} 
+#' becomes really boring...
+#' @param wait \code{numeric}. Inserts a break (in seconds) after every internal 
+#' call to \code{\link{download.file}} or \code{\link{getURL}}, which reduces 
+#' the chance of FTP connection errors that frequently occur after many requests. 
+#' @param checkIntegrity \code{logical}. If \code{FALSE} (default), no file 
+#' integrity check is performed, else the size of each downloaded file is 
+#' checked. In case of inconsistencies, the function tries to re-download broken 
+#' files. 
+#' @param forceDownload \code{logical}. If \code{TRUE} (default), try to 
+#' download data irrespective of whether online information could be retrieved 
+#' via \code{MODIS:::getStruc} or not.
+#' @param ... Arguments found in \code{\link{MODISoptions}}, sections 'STORAGE' 
+#' and 'DOWNLOAD'.
+#' 
+#' @return 
+#' An invisible vector of downloaded data and paths.
+#' 
+#' @references 
+#' MODIS data is obtained through the online Data Pool at the NASA Land 
+#' Processes Distributed Active Archive Center (LP DAAC), USGS/Earth Resources 
+#' Observation and Science (EROS) Center, Sioux Falls, South Dakota 
+#' \url{https://lpdaac.usgs.gov/get_data}.
+#' 
+#' SRTM data is obtained through CGIAR-CSI and mirror servers. For the use this 
+#' data please read \url{http://srtm.csi.cgiar.org/SELECTION/SRT_disclaimer.htm}.
+#' Jarvis A., H.I. Reuter, A.  Nelson, E. Guevara, 2008, Hole-filled seamless 
+#' SRTM data V4, International Centre for Tropical Agriculture (CIAT), available 
+#' from \url{http://srtm.csi.cgiar.org}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' # one specific file (no regular erpression allowed here for now!)
+#' # ca 2 mB!!!
+#' a <- getHdf(HdfName="MYD11A1.A2009001.h18v04.005.2009013145459.hdf", wait=0)
+#' 
+#' 
+#' # DO NOT RUN THE NEXT EXAMPLE (unless you need this data)!!!
+#' # Get all MODIS TERRA and AQUA 11A1 beginning from 18. October 2011 up to today.
+#' # (Can be ran in a sceduled job, for daily archive update)
+#' # getHdf(product="M.D11A1",begin="2011.10.18",tileH=18:19,tileV=4) 
+#' 
+#' # same Tiles with a LIST extent.
+#' # approximatley 21 mB!
+#' Austria <- list(xmax=17.47,xmin=9.2,ymin=46.12,ymax=49.3)
+#' b <- getHdf(product="M.D11A1",begin="2009001",end="2009-01-02",extent=Austria)
+#' b
+#' 
+#' # require(mapdata)
+#' getHdf(product="M.D11A1",begin="2009.01.01",end="2009002",extent="austria")
+#' # without specification of the extent... interactive selection see: "getTile()"
+#' c <- getHdf(product="M.D11A1",begin="2009.01.01",end="2009002")
+#' c
+#' 
+#' # SRTM data
+#' # SRTM server limits downloads! (It seams to be blocked, but (normally) it continues after a while,
+#' # you have to be patient!).
+#' # The files are zips, this function only performs the download!
+#' d <- getHdf(product="SRTM",extent="austria")  
+#' d
+#' }
+#' 
+#' @export getHdf
+#' @name getHdf
 getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE,forceDownload=TRUE,...) 
 {
   # product="MOD13Q1"; begin="2010001"; end="2010005"; tileH=NULL; tileV=NULL; extent=NULL; collection=NULL; quiet=FALSE; wait=0.5; checkIntegrity=FALSE; z=1;u=1
@@ -95,10 +183,6 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
       }
       if (!file.exists(paste(path$localPath,".SRTM_sizes",sep="/")))
       {
-        if (! require(RCurl)) 
-        {
-          stop("You need to install the 'RCurl' package: install.packages('RCurl')")
-        }
         sizes <- getURL(paste0(path$remotePath[[1]],"/"))
         sizes <- strsplit(sizes, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
         sizes <- sapply(sizes,function(x){x <- strsplit(x," ")[[1]];paste(x[length(x)],x[length(x)-5],sep=" ")})
@@ -297,11 +381,6 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
                   rm(ftpfiles)
               }
               
-              if (!require(RCurl)) 
-              {
-                  stop("You need to install the 'RCurl' package: install.packages('RCurl')")
-              }
-
               for (g in 1:sturheit)
               { # get list of FILES in remote dir
   #                        server <- names(path$remotePath)[g%%length(path$remotePath)+1]

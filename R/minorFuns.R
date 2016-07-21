@@ -15,33 +15,12 @@ stubborn <- function(level="high")
     }
 }
 
-file.size <- function(file,units="B")
-{
-    units <- toupper(units)
-    unit <- c(1,1024,1048576,1073741824,1073741824*1024) 
-    names(unit) <- c("B","KB", "MB", "GB","TB")
-        
-    if (!units %in% names(unit))
-    {
-        stop('unit must be one of: "B", "KB", "MB", "GB" or "TB"')
-    } 
-    
-    file <- file.info(file)
-    file <- file[!file$isdir,"size"]
-    
-    res <- file/unit[toupper(units)]
-    return(res)
-}
 
 checksizefun <- function(file,sizeInfo=NULL,flexB=0)
 {
     # determine reference size
     if (is.null(sizeInfo))
     {
-        if (!require(XML)) 
-        {
-            stop("You need to install the 'XML' package: install.packages('XML')")
-        }
         xmlfile  <- paste0(file,".xml")
         xmlfile  <- xmlParse(xmlfile)
         MetaSize <- getNodeSet(xmlfile, "/GranuleMetaDataFile/GranuleURMetaData/DataFiles/DataFileContainer/FileSize" )
@@ -57,7 +36,7 @@ checksizefun <- function(file,sizeInfo=NULL,flexB=0)
         return(res)
     }
     
-    FileSize <- as.numeric(file.size(file))
+    FileSize <- as.numeric(fileSize(file))
     if (flexB!=0)
     {
         isOK <- (MetaSize >= FileSize-flexB & MetaSize <= FileSize+flexB)
@@ -70,14 +49,11 @@ return(res)
 }
 
 
+#' @export search4map
+#' @name search4map
 search4map <- function(pattern="",database='worldHires',plot=FALSE)
 {
-  if (!require(mapdata))
-  {
-    stop("This function requires 'mapdata', please install it first: install.packages('mapdata')")
-  }
-  
-  areas <- grep(x=map(database,plot=FALSE)$names,pattern=pattern,value=TRUE,ignore.case=TRUE)
+  areas <- grep(x=maps::map(database,plot=FALSE)$names,pattern=pattern,value=TRUE,ignore.case=TRUE)
   
   if (length(areas)==0)
   {
@@ -88,7 +64,7 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
   
   if (plot)
   {
-    map(database,areas)
+    maps::map(database,areas)
     map.axes() 
     box()
     grid(36,18,col="blue",lwd=0.5)
@@ -601,11 +577,6 @@ filesUrl <- function(url)
       
       if (substring(url,1,4)=="http")
       {
-        if(!require(XML))
-        {
-          stop("Missing dependency, please install the 'XML' package.")
-        }
-        
         co     <- htmlTreeParse(co)
         co     <- co$children[[1]][[2]][[2]]
         co     <- sapply(co$children, function(el) xmlGetAttr(el, "href"))

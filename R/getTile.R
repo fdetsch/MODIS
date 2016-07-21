@@ -2,6 +2,8 @@
 # Date : August 2011
 # Licence GPL v3
 
+#' @export getTile
+#' @name getTile
 getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, system = "MODIS", zoom = TRUE)
 {
   # debug:
@@ -17,31 +19,14 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
   target <- NULL  # if extent is a raster*/Spatial* and has a different proj it is changed
   system <- toupper(system)
   
-  if (system == "MERIS")
-  {
+  if (system == "MERIS") {
     # generate tiling structure of Culture-Meris data
     tiltab  <- genTile(tileSize = 5)
     usePoly <- FALSE
-  } else if (system == "SRTM")
-  {
+  } else if (system == "SRTM") {
     # generate tiling structure of SRTMv4 data
     tiltab  <- genTile(tileSize = 5, extent=list(xmin=-180, xmax=180, ymin=-60, ymax=60), StartNameFrom=c(1,1))
     usePoly <- FALSE
-  } else 
-  {
-    if (! require(rgdal) )
-    {
-      cat("Using simple selection method,\n\tFor precise subsetting install the 'rgdal' package: install.packages('rgdal')\n")
-      usePoly <- FALSE
-      tiltab  <- tiletable
-    }
-    
-    if (! require(rgeos) )
-    {
-      cat("Using simple selection method,\n\tFor precise subsetting install the 'rgeos' package: install.packages('rgeos')\n")
-      usePoly <- FALSE
-      tiltab  <- tiletable
-    }
   }
   
   # supported extent: shp, list, raster-Extent/-Layer/-Brick/-Stack, map or blank
@@ -131,17 +116,12 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
   # if CHARACTER (country name of MAP)     
   if (inherits(extent, "character"))
   {
-    if (!require(mapdata))
-    {
-      stop("For 'TILE' selection by country name (?map) you need to install the 'mapdata' package: install.packages('mapdata')")
-    }
-    
-    try(testm <- map("worldHires", extent, plot = FALSE),silent = TRUE)
+    try(testm <- maps::map("worldHires", extent, plot = FALSE),silent = TRUE)
     if (!exists("testm"))
     {
       stop(paste0("Country name not valid. Check availability/spelling, i.e. try if it works with: map('worldHires,'",extent, "'), or use '?search4map' function"))
     }
-    extent <- map("worldHires", extent, plot = FALSE, fill=TRUE)
+    extent <- maps::map("worldHires", extent, plot = FALSE, fill=TRUE)
   }
     
   # if MAP (from mapdata/maps)
@@ -167,10 +147,6 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     
     if (!isLonLat(ext)) 
     { 
-      if (! require(rgdal) )
-      {
-        stop("Your 'extent' is not in LatLon coordinates, you need to install the 'rgdal' package: install.packages('rgdal')")
-      }
       if(length(grep(class(extent),pattern="Raster*"))==1)
       {
         extent <- projectExtent(ext,"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
@@ -240,11 +216,6 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
   
   } else if (inherits(extent,"SpatialPolygonsDataFrame") & !is.null(buffer))
   {
-    if (!require(rgeos))
-    {
-      stop("To use a 'buffer' in combination with an extent of class 'Spatial*' you need to install package 'rgeos': install.packages('rgeos')")
-    }
-    
     if (length(buffer)>1)
     {
       buffer <- buffer[1]
@@ -255,10 +226,10 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     # http://stackoverflow.com/questions/9735466/how-to-compute-a-line-buffer-with-spatiallinesdataframe
     win                 <- getOption("warn") 
     options(warn=-2)
-    inproj              <- proj4string(extent)
-    proj4string(extent) <- CRS("+init=epsg:3395")
+    inproj              <- sp::proj4string(extent)
+    sp::proj4string(extent) <- CRS("+init=epsg:3395")
     extent              <- gBuffer(extent,width=buffer)
-    proj4string(extent) <- CRS(inproj)
+    sp::proj4string(extent) <- CRS(inproj)
     options(warn=win)
   }
   
@@ -327,12 +298,12 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     pos  <- Polygons(po,"selection")
     spos <- SpatialPolygons(list(pos))
     
-    if (is.na(proj4string(spos)))
+    if (is.na(sp::proj4string(spos)))
     {
-      proj4string(spos) <- proj4string(sr) # sr
+      sp::proj4string(spos) <- sp::proj4string(sr) # sr
     }
      
-    selected <- sr[spos,] # == rgeos:::over() # sr 
+    selected <- sr[spos,] # sr 
     
     tileH  <- unique(as.numeric(selected@data$h))
     tileV  <- unique(as.numeric(selected@data$v))
@@ -346,20 +317,15 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
 
 mapSelect <- function(zoom=TRUE)
 {
-  if (!require(mapdata)) 
-  {
-    stop("For interactive TILE selection you need to install the 'mapdata' package: install.packages('mapdata')")
-  }
-    
   dev.new(width=9,height=7)
-  map("worldHires")
+  maps::map("worldHires")
   map.axes() 
   grid(36,18,col="blue",lwd=0.5)
   abline(h=0,col="yellow",lwd=1)
   if(zoom) 
   {
     title("ZOOM-IN by selecting UL and LR points with the mouse!")            
-    # code taken from function raster:::drawExtent
+    # code taken from function raster::drawExtent
     loc1 <- locator(n = 1, type = "p", pch = "+", col = "red")
     loc2 <- locator(n = 1, type = "p", pch = "+", col = "red")
     loc  <- rbind(unlist(loc1), unlist(loc2))
@@ -369,12 +335,12 @@ mapSelect <- function(zoom=TRUE)
     lines(p, col = "red")            
     
     Sys.sleep(0.5)
-    map("worldHires",xlim=c(min(loc[, "x"]),max(loc[, "x"])),ylim=c(min(loc[,"y"]),max(loc[, "y"])))
+    maps::map("worldHires",xlim=c(min(loc[, "x"]),max(loc[, "x"])),ylim=c(min(loc[,"y"]),max(loc[, "y"])))
     map.axes() 
     grid(36,18,col="blue",lwd=0.5)            
   }
   title("Set UL and LR points with the mouse!")
-  # code taken from function raster:::drawExtent
+  # code taken from function raster::drawExtent
   loc1 <- locator(n = 1, type = "p", pch = "+", col = "red")
   loc2 <- locator(n = 1, type = "p", pch = "+", col = "red")
   loc  <- rbind(unlist(loc1), unlist(loc2))

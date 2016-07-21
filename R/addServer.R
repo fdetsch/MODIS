@@ -28,10 +28,14 @@
 #' Florian Detsch
 #' 
 #' @examples 
+#' \dontrun{
+#' ## E.g., add server of MODIS evapotranspiration product
 #' MODIS:::addServer(name = "NTSG", sensor = "MODIS",
 #'                   basepath = "ftp://ftp.ntsg.umt.edu/pub/MODIS/NTSG_Products/MOD16/",
 #'                   varpath = "PRODUCT.CCC/YYYY/DDD/")
-#'           
+#' }                   
+#'     
+#' @export addServer                 
 #' @name addServer
 addServer <- function(name, sensor = "MODIS", basepath, varpath, 
                       content = "images", path_ext = "inst/external", 

@@ -2,17 +2,13 @@
 # Date : July 2012
 # Licence GPL v3
 
-
+#' @export arcStats
+#' @name arcStats
 arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.01", end=format(Sys.time(), "%Y.%m.%d"), asMap=TRUE, outName=NULL,...)
 {  
 # product="MYD17A2"; collection="005"; extent=list(xmin=-20,xmax=40,ymin=10, ymax=20); begin="2000.08.01"; end="2000.08.21"; asMap="both"; outName=NULL;u=1;z=1
 # product="MOD13Q1"; collection="005"; extent='global'; begin="2000.08.01"; end="2004.08.21"; asMap="both"; outName=NULL;u=1;z=1
  
-    if (!require(rgdal))
-    {
-        stop("Please install 'rgdal': install.packages('rgdal')")
-    }
-
     date4name <- format(Sys.time(), "%Y%m%d%H%M%S") 
           
     if(is.null(outName))
@@ -110,7 +106,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
           
           if (length(n)!=0)
           {
-              meanSize <- mean(file.size(n,units="Mb")) 
+              meanSize <- mean(fileSize(n,units="Mb")) 
               n <- sapply(n,function(x)
               {
                   date <- strsplit(normalizePath(dirname(x),winslash="/"),"/")[[1]]
@@ -135,16 +131,6 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
       # mapping 
       if (isTRUE(asMap)|tolower(asMap)=="both")
       {
-#                if (!(require(maptools)))
-#                {
-#                    stop("Please install maptools package: install.packages('maptools')")
-#                }
-          
-          if (!(require(mapdata)))
-          {
-              stop("Please install mapdata package: install.packages('mapdata')")
-          }
-
           srx <- sr
           srx@data <- data.frame(percent=(round(table$percent)))
            
@@ -163,17 +149,17 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
                  
           if(extent[1]=="global")
           {
-              globe <- map("world",plot=FALSE)
+              globe <- maps::map("world",plot=FALSE)
           } else
           {
-              globe <- map("worldHires",plot=FALSE,xlim=xlim,ylim=ylim)
+              globe <- maps::map("worldHires",plot=FALSE,xlim=xlim,ylim=ylim)
               xax   <- xax[xax$x>=min(xlim) & xax$x<=max(xlim),]
               yax   <- yax[yax$y>=min(ylim) & yax$y<=max(ylim),]
           }  
-          coordinates(xax) <- ~x+y
-          coordinates(yax) <- ~x+y 
-          proj4string(xax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-          proj4string(yax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"                               
+          sp::coordinates(xax) <- ~x+y
+          sp::coordinates(yax) <- ~x+y 
+          sp::proj4string(xax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
+          sp::proj4string(yax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"                               
           
           globe$x[!is.na(globe$x) & globe$x > 180] <- 180
           
@@ -183,7 +169,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
           #invisible(set_ll_warn(TRUE)) # shouldn't be necessary becaus of the trimming
           #iwa <- options()$warn
           #options(warn=-1)
-          proj4string(globe) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
+          sp::proj4string(globe) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
           #options(warn=iwa)
              
           if(!isLonLat(opts$outProj))
@@ -195,11 +181,11 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
               xlim <- c(xmin(tmp),xmax(tmp))
               ylim <- c(ymin(tmp),ymax(tmp))
               
-              xax <- spTransform(xax,CRS(opts$outProj))
-              yax <- spTransform(yax,CRS(opts$outProj))
+              xax <- sp::spTransform(xax,CRS(opts$outProj))
+              yax <- sp::spTransform(yax,CRS(opts$outProj))
 
-              globe <- spTransform(globe,CRS(opts$outProj))
-              srx   <- spTransform(srx,CRS(opts$outProj))
+              globe <- sp::spTransform(globe,CRS(opts$outProj))
+              srx   <- sp::spTransform(srx,CRS(opts$outProj))
           }
           
           xax <- as.data.frame(xax)[,c("x","tileID")]

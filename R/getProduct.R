@@ -6,6 +6,8 @@
 # improvement of automatic sensor detection 
 # make a class modisproduct
     
+#' @export getProduct
+#' @name getProduct
 getProduct <- function(x=NULL,quiet=FALSE) 
 {    
 

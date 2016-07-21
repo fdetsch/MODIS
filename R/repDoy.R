@@ -3,6 +3,8 @@
 # Licence GPL v3
 
  
+#' @export repDoy
+#' @name repDoy
 repDoy <- function(pixX, layerDate = NULL, bias = 0)
 {	
   if (is.null(layerDate))

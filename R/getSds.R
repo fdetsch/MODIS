@@ -2,6 +2,8 @@
 # Date : August 2011
 # Licence GPL v3
 
+#' @export getSds
+#' @name getSds
 getSds <- function(HdfName,SDSstring=NULL,method="gdal") 
 {
 

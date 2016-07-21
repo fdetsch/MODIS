@@ -2,6 +2,8 @@
 # Date : August 2012
 # Licence GPL v3
 
+#' @export orgTime
+#' @name orgTime
 orgTime <- function(files,nDays="asIn",begin=NULL,end=NULL,pillow=75,pos1=10,pos2=16,format="%Y%j")
 {
     if (inherits(files,"Raster"))

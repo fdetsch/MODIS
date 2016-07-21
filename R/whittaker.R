@@ -74,13 +74,10 @@ doCollapse <- function(tx,pillow)
   list(order=c(tS,ord,tE),sequence=c(s0,s1,s2)+1)
 }
     
+#' @export whittaker.raster
+#' @name whittaker.raster
 whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda = 5000, nIter= 3, outputAs="single", collapse=FALSE, prefixSuffix=c("MCD","ndvi"), outDirPath=".", outlierThreshold=NULL, mergeDoyFun="max", ...)
 {
-  if(!require(ptw))
-  {
-    stop("In order to use the the whittaker filter please install 'ptw': install.package('ptw')") 
-  }
-
   # debug 
   # w=wt; t=inT; groupYears=TRUE; lambda = 5000; nIter= 3; outDirPath = "./"; collapse=FALSE; opt <- MODIS:::combineOptions();removeOutlier=FALSE;mergeDoyFun="max";opts$outDirPath <- MODIS:::setPath(outDirPath)
   # w=NULL; t=NULL; groupYears=TRUE; lambda = 5000; nIter= 5; outDirPath = "./SUB/";collapse=TRUE; opts <- MODIS:::combineOptions();removeOutlier=FALSE;mergeDoyFun="max"
@@ -257,9 +254,9 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     }
     
     # better to be save than sorry:
-    parallel:::clusterEvalQ(cl,require(bitops))
-    parallel:::clusterEvalQ(cl,require(rgdal))
-    parallel:::clusterEvalQ(cl,require(ptw))
+    parallel::clusterEvalQ(cl,require(bitops))
+    parallel::clusterEvalQ(cl,require(rgdal))
+    parallel::clusterEvalQ(cl,require(ptw))
     tr <- blockSizeCluster(vi)
   }    
 

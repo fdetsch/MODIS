@@ -14,9 +14,10 @@
 #' \cr
 #' \emph{Maintainer:} Matteo Mattiuzzi \email{matteo@@mattiuzzi.com}
 #'
-#' @import leaflet sp raster satellite scales Rcpp methods png lattice rgdal gdalUtils latticeExtra viridisLite
+#' @import bitops mapdata parallel ptw raster RCurl rgeos rgdal sp XML
 #' @importFrom grDevices dev.new dev.off png
 #' @importFrom graphics abline box grid locator title
+#' @importFrom maps map.axes
 #' @importFrom methods as
 #' @importFrom stats na.omit smooth.spline
 #' @importFrom utils capture.output download.file installed.packages read.table vi write.csv write.table

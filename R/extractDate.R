@@ -2,6 +2,8 @@
 # Date : August 2012
 # Licence GPL v3
 
+#' @export extractDate
+#' @name extractDate
 extractDate <- function(files,pos1=10,pos2=16,asDate=FALSE,format="%Y%j")
 {
   if(inherits(files,"Raster"))

@@ -16,7 +16,7 @@ With this function you define the period to be filtered (begin:end), the output 
 
 \arguments{
   \item{files}{MODIS filenames, eg output of \code{runGdal} or \code{runMrt}.}
-  \item{nDays}{Integer. Time interval for the output layers. Default is "asIn" that includes the exact input dates within the period selected using \code{begin} and \code{end}. Can also be nDays="1 month" or "1 week" see: \url{https://www.stat.berkeley.edu/classes/s133/dates.html} example of seq(from,to,by) at the bottom.}
+  \item{nDays}{Integer. Time interval for the output layers. Default is "asIn" that includes the exact input dates within the period selected using \code{begin} and \code{end}. Can also be nDays="1 month" or "1 week" see: \url{http://www.stat.berkeley.edu/~s133/dates.html} example of seq(from,to,by) at the bottom.}
   \item{begin}{Default is from earliest input dataset. Here you can supply the begin date of the output} 
   \item{end}{Default to the end of the input dataset. Here you can specify the end date of the output (note, the exact \code{end}-date depends on \code{start} and \code{nDays} argument.} 
   \item{pillow}{Number of days added on the beginning and on the end of a time serie.} 

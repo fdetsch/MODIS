@@ -73,11 +73,7 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
   
   if (getIT | forceCheck)
   {
-    if (!require(RCurl))
-    {
-      stop("You need to install the 'RCurl' package: install.packages('RCurl')")
-    }
-    
+
     lockfile <- paste0(opts$auxPath, basnam,".lock")[[1]]
     if(file.exists(lockfile))
     {

@@ -113,8 +113,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE)
 
   if (tool=="GDAL") # EPRS:xxxx or xxxx or "+proj=sin...." 
   { # EPSGinfo is lazy loaded (see: minorFuns.R)
-    require(rgdal)
-    
+
     inW <- getOption("warn")
     on.exit(options(warn=inW))
     options(warn=-1)
@@ -129,7 +128,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE)
           proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
       } else
       {
-        stop("Could not convert 'outProj' argunemt",proj, "to a sp:::CRS compatible string!")
+        stop("Could not convert 'outProj' argunemt",proj, "to a sp::CRS compatible string!")
       }
     } else if(!is.na(as.numeric(proj)))
     {

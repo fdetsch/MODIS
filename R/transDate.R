@@ -2,6 +2,8 @@
 # Date : November 2011
 # Licence GPL v3
   
+#' @export transDate
+#' @name transDate
 transDate <- function(begin=NULL, end=NULL)
 {
   if(is.null(begin)) 

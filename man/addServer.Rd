@@ -37,10 +37,13 @@ list of online (FTP) servers featured by \strong{MODIS} (see
 \code{MODIS:::MODIS_FTPinfo}).
 }
 \examples{
+\dontrun{
+## E.g., add server of MODIS evapotranspiration product
 MODIS:::addServer(name = "NTSG", sensor = "MODIS",
                   basepath = "ftp://ftp.ntsg.umt.edu/pub/MODIS/NTSG_Products/MOD16/",
                   varpath = "PRODUCT.CCC/YYYY/DDD/")
-          
+}                   
+    
 }
 \author{
 Florian Detsch

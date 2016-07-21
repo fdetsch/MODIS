@@ -46,7 +46,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     
     fls_col <- paste0(dir_aux, "/collections.RData")
     
-    if (!file.exists(ch_fls_col))
+    if (!file.exists(fls_col))
       invisible(
         file.copy(system.file("external", "collections.RData", package = "MODIS"), 
                   fls_col)

@@ -2,12 +2,12 @@
 #' 
 #' @description 
 #' This function returns MODIS QA information for a specific product. It gets 
-#' the information from a internal database and not all products are available.   
+#' the information from an internal database and not all products are available.   
 #' 
-#' @param product MODIS product, see \code{\link{getProduct}}.
-#' @param what Parameter Name (ie 
+#' @param product \code{character}, see \code{\link{getProduct}}.
+#' @param what \code{character}. Parameter name, i.e. 
 #' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}, 
-#' TABLE 2: MOD13Q1 VI Quality; Long Name)
+#' (TABLE 2: MOD13Q1 VI Quality; Long Name).
 #' @param warn \code{logical}, whether or not to throw warning messages.
 #' 
 #' @return 

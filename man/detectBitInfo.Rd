@@ -7,11 +7,11 @@
 detectBitInfo(product, what = "all", warn = TRUE)
 }
 \arguments{
-\item{product}{MODIS product, see \code{\link{getProduct}}.}
+\item{product}{\code{character}, see \code{\link{getProduct}}.}
 
-\item{what}{Parameter Name (ie 
+\item{what}{\code{character}. Parameter name, i.e. 
 \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}, 
-TABLE 2: MOD13Q1 VI Quality; Long Name)}
+(TABLE 2: MOD13Q1 VI Quality; Long Name).}
 
 \item{warn}{\code{logical}, whether or not to throw warning messages.}
 }
@@ -20,7 +20,7 @@ If \code{what = "all"} a \code{data.frame}, else a \code{list}.
 }
 \description{
 This function returns MODIS QA information for a specific product. It gets 
-the information from a internal database and not all products are available.
+the information from an internal database and not all products are available.
 }
 \examples{
 detectBitInfo("MOD13Q1")

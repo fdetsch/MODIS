@@ -1,7 +1,44 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date: August 2012
-# Licence GPL v3
-
+#' Delete local MODIS grid files
+#' 
+#' @description 
+#' Delete MODIS grid files to reduce the local storage.
+#' 
+#' @param product \code{character}, see \code{\link{getProduct}}.
+#' @param collection \code{character} or \code{integer}, see 
+#' \code{\link{getCollection}}.
+#' @param extent Extent information, defaults to \code{'global'}. See
+#' \code{\link{getTile}}
+#' @param tileH \code{numeric} or \code{character}. Horizontal tile number, 
+#' see \code{\link{getTile}}.
+#' @param tileV Same for vertical tiles.
+#' @param begin \code{character}. Begin date of MODIS time series, see 
+#' \code{\link{transDate}} for formatting.
+#' @param end Same for end date.
+#' @param ask \code{logical}. If \code{TRUE} (default), the user is being asked 
+#' for deletion after checking.
+#' @param ... Arguments passed to \code{\link{MODISoptions}}, particularly 
+#' \code{localArcPath}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' 
+#' # YOU ARE ASKED TO CONFIM THE DELETION! BUT IF THE EXAMPLE THIS FOR YOU SENSITIVE DATA CHANGE IT!
+#' 
+#' # REMOVE "MYD11A2" from specific date range and area subset:
+#' # delHdf(product="MYD11A2",begin="2010001",end="2010.02.01",extent="austria")
+#' # or
+#' # delHdf(product="MYD11A2",begin="2010001",end="2010.02.01",tileV=18:19,tileH=4)
+#' 
+#' # REMOVE "MOD11A2" and "MYD11A2" from specific date range but globaly:
+#' # delHdf(product="M.D11A2",begin="2010001",end="2010.02.01") 
+#' 
+#' # REMOVE ALL "MOD11A2" from local archive:
+#' # delHdf(product="MOD11A2") 
+#' }
+#' 
 #' @export delHdf
 #' @name delHdf
 delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=NULL, begin=NULL, end=NULL, ask=TRUE,...)

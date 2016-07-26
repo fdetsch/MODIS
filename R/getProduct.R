@@ -1,11 +1,39 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2011
-# Licence GPL v3
- 
-# TODO:
-# improvement of automatic sensor detection 
-# make a class modisproduct
-    
+#' Check and create product-related information
+#' 
+#' @description 
+#' On user side, it is a funtion to find the desidered product. On package site, 
+#' it generates central internal information to hande files.  
+#' 
+#' @param x \code{character}. MODIS filename, product name or regular expression 
+#' (for the latter, see argument \code{pattern} in \code{\link{grep}} for 
+#' details). If not specified, all available products are returned.
+#' @param quiet \code{logical}, defaults to \code{FALSE}.
+#' 
+#' @return 
+#' An invisible \code{list} with usable information for other functions, see 
+#' examples.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' getProduct() # list available products
+#' 
+#' getProduct("MxD11C3") # 'x' for backward compatibility
+#' getProduct("MxD11C3", quiet = TRUE)
+#' 
+#' # or use regular expression style
+#' getProduct("M.D11C3")
+#' getProduct("M.D11C")
+#' 
+#' getProduct("MOD14$")
+#' getProduct("MOD14")
+#' 
+#' internal_info <- getProduct("MOD11C3", quiet = TRUE) 
+#' internal_info
+#' 
+#' getProduct("SRTM") # download only
+#' 
 #' @export getProduct
 #' @name getProduct
 getProduct <- function(x=NULL,quiet=FALSE) 

@@ -1,7 +1,32 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2011
-# Licence GPL v3
-
+#' List SDS in a MODIS grid file
+#' 
+#' @description 
+#' This function lists the names of all scientific datasets (SDS) contained in a 
+#' specified MODIS grid HDF file.
+#' 
+#' @param HdfName \code{character}. (Absolute) filename from which to extract 
+#' SDS names.
+#' @param SDSstring \code{character}, see Value.
+#' @param method \code{character}, defaults to \code{"gdal"}. Caution: on 
+#' Windows, the default 'GDAL' installation doesn't support HDF4 files. Install 
+#' 'FWTools' or use \code{method = "mrt"} instead.
+#' 
+#' @return 
+#' A \code{list} or \code{character}. If \code{SDSstring} is provided, the 
+#' function reports extracted SDS and a formatted SDSsting (e.g., "11101"). If 
+#' not provided, the SDS names in \code{HdfName} are returned.  Consult the MRT 
+#' manual for details.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' getSds(HdfName="XXX.hdf")
+#' getSds(HdfName="/path/XXX.hdf",method="gdal") # require GDAL (FWTools on Windows)
+#' getSds(HdfName="/path/XXX.hdf",method="mrt") # require MRTool
+#' }
+#' 
 #' @export getSds
 #' @name getSds
 getSds <- function(HdfName,SDSstring=NULL,method="gdal") 

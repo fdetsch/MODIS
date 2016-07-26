@@ -1,8 +1,52 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2011
-# Licence GPL v3
-
-
+#' Get available collections of MODIS product(s)
+#' 
+#' @description 
+#' Checks and retrieves available MODIS collection(s) for a given product.
+#' 
+#' @param product \code{character}. MODIS grid product to check for existing 
+#' collections, see \code{\link{getProduct}}.
+#' @param collection \code{character} or \code{integer}. If provided, the 
+#' function only checks if the specified collection exists and returns the 
+#' collection number formatted based on the \code{as} parameter or \code{FALSE} 
+#' if it doesn't exists. The check is performed on the primary data source, 
+#' 'LP DAAC' \url{https://lpdaac.usgs.gov/}.
+#' @param newest \code{logical}. If \code{TRUE} (default), return only the 
+#' newest collection, else return all available collections.
+#' @param forceCheck \code{logical}, defaults to \code{FALSE}. If \code{TRUE}, 
+#' connect to the 'LP DAAC' FTP server and get available collections, of which 
+#' an updated version is permanently stored in 
+#' \code{MODIS:::combineOptions()$auxPath}.
+#' @param as \code{character}, defaults to \code{'character'} which returns the 
+#' typical 3-digit collection number (i.e., \code{"005"}). \code{as = 'numeric'} 
+#' returns the result as \code{numeric} (i.e., \code{5}).
+#' @param quiet \code{logical}, defaults to \code{TRUE}.
+#' 
+#' @return 
+#' A 3-digit \code{character} or \code{numeric} vector indicating available 
+#' collections. Additionally, a text file in a hidden folder in 
+#' \code{getOption("MODIS_localArcPath")} as database for future calls. If 
+#' \code{collection} is provided, only the (formatted) collection, or 
+#' \code{FALSE} if it doesn't exist, is returned.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @seealso 
+#' \code{\link{getProduct}}.
+#' 
+#' @examples 
+#' \dontrun{
+#' 
+#' # update or get collections for MOD11C3 and MYD11C3
+#' getCollection(product="M.D11C3")
+#' getCollection(product="M.D11C3",newest=FALSE)
+#' 
+#' getCollection(product="M.D11C3",collection=3)
+#' getCollection(product="M.D11C3",collection=41)
+#' getCollection(product="M.D11C3",collection="041")
+#' getCollection(product="M.D11C3",forceCheck=TRUE)
+#' }
+#' 
 #' @export getCollection
 #' @name getCollection
 getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,as="character",quiet=TRUE)

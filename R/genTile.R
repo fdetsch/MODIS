@@ -1,7 +1,40 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : January 2012
-# Licence GPL v3
-
+#' Generate tiling system
+#' 
+#' @description 
+#' This function generates a matrix with bounding box information for a 
+#' global tiling system (based on Lat/Lon). 
+#' 
+#' @param tileSize \code{numeric}, size of a single tile in degrees (EPSG:4326).
+#' @param offset \code{numeric}, shifts the tiling system in upper-left 
+#' direction.
+#' @param StartNameFrom \code{numeric}. \code{c(Lat-Direction,Lon-Direction)} 
+#' start number in the naming of the tiles.
+#' @param extent \code{list}. Tile system extent information, basically the 
+#' coverage of the data on server.
+#' 
+#' @return 
+#' A \code{matrix}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @seealso 
+#' \code{\link{getTile}}.
+#' 
+#' @examples 
+#' \dontrun{
+#' e1 <- genTile() # 1x1 degree tiling system.  
+#' # 10x10 degree tiling system with offset to be aligned to Geoland2 Dataset
+#' e2 <- genTile(tileSize=10,offset=(1/112)/2)
+#' # Tiling system for SRTMv4 data (CGIAR-CSI) 
+#' e3 <- genTile(tileSize=5,StartNameFrom = c(1, 1), 
+#'               extent=list(xmin = -180, xmax = 180, ymin = -60,ymax = 60)) 
+#' 
+#' head(e1)
+#' head(e2)
+#' head(e3)
+#' }
+#' 
 #' @export genTile
 #' @name genTile
 genTile <- function(tileSize=1,offset=0,StartNameFrom=c(0,0),extent=list(xmin=-180,xmax=180,ymin=-90,ymax=90)) 

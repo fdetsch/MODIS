@@ -16,7 +16,8 @@ delHdf(product, collection = NULL, extent = "global", tileV = NULL,
 \item{extent}{Extent information, defaults to \code{'global'}. See
 \code{\link{getTile}}}
 
-\item{tileV}{Same for vertical tiles.}
+\item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), 
+see \code{tileH}.}
 
 \item{tileH}{\code{numeric} or \code{character}. Horizontal tile number, 
 see \code{\link{getTile}}.}

@@ -10,7 +10,8 @@
 #' \code{\link{getTile}}
 #' @param tileH \code{numeric} or \code{character}. Horizontal tile number, 
 #' see \code{\link{getTile}}.
-#' @param tileV Same for vertical tiles.
+#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
+#' see \code{tileH}.
 #' @param begin \code{character}. Begin date of MODIS time series, see 
 #' \code{\link{transDate}} for formatting.
 #' @param end Same for end date.

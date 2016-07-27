@@ -1,7 +1,142 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2011
-# Licence GPL v3
-
+#' Get MODIS tile id(s)
+#' 
+#' @description 
+#' Get MODIS tile id(s) for a specific geographic area.
+#' 
+#' @param extent Extent information, see details.
+#' @param tileH \code{numeric} or \code{character}. Horizontal tile number(s) 
+#' (e.g. \code{tileH = 1:5}), see \url{http://modis-land.gsfc.nasa.gov/MODLAND_grid.html}.
+#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), see 
+#' \code{tileH}.
+#' @param buffer \code{numeric} (in map units). Buffers the specified 
+#' \code{extent}, negative values are allowed. If \code{extent} is a vector 
+#' object ("shp" or "character" name of a "map" object), only one value is 
+#' allowed, e.g. \code{buffer = 0.5} (\code{\link{gBuffer}} is used). In the 
+#' other cases, also \code{buffer = c(x, y)} can be specified.
+#' @param system \code{character}, defaults to \code{MODIS}. A possible 
+#' alternative is the \code{SRTM} tiling system.
+#' @param zoom \code{logical}, defaults to \code{TRUE}. The interactive mode is 
+#' only activated if no other extent arguments (i.e., \code{extent}, 
+#' \code{tileH}, \code{tileV}) are specified. If \code{zoom = TRUE}, the first 
+#' two clicks on the map are defining the zoom-in area, and the next two clicks 
+#' are the download area. For large areas you can set \code{zoom = FALSE}.
+#' 
+#' @return 
+#' A \code{list}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @seealso 
+#' \strong{raster} package: \code{\link{extent}}, \code{\link{raster}}, 
+#' \code{\link{stack}}, \code{\link{brick}}, or \code{\link{shapefile}}.
+#' 
+#' @details 
+#' \describe{
+#' \tabular{ll}{
+#'   \code{extent}:\cr
+#'   \cr 
+#'   
+#'   If \code{list}:\cr 
+#'   \tab Then LatLon coordinates in the following form:\cr 
+#'   \tab \code{list(xmin = numeric, xmax = numeric, ymax = numeric, ymin = numeric)}.\cr
+#'   \cr
+#'   If \code{character}:\cr
+#'   \tab The country name of a \code{map} object (see \code{\link{map}}), you 
+#'   can use \code{\link{search4map}} to find a map by regular expression.\cr
+#'   \tab Or the file name (plus path) of a raster image or ESRI shapefile (shp).\cr
+#'   \cr
+#'   Other:\cr
+#'   \tab If \code{Raster*}.\cr
+#'   \tab Using a \code{Raster*} object as \code{extent}, the function 
+#'   automatically determines the extent, resolution, and projection. This will 
+#'   be used by \code{\link{runGdal}} creating perfectly matching files. If the 
+#'   raster file has not a valid CRS string, LatLon is assumed.\cr
+#' \tab Using an \code{extent} object, it must be in LatLon, as the extent 
+#' object has no projection information attached.\cr
+#' \tab If ESRI shapefile (shp) or \code{map} object, a call to 
+#' \code{\link{over}} is performed to determine the MODIS tile containg the 
+#' extent. This often considerably reduces the number of required tiles, but can 
+#' lead to NO-DATA areas if not all tiles had to be downloaded in the bounding 
+#' box of 'extent'! 
+#' }
+#' }
+#' 
+#' PS:\cr
+#' If an extent is specified through \code{tileV, tileH} arguments, no cropping 
+#' is performed and the full un-cutted tile(s) (if more than one then also 
+#' mosaicked) is/are processed!  
+#' 
+#' @examples 
+#' \dontrun{
+#' # ex 1 ############
+#' # drawing the extent. NOTE: It is not possible to draw a date-line crossing area!
+#' # draw extent with zoom, for smaller extents
+#' getTile()
+#' 
+#' # ex 2 ############
+#' # "extent" specified with a vector file (map or shp)
+#' japan <- getTile(extent="Japan")
+#' japan
+#' # and here the same "extent" using the bounding box 
+#' getTile(extent=japan$extent)
+#' 
+#' # ex 3 ############
+#' # with tileH and tileV
+#' getTile(tileH=18:19,tileV=4)
+#' 
+#' # ex 4 ############
+#' # with extent of class "list"
+#' Austria <- list(ymin=46.12,ymax=49.3,xmin=9.2,xmax=17.47)
+#' getTile(extent=Austria)
+#' getTile(extent=Austria,buffer=10)
+#' getTile(extent=Austria,buffer=c(0,10)) 
+#' 
+#' # ex 5 ############
+#' # with extent or raster* object from raster package
+#' # rasterObject
+#' rasterObject <- raster(xmn=9.2,xmx=17.47,ymn=46.12,ymx=49.3)
+#' getTile(extent=rasterObject)
+#' 
+#' # raster extent
+#' ext <- extent(rasterObject)
+#' getTile(extent=ext)
+#' 
+#' # rasterObject in UTM33N
+#' CRS <- "+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+#' rasterObject <- projectExtent(rasterObject,CRS)
+#' extent(rasterObject)
+#' projection(rasterObject)
+#' getTile(extent=rasterObject) 
+#' 
+#' # ex 6 #################
+#' require(mapdata)
+#' # Character name of a map contained in "map("worldHires",extent,plot=FALSE)".
+#' # Use with caution! The following example includes much more areas than the main USA. 
+#' map("worldHires","usa")
+#' 
+#' # Maybe before using this option run a test map("worldHires",yourCharacterExtent).
+#' # Check awailability of maps with: 
+#' map("worldHires",plot=FALSE)$names
+#' # or 
+#' search4map("Gua")
+#' 
+#' getTile(extent="usa")
+#' # it is also possible to put an map object. In this specific example the low resolution map is used!
+#' # in such case polygon matching is used see ex 2
+#' getTile(extent=map("usa",plot=FALSE))
+#' 
+#' # also possible: 
+#' ext <-  map("state", region = c("new york", "new jersey", "penn"))
+#' getTile(extent=ext)
+#' 
+#' # or:
+#' getTile(extent=c("austria","germany","switzerland"))
+#' 
+#' # SRTM data
+#' getTile(extent=c("austria","germany","switzerland"),system="SRTM")
+#' }
+#' 
 #' @export getTile
 #' @name getTile
 getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, system = "MODIS", zoom = TRUE)

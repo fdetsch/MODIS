@@ -19,10 +19,11 @@ getHdf(product, begin = NULL, end = NULL, tileH = NULL, tileV = NULL,
 \item{end}{\code{character}. End date, compatible with future dates for 
 continuous updates via scheduled jobs.}
 
-\item{tileH}{\code{character}. Horizontal tile number(s; e.g. 
-\code{tileH = 1:5}), see \url{http://modis-land.gsfc.nasa.gov/MODLAND_grid.html}.}
+\item{tileH}{\code{numeric} or \code{character}. Horizontal tile number(s), 
+see \code{\link{getTile}}.}
 
-\item{tileV}{Character vector. Vertical tile number(s), see \code{tileH}.}
+\item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), 
+see \code{tileH}.}
 
 \item{extent}{See Details in \code{\link{getTile}}.}
 

@@ -14,9 +14,10 @@
 #' \code{\link{transDate}} for formatting. 
 #' @param end \code{character}. End date, compatible with future dates for 
 #' continuous updates via scheduled jobs. 
-#' @param tileH \code{character}. Horizontal tile number(s; e.g. 
-#' \code{tileH = 1:5}), see \url{http://modis-land.gsfc.nasa.gov/MODLAND_grid.html}.
-#' @param tileV Character vector. Vertical tile number(s), see \code{tileH}.
+#' @param tileH \code{numeric} or \code{character}. Horizontal tile number(s), 
+#' see \code{\link{getTile}}.
+#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
+#' see \code{tileH}.
 #' @param extent See Details in \code{\link{getTile}}.
 #' @param collection \code{character} or \code{integer}. Desired MODIS product 
 #' collection, see MODIS pages or \code{\link{getCollection}} for more information.

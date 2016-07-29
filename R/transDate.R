@@ -1,7 +1,29 @@
-# Author: Matteo Mattiuzzi, Anja Klisch, matteo.mattiuzzi@boku.ac.at
-# Date : November 2011
-# Licence GPL v3
-  
+#' MODIS date conversion and testing
+#'   
+#' @description 
+#' This function converts a sequence of input dates to 'YYYY-MM-DD' and 
+#' 'YYYYDDD'.
+#' 
+#' @param begin \code{character}. Begin date of time series, see 
+#' \code{\link{transDate}}. If not provided, this defaults to 
+#' \code{"1972-01-01"}.
+#' @param end \code{character}. End date of MODIS time series. If not provided, 
+#' this defaults to \code{Sys.Date()}.
+#' 
+#' @return 
+#' A \code{list} of begin and end dates formatted according to 'YYYY-MM-DD' 
+#' (first two slots; class \code{Date}) and 'YYYYDDD' (second two slots; class 
+#' \code{character}).
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' transDate()
+#' transDate(begin="2009.01.01")
+#' transDate(end="2009.01.01")
+#' transDate(begin="2009-01-01",end="2011.03.16")
+#'                
 #' @export transDate
 #' @name transDate
 transDate <- function(begin=NULL, end=NULL)

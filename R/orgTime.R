@@ -1,7 +1,44 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2012
-# Licence GPL v3
-
+#' Handles input and output dates used for filtering
+#' 
+#' @description 
+#' This function lets you to define the period to be filtered, the output 
+#' temporal resolution, and selected the required data from \code{files}.
+#' 
+#' @param files \code{character}. MODIS filenames, e.g. created from 
+#' \code{\link{runGdal}} or \code{\link{runMrt}}.
+#' @param nDays Time interval for output layers. Defaults to \code{"asIn"} that 
+#' includes the exact input dates within the period selected using \code{begin} 
+#' and \code{end}. Can also be \code{nDays = "1 month"} or \code{"1 week"}, see 
+#' \url{http://www.stat.berkeley.edu/~s133/dates.html} and Examples.
+#' @param begin \code{character}. Output begin date, defaults to the earliest 
+#' input dataset.
+#' @param end \code{character}. Output end date, defaults to the latest input 
+#' dataset. Note that the exact \code{end} date depends on \code{begin} and 
+#' \code{nDays}.
+#' @param pillow \code{integer}. Number of days added to the beginning and end 
+#' of a time series.
+#' @param pos1 \code{integer}, start of date string in \code{files}.
+#' @param pos2 \code{integer}, end of date string.
+#' @param format \code{character}, see \code{\link{extractDate}}.
+#' 
+#' @return 
+#' A \code{list}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' # note, this function can be applied to any files that have a date information in the _filename_!
+#' files <- c("MOD13A2.A2010353.1_km_16_days_composite_day_of_the_year.tif",
+#'            "MOD13A2.A2011001.1_km_16_days_composite_day_of_the_year.tif",
+#'            "MYD13A2.A2010361.1_km_16_days_composite_day_of_the_year.tif",
+#'            "MYD13A2.A2011009.1_km_16_days_composite_day_of_the_year.tif")
+#' 
+#' orgTime(files)
+#' orgTime(files,nDays=2,begin="2010350",end="2011015")
+#' }
+#' 
 #' @export orgTime
 #' @name orgTime
 orgTime <- function(files,nDays="asIn",begin=NULL,end=NULL,pillow=75,pos1=10,pos2=16,format="%Y%j")

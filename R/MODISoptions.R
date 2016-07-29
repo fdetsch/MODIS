@@ -1,6 +1,92 @@
+#' Set or retrieve permanent MODIS package options
+#' 
+#' @description 
+#' Set or retrieve persistant \strong{MODIS} package options (per user or 
+#' systemwide). Changes here will persist through sessions and updates.
+#' 
+#' @param localArcPath \code{character}, defaults to \code{"~/MODIS_ARC"}. 
+#' Target folder for downloaded MODIS HDF files. 
+#' @param outDirPath \code{character}, defaults to \code{"~/MODIS_ARC/PROCESSED"}. 
+#' Target folder for results of \code{\link{runGdal}} and \code{\link{runMrt}}. 
+#' @param pixelSize Output pixel size (in target reference system units) passed 
+#' to \code{\link{runGdal}} and \code{\link{runMrt}}, defaults to \code{"asIn"}.
+#' @param outProj Target reference system passed to \code{\link{runGdal}} and 
+#' \code{\link{runMrt}}. \code{\link{runGdal}} requires a valid 
+#' \code{\link{CRS}}. As for \code{\link{runMrt}}, please consult the MRT manual. 
+#' Since the two pocessing methods do not have common methods, it is suggested 
+#' to stick with the default settings (see Details).
+#' @param resamplingType Defaults to \code{"NN"} (Nearest Neightbour). MRT and 
+#' GDAL both support \code{c('NN', 'CC', 'BIL')}. In addition, GDAL supports 
+#' \code{cubicspline} and \code{lanczos} and, from \code{GDAL >= 1.10.0} onwards, 
+#' also \code{mode} and \code{average}.
+#' @param dataFormat \code{character}, defaults to \code{"GTiff"}. One of 
+#' \code{getOption("MODIS_gdalOutDriver")} (column 'name').
+#' @param gdalPath \code{character}. Path to gdal bin directory and more 
+#' relevant for Windows users. Use \code{MODIS:::checkTools("GDAL")} to try to 
+#' detect it automatically.
+#' @param MODISserverOrder \code{character}. Possible options are \code{"LPDAAC"}
+#' (default) and \code{"LAADS"}. If only one server is selected, all efforts to 
+#' download data from the second server available are inhibited.
+#' @param dlmethod \code{character}, defaults to \code{auto}. See argument 
+#' \code{method} in \code{\link{download.file}}. On Unix (also Mac?), it is 
+#' suggested to use \code{"wget"} or, if installed, \code{"aria2"}.
+#' @param stubbornness \code{numeric}. The number of retries after the target 
+#' server has refused a connection. Higher values increase the chance of getting 
+#' the file, but also lead to hanging functions if the server is down.
+#' @param systemwide \code{logical}. If \code{FALSE} (default), 'user'-wide 
+#' settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
+#' write settings to 'systemwide', presumed you have write access to 
+#' \code{paste(R.home(component="etc"), '/', '.MODIS_opts.R', sep='')}.
+#' @param quiet \code{logical}. If \code{TRUE} (default), options are printed to 
+#' the console.
+#' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
+#' @param checkPackages \code{logical}. If \code{TRUE} (default), check if 
+#' suggested \R packages, as well as 'GDAL' and 'MRT' are installed.
+#' 
+#' @details 
+#' These settings are permanent, easy to change and take effect immediatley!
+#' 
+#' If you change default values, consider that your settings have to be valid 
+#' for any MODIS product, layer and area!
+#' 
+#' It is not recommended to use a not globally applicable georeference reference 
+#' system as default for \code{outProj}, or a fixed \code{pixelSize} for 
+#' different products, or a \code{resamplingType} that is not \code{"NN"}.
+#' 
+#' \code{localArcPath} and \code{outDirPath} should be changed, expecially on a 
+#' Windows OS, as \code{'~/MODIS_ARC/...'} is normally on the 'c:/...' drive. 
+#' You may also specify a shared network drive if you have a central MODIS data 
+#' server. 
+#' 
+#' On Windows, you have to set \code{gdalPath} to the location of GDAL 
+#' executables (i.e., the \code{'.../GDAL../bin'} directory). On Unix-alikes, 
+#' this should not be required unless you want to specify a non-default GDAL 
+#' installation.
+#' 
+#' On an unixoid OS, it is suggested to use \code{dlmethod = 'wget'} because it's 
+#' a reliable tool and, after the change of the 'LP DAAC' datapool from FTP to 
+#' HTTP (May 2013), \code{dlmethod = 'auto'} seems not to work properly. On 
+#' Windows, on the other hand, it seems to work fine with \code{dlmethod = 'auto'}. 
+#' Help and suggestions appreciated! 
+#' 
+#' @author 
+#' Matteo Mattiuzzi and Steven Mosher
+#' 
+#' @examples 
+#' \dontrun{
+#' ## get options
+#' MODISoptions()
+#' 
+#' ## set options
+#' MODISoptions(localArcPath="/another/path/than/default")
+#' }
+#' 
 #' @export MODISoptions
 #' @name MODISoptions
-MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, resamplingType, dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, systemwide = FALSE, quiet=FALSE, save=TRUE, checkPackages=TRUE)
+MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, 
+                         resamplingType, dataFormat, gdalPath, MODISserverOrder, 
+                         dlmethod, stubbornness, systemwide = FALSE, quiet=FALSE, 
+                         save=TRUE, checkPackages=TRUE)
 {
   # This function collects the package options from up to 3 files and creates the .MODIS_opts.R file (location depending on systemwide=T/F, see below):
   # 1. package installation directory (factory defaults); 

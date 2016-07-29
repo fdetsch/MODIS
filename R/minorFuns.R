@@ -1,3 +1,40 @@
+#' Minor MODIS package functions
+#'
+#' @description 
+#' Compendium of minor \strong{MODIS} package-related functions.
+#' 
+#' @param pattern Regular expression passed to \code{\link{grep}}.
+#' @param database \code{character}. Defaults to \code{"worldHires"}, see 
+#' \code{\link{map}} for available options.
+#' @param plot \code{logical}, defaults to \code{FALSE}. If \code{TRUE}, search 
+#' results are displayed.
+#' 
+#' @return 
+#' A \code{list} of length 2. The first entry is the call to create the given 
+#' map, whereas the second entry represents the names of areas within the 
+#' search. 
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @seealso 
+#' \code{\link{getTile}}, \code{\link{map}}, \code{\link{grep}}.
+#' 
+#' @examples 
+#' \dontrun{
+#' search4map()
+#' 
+#' search4map(pattern="USA",plot=TRUE)
+#' search4map(database="state",plot=TRUE)?map
+#' 
+#' search4map(database="italy",pattern="Bolz",plot=TRUE)
+#' 
+#' search4map(pattern="Sicily",plot=TRUE)
+#' }
+#' 
+#' @name minorFuns
+NULL
+
 ##########################################
 # central setting for stubbornness 
 stubborn <- function(level="high")
@@ -49,8 +86,9 @@ return(res)
 }
 
 
+#' @describeIn minorFuns Simplifies search for \strong{mapdata}-based extents
+#' @aliases search4map
 #' @export search4map
-#' @name search4map
 search4map <- function(pattern="",database='worldHires',plot=FALSE)
 {
   areas <- grep(x=maps::map(database,plot=FALSE)$names,pattern=pattern,value=TRUE,ignore.case=TRUE)

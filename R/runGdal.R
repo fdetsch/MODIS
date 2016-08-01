@@ -1,4 +1,107 @@
-
+#' Process MODIS hdf with GDAL
+#' 
+#' @description 
+#' Downloads MODIS grid data from archive (FTP or local) and processes the 
+#' files.
+#' 
+#' @param product \code{character}, see \code{\link{getProduct}}.
+#' @param collection \code{character} or \code{integer}, see 
+#' \code{\link{getCollection}}.
+#' @param begin \code{character}. Begin date of MODIS time series, see 
+#' \code{\link{transDate}} for formatting.
+#' @param end Same for end date.
+#' @param extent Extent information, defaults to \code{'global'}. See
+#' \code{\link{getTile}}.
+#' @param tileH \code{numeric} or \code{character}. Horizontal tile number, 
+#' see \code{\link{getTile}}.
+#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
+#' see \code{tileH}.
+#' @param buffer \code{numeric} (in map units), see \code{\link{getTile}}.
+#' @param SDSstring \code{character}, see \code{\link{getSds}}.
+#' @param job \code{character}. Name of the current job for the creation of the 
+#' output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
+#' @param checkIntegrity \code{logical}. If \code{FALSE} (default), no file 
+#' integrity check is performed, else the size of each downloaded file is 
+#' checked. In case of inconsistencies, the function tries to re-download broken 
+#' files.
+#' @param wait \code{numeric}, see \code{\link{getHdf}}.
+#' @param quiet \code{logical}, defaults to \code{TRUE}.
+#' @param forceDownload \code{logical}, see \code{\link{getHdf}}.
+#' @param ... See Methods.
+#' 
+#' @details 
+#' \describe{
+#' \tabular{rll}{
+#'   \tab \code{outProj}\tab CRS/ prj4 or EPSG code of output, any format supported by gdal see examples.\cr \tab \tab Default is 'asIn' (no warping). See \code{?MODISoptions}.\cr
+#'   \tab \code{pixelSize}\tab Numeric single value. Output pixel size in target reference system unit.\cr \tab \tab Default is 'asIn'. See \code{?MODISoptions}.\cr
+#'   \tab \code{resamplingType}\tab Character. Default is 'near', can be one of: 'bilinear', 'cubic', 'cubicspline', 'lanczos'.\cr \tab \tab See \code{?MODISoptions}.\cr
+#'   \tab \code{blockSize}\tab integer. Default \code{NULL} that means the stripe size is set by GDAL.\cr \tab \tab Basically it is the "-co BLOCKYSIZE=" parameter. See: http://www.gdal.org/frmt_gtiff.html\cr
+#'   \tab \code{compression}\tab logical. Default is \code{TRUE}, compress data with the lossless LZW compression with "predictor=2".\cr \tab \tab See: \url{http://www.gdal.org/frmt_gtiff.html}\cr
+#'   \tab \code{dataFormat}\tab Data output format, see \code{getOption("MODIS_gdalOutDriver")} column 'name'.\cr
+#'   \tab \code{localArcPath}\tab Character.  See \code{?MODISoptions}. Local path to look for and/or to download MODIS files.\cr
+#'   \tab \code{outDirPath}\tab Character.  See \code{?MODISoptions}. Root directory where to write \code{job} folder.\cr
+#' }
+#' }
+#' 
+#' \code{\link{runGdal}} uses a lot of \strong{MODIS} package functions, see in 
+#' section Arguments and Methods the respective '?function' for details and 
+#' inputs.\cr
+#' If \code{extent} is a \code{Raster*} object, the output has exactly the same 
+#' extent, pixel size, and projection.\cr
+#' If \code{extent} is a \strong{sp} object (i.e., polygon shapefile), the 
+#' output has exactly the same extent and projection.\cr
+#' If \code{tileH} and \code{tileV} are used (instead of \code{extent}) to 
+#' define the area of interest, and \code{outProj} and \code{pixelSize} are 
+#' \code{'asIn'}, the result is only converted from multilayer-HDF to 
+#' \code{dataFormat}, default "GeoTiff" (\code{\link{MODISoptions}}).\cr
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @seealso 
+#' \code{\link{getHdf}}, \code{\link{runMrt}}.
+#' 
+#' @note 
+#' You need to have a GDAL installed on your system!\cr
+#' \url{http://www.gdal.org/gdal_utilities.html}\cr\cr
+#' On Unix-alkes, install 'gdal-bin' (i.e. Ubuntu: 'sudo apt-get install gdal-bin')\cr
+#' On Windows, you need to install GDAL through OSGeo4W 
+#' (\url{http://trac.osgeo.org/osgeo4w/}) or FWTools 
+#' (\url{http://fwtools.maptools.org/}) since the standard GDAL does not support 
+#' HDF4 format.
+#' 
+#' @examples 
+#' \dontrun{
+#' # LST in Austria
+#' runGdal( product="MOD11A1", extent="austria", begin="2010001", end="2010005", SDSstring="101")
+#' 
+#' # LST with interactiv area selection
+#' runGdal( product="MOD11A1", begin="2010001", end="2010005", SDSstring="101")
+#' 
+#' ### outProj examples
+#' # LST of Austria warped to UTM 34N (the three different possibilites to specify "outProj")
+#' # to find am EPSG or prj4 you may use: prj <- make_EPSG() See  
+#' runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
+#'          SDSstring="101", outProj="EPSG:32634")
+#' 
+#' runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
+#'          SDSstring="101", outProj="32634")
+#' 
+#' runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
+#'          SDSstring="101", outProj="+proj=utm +zone=34 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+#' 
+#' ### resamplingType examples
+#' runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
+#'          SDSstring="1", resamplingType="lanczos", outProj="32634", pixelSize=100)
+#' 
+#' ### processing entire tiles and keeping Sinusoidal projection
+#' # This corresponds to a format conversion (eos-hdf04 to Geotiff) and 
+#' # layer extraction (multi-layer to single layer)
+#' runGdal( job="LSTaustria", product="MOD11A1", tileH=18:19,tileV=4, begin="2010001", end="2010005",
+#'          SDSstring="1", outProj="asIn")
+#' 
+#' }
+#' 
 #' @export runGdal
 #' @name runGdal
 runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, tileH=NULL, tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, quiet=FALSE,forceDownload=TRUE,...)

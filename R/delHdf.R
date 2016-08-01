@@ -7,7 +7,7 @@
 #' @param collection \code{character} or \code{integer}, see 
 #' \code{\link{getCollection}}.
 #' @param extent Extent information, defaults to \code{'global'}. See
-#' \code{\link{getTile}}
+#' \code{\link{getTile}}.
 #' @param tileH \code{numeric} or \code{character}. Horizontal tile number, 
 #' see \code{\link{getTile}}.
 #' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 

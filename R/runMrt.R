@@ -1,6 +1,84 @@
-# Author: Matteo Mattiuzzi and Forrest Stevens
-# Date : August 2011
-# Licence GPL v3
+#' Run Modis Reprojection Tool ('MRT-grid') with specified parameters
+#' 
+#' @description 
+#' Specifying input parameters, this function gets MODIS grid data from the 
+#' archive (HTTP/FTP or local) and processes them with the 'MRT-grid' tool. See 
+#' also the 'MRT' manual, available online via 
+#' \url{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}, 
+#' for further information.
+#' 
+#' @param ... See Details.
+#' 
+#' @details  
+#' \describe{
+#' \tabular{rll}{
+#' \tab \code{product}\tab See \code{\link{getProduct}}.\cr
+#' \tab \code{begin}\tab See \code{\link{transDate}}.\cr
+#' \tab \code{end}\tab See \code{\link{transDate}}.\cr
+#' \tab \code{extent}\tab See \code{\link{getTile}}.\cr
+#' \tab \code{SDSstring}\tab See \code{\link{getSds}}. Default is to extract all 
+#' SDS.\cr
+#' \tab \code{job}\tab \code{character}. Name of the current job for the 
+#' creation of the output folder. If not specified, it is created in 
+#' 'PRODUCT.COLLECTION_DATETIME'\cr
+#' 
+#' \tab \code{localArcPath}\tab \code{character}. Defaults to 
+#' \code{options("MODIS_localArcPath")}. Local path to look for and/or download 
+#' MODIS files.\cr
+#' \tab \code{outDirPath}\tab \code{character}. Defaults to 
+#' \code{options("MODIS_outDirPath")}. Root directory where to write \code{job} 
+#' folder.\cr
+#' 
+#' \tab \code{dataType}\tab \code{character}, defaults to \code{'GeoTiff'} (see 
+#' \code{\link{MODISoptions}}. 'MRT' supports: \code{"raw binary"} (hdr+dat), 
+#' \code{"HDF-EOS"} (hdf), and \code{"GeoTiff"} (tif). Any other format 
+#' specified through \code{\link{MODISoptions}} or \code{dataType}, is switched 
+#' to 'GeoTiff'.\cr
+#' 
+#' \tab \code{outProj}\tab \code{character}, see 'MRT' manual.\cr
+#' \tab \code{zone}\tab Optional UTM zone number when \code{outProj = "UTM"}. If 
+#' not set, it is autodetected. See 'MRT' manual.\cr
+#' \tab \code{projPara}\tab \code{character} in the form "6371007.18 0.00 0.00 
+#' ...". For \code{outProj \%in\% c("GEO","SIN")}, it is autodetected. See 'MRT' 
+#' manual.\cr
+#' \tab \code{datum}\tab \code{character}, defaults to 'NODATUM'. See 'MRT' 
+#' manual.\cr
+#' 
+#' \tab \code{mosaic}\tab \code{logical}, defaults to \code{TRUE}. Mosaic files 
+#' or not? One case for setting \code{mosaic=FALSE} is a too large \code{extent}. 
+#' HDF4 file supports max 2GB filesize, if crossed mosaicing process will fail.\cr
+#' \tab \code{anonym}\tab \code{logical}, defaults to \code{TRUE}. If 
+#' \code{FALSE}, the job name is added at the end of the root filename.\cr
+#' \tab \code{quiet}\tab \code{logical}, defaults to \code{FALSE}. It is up to 
+#' you to switch to 'boring' alias \code{FALSE}. Not fully implemented!\cr
+#' \tab \code{dlmethod}\tab default \code{options("MODIS_dlmethod")}. Argument 
+#' passed to \code{\link{download.file}} (see \code{\link{MODISoptions}}).\cr
+#' \tab \code{stubbornness}\tab Default is \code{options("MODIS_stubborness")}. See \code{?MODISoptions}\cr
+#' }
+#' }
+#' 
+#' @author 
+#' Matteo Mattiuzzi and Forrest Stevens
+#' 
+#' @seealso 
+#' \code{\link{getHdf}}.
+#' 
+#' @source 
+#' You can obtain MRT-grid after registration from: 
+#' \url{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}.
+#' 
+#' @examples 
+#' \dontrun{
+#' runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+#'         job="ExampleGEOdelme", outProj="GEO")
+#' runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+#'         job="ExampleSINdelme", outProj="SIN")
+#' runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+#'         job="ExampleUTMdelme", outProj="UTM")
+#' }
+
+
+
 
 #' @export runMrt
 #' @name runMrt

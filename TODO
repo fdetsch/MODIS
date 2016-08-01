@@ -7,3 +7,4 @@ transDate():
 
 whittaker.raster():
 # fix integer bug (see github)
+# maybe add `derivate = 1`

@@ -1,11 +1,116 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2012
-# Licence GPL v3
-
-# maybe to add: derivate=1
-
-# vx=val[index,u];wx=wtu[index,u];tx=inTu[index,u]
-# tmtr <- cbind(vx,wx,tx)
+#' Filter vegetation index with modified Whittaker approach
+#' 
+#' @description 
+#' Use a modified Whittaker filter function (see References) from package 
+#' \strong{ptw} to filter a vegetation index (VI) time serie of satellite data.
+#' 
+#' @param vi \code{Raster*} or \code{character} filenames, sorted VI. Use 
+#' \code{\link{preStack}} functionality to ensure the right input.
+#' @param w \code{Raster*} or \code{character} filenames. In case of MODIS 
+#' composite, the sorted 'VI_Quality' layers.
+#' @param t \code{Raster*} or \code{character} filenames. In case of MODIS 
+#' composite, the sorted 'composite_day_of_the_year' layers. If missing, the 
+#' date is determined using \code{timeInfo}.
+#' @param timeInfo Output from \code{\link{orgTime}}.
+#' @param lambda \code{character} or \code{integer}. Yearly lambda value passed 
+#' to \code{\link{whit2}}. If set as \code{character} (i.e., 
+#' \code{lambda = "600"}), it is not adapted to the time serie length, but used 
+#' as a fixed value (see Details). High values = stiff/rigid spline.
+#' @param nIter \code{integer}. Number of iteration for the upper envelope 
+#' fitting.
+#' @param outputAs \code{character}, organisation of output files. 
+#' \code{"single"} (default) means each date one \code{RasterLayer}; 
+#' \code{"yearly"} a \code{RasterBrick} for each year, and \code{"one"} one 
+#' \code{RasterBrick} for the entire time series.
+#' @param collapse \code{logical}. Collapse input data of multiple years into 
+#' one single year before filtering.
+#' @param prefixSuffix \code{character}, file naming. Names are composed 
+#' dot-separated: \code{paste0(prefixSuffix[1], "YYYDDD", lambda, 
+#' refixSuffix[2], ".defaultFileExtension")}.
+#' @param outDirPath \code{character}, output path. Defaults to the current 
+#' working directory.
+#' @param outlierThreshold \code{numeric} in the same unit as \code{vi}, used 
+#' for outlier removal (see Details).
+#' @param mergeDoyFun Especially when using \code{collapse = TRUE}, multiple 
+#' measurements for one day can be present. Here you can choose how those values 
+#' are merged to one single value: \code{"max"} uses the highest value, 
+#' \code{"mean"} or \code{"weighted.mean"} use the \code{\link{mean}} if no 
+#' weighting \code{"w"} is available, and \code{\link{weighted.mean}} if it is.
+#' @param ... Arguments passed to \code{\link{writeRaster}} (except for 
+#' \code{filename}).
+#' 
+#' @return 
+#' The filtered data and a text file with the dates of the output layers.
+#' 
+#' @details 
+#' The argument \code{lambda} is passed to \code{MODIS:::miwhitatzb1}. You can 
+#' set it as yearly \code{lambda}, which means that it doesn't matter how long 
+#' the input time serie is because \code{lambda} is adapted to it with: 
+#' \code{lambda*('length of input timeserie in days'/365)}. The input length can 
+#' differ from the output because of the \code{pillow} argument in 
+#' \code{orgTime}. But it can also be set as \code{character} (i.e., 
+#' \code{lambda = "1000"}). In this case, the adaption to the time serie length 
+#' is not performed.\cr
+#' 
+#' @references 
+#' Modified Whittaker smoother, according to Atzberger & Eilers 2011 
+#' International Journal of Digital Earth 4(5):365-386.\cr
+#' Implementation in R: Agustin Lobo 2012
+#' 
+#' @note 
+#' Currently tested on MODIS and Landsat data. Using M*D13, it is also possible 
+#' to use the 'composite_day_of_the_year' and the 'VI_Quality' layers. Note that 
+#' this function is currently under heavy development.
+#' 
+#' @seealso 
+#' \code{\link{smooth.spline.raster}}, \code{\link{raster}}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi and Agustin Lobo
+#' 
+#' @examples 
+#' \dontrun{
+#' # The full capacity of the following functions is currently avaliable only with M*D13 data.
+#' # !! The function is very new, double check the result !!
+#' 
+#' # You need to extract: 'vegetation index', 'VI_Quality layer', and 'composite day of the year'.
+#' # runGdal(product="MOD13A2",begin="2004340",extent="sicily",end="2006070",
+#' # job="fullCapa",SDSstring="101000000010")
+#' # You can download this dataset from (2.6 MB): 
+#' path <- paste0(options("MODIS_outDirPath"),"fullCapa")
+#' 
+#' # the only obligatory dataset is the vegetatino index 
+#' # get the 'vi' data in the source directory: 
+#' vi <- preStack(path=path, pattern="*_NDVI.tif$")
+#' 
+#' # "orgTime" detects timing information of the input data and generates based on the arguments
+#' # the output date information. 
+#' # For spline functions (in general) the beginning and the end of the time series
+#' # is always problematic. So there is the argument "pillow" (default 75 days) that adds
+#' # (if available) some more layers on the two endings.
+#' 
+#' timeInfo <- orgTime(vi,nDays=16,begin="2005001",end="2005365",pillow=40)
+#' 
+#' # now re-run "preStack" with two differences, 'files' (output of the first 'preStack' call)
+#' # and the 'timeInfo'
+#' # Here only the data needed for the filtering is extracted:
+#' vi <- preStack(files=vi,timeInfo=timeInfo)
+#' 
+#' # For speedup try (On some Win7 problematic): 
+#' # beginCluster() # See: ?beginCluster
+#' system.time(whittaker.raster(vi,timeInfo=timeInfo,lambda=5000))
+#' 
+#' # if the files are M*D13 you can use also Quality layers and the composite day of the year:
+#' wt <- preStack(path=path, pattern="*_VI_Quality.tif$", timeInfo=timeInfo)
+#' # can also be already stacked:
+#' inT <- preStack(path=path, pattern="*_composite_day_of_the_year.tif$", timeInfo=timeInfo)
+#' 
+#' # beginCluster() # See: ?beginCluster 
+#' system.time(whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrite=TRUE))
+#' }
+#' 
+#' @name whittaker.raster
+NULL
 
 unifyDoubleWM <- function(vx,wx,tx)
 {
@@ -75,7 +180,6 @@ doCollapse <- function(tx,pillow)
 }
     
 #' @export whittaker.raster
-#' @name whittaker.raster
 whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda = 5000, nIter= 3, outputAs="single", collapse=FALSE, prefixSuffix=c("MCD","ndvi"), outDirPath=".", outlierThreshold=NULL, mergeDoyFun="max", ...)
 {
   # debug 

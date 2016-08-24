@@ -273,7 +273,7 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     opts$datatype <- dataType(vi[[1]])
   }
 
-  if(opts$datatype == "FLT")
+  if(length(grep("FLT", opts$datatype)) > 0)
   {
     doround <- FALSE
   } else

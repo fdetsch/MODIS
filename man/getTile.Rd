@@ -11,7 +11,8 @@ getTile(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL,
 \item{extent}{Extent information, see details.}
 
 \item{tileH}{\code{numeric} or \code{character}. Horizontal tile number(s) 
-(e.g. \code{tileH = 1:5}), see \url{http://modis-land.gsfc.nasa.gov/MODLAND_grid.html}.}
+(e.g. \code{tileH = 1:5}), see 
+\url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.}
 
 \item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), see 
 \code{tileH}.}

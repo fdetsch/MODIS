@@ -21,13 +21,13 @@ Description: Download and processing functionalities for the Moderate Resolution
 License: GPL (>= 3) | file LICENSE
 LazyData: TRUE
 Depends:
+    mapdata,
     R (>= 2.10),
     raster
 Imports:
     bitops, 
     grDevices,
     graphics,
-    mapdata, 
     maps,
     methods,
     parallel,

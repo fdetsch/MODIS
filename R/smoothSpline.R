@@ -106,7 +106,7 @@ smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = 
     # bitMask    <- opts$bitMask
     # threshold  <- opts$threshold
     
-    dataFormat <- opts$dataFormat
+    dataFormat <- opt$dataFormat
     rasterOut  <- toupper(writeFormats())
 
     
@@ -301,7 +301,7 @@ return(r)
             ni <- nodes + i
             if (ni <= tr$n)
             {
-                sendCall(cl[[d$node]], clFun, ni, tag=ni)
+                parallel:::sendCall(cl[[d$node]], clFun, ni, tag=ni)
             }
         
         }

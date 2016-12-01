@@ -12,7 +12,7 @@ repDoy(pixX, layerDate = NULL, bias = 0)
 
 \item{layerDate}{If \code{NULL} (default), try to autodetect layer dates. If 
 you want to be sure, use the result from 
-\code{extracDate(..., asDate = TRUE)} or \code{\link{orgTime}}.}
+\code{extractDate(..., asDate = TRUE)} or \code{\link{orgTime}}.}
 
 \item{bias}{\code{integer}. Bias applied to all values in \code{pixX}.}
 }

@@ -7,7 +7,7 @@
 transDate(begin = NULL, end = NULL)
 }
 \arguments{
-\item{begin}{\code{character}. Begin date of time series, see 
+\item{begin}{\code{character}. Begin date(s) of time series, see 
 \code{\link{transDate}}. If not provided, this defaults to 
 \code{"1972-01-01"}.}
 

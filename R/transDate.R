@@ -4,7 +4,7 @@
 #' This function converts a sequence of input dates to 'YYYY-MM-DD' and 
 #' 'YYYYDDD'.
 #' 
-#' @param begin \code{character}. Begin date of time series, see 
+#' @param begin \code{character}. Begin date(s) of time series, see 
 #' \code{\link{transDate}}. If not provided, this defaults to 
 #' \code{"1972-01-01"}.
 #' @param end \code{character}. End date of MODIS time series. If not provided, 
@@ -35,16 +35,31 @@ transDate <- function(begin=NULL, end=NULL)
 
   if (is.null(end)) 
   {
-	  end <- format(Sys.time(),"%Y.%m.%d") # actual date
+	  end <- strftime(Sys.Date(),"%Y.%m.%d") # actual date
   } 
 
-  if (nchar(begin)==7)
-  {
-	  begin <- format(as.Date(begin,"%Y%j"),"%Y.%m.%d")   
+  ## if 'begin' dates come in '%Y%j' format, reformat to '%Y.%m.%d'
+  if (any(nchar(begin) == 7)) {
+    
+    # if all 'begin' dates have the same format, proceed
+    if (all(nchar(begin) == 7)) {
+      begin <- strftime(as.Date(begin, "%Y%j"), "%Y.%m.%d")
+    
+    # else throw error    
+    } else {
+      stop("Input dates are required to have the same format (e.g., '%Y%j').\n")
+    }
   }
-  if (nchar(end)==7) 
-  {
-	  end <- format(as.Date(end,"%Y%j"),"%Y.%m.%d")  
+  
+  ## same as above, but for 'end' dates
+  if (any(nchar(end) == 7)) {
+    
+    if (all(nchar(end) == 7)) {
+      end <- strftime(as.Date(end,"%Y%j"),"%Y.%m.%d")  
+      
+    } else {
+      stop("Input dates are required to have the same format (e.g., '%Y%j').\n")
+    }
   }
 
   divisor <- substr(begin,5,5)

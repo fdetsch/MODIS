@@ -4,6 +4,7 @@ getProduct():
 
 transDate():
 # add 'format' argument
+# 'Date' method?
 
 whittaker.raster():
 # fix integer bug (see github)

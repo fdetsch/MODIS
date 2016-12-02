@@ -51,7 +51,7 @@ temporalComposite <- function(x, y,
   if (inherits(y, "character")) y <- raster::stack(y)
 
   ## append year to "composite_day_of_the_year"
-  y <- MODIS::reformatDOY(y, cores = 3L)
+  y <- MODIS::reformatDOY(y, cores = cores)
 
   ## create half-monthly time series
   dates_mod <- MODIS::extractDate(x, asDate = TRUE)$inputLayerDates

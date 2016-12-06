@@ -17,7 +17,7 @@ if ( !isGeneric("orgTime") ) {
 #' @param nDays Time interval for output layers. Defaults to \code{"asIn"} that 
 #' includes the exact input dates within the period selected using \code{begin} 
 #' and \code{end}. Can also be \code{nDays = "1 month"} or \code{"1 week"}, see 
-#' \url{http://www.stat.berkeley.edu/~s133/dates.html} and Examples.
+#' \code{\link{seq.Date}} and Examples.
 #' @param begin \code{character}. Output begin date, defaults to the earliest 
 #' input dataset.
 #' @param end \code{character}. Output end date, defaults to the latest input 
@@ -40,6 +40,9 @@ if ( !isGeneric("orgTime") ) {
 #' \item{\code{$outputLayerDates}}
 #' \item{\code{$call}}
 #' }
+#' 
+#' @seealso 
+#' \code{\link{seq.Date}}.
 #' 
 #' @author 
 #' Matteo Mattiuzzi, Florian Detsch

@@ -28,7 +28,7 @@ adjust 'pos1', 'pos2', and 'format' according to its layer
 \item{nDays}{Time interval for output layers. Defaults to \code{"asIn"} that 
 includes the exact input dates within the period selected using \code{begin} 
 and \code{end}. Can also be \code{nDays = "1 month"} or \code{"1 week"}, see 
-\url{http://www.stat.berkeley.edu/~s133/dates.html} and Examples.}
+\code{\link{seq.Date}} and Examples.}
 
 \item{begin}{\code{character}. Output begin date, defaults to the earliest 
 input dataset.}
@@ -86,5 +86,8 @@ orgTime(dates.v1)
 }
 \author{
 Matteo Mattiuzzi, Florian Detsch
+}
+\seealso{
+\code{\link{seq.Date}}.
 }
 

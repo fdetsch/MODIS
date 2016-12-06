@@ -29,6 +29,11 @@
 #' @param forceDownload \code{logical}, see \code{\link{getHdf}}.
 #' @param ... See Methods.
 #' 
+#' @return 
+#' A \code{list} of the same length as 'product'. Each product slot holds a 
+#' sub-\code{list} of processed dates which, for each time step, include the 
+#' corresponding output files as \code{character} objects. 
+#' 
 #' @details 
 #' \describe{
 #' \tabular{rll}{
@@ -56,7 +61,7 @@
 #' \code{dataFormat}, default "GeoTiff" (\code{\link{MODISoptions}}).\cr
 #' 
 #' @author 
-#' Matteo Mattiuzzi
+#' Matteo Mattiuzzi, Florian Detsch
 #' 
 #' @seealso 
 #' \code{\link{getHdf}}, \code{\link{runMrt}}.
@@ -291,9 +296,10 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
       q <- NULL
     }
     
-    for (z in seq_along(product$PRODUCT))
-    { # z=1
-      todo <- paste(product$PRODUCT[z],".",product$CCC[[product$PRODUCT[z]]],sep="")    
+    lst_product <- vector("list", length(product$PRODUCT))
+    for (z in seq_along(product$PRODUCT)) {
+      # z=1
+      todo <- paste(product$PRODUCT[[z]], product$CCC[[product$PRODUCT[z]]], sep = ".")
       
       if(z==1)
       {
@@ -308,11 +314,13 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
         cat("########################\n")
         
         outDir <- file.path(opts$outDirPath,job,fsep="/")
+        outDir <- gsub("//", "/", outDir)
         dir.create(outDir,showWarnings=FALSE,recursive=TRUE)
       }
       
-      for(u in seq_along(todo))
-      { # u=1
+      lst_todo <- vector("list", length(todo))
+      for (u in seq_along(todo)) {
+        # u=1
         ftpdirs      <- list()
         
         if (length(unlist(product$SOURCE)) > 1) {
@@ -339,9 +347,10 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
         if (sum(us,na.rm=TRUE)>0)
         {
           avDates <- avDates[us]
-                      
-          for (l in seq_along(avDates))
-          { # l=1
+          
+          lst_ofile <- vector("list", length(avDates))
+          for (l in seq_along(avDates)) { 
+            # l=1
             files <- unlist(
               getHdf(product=prodname, collection=coll, begin=avDates[l], end=avDates[l],
                tileH=extent$tileH, tileV=extent$tileV, checkIntegrity=checkIntegrity, 
@@ -356,9 +365,9 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
               w <- getOption("warn")
               options("warn"= -1)
               SDS <- list()
-              for (z in seq_along(files))
+              for (y in seq_along(files))
               { # get all SDS names for one chunk
-                SDS[[z]] <- getSds(HdfName=files[z], SDSstring=SDSstring, method="GDAL")
+                SDS[[y]] <- getSds(HdfName=files[y], SDSstring=SDSstring, method="GDAL")
               }
               options("warn"= w)
             
@@ -367,8 +376,11 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
                 NAS <- getNa(SDS[[1]]$SDS4gdal)
               }
                
-              for (i in seq_along(SDS[[1]]$SDSnames))
-              { # i=1
+              ## loop over sds
+              ofiles <- character(length(SDS[[1]]$SDSnames))
+              
+              for (i in seq_along(SDS[[1]]$SDSnames)) {
+                # i=1
                 outname <- paste0(paste0(strsplit(basename(files[1]),"\\.")[[1]][1:2],collapse="."),
                    ".", gsub(SDS[[1]]$SDSnames[i],pattern=" ",replacement="_"), extension)
                   
@@ -475,14 +487,29 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
                     {
                       unlink(list.files(path=outDir,pattern=ranpat,full.names=TRUE),recursive=TRUE)
                     }
-                  }
-                } else
-                {
-                  warning(paste0("No file found for date: ",avDates[l]))
-                }
-               }
+                
+                ofiles[i] <- ofile
+              }
+              
+              lst_ofile[[l]] <- ofiles
+            } else {
+              warning(paste0("No file found for date: ",avDates[l]))
+              lst_ofile[[l]] <- NULL
             }
+          }
+          
+          names(lst_ofile) <- avDates
+          lst_todo[[u]] <- lst_ofile
+          
+        } else {
+          lst_todo[[u]] <- NULL
         }
+      }
+      
+      lst_product[[z]] <- lst_todo[[1]]
     }
+    
+    names(lst_product) <- paste(product$PRODUCT, product$CCC, sep = ".")
+    return(lst_product)
 }
 

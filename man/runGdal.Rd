@@ -49,6 +49,11 @@ files.}
 
 \item{...}{See Methods.}
 }
+\value{
+A \code{list} of the same length as 'product'. Each product slot holds a 
+sub-\code{list} of processed dates which, for each time step, include the 
+corresponding output files as \code{character} objects.
+}
 \description{
 Downloads MODIS grid data from archive (FTP or local) and processes the 
 files.
@@ -122,7 +127,7 @@ runGdal( job="LSTaustria", product="MOD11A1", tileH=18:19,tileV=4, begin="201000
 
 }
 \author{
-Matteo Mattiuzzi
+Matteo Mattiuzzi, Florian Detsch
 }
 \seealso{
 \code{\link{getHdf}}, \code{\link{runMrt}}.

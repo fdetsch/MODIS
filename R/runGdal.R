@@ -25,9 +25,11 @@
 #' checked. In case of inconsistencies, the function tries to re-download broken 
 #' files.
 #' @param wait \code{numeric}, see \code{\link{getHdf}}.
-#' @param quiet \code{logical}, defaults to \code{TRUE}.
 #' @param forceDownload \code{logical}, see \code{\link{getHdf}}.
-#' @param ... See Methods.
+#' @param overwrite \code{logical}, defaults to \code{FALSE}. Determines 
+#' whether or not to overwrite existing output files.
+#' @param ... Additional arguments passed to \code{MODIS:::combineOptions()}, 
+#' see also \code{\link{MODISoptions}}.
 #' 
 #' @return 
 #' A \code{list} of the same length as 'product'. Each product slot holds a 
@@ -109,12 +111,14 @@
 #' 
 #' @export runGdal
 #' @name runGdal
-runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, tileH=NULL, tileV=NULL, buffer=0, SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, quiet=FALSE,forceDownload=TRUE,...)
+runGdal <- function(product, collection=NULL, 
+                    begin=NULL, end=NULL, 
+                    extent=NULL, tileH=NULL, tileV=NULL, buffer=0, 
+                    SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, 
+                    forceDownload=TRUE, overwrite = FALSE, ...)
 {
     opts <- combineOptions(...)
-    # debug:
-    # opts    <- combineOptions();product="MYD09GQ";collection=NULL; begin='2007.12.03'; end='2007.12.03'; extent=siteExtent; tileH=NULL; tileV=NULL; buffer=0; SDSstring=NULL; job=NULL; checkIntegrity=TRUE; wait=0.5; quiet=FALSE
-          
+
     if(!opts$gdalOk)
     {
         stop("GDAL not installed or configured, read in '?MODISoptions' for help")
@@ -288,12 +292,12 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
       cp <- NULL
     }
     ####
-    if (quiet)
-    {
-      q <- " -q"
-    } else
-    {
-      q <- NULL
+    
+    ## if 'quiet = FALSE' or not available, show full console output
+    q <- if ("quiet" %in% names(opts)) {
+      if (opts$quiet) " -q" else NULL
+    } else {
+      NULL
     }
     
     lst_product <- vector("list", length(product$PRODUCT))
@@ -425,68 +429,75 @@ runGdal <- function(product, collection=NULL, begin=NULL,end=NULL, extent=NULL, 
                   gdalSDS <- randomName
 
                 } 
-                if (.Platform$OS=="unix")
-                {
+                
+                # unix
+                if (.Platform$OS=="unix") {
+                  
                   ifile <- paste0(gdalSDS,collapse="' '")
                   ofile <- paste0(outDir, '/', outname)
-                  cmd   <- paste0(opts$gdalPath,
-                        "gdalwarp",
-                            s_srs,
-                            t_srs,
-                            of,
-                            te,
-                            tr,
-                            cp,
-                            bs,
-                            rt,
-                            q,
-                            srcnodata,
-                            dstnodata,
-                            " -overwrite",
-                            " -multi",
-                            " \'", ifile,"\'",
-                            " ",
-                            ofile
-                            )
-                  cmd <- gsub(x=cmd,pattern="\"",replacement="'")
-                  system(cmd)
-                } else # windows
-                {
+                  
+                  if (!file.exists(ofile) | overwrite) {
+                    cmd <- paste0(opts$gdalPath,
+                                  "gdalwarp",
+                                  s_srs,
+                                  t_srs,
+                                  of,
+                                  te,
+                                  tr,
+                                  cp,
+                                  bs,
+                                  rt,
+                                  q,
+                                  srcnodata,
+                                  dstnodata,
+                                  " -overwrite",
+                                  " -multi",
+                                  " \'", ifile,"\'",
+                                  " ",
+                                  ofile)
+                    
+                    cmd <- gsub(x=cmd,pattern="\"",replacement="'")
+                    system(cmd)
+                  }
+                  
+                # windows  
+                } else {
+                  
                   cmd <- paste0(opts$gdalPath,"gdalwarp")
                
-                  # ifile <- paste(shortPathName(gdalSDS),collapse='\" \"',sep=' ')
-                  # ofile <- shortPathName(paste0(normalizePath(outDir), '\\', outname))
                   ofile <- paste0(outDir, '/', outname)      
                   ifile <- paste0(gdalSDS,collapse='" "')
                   
                   # GDAL < 1.8.0 doesn't support ' -overwrite' 
-                  if(file.exists(ofile))
-                  {
-                    invisible(file.remove(ofile))
-                  }
+                  if (!file.exists(ofile) | overwrite) {
+                    
+                    if(file.exists(ofile))
+                      invisible(file.remove(ofile))
+                    
                     shell(
-                       paste(cmd,
-                        s_srs,
-                        t_srs,
-                        of,
-                        te,
-                        tr,
-                        cp,
-                        bs,
-                        rt,
-                        q,
-                        srcnodata,
-                        dstnodata,
-                        ' -multi',
-                        ' \"', ifile,'\"',
-                        ' \"', ofile,'\"',
-                       sep = '')
-                      ) 
-                   }
-                    if(length(grep(todo,pattern="M.D13C2\\.005"))>0)
-                    {
-                      unlink(list.files(path=outDir,pattern=ranpat,full.names=TRUE),recursive=TRUE)
-                    }
+                      paste0(cmd,
+                             s_srs,
+                             t_srs,
+                             of,
+                             te,
+                             tr,
+                             cp,
+                             bs,
+                             rt,
+                             q,
+                             srcnodata,
+                             dstnodata,
+                             ' -multi',
+                             ' \"', ifile,'\"',
+                             ' \"', ofile,'\"')
+                    )
+                  }
+                }
+                
+                if(length(grep(todo, pattern = "M.D13C2\\.005")) > 0) {
+                  unlink(list.files(path = outDir, pattern = ranpat, 
+                                    full.names = TRUE), recursive = TRUE)
+                }
                 
                 ofiles[i] <- ofile
               }

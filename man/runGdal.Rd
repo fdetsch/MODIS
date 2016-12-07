@@ -7,7 +7,7 @@
 runGdal(product, collection = NULL, begin = NULL, end = NULL,
   extent = NULL, tileH = NULL, tileV = NULL, buffer = 0,
   SDSstring = NULL, job = NULL, checkIntegrity = TRUE, wait = 0.5,
-  quiet = FALSE, forceDownload = TRUE, ...)
+  forceDownload = TRUE, overwrite = FALSE, ...)
 }
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}.}
@@ -43,11 +43,13 @@ files.}
 
 \item{wait}{\code{numeric}, see \code{\link{getHdf}}.}
 
-\item{quiet}{\code{logical}, defaults to \code{TRUE}.}
-
 \item{forceDownload}{\code{logical}, see \code{\link{getHdf}}.}
 
-\item{...}{See Methods.}
+\item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines 
+whether or not to overwrite existing output files.}
+
+\item{...}{Additional arguments passed to \code{MODIS:::combineOptions()}, 
+see also \code{\link{MODISoptions}}.}
 }
 \value{
 A \code{list} of the same length as 'product'. Each product slot holds a 

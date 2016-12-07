@@ -289,7 +289,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
         
         ## ensure compatibility with servers other than those specified in 
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
-        server <- unlist(product$SOURCE)
+        server <- unique(unlist(product$SOURCE))
         
         if (length(server) > 1) {
           # alternative server, i.e. when priority is not reachable

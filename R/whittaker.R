@@ -49,7 +49,7 @@
 #' \code{lambda*('length of input timeserie in days'/365)}. The input length can 
 #' differ from the output because of the \code{pillow} argument in 
 #' \code{orgTime}. But it can also be set as \code{character} (i.e., 
-#' \code{lambda = "1000"}). In this case, the adaption to the time serie length 
+#' \code{lambda = "1000"}). In this case, the adaption to the time series length 
 #' is not performed.\cr
 #' 
 #' @references 

@@ -562,23 +562,6 @@ defineName <- function(x) # "x" is a MODIS,SRTM or culture-MERIS filename
   return(secName)
 }
 
-#### install dependencies and suggested
-
-checkDeps <- function()
-{
-    needed <- c('RCurl', 'rgeos', 'rgdal', 'maps', 'mapdata', 'parallel', 'ptw', 'XML')
-    if (all(needed %in% installed.packages()[,1]))
-    {
-        cat("All suggested packages are installed\n")
-    } else {
-        missingP <- !needed %in% installed.packages()[,1]
-        missingP <- paste0(needed[missingP],collapse="', '")
-
-        cat("To install all required and suggested packages run:\n\tsetRepositories() # activate CRAN, R-forge, and Omegahat and then: \n\tinstall.packages(c('",missingP,"'),dependencies=TRUE)\n\n")
-    }
-}
-
-
 # this function selects elements of a list by "row".
 listPather <- function(x,index)
 {

@@ -40,8 +40,8 @@
 #' @param quiet \code{logical}. If \code{TRUE} (default), options are printed to 
 #' the console.
 #' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
-#' @param checkPackages \code{logical}. If \code{TRUE} (default), check if 
-#' suggested \R packages, as well as 'GDAL' and 'MRT' are installed.
+#' @param checkTools \code{logical}, defaults to \code{TRUE}. Check if external 
+#' tools (i.e., GDAL and MRT) are installed and reachable through R.
 #' 
 #' @details 
 #' These settings are permanent, easy to change and take effect immediatley!
@@ -86,7 +86,7 @@
 MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, 
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
                          dlmethod, stubbornness, systemwide = FALSE, quiet=FALSE, 
-                         save=TRUE, checkPackages=TRUE)
+                         save=TRUE, checkTools = TRUE)
 {
   # This function collects the package options from up to 3 files and creates the .MODIS_opts.R file (location depending on systemwide=T/F, see below):
   # 1. package installation directory (factory defaults); 
@@ -96,15 +96,8 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   # The final settings are written in to the user specific file 3.
   # options are not tested here! only generated!
   
-  # debug: systemwide = FALSE; quiet=FALSE; save=TRUE; checkPackages=TRUE
-  if(checkPackages)
-  {
-    # check if all suggested packages are installed:
-    suggestedPackages <- checkDeps()
-  } else
-  {
-    suggestedPackages <- "run 'MODISoptions(checkPackages=TRUE)' for further details"
-  }
+  # debug: systemwide = FALSE; quiet=FALSE; save=TRUE
+
   # container for all options
   opts  <- new.env()
   
@@ -277,7 +270,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   }  
   
   # checks if the pointed GDAL exists and supports 'HDF4Image' driver.
-  if(checkPackages)
+  if(checkTools)
   {
     # GDAL
     isOk <- checkGdalDriver(path=opt$gdalPath)
@@ -325,7 +318,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     opt$dataFormat <- 'GTiff'
   }
   
-  if(checkPackages & opt$gdalOk)
+  if(checkTools & opt$gdalOk)
   {
     opt$gdalOutDriver <- gdalWriteDriver(renew = FALSE, quiet = FALSE, gdalPath=opt$gdalPath,outDirPath=opt$outDirPath)
   }
@@ -427,10 +420,6 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     cat('outProj        :', opt$outProj, '\n')
     cat('resamplingType :', opt$resamplingType, '\n')
     cat('dataFormat     :', opt$dataFormat, '\n\n\n')
-    
-    cat('DEPENDENCIES:\n')
-    cat('_______________\n')
-    cat(suggestedPackages,'\n\n')
   }
   
   # remove ftpstring* from opt (old "~/.MODIS_Opts.R" style)

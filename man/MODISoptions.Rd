@@ -6,7 +6,7 @@
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
   dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness,
-  systemwide = FALSE, quiet = FALSE, save = TRUE, checkPackages = TRUE)
+  systemwide = FALSE, quiet = FALSE, save = TRUE, checkTools = TRUE)
 }
 \arguments{
 \item{localArcPath}{\code{character}, defaults to \code{"~/MODIS_ARC"}. 
@@ -58,8 +58,8 @@ the console.}
 
 \item{save}{\code{logical}. If \code{TRUE} (default), settings are permanent.}
 
-\item{checkPackages}{\code{logical}. If \code{TRUE} (default), check if 
-suggested \R packages, as well as 'GDAL' and 'MRT' are installed.}
+\item{checkTools}{\code{logical}, defaults to \code{TRUE}. Check if external 
+tools (i.e., GDAL and MRT) are installed and reachable through R.}
 }
 \description{
 Set or retrieve persistant \strong{MODIS} package options (per user or 

@@ -32,11 +32,13 @@ returns the result as \code{numeric} (i.e., \code{5}).}
 \item{quiet}{\code{logical}, defaults to \code{TRUE}.}
 }
 \value{
-A 3-digit \code{character} or \code{numeric} vector indicating available 
-collections. Additionally, a text file in a hidden folder in 
+A 3-digit \code{character} or \code{numeric} object (depending on 'as') or, 
+if \code{length(product) > 1}, a \code{list} of such objects with each slot 
+corresponding to the collection available for a certain product. 
+Additionally, a text file in a hidden folder located in 
 \code{getOption("MODIS_localArcPath")} as database for future calls. If 
-\code{collection} is provided, only the (formatted) collection, or 
-\code{FALSE} if it doesn't exist, is returned.
+'collection' is provided, only the (formatted) collection (or \code{FALSE} if 
+it could not be found) is returned.
 }
 \description{
 Checks and retrieves available MODIS collection(s) for a given product.

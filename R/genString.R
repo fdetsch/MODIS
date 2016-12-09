@@ -4,7 +4,8 @@
 
 # 'date' is the date of an existing file! result from getStruc() and passed as single date! For format see ?transDate
 
-genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, remote=TRUE, ...)
+genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, remote=TRUE, 
+                      opts = NULL, ...)
 {
   product <- getProduct(x=x,quiet=TRUE)
 
@@ -24,9 +25,12 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
     product$DATE <- list(paste0("A",transDate(date)$beginDOY)) # generates MODIS file date format "AYYYYDDD"
   }
 
-  opts         <- combineOptions(...)
+  ## if options have not been passed down, create them from '...'
+  if (is.null(opts))
+    opts <- combineOptions(...)
+  
   opts$auxPath <- setPath(opts$auxPath)
-  remotePath   <- localPath <- NULL    
+  remotePath <- localPath <- NULL    
     
   if (is.null(product$DATE)) # if x is a PRODUCT and date is not provided 
   { 

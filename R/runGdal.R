@@ -20,14 +20,11 @@
 #' @param SDSstring \code{character}, see \code{\link{getSds}}.
 #' @param job \code{character}. Name of the current job for the creation of the 
 #' output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
-#' @param checkIntegrity \code{logical}. If \code{FALSE} (default), no file 
-#' integrity check is performed, else the size of each downloaded file is 
-#' checked. In case of inconsistencies, the function tries to re-download broken 
-#' files.
+#' @param checkIntegrity \code{logical}, see \code{\link{getHdf}}. 
 #' @param wait \code{numeric}, see \code{\link{getHdf}}.
 #' @param forceDownload \code{logical}, see \code{\link{getHdf}}.
 #' @param overwrite \code{logical}, defaults to \code{FALSE}. Determines 
-#' whether or not to overwrite existing output files.
+#' whether or not to overwrite existing SDS output files.
 #' @param ... Additional arguments passed to \code{MODIS:::combineOptions()}, 
 #' see also \code{\link{MODISoptions}}.
 #' 

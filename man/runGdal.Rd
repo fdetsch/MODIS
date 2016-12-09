@@ -36,17 +36,14 @@ see \code{tileH}.}
 \item{job}{\code{character}. Name of the current job for the creation of the 
 output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.}
 
-\item{checkIntegrity}{\code{logical}. If \code{FALSE} (default), no file 
-integrity check is performed, else the size of each downloaded file is 
-checked. In case of inconsistencies, the function tries to re-download broken 
-files.}
+\item{checkIntegrity}{\code{logical}, see \code{\link{getHdf}}.}
 
 \item{wait}{\code{numeric}, see \code{\link{getHdf}}.}
 
 \item{forceDownload}{\code{logical}, see \code{\link{getHdf}}.}
 
 \item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines 
-whether or not to overwrite existing output files.}
+whether or not to overwrite existing SDS output files.}
 
 \item{...}{Additional arguments passed to \code{MODIS:::combineOptions()}, 
 see also \code{\link{MODISoptions}}.}

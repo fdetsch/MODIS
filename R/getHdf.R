@@ -1,3 +1,7 @@
+if ( !isGeneric("getHdf") ) {
+  setGeneric("getHdf", function(HdfName, ...)
+    standardGeneric("getHdf"))
+}
 #' Create or update a local subset of global online MODIS grid data pool
 #' 
 #' @description 
@@ -24,16 +28,12 @@
 #' @param HdfName \code{character} vector or \code{list}. Full HDF file name(s) 
 #' to download a small set of files. If specified, other file-related parameters 
 #' (i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored. 
-#' @param quiet \code{logical}, defaults to \code{FALSE}. Refers to all internal 
-#' \code{\link{download.file}} calls. If \code{TRUE}, \code{\link{getHdf}} 
-#' becomes really boring...
 #' @param wait \code{numeric}. Inserts a break (in seconds) after every internal 
 #' call to \code{\link{download.file}} or \code{\link{getURL}}, which reduces 
 #' the chance of FTP connection errors that frequently occur after many requests. 
-#' @param checkIntegrity \code{logical}. If \code{FALSE} (default), no file 
-#' integrity check is performed, else the size of each downloaded file is 
-#' checked. In case of inconsistencies, the function tries to re-download broken 
-#' files. 
+#' @param checkIntegrity \code{logical}. If \code{TRUE} (default), the size of 
+#' each downloaded file is checked. In case of inconsistencies, the function 
+#' tries to re-download broken files. 
 #' @param forceDownload \code{logical}. If \code{TRUE} (default), try to 
 #' download data irrespective of whether online information could be retrieved 
 #' via \code{MODIS:::getStruc} or not.
@@ -60,10 +60,10 @@
 #' 
 #' @examples 
 #' \dontrun{
-#' # one specific file (no regular erpression allowed here for now!)
-#' # ca 2 mB!!!
-#' a <- getHdf(HdfName="MYD11A1.A2009001.h18v04.005.2009013145459.hdf", wait=0)
-#' 
+#' # one or more specific file (no regular erpression allowed here)
+#' a <- getHdf(c("MYD11A1.A2009001.h18v04.006.2015363221538.hdf", 
+#'               "MYD11A1.A2009009.h18v04.006.2015364055036.hdf", 
+#'               "MYD11A1.A2009017.h18v04.006.2015364115403.hdf"))
 #' 
 #' # DO NOT RUN THE NEXT EXAMPLE (unless you need this data)!!!
 #' # Get all MODIS TERRA and AQUA 11A1 beginning from 18. October 2011 up to today.
@@ -92,56 +92,41 @@
 #' 
 #' @export getHdf
 #' @name getHdf
-getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent=NULL, collection=NULL, HdfName, quiet=FALSE, wait=0.5, checkIntegrity=FALSE,forceDownload=TRUE,...) 
+
+################################################################################
+### function using 'missing' input #############################################
+#' @aliases getHdf,missing-method
+#' @rdname getHdf
+setMethod("getHdf",
+          signature(HdfName = "missing"),
+          function(product, 
+                   begin=NULL, end=NULL, 
+                   tileH=NULL, tileV=NULL, extent=NULL, 
+                   collection=NULL, wait=0.5, checkIntegrity=TRUE,forceDownload=TRUE,...) 
 {
-  # product="MOD13Q1"; begin="2010001"; end="2010005"; tileH=NULL; tileV=NULL; extent=NULL; collection=NULL; quiet=FALSE; wait=0.5; checkIntegrity=FALSE; z=1;u=1
+  # product="MOD13Q1"; begin="2010001"; end="2010005"; tileH=NULL; tileV=NULL; extent=NULL; collection=NULL; wait=0.5; checkIntegrity=FALSE; z=1;u=1
   opts <- combineOptions(...)
+
+  ## if 'quiet' is not available, show full console output
+  if (!"quiet" %in% names(opts))
+    opts$quiet <- FALSE
 
   sturheit <- stubborn(level=opts$stubbornness)
   wait     <- as.numeric(wait)
 
   # TODO HdfName as regex
-  if (!missing(HdfName))
-  { 
-    HdfName <- unlist(HdfName)
-    dates <- list()
-    
-    for (i in seq_along(HdfName))
-    {
-      HdfName[i]     <- basename(HdfName[i]) # separate name from path
-      path           <- genString(HdfName[i],...)
-      path$localPath <- setPath(path$localPath)
+  if (missing(product))
+    stop("Please provide a supported 'product', see getProduct().\n")
 
-      if (!file.exists(paste0(path$localPath,"/",HdfName[i]))) 
-      {
-        ModisFileDownloader(HdfName[i],quiet=quiet,...)
-      }
-      
-      if(checkIntegrity)
-      {
-        doCheckIntegrity(HdfName[i], quiet=quiet,...)
-      }
-      dates[[i]] <- paste0(path$local,"/",HdfName[i])
-    }
-    return(invisible(unlist(dates)))
-
-  } else 
-  { # if HdfName isn't provided:
-
-    if (missing(product))
-    {
-        stop("Please provide the supported-'product'. See in: 'getProduct()'")
-    }
-
-    #######
-    # check product
-    product <- getProduct(x=product,quiet=TRUE)
-    # check if missing collection, else bilieve it
-    if(is.null(collection)) 
-    {
-      product$CCC <- getCollection(product=product,quiet=TRUE)[[1]]
-    } else
-    {
+  #######
+  # check product
+  product <- getProduct(x=product,quiet=TRUE)
+  # check if missing collection, else bilieve it
+  if(is.null(collection)) 
+  {
+    product$CCC <- getCollection(product=product,quiet=TRUE, forceCheck = TRUE)[[1]]
+  } else
+  {
       product$CCC <- sprintf("%03d",as.numeric(unlist(collection)[1]))
     }
     #########
@@ -180,7 +165,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
       {
         cat("Getting SRTM metadata from: ftp://xftp.jrc.it\nThis is done once (the metadata is not used at the moment!)\n")
         download.file("ftp://xftp.jrc.it/pub/srtmV4/SRTM_META/meta.zip",paste(path$localPath,"meta.zip",sep="/"),
-        mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=TRUE)
+        mode='wb', method=opts$dlmethod, quiet=opts$quiet, cacheOK=TRUE)
       }
       if (!file.exists(paste(path$localPath,".SRTM_sizes",sep="/")))
       {
@@ -223,7 +208,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
               hdf <- download.file(
                   paste0(path$remotePath[[server[g]]],"/", files[d]),
                   destfile=paste0(path$localPath,"/", files[d]),
-                  mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=TRUE),
+                  mode='wb', method=opts$dlmethod, quiet=opts$quiet, cacheOK=TRUE),
               silent=TRUE
           )
           if (hdf==0) 
@@ -231,7 +216,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
             SizeCheck <- checksizefun(file=paste0(path$localPath,"/", files[d]),sizeInfo=sizes,flexB=50000)
             if(!SizeCheck$isOK) {hdf=1} # if size check fails, re-try!
           }
-          if(hdf==0 & !quiet) 
+          if(hdf==0 & !opts$quiet) 
           {
             lastused <- server[g] 
             if (g==1) 
@@ -427,7 +412,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
                       }
 
                       dates[[l]][i,j+1] <- HDF
-                      hdf <- ModisFileDownloader(HDF, wait=wait, quiet=quiet)
+                      hdf <- ModisFileDownloader(HDF, wait=wait, quiet=opts$quiet)
                       mtr[j] <- hdf
 
                     } else 
@@ -443,7 +428,7 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
             }
             if(checkIntegrity)
             { # after each 'i' do the sizeCheck
-              isIn <- doCheckIntegrity(paste0(path$localPath,dates[[l]][i,-1]), wait=wait, quiet=quiet,...)
+              isIn <- doCheckIntegrity(paste0(path$localPath,dates[[l]][i,-1]), wait=wait, quiet=opts$quiet,...)
             }
           suboutput[[i]] <- paste0(path$localPath,dates[[l]][i,-1])                    
           } # end i
@@ -458,6 +443,57 @@ getHdf <- function(product, begin=NULL, end=NULL, tileH=NULL, tileV=NULL, extent
     }
     }
     return(invisible(output))
-} 
-} ## END: FTP vs ARC check and download 
+}) ## END: FTP vs ARC check and download 
 
+
+################################################################################
+### function using 'character' input ###########################################
+#' @aliases getHdf,character-method
+#' @rdname getHdf
+setMethod("getHdf",
+          signature(HdfName = "character"),
+          function(HdfName, wait = 0.5, checkIntegrity = TRUE, ...) {
+            
+  opts <- combineOptions(...)
+            
+  ## if 'quiet' is not available, show full console output
+  if (!"quiet" %in% names(opts))
+    opts$quiet <- FALSE
+  
+  wait <- as.numeric(wait)
+  
+  ## loop over 'HdfName'
+  HdfName <- basename(HdfName)  
+  
+  dates <- sapply(HdfName, function(i) {
+
+    path <- genString(i, opts = opts)
+    path$localPath <- setPath(path$localPath)
+    
+    if (!file.exists(paste0(path$localPath, "/", i))) 
+      ModisFileDownloader(i, wait = wait, opts = opts)
+
+    if(checkIntegrity)
+      jnk <- doCheckIntegrity(i, wait = wait, opts = opts)
+
+    paste0(path$local, "/", i)
+  })
+  
+  ## return output
+  return(invisible(dates))
+})
+
+
+################################################################################
+### function using 'list' input ################################################
+#' @aliases getHdf,list-method
+#' @rdname getHdf
+setMethod("getHdf",
+          signature(HdfName = "list"),
+          function(HdfName, wait = 0.5, checkIntegrity = TRUE, ...) {
+            
+  ## unlist 'HdfName' and call 'character' method
+  HdfName <- unlist(HdfName)
+  
+  getHdf(HdfName, wait, checkIntegrity, ...)
+})

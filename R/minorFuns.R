@@ -661,13 +661,20 @@ makeRandomString <- function(n=1, length=12)
 }
 
 # this function care about the download of files. Based on remotePath (result of genString) it alterates the effort on available sources and stops after succeded download or by reacing the stubbornness thresshold.
-ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
+ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
 {
     x <- basename(x)
 
-    opts              <- combineOptions(...)
+    ## if options have not been passed down, create them from '...'
+    if (is.null(opts))
+      opts <- combineOptions(...)
+    
     opts$stubbornness <- stubborn(opts$stubbornness)
 
+    ## if 'quiet' is not available, show full console output
+    if (!"quiet" %in% names(opts))
+      opts$quiet <- FALSE
+    
     iw <- options()$warn 
     options(warn=-1)
     on.exit(options(warn=iw))
@@ -676,7 +683,7 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
     
     for (a in seq_along(x))
     {  # a=1
-        path           <- genString(x[a],...)
+        path <- genString(x[a], opts = opts)
         path$localPath <- setPath(path$localPath)
         
         hv <- seq_along(opts$MODISserverOrder)
@@ -684,7 +691,7 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
         g=1
         while(g <= opts$stubbornness) 
         {     
-          if (!quiet)
+          if (!opts$quiet)
           {
               cat("\nGetting file from:",opts$MODISserverOrder[hv[g]],"\n############################\n")
           }
@@ -709,12 +716,12 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
             if (length(server) > 1)
               server <- server[which(server %in% opts$MODISserverOrder[hv[g]])]
               
-            out[a] <- try(download.file(url=paste(path$remotePath[id_remotepath],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=FALSE),silent=TRUE)
+            out[a] <- try(download.file(url=paste(path$remotePath[id_remotepath],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=opts$quiet, cacheOK=FALSE),silent=TRUE)
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!
-          if (out[a]!=0 & !quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 
-          if (out[a]==0 & !quiet & g>1) {cat("Downloaded after:",g,"re-tries\n\n")}
-          if (out[a]==0 & !quiet & g==1) {cat("Downloaded by the first try!\n\n")}
+          if (out[a]!=0 & !opts$quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 
+          if (out[a]==0 & !opts$quiet & g>1) {cat("Downloaded after:",g,"re-tries\n\n")}
+          if (out[a]==0 & !opts$quiet & g==1) {cat("Downloaded by the first try!\n\n")}
           if (out[a]==0) {break}    
           Sys.sleep(wait)
           g=g+1    
@@ -723,59 +730,66 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
 return(!as.logical(out)) 
 }
 
-doCheckIntegrity <- function(x, quiet=FALSE, wait=wait,...)
-{
-    x <- basename(x)
-
+doCheckIntegrity <- function(x, wait = 0.5, opts = NULL, ...) {
+  
+  x <- basename(x)
+  
+  ## if options have not been passed down, create them from '...'
+  if (is.null(opts))
     opts <- combineOptions(...)
-    opts$stubbornness <- stubborn(opts$stubbornness)
-
-    out <- rep(NA,length=length(x))
-        
-    for (a in seq_along(x))
+  
+  opts$stubbornness <- stubborn(opts$stubbornness)
+  
+  ## if 'quiet' is not available, show full console output
+  if (!"quiet" %in% names(opts))
+    opts$quiet <- FALSE
+  
+  out <- rep(NA,length=length(x))
+  
+  for (a in seq_along(x))
+  { 
+    if(basename(x[a])=="NA")
+    {
+      out[a] <- NA
+    } else
     { 
-        if(basename(x[a])=="NA")
+      path <- genString(x[a], opts = opts)
+      path$localPath <- setPath(path$localPath) 
+      
+      hv <- 1:length(path$remotePath)
+      hv <- rep(hv,length=opts$stubbornness)
+      g=1
+      while(g <= opts$stubbornness) 
+      {     
+        if (g==1)
         {
-            out[a] <- NA
-        } else
-        { 
-            path <- genString(x[a],...)
-            path$localPath <- setPath(path$localPath) 
-            
-            hv <- 1:length(path$remotePath)
-            hv <- rep(hv,length=opts$stubbornness)
-            g=1
-            while(g <= opts$stubbornness) 
-            {     
-                if (g==1)
-                {
-                    out[a] <- checkIntegrity(x = x[a],...)
-                }
-                
-                if (is.na(out[a]))
-                {
-                    unlink(x[a])
-                    break
-                }
-                if (!out[a])
-                {
-                    if (!quiet)
-                    {
-                        cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
-                    }
-                    unlink(x[a])
-                    out[a] <- ModisFileDownloader(x[a], quiet=quiet,...)
-                } else if (out[a]) 
-                {
-                    break
-                }
-                
-                out[a] <- checkIntegrity(x = x[a],...)
-                g=g+1
-            }
+          out[a] <- checkIntegrity(x = x[a], opts = opts)
         }
+        
+        if (is.na(out[a]))
+        {
+          unlink(x[a])
+          break
+        }
+        if (!out[a])
+        {
+          if (!opts$quiet)
+          {
+            cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
+          }
+          unlink(x[a])
+          out[a] <- ModisFileDownloader(x[a], wait = wait, opts = opts)
+        } else if (out[a]) 
+        {
+          break
+        }
+        
+        out[a] <- checkIntegrity(x = x[a], opts = opts)
+        g=g+1
+      }
     }
-return(as.logical(out)) 
+  }
+  return(as.logical(out)) 
 }
 
 # setPath for localArcPath and outDirPath

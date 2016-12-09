@@ -22,11 +22,13 @@
 #' @param quiet \code{logical}, defaults to \code{TRUE}.
 #' 
 #' @return 
-#' A 3-digit \code{character} or \code{numeric} vector indicating available 
-#' collections. Additionally, a text file in a hidden folder in 
+#' A 3-digit \code{character} or \code{numeric} object (depending on 'as') or, 
+#' if \code{length(product) > 1}, a \code{list} of such objects with each slot 
+#' corresponding to the collection available for a certain product. 
+#' Additionally, a text file in a hidden folder located in 
 #' \code{getOption("MODIS_localArcPath")} as database for future calls. If 
-#' \code{collection} is provided, only the (formatted) collection, or 
-#' \code{FALSE} if it doesn't exist, is returned.
+#' 'collection' is provided, only the (formatted) collection (or \code{FALSE} if 
+#' it could not be found) is returned.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
@@ -65,24 +67,6 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         stop("Unknown product")
     }
     
-    # load aux
-#    if (!file.exists(paste0(opts$auxPath,"collections.RData"))) # on the very first call use the delivered pre-updated version    
-#    {
-#        opts$auxPath <- setPath(opts$auxPath)
-#        invisible(file.copy(file.path(find.package("MODIS"), "external","collections.RData"), file.path(opts$auxPath,"collections.RData",fsep="/")))
-#        unlink(file.path(opts$auxPath,"collections.txt",fsep="/"))
-#    }
-#    load(paste0(opts$auxPath,"collections.RData"))
-    
-#    unlink(paste0(opts$auxPath,"collections.RData"))
-
-#    if (!file.exists(paste0(opts$auxPath,"collections"))) # on the very first call use the delivered pre-updated version    
-#    {
-#        opts$auxPath <- MODIS:::setPath(opts$auxPath)
-#        invisible(file.copy(file.path(find.package("MODIS"), "/external","collections"), paste0(opts$auxPath,"collections")))
-#    }
-#    MODIScollection <- read.table(paste0(opts$auxPath,"collections"))
-    
     ## if 'collections' dataset does not exist in opts$auxPath, copy it from 
     ## 'inst/external', then import data
     dir_aux <- opts$auxPath
@@ -107,11 +91,14 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
       if (forceCheck | sum(!productN$PRODUCT %in% colnames(MODIScollection))>0) 
       {
         sturheit <- stubborn(level=opts$stubbornness)
-		    
+
+        load(system.file("external", "MODIS_FTPinfo.RData", package = "MODIS"))
+        
     		for (i in seq_along(unique(productN$PF1))) 
     		{	
     		  ## retrieve ftp server address based on product source information
     		  server <- unlist(productN$SOURCE)
+
     		  ftp_id <- sapply(MODIS_FTPinfo, function(i) i$name %in% server)
     		  ftp_id <- which(ftp_id)[1]
     		  
@@ -141,7 +128,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     			{
     			  ## if 'product' is hosted on NTSG server, remove non-product folders 
     			  ## and files
-    			  if (productN$SOURCE == "NTSG") {
+    			  if (productN$SOURCE[[1]][1] == "NTSG") {
     			    dirs <- dirs[grep("^MOD16", dirs)]
     			  
     			    # remove .pdf files  
@@ -202,7 +189,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     {
 	    res <- list(MODIScollection[,ind])
 	    names(res) <- colnames(MODIScollection)[ind]
-    } else if (length(ind)>=1) 
+    } else if (length(ind)>1) 
     {
 	    res <- as.list(MODIScollection[,ind])
     } else 

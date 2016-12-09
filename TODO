@@ -20,8 +20,10 @@ longer term changes:
   MOD and MYD should still be run by one call, but not eg: MxD13A1 and MxD13A2. This change would simplify a lot the package development.
 - I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
 
-
+any functions:
+- 'quiet' argument -> should be part of options list automatically; same for 'cores'?
   
-  
+getHdf()
+- 'HdfName' with regular expression
 
   

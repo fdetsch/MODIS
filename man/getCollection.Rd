@@ -5,7 +5,7 @@
 \title{Get available collections of MODIS product(s)}
 \usage{
 getCollection(product, collection = NULL, newest = TRUE,
-  forceCheck = FALSE, as = "character", quiet = TRUE)
+  forceCheck = FALSE, as = "character", quiet = TRUE, ...)
 }
 \arguments{
 \item{product}{\code{character}. MODIS grid product to check for existing 
@@ -30,6 +30,8 @@ typical 3-digit collection number (i.e., \code{"005"}). \code{as = 'numeric'}
 returns the result as \code{numeric} (i.e., \code{5}).}
 
 \item{quiet}{\code{logical}, defaults to \code{TRUE}.}
+
+\item{...}{Additional arguments passed to \code{MODIS:::combineOptions}.}
 }
 \value{
 A 3-digit \code{character} or \code{numeric} object (depending on 'as') or, 

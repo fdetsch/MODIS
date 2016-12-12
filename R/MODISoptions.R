@@ -276,7 +276,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     if (isOk) 
     {
       opt$gdalOk  <- TRUE
-      gdalVersion <- checkTools(tool="GDAL",quiet=TRUE)$GDAL$version
+      gdalVersion <- checkTools(tool="GDAL",quiet=TRUE, opts = opt)$GDAL$version
     } else
     {
       opt$gdalOk  <- FALSE
@@ -284,7 +284,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     }
     
     # MRT
-    mrt <- checkTools(tool="MRT",quiet=TRUE)$MRT
+    mrt <- checkTools(tool="MRT",quiet=TRUE, opts = opt)$MRT
     if(mrt$MRT)
     {
       opt$mrtOk  <- TRUE

@@ -7,7 +7,7 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
     resamplingType <- "near"
   }
   
-  resamplingType <- trim(tolower(as.character(resamplingType)))
+  resamplingType <- raster::trim(tolower(as.character(resamplingType)))
   tool           <- toupper(tool)
   
   if (!tool %in% c("GDAL","MRT"))
@@ -207,7 +207,7 @@ checkGdalDriver <- function(path=NULL)
   }
 }
 
-combineOptions <- function(...) 
+combineOptions <- function(checkTools = TRUE, ...) 
 {
   opts <- options()
   opts <- opts[grep(names(opts),pattern="^MODIS_*.")] # isolate MODIS_opts
@@ -218,7 +218,7 @@ combineOptions <- function(...)
     {
       warning("MODIS_Opts file not found, run '?MODISoptions' to see and set permanent package defaults!\n")
     }
-    MODISoptions(save=FALSE,quiet=TRUE)    
+    MODISoptions(save=FALSE,quiet=TRUE, checkTools = checkTools)    
     opts <- options() # collects all options
     opts <- opts[grep(names(opts),pattern="^MODIS_*.")] # isolate MODIS_opts
   }

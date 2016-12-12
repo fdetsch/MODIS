@@ -17,7 +17,8 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
 
   if(length(product$CCC)==0)
   {
-    product$CCC <- getCollection(product=product$PRODUCT,collection=collection)[[1]]
+    product$CCC <- getCollection(product=product$PRODUCT,collection=collection, 
+                                 checkTools = FALSE)[[1]]
   }
      
   if (!is.null(date)) 
@@ -27,7 +28,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
 
   ## if options have not been passed down, create them from '...'
   if (is.null(opts))
-    opts <- combineOptions(...)
+    opts <- combineOptions(checkTools = FALSE, ...)
   
   opts$auxPath <- setPath(opts$auxPath)
   remotePath <- localPath <- NULL    

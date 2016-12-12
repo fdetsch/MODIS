@@ -120,7 +120,7 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
   }
 }
 
-checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
+checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
 {
     tool <- toupper(tool)
     
@@ -188,7 +188,9 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
     {
         GDAL <- FALSE
         gdv  <- NA
-        opts <- combineOptions()
+        
+        if (is.null(opts))
+          opts <- combineOptions(checkTools = FALSE)
         
         if (.Platform$OS=="unix")
         {    
@@ -213,7 +215,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
                 GDAL <- TRUE
                 
                 gdv <- strsplit(gdaltext,",")[[1]][1]
-                gdv <- trim(gsub(gdv,pattern="GDAL",replacement=""))
+                gdv <- raster::trim(gsub(gdv,pattern="GDAL",replacement=""))
                 gdv <- as.numeric(strsplit(gdv,"\\.")[[1]])
             }
             GDAL <- list(GDAL=GDAL,version=gdaltext,vercheck=gdv)
@@ -287,7 +289,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
                 }
                 GDAL <- TRUE
                 gdv <- strsplit(gdaltext,",")[[1]][1]
-                gdv <- trim(gsub(gdv,pattern="GDAL",replacement=""))
+                gdv <- raster::trim(gsub(gdv,pattern="GDAL",replacement=""))
                 gdv <- as.numeric(strsplit(gdv,"\\.")[[1]])
 
             }

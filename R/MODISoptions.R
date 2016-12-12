@@ -44,30 +44,31 @@
 #' tools (i.e., GDAL and MRT) are installed and reachable through R.
 #' 
 #' @details 
-#' These settings are permanent, easy to change and take effect immediatley!
+#' These settings are permanent, easy to change and take effect immediately!
 #' 
 #' If you change default values, consider that your settings have to be valid 
 #' for any MODIS product, layer and area!
 #' 
-#' It is not recommended to use a not globally applicable georeference reference 
-#' system as default for \code{outProj}, or a fixed \code{pixelSize} for 
-#' different products, or a \code{resamplingType} that is not \code{"NN"}.
+#' It is not recommended to use 
+#' \itemize{
+#' \item{a coordinate reference system that is not applicable globally as 
+#' default for 'outProj',}
+#' \item{or a fixed 'pixelSize' for different products,}
+#' \item{or a 'resamplingType' that is not \code{"NN"}.}
+#' }
 #' 
-#' \code{localArcPath} and \code{outDirPath} should be changed, expecially on a 
-#' Windows OS, as \code{'~/MODIS_ARC/...'} is normally on the 'c:/...' drive. 
-#' You may also specify a shared network drive if you have a central MODIS data 
-#' server. 
+#' 'localArcPath' and 'outDirPath' should be changed, expecially on a Windows 
+#' OS, as '~/MODIS_ARC/...' is normally on the 'C:/...' drive. You may also 
+#' specify a shared network drive if you have a central MODIS data server. 
 #' 
-#' On Windows, you have to set \code{gdalPath} to the location of GDAL 
-#' executables (i.e., the \code{'.../GDAL../bin'} directory). On Unix-alikes, 
-#' this should not be required unless you want to specify a non-default GDAL 
-#' installation.
+#' On Windows, you have to set 'gdalPath' to the location of GDAL executables 
+#' (i.e., the '.../GDAL../bin' directory). On Unix-alikes, this should not be 
+#' required unless you want to specify a non-default GDAL installation.
 #' 
-#' On an unixoid OS, it is suggested to use \code{dlmethod = 'wget'} because it's 
-#' a reliable tool and, after the change of the 'LP DAAC' datapool from FTP to 
-#' HTTP (May 2013), \code{dlmethod = 'auto'} seems not to work properly. On 
-#' Windows, on the other hand, it seems to work fine with \code{dlmethod = 'auto'}. 
-#' Help and suggestions appreciated! 
+#' On an unixoid OS, it is suggested to use \code{dlmethod = 'wget'} because it 
+#' is a reliable tool and, after the change of the 'LP DAAC' datapool from FTP 
+#' to HTTP (May 2013), \code{dlmethod = 'auto'} seems not to work properly. On 
+#' Windows, on the other hand, \code{dlmethod = 'auto'} seems to work fine. 
 #' 
 #' @author 
 #' Matteo Mattiuzzi and Steven Mosher
@@ -102,69 +103,67 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   opts  <- new.env()
   
   ##################################
-  # 1. factory defaults
-  eval(parse(file.path(find.package("MODIS"), "external", "MODIS_Opts.R")),envir=opts) 
+  # 1. factory defaults -----
+  eval(parse(file.path(find.package("MODIS"), "external", "MODIS_Opts.R")),
+       envir = opts) 
   
-  # 2. system wide
-  sysopts <- paste(R.home(component="etc"), '/', '.MODIS_Opts.R', sep='')
+  # 2. system wide -----
+  sysopts <- paste(R.home(component = "etc"), '.MODIS_Opts.R', sep = '/')
   so      <- FALSE
   
-  if (file.exists(sysopts))
-  {
-    eval(parse(sysopts),envir=opts)
+  if (file.exists(sysopts)) {
+    eval(parse(sysopts), envir = opts)
     so <- TRUE
   }
   
-  # 3. user specific
-  optfile <- file.path("~/.MODIS_Opts.R",fsep="/")
+  # 3. user specific -----
+  optfile <- file.path("~/.MODIS_Opts.R", fsep = "/")
   uo      <- FALSE
   
-  if(systemwide)
-  {
-    if(!file.create(sysopts,showWarnings=FALSE))
-    {
-      stop("You do not have write permission in ",R.home(component="etc")," to create/change 'systemwide' MODIS options. Set 'systemwide=FALSE' for single user settings or start R as root/admin and run again 'MODISoptions'!")
-    }
+  # system-wide
+  if(systemwide) {
+    if(!file.create(sysopts, showWarnings = FALSE))
+      stop("You do not have sufficient permissions to create or change ", 
+           "'systemwide' MODIS options. Set 'systemwide = FALSE' for user-wide", 
+           " settings or start R as root/admin and re-run MODISoptions().\n")
+
     optfile <- sysopts
     whose   <- 'systemwide'
-  } else
-  {
-    if (file.exists(optfile))
-    {   
-      eval(parse(optfile),envir=opts)
+    
+  # user-wide  
+  } else {
+    if (file.exists(optfile)) {   
+      eval(parse(optfile), envir = opts)
       uo <- TRUE
     }
+    
     whose <- 'user'
   } 
   
-  if(!uo)
-  {
-    if(!so & save)
-    {
+  if(!uo) {
+    if(!so & save) {
       warning("No MODIS 'user' nor 'systemwide' settings file found. File is created for '",whose,"'-settings in: ",normalizePath(optfile,'/',mustWork=FALSE),sep="")
-    } else if (!save)
-    {
+    } else if (!save) {
       warning("No MODIS 'user' nor 'systemwide' settings file found, using factory defaults. Use '?MODISoptions' to configure the 'MODIS' package and make settings permanent!")
     }
   }
+  
   #################################
   opt <- as.list(opts)	
   
   # localArcPath
   opt$localArcPath <- correctPath(opt$localArcPath)
   
-  if(!missing(localArcPath))
-  {
+  if(!missing(localArcPath)) {
     localArcPath <- correctPath(localArcPath) 
   
-    if (opt$localArcPath != localArcPath)
-    {
+    if (opt$localArcPath != localArcPath) {
       message("Setting 'localArcPath' to '", normalizePath(localArcPath,"/",FALSE),"'\nIf you already have downloaded some HDF-files to '",normalizePath(opt$localArcPath,"/",FALSE) ,"' you can use '?orgStruc()' to re-arrange your HDF-data!")
     }
+    
     options(MODIS_localArcPathWarned=TRUE)
     opt$localArcPath <- localArcPath
-  } else
-  {
+  } else {
     if (length(list.dirs(opt$localArcPath,recursive=FALSE))==0)
     {
       if(!isTRUE(options()$MODIS_localArcPathWarned))

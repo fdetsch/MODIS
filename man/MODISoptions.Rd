@@ -66,30 +66,31 @@ Set or retrieve persistant \strong{MODIS} package options (per user or
 systemwide). Changes here will persist through sessions and updates.
 }
 \details{
-These settings are permanent, easy to change and take effect immediatley!
+These settings are permanent, easy to change and take effect immediately!
 
 If you change default values, consider that your settings have to be valid 
 for any MODIS product, layer and area!
 
-It is not recommended to use a not globally applicable georeference reference 
-system as default for \code{outProj}, or a fixed \code{pixelSize} for 
-different products, or a \code{resamplingType} that is not \code{"NN"}.
+It is not recommended to use 
+\itemize{
+\item{a coordinate reference system that is not applicable globally as 
+default for 'outProj',}
+\item{or a fixed 'pixelSize' for different products,}
+\item{or a 'resamplingType' that is not \code{"NN"}.}
+}
 
-\code{localArcPath} and \code{outDirPath} should be changed, expecially on a 
-Windows OS, as \code{'~/MODIS_ARC/...'} is normally on the 'c:/...' drive. 
-You may also specify a shared network drive if you have a central MODIS data 
-server. 
+'localArcPath' and 'outDirPath' should be changed, expecially on a Windows 
+OS, as '~/MODIS_ARC/...' is normally on the 'C:/...' drive. You may also 
+specify a shared network drive if you have a central MODIS data server. 
 
-On Windows, you have to set \code{gdalPath} to the location of GDAL 
-executables (i.e., the \code{'.../GDAL../bin'} directory). On Unix-alikes, 
-this should not be required unless you want to specify a non-default GDAL 
-installation.
+On Windows, you have to set 'gdalPath' to the location of GDAL executables 
+(i.e., the '.../GDAL../bin' directory). On Unix-alikes, this should not be 
+required unless you want to specify a non-default GDAL installation.
 
-On an unixoid OS, it is suggested to use \code{dlmethod = 'wget'} because it's 
-a reliable tool and, after the change of the 'LP DAAC' datapool from FTP to 
-HTTP (May 2013), \code{dlmethod = 'auto'} seems not to work properly. On 
-Windows, on the other hand, it seems to work fine with \code{dlmethod = 'auto'}. 
-Help and suggestions appreciated!
+On an unixoid OS, it is suggested to use \code{dlmethod = 'wget'} because it 
+is a reliable tool and, after the change of the 'LP DAAC' datapool from FTP 
+to HTTP (May 2013), \code{dlmethod = 'auto'} seems not to work properly. On 
+Windows, on the other hand, \code{dlmethod = 'auto'} seems to work fine.
 }
 \examples{
 \dontrun{

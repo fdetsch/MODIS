@@ -84,9 +84,7 @@ timeInfo <- orgTime(vi,nDays=16,begin="2005001",end="2005365",pillow=40)
 # Here only the data needed for the filtering is extractet:
 vi <- preStack(files=vi,timeInfo=timeInfo)
 
-# For speedup try (Sometimes problematic on Win7): 
-beginCluster(type="SOCK",exclude="MODIS") # See: ?beginCluster
-system.time(smooth.spline.raster(x=vi,timeInfo=timeInfo))
+smooth.spline.raster(x=vi,timeInfo=timeInfo)
 
 # Filter with weighting and time information:
 # if the files are M*D13 you can use also Quality layers and the composite day of the year:
@@ -95,8 +93,7 @@ w <- makeWeights(w,bitShift=2,bitMask=15,threshold=6)
 # you can also pass only the names
 t <- preStack(path=path, pattern="*_composite_day_of_the_year.tif$", timeInfo=timeInfo)
 
-beginCluster(type="SOCK",exclude="MODIS") # See: ?beginCluster
-system.time(smooth.spline.raster(x=vi,w=w,t=t,timeInfo=timeInfo))
+smooth.spline.raster(x=vi,w=w,t=t,timeInfo=timeInfo)
 }
 
 }

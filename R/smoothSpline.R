@@ -76,9 +76,7 @@
 #' # Here only the data needed for the filtering is extractet:
 #' vi <- preStack(files=vi,timeInfo=timeInfo)
 #' 
-#' # For speedup try (Sometimes problematic on Win7): 
-#' beginCluster(type="SOCK",exclude="MODIS") # See: ?beginCluster
-#' system.time(smooth.spline.raster(x=vi,timeInfo=timeInfo))
+#' smooth.spline.raster(x=vi,timeInfo=timeInfo)
 #' 
 #' # Filter with weighting and time information:
 #' # if the files are M*D13 you can use also Quality layers and the composite day of the year:
@@ -87,8 +85,7 @@
 #' # you can also pass only the names
 #' t <- preStack(path=path, pattern="*_composite_day_of_the_year.tif$", timeInfo=timeInfo)
 #' 
-#' beginCluster(type="SOCK",exclude="MODIS") # See: ?beginCluster
-#' system.time(smooth.spline.raster(x=vi,w=w,t=t,timeInfo=timeInfo))
+#' smooth.spline.raster(x=vi,w=w,t=t,timeInfo=timeInfo)
 #' }
 #' 
 #' @export smooth.spline.raster
@@ -168,31 +165,8 @@ smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = 
     }
         
     tr <- blockSize(x)
-    
-    cluster <- raster:::.doCluster()
-    if (cluster)
-    {
-        cl <- getCluster()
-        on.exit(endCluster())
-        nodes <- getOption("rasterClusterCores")
-        
-        clF <- function(i){require(MODIS)}
-
-        for (i in 1:nodes) 
-        {
-            parallel:::sendCall(cl[[i]], clF, i, tag=i)
-            parallel:::recvOneData(cl)
-        }
-        
-        # better to be save than sorry:
-        clusterEvalQ(cl,require(bitops))
-        clusterEvalQ(cl,require(rgdal))
-        
-        tr <- blockSizeCluster(x)
-    }    
 
     cat("Data is in, start processing!\n")
-# clusterExport(cl,ls())
 ###############################
 # clusterFuns: 
 
@@ -248,65 +222,23 @@ clFun <- function(l)
 return(r)
 }
 
-    if (!cluster)
+    for ( i in seq_along(tr$row) )
     {    
-        for ( i in seq_along(tr$row) )
-        {    
-            res <- clFun(i)
-            res <- round(res)
-    
-            if (groupYears)
-            {
-                for (a in seq_along(unique(format(timeInfo$outputLayerDates,"%Y"))))
-                {
-                    y <- unique(format(timeInfo$outputLayerDates,"%Y"))[a]
-                    b[[a]] <- writeValues(b[[a]], res[,format(timeInfo$outputLayerDates,"%Y")==y], tr$row[i])
-                }   
-            } else 
-            {
-                b[[1]]  <- writeValues(b[[1]], res, tr$row[i])
-            }
-        }       
-    } else
-    {
-        for (i in 1:nodes) 
+      res <- clFun(i)
+      res <- round(res)
+      
+      if (groupYears)
+      {
+        for (a in seq_along(unique(format(timeInfo$outputLayerDates,"%Y"))))
         {
-            parallel:::sendCall(cl[[i]], clFun, i, tag=i)
-        }
-    
-        for (i in 1:tr$n)
-        {
-            d <- parallel:::recvOneData(cl)
-    
-            if (!d$value$success)
-            {
-                stop("Cluster error in Row: ", tr$row[d$value$tag],"\n")
-            }
-            ind <- d$value$tag
-            d$value$value <- round(d$value$value)
-            #####
-            if (groupYears)
-            {
-                for (a in seq_along(unique(format(timeInfo$outputLayerDates,"%Y"))))
-                {
-                    y <- unique(format(timeInfo$outputLayerDates,"%Y"))[a]
-                    b[[a]] <- writeValues(b[[a]], d$value$value[,format(timeInfo$outputLayerDates,"%Y")==y], tr$row[ind])
-                }   
-            } else 
-            {
-                b[[1]]  <- writeValues(b[[1]], d$value$value, tr$row[ind])
-            }
-            #####        
-    
-            ni <- nodes + i
-            if (ni <= tr$n)
-            {
-                parallel:::sendCall(cl[[d$node]], clFun, ni, tag=ni)
-            }
-        
-        }
-    }
-###############################
+          y <- unique(format(timeInfo$outputLayerDates,"%Y"))[a]
+          b[[a]] <- writeValues(b[[a]], res[,format(timeInfo$outputLayerDates,"%Y")==y], tr$row[i])
+        }   
+      } else 
+      {
+        b[[1]]  <- writeValues(b[[1]], res, tr$row[i])
+      }
+    }       
     
     for (a in seq_along(b))
     {    

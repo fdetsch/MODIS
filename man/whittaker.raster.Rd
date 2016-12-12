@@ -107,17 +107,14 @@ timeInfo <- orgTime(vi,nDays=16,begin="2005001",end="2005365",pillow=40)
 # Here only the data needed for the filtering is extracted:
 vi <- preStack(files=vi,timeInfo=timeInfo)
 
-# For speedup try (On some Win7 problematic): 
-# beginCluster() # See: ?beginCluster
-system.time(whittaker.raster(vi,timeInfo=timeInfo,lambda=5000))
+whittaker.raster(vi,timeInfo=timeInfo,lambda=5000)
 
 # if the files are M*D13 you can use also Quality layers and the composite day of the year:
 wt <- preStack(path=path, pattern="*_VI_Quality.tif$", timeInfo=timeInfo)
 # can also be already stacked:
 inT <- preStack(path=path, pattern="*_composite_day_of_the_year.tif$", timeInfo=timeInfo)
 
-# beginCluster() # See: ?beginCluster 
-system.time(whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrite=TRUE))
+whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrite=TRUE)
 }
 
 }

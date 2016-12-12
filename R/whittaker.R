@@ -96,17 +96,14 @@
 #' # Here only the data needed for the filtering is extracted:
 #' vi <- preStack(files=vi,timeInfo=timeInfo)
 #' 
-#' # For speedup try (On some Win7 problematic): 
-#' # beginCluster() # See: ?beginCluster
-#' system.time(whittaker.raster(vi,timeInfo=timeInfo,lambda=5000))
+#' whittaker.raster(vi,timeInfo=timeInfo,lambda=5000)
 #' 
 #' # if the files are M*D13 you can use also Quality layers and the composite day of the year:
 #' wt <- preStack(path=path, pattern="*_VI_Quality.tif$", timeInfo=timeInfo)
 #' # can also be already stacked:
 #' inT <- preStack(path=path, pattern="*_composite_day_of_the_year.tif$", timeInfo=timeInfo)
 #' 
-#' # beginCluster() # See: ?beginCluster 
-#' system.time(whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrite=TRUE))
+#' whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrite=TRUE)
 #' }
 #' 
 #' @name whittaker.raster
@@ -123,58 +120,51 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
   
   opts <- combineOptions(...)
   
-  outDirPath     <- setPath(outDirPath)
+  outDirPath     <- setPath(opts$outDirPath)
   bitShift       <- opts$bitShift
   bitMask        <- opts$bitMask
   threshold      <- opts$threshold
   
   dataFormat     <- opts$dataFormat
-  rasterOut      <- toupper(writeFormats())
+  rasterOut      <- toupper(raster::writeFormats())
   
-  if(toupper(dataFormat) %in% rasterOut[,"name"])
-  {
+  if(toupper(dataFormat) %in% rasterOut[,"name"]) {
     dataFormat <- getExtension(dataFormat)
-  } else
-  {
-    stop("Argument dataFormat='",dataFormat,"' is unknown/not supported. Please run 'writeFormats()' (column 'name') so list available dataFormat's")
+  } else {
+    stop("Unknown or unsupported data format: '", dataFormat, "'. Please run 
+         raster::writeFormats() (column 'name') for supported file types.\n")
   }
   
-  if (is.null(opts$minDat))
-  {
-    minDat <- 3 # 3 is very small!
-  } else 
-  {
-    minDat <- opts$minDat
-  }
+  minDat <- ifelse(is.null(opts$minDat), 3, opts$minDat) # 3 is very small!
   
-  if(collapse)
-  {
-    if(timeInfo$call$nDays=="asIn")
-    {
-      stop("'orgTime' argument nDays='asIn' is not allowed when using collapse=TRUE")
-    }
-    fitt <- seq(as.numeric(format(min(timeInfo$outputLayerDates),"%j")),as.numeric(format(max(timeInfo$outputLayerDates),"%j")),by=timeInfo$call$nDays) + timeInfo$call$pillow    
-  } else
-  {
+  if (collapse) {
+    if(timeInfo$call$nDays == "asIn")
+      stop("Argument nDays = 'asIn' (passed to orgTime()) is not allowed when using collapse = TRUE.\n")
+
+      fitt <- seq(as.numeric(format(min(timeInfo$outputLayerDates),"%j")),as.numeric(format(max(timeInfo$outputLayerDates),"%j")),by=timeInfo$call$nDays) + timeInfo$call$pillow    
+  } else {
     fitt <- timeInfo$outSeq
   }
   
   inlam  <- lambda
-  if (is.character(lambda))
-  {
-    cat("Using fixed 'lambda':",lambda,"\n")
+  
+  ## fixed lambda
+  if (is.character(lambda)) {
+    cat("Using fixed 'lambda': ", lambda, ".\n", sep = "")
     nameL <- "fL"
-  } else 
-  {
-    if (collapse)
-    {
-      lambda <- lambda*((365 + 2*timeInfo$call$pillow)/365)
-      cat("Yearly 'lambda' is:",inlam,"\nNow changed with lambda*((365+2*pillow)/365) to:",lambda,"\n")
-    } else
-    {
-      lambda <- lambda*((max(timeInfo$inSeq) - min(timeInfo$inSeq) -1)/365)
-      cat("Yearly 'lambda' is:",inlam,"\nNow changed with lambda*('length of input data period in days'/365) to:",lambda,"\n")
+    
+  ## yearly lambda  
+  } else {
+    if (collapse) {
+      lambda <- lambda * ((365 + 2 * timeInfo$call$pillow) / 365)
+      cat("Yearly 'lambda' is:", inlam, "\nNow changed with lambda*((365+2*pillow)/365) to:",lambda,"\n")
+    } else {
+      lambda <- lambda * ((max(timeInfo$inSeq) - min(timeInfo$inSeq) - 1) / 365)
+      cat("Yearly 'lambda' is: ", inlam, ".\n", 
+          "Now changed to lambda * ('length of input period in days' / 365): ", 
+          lambda, ".\n", sep = "")
     }
+    
     nameL <- "yL"
   }
   
@@ -184,36 +174,25 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
   
   lambda <- as.numeric(lambda)
   
-  if(!inherits(vi,"Raster")) 
-  {
-    vi <- stack(vi,quick=TRUE)
-  }
-  
-  if(!inherits(w,"Raster") & !is.null(w)) 
-  {
-    w <- stack(w,quick=TRUE)
-  }
-  
-  if(!inherits(t,"Raster") & !is.null(t)) 
-  {
-    t <- stack(t,quick=TRUE)
-  }
-  
-  if(is.null(opts$datatype))
-  {
-    opts$datatype <- dataType(vi[[1]])
-  }
-  
-  if(length(grep("FLT", opts$datatype)) > 0)
-  {
+  if (!inherits(vi, "Raster")) 
+    vi <- raster::stack(vi, quick = TRUE)
+
+  if(!inherits(w, "Raster") & !is.null(w)) 
+    w <- raster::stack(w, quick = TRUE)
+
+  if(!inherits(t, "Raster") & !is.null(t)) 
+    t <- raster::stack(t, quick = TRUE)
+
+  if (is.null(opts$datatype)) 
+    opts$datatype <- raster::dataType(vi[[1]])
+
+  if (length(grep("FLT", opts$datatype)) > 0) {
     doround <- FALSE
-  } else
-  {
+  } else {
     doround <- TRUE
   }
   
-  if (is.null(opts$overwrite))
-  {
+  if (is.null(opts$overwrite)) {
     opts$overwrite <- FALSE
   }
   
@@ -265,105 +244,76 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     b     <- vector(mode="list",length=length(oname)) 
     for(a in seq_along(oname))
     {      
-      b[[a]] <- raster(vi)
+      b[[a]] <- raster::raster(vi)
       b[[a]] <- writeStart(b[[a]], filename=oname[a], datatype=opts$datatype, overwrite=opts$overwrite)
     }
   } 
   
-  tr <- blockSize(vi)
-  cluster <- isTRUE(getOption("rasterCluster"))
-  
-  if (cluster)
-  {
-    # beginCluster()
-    cl <- getCluster()
-    on.exit(endCluster())
-    nodes <- getOption("rasterClusterCores")
-    
-    # MODIS fails to load if not done like that ...        
-    clF <- function(i){require(MODIS)}
-    for (i in 1:nodes) 
-    {
-      parallel:::sendCall(cl[[i]], clF, i, tag=i)
-      parallel:::recvOneData(cl)
-    }
-    
-    # better to be save than sorry:
-    parallel::clusterEvalQ(cl,require(bitops))
-    parallel::clusterEvalQ(cl,require(rgdal))
-    parallel::clusterEvalQ(cl,require(ptw))
-    tr <- blockSizeCluster(vi)
-  }    
+  tr <- raster::blockSize(vi)
   
   cat("Data is in, start processing!\n")
   
-  if(tolower(mergeDoyFun)=="max")
-  {
+  if (mergeDoyFun == "max") {
     mergeFun <- unifyDoubleMX
-  } else if (tolower(mergeDoyFun)=="weighted.mean" | tolower(mergeDoyFun)== "mean")
-  {
+  } else if (mergeDoyFun == "weighted.mean" | mergeDoyFun == "mean") {
     mergeFun <- unifyDoubleWM
   }
   
-  clFun <- function(l)
-  {
-    val    <- getValues(vi, row=tr$row[l], nrows=tr$nrows[l])
-    val    <- t(val)
+  clFun <- function(l) {
+    val <- raster::getValues(vi, row = tr$row[l], nrows = tr$nrows[l])
+    val <- t(val)
     mtrdim <- dim(val)
     
-    set0   <- matrix(FALSE,nrow=mtrdim[1], ncol=mtrdim[2])
+    set0 <- matrix(FALSE,nrow = mtrdim[1], ncol = mtrdim[2])
     set0[is.na(val)] <- TRUE
     
-    if (!is.null(w))
-    {
-      wtu <- getValues(w, row=tr$row[l], nrows=tr$nrows[l])
+    ## if 'VI_Quality' is supplied:
+    if (!is.null(w)) {
+      wtu <- raster::getValues(w, row = tr$row[l], nrows = tr$nrows[l])
       
       # is it not a weight info [0-1]?
-      if(max(wtu,na.rm=TRUE) > 1)
-      {
-        if(is.null(bitShift) | is.null(bitMask))
-        {
+      if (max(wtu, na.rm = TRUE) > 1) {
+        if(is.null(bitShift) | is.null(bitMask)) {
           # try to detect VI usefulness layer
-          bits     <- detectBitInfo(vi,"VI usefulness",warn=FALSE)
+          bits     <- detectBitInfo(vi, "VI usefulness", warn = FALSE)
           bitShift <- bits$bitShift
           bitMask  <- bits$bitMask
         }
-        if(is.null(bitShift) | is.null(bitMask))
-        {
-          stop("Could not extract 'bits' for weighting from this product. Use '?makeWeights' function to generate weights manually!")
-        }
-        wtu  <- makeWeights(wtu, bitShift = bitShift, bitMask = bitMask, threshold = threshold, decodeOnly = FALSE)
+        
+        if(is.null(bitShift) | is.null(bitMask)) 
+          stop("Could not extract 'bits' for weighting from this product. ", 
+               "Use '?makeWeights' function to generate weights manually!")
+
+        wtu <- makeWeights(wtu, bitShift = bitShift, bitMask = bitMask, threshold = threshold, decodeOnly = FALSE)
       }
+      
       wtu <- t(wtu)
       set0[wtu==0] <- TRUE
-    } else
-    {
-      # if no weighting info is available then weight = 1
-      wtu <- matrix(1,nrow=mtrdim[1],ncol=mtrdim[2])
+      
+    ## else if 'VI_Quality' is not supplied, then weight = 1:  
+    } else {
+      wtu <- matrix(1, nrow = mtrdim[1], ncol = mtrdim[2])
     }
     
-    if (inherits(t,"Raster"))
-    {
-      inTu <- getValues(t, row=tr$row[l], nrows=tr$nrows[l])
+    if (inherits(t, "Raster")) {
+      inTu <- raster::getValues(t, row = tr$row[l], nrows = tr$nrows[l])
       inTu <- t(inTu)
       
       set0[is.na(inTu)] <- TRUE
-      set0[ inTu <= 0 ] <- TRUE
+      set0[inTu <= 0] <- TRUE
       
       t0 <- min(timeInfo$inDoys[1]) - 1
       
-      if(!collapse)
-      {
-        inTu <- t(repDoy(t(inTu),layerDate=timeInfo,bias=-t0))
+      if (!collapse) {
+        inTu <- t(repDoy(t(inTu), layerDate = timeInfo, bias = -t0))
       }
+      
       inTu[set0] <- 0
-    } else 
-    {
-      if (collapse)
-      {
+      
+    } else {
+      if (collapse) {
         inTu <- matrix(timeInfo$inDoys,nrow=length(timeInfo$inDoys),ncol=mtrdim[2])
-      } else
-      {       
+      } else {       
         inTu <- matrix(timeInfo$inSeq,nrow=length(timeInfo$inSeq),ncol=mtrdim[2])
       }
     }
@@ -372,21 +322,17 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     wtu[set0] <- 0
     val[set0] <- 0    
     
-    out <- matrix(NA, nrow=length(fitt), ncol=mtrdim[2])
+    out <- matrix(NA, nrow = length(fitt), ncol = mtrdim[2])
     
-    if(!is.null(outlierThreshold))
-    {
-      kickOutlier <- function(vals,weights,lambda,threshold)
-      {
-        fTS <- whit2(vals,w=weights,lambda=lambda)
+    if (!is.null(outlierThreshold)) {
+      kickOutlier <- function(vals, weights, lambda, threshold) {
+        fTS <- ptw::whit2(vals, w = weights, lambda = lambda)
         weights[weights==1][abs(vals[weights==1]-fTS[weights==1]) > threshold] <- 0            
         return(weights)    
       }
-    } else
-    {
+    } else {
       # if is.null(outlierThreshold) generate a fake function to avoid a per pixel "if"
-      kickOutlier <- function(vals,weights,lambda,threshold)
-      {
+      kickOutlier <- function(vals, weights, lambda, threshold) {
         return(weights)
       }       
     }
@@ -427,7 +373,7 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
       #plot(valVec,ylim=c(-1000,9000))
       for(i in 1:nIter)
       {
-        fTS <- whit2(valVec,w=wtVec,lambda=lambda)
+        fTS <- ptw::whit2(valVec,w=wtVec,lambda=lambda)
         valVec[valVec < fTS] <- fTS[valVec < fTS]
       }
       out[,u] <- fTS[fitt]
@@ -438,49 +384,15 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     return(t(out))
   }
   
-  if (!cluster)
-  {    
-    for (i in seq_along(tr$row))
-    {    
-      res <- clFun(i)
-      
-      if(doround)
-      {
-        res <- round(res)
-      }
-      b <- writeValuesMODIS(b,res,tr$row[i],timeInfo,collapse,outputAs)
-    }       
-  } else
-  {
-    for (i in 1:nodes) 
-    {
-      parallel:::sendCall(cl[[i]], fun = clFun, args = i, tag=i)
-    }
+  for (i in seq_along(tr$row)) {    
+    res <- clFun(i)
     
-    for (i in 1:tr$n)
-    {
-      d <- parallel:::recvOneData(cl)
-      
-      if (!d$value$success)
-      {
-        stop("cluster error")
-      }
-      
-      ni <- nodes + i
-      if (ni <= tr$n)
-      {
-        parallel:::sendCall(cl[[d$node]], fun = clFun, args = ni, tag=ni)
-      }
-      
-      if(doround)
-      {
-        d$value$value <- round(d$value$value)
-      }
-      
-      #####
-      b <- writeValuesMODIS(b,res,tr$row[d$value$tag],timeInfo,collapse,outputAs)
-    }
+    if (doround) 
+      res <- round(res)
+
+    b <- writeValuesMODIS(b, res, tr$row[i], timeInfo, collapse, outputAs)
   }
+  
   writeStopMODIS(b,timeInfo,outputAs,collapse)
   return(b)
 }

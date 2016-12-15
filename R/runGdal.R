@@ -191,10 +191,7 @@ runGdal <- function(product, collection=NULL,
             {
                 outProj <- "+proj=longlat +ellps=clrk66 +no_defs" # CMG proj
             }
-        } else if (product$SENSOR[1]=="SRTM")
-        {
-            outProj <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-        } 
+        }  
     }
     t_srs <- paste0(' -t_srs ',shQuote(outProj))
     
@@ -236,10 +233,7 @@ runGdal <- function(product, collection=NULL,
       {
         s_srs <- paste0(' -s_srs ',shQuote("+proj=longlat +ellps=clrk66 +no_defs"))
       }
-    } else if (product$SENSOR[1]=="SRTM")
-    {
-      s_srs <- paste0(' -s_srs ',shQuote("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
-    }
+    } 
     #### te (target @extent)
     te <- NULL # if extent comes from tileV/H
     if (!is.null(extent$target$extent)) # all extents but not tileV/H

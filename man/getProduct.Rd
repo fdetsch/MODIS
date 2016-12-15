@@ -37,8 +37,6 @@ getProduct("MOD14")
 internal_info <- getProduct("MOD11C3", quiet = TRUE) 
 internal_info
 
-getProduct("SRTM") # download only
-
 }
 \author{
 Matteo Mattiuzzi

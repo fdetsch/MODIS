@@ -83,106 +83,103 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 
     load(fls_col)
     
-    MODIS <- MODIScollection[, grep(colnames(MODIScollection), pattern="M.D")]
-    SRTM  <- MODIScollection[, grep(colnames(MODIScollection), pattern="SRTM")]
-    MODIScollection <- cbind(MODIS,SRTM)
+    MODIScollection <- MODIScollection[, grep(colnames(MODIScollection), 
+                                              pattern = "M.D")]
 
-    if (productN$SENSOR[1] !="C-Band-RADAR")
-    {    
-      if (forceCheck | sum(!productN$PRODUCT %in% colnames(MODIScollection))>0) 
-      {
-        sturheit <- stubborn(level=opts$stubbornness)
-
-        load(system.file("external", "MODIS_FTPinfo.RData", package = "MODIS"))
+    if (forceCheck | sum(!productN$PRODUCT %in% colnames(MODIScollection))>0) 
+    {
+      sturheit <- stubborn(level=opts$stubbornness)
+      
+      load(system.file("external", "MODIS_FTPinfo.RData", package = "MODIS"))
+      
+      for (i in seq_along(unique(productN$PF1))) 
+      {	
+        ## retrieve ftp server address based on product source information
+        server <- unlist(productN$SOURCE)
         
-    		for (i in seq_along(unique(productN$PF1))) 
-    		{	
-    		  ## retrieve ftp server address based on product source information
-    		  server <- unlist(productN$SOURCE)
-
-    		  ftp_id <- sapply(MODIS_FTPinfo, function(i) i$name %in% server)
-    		  ftp_id <- which(ftp_id)[1]
-    		  
-    		  ftp <- paste0(MODIS_FTPinfo[[ftp_id]]$basepath,"/",unique(productN$PF1)[i],"/")
-    			cat("Updating collections from", server[1], "for platform:",unique(productN$PLATFORM)[i],"\n")
-    
-    			if(exists("dirs")) 
-    			{
-    			    suppressWarnings(rm(dirs))
-    			}
-    			for (g in 1:sturheit)
-    			{
-    			  try(dirs <- filesUrl(ftp))
-    				if(exists("dirs"))
-    				{
-    				  if(all(dirs != FALSE))
-    				  {
-    				    break
-    				  }
-    			  }
-    			} 
-    
-    			if (!exists("dirs")) 
-    			{
-    				cat("FTP is not available, using stored information from previous calls (this should be mostly fine)\n")
-    			} else 
-    			{
-    			  ## if 'product' is hosted on NTSG server, remove non-product folders 
-    			  ## and files
-    			  if (productN$SOURCE[[1]][1] == "NTSG") {
-    			    dirs <- dirs[grep("^MOD16", dirs)]
-    			  
-    			    # remove .pdf files  
-    			    if (length(grep(".pdf$", dirs)) > 0)
-    			      dirs <- dirs[-grep(".pdf$", dirs)]
-    			    
-    			    # remove '_MERRAGMAO' extension
-    			    dirs <- dirs[grep("_MERRAGMAO", dirs)]
-    			    dirs <- gsub("_MERRAGMAO", "", dirs)
-    			  }
-
-    			  ## information about products and collections    			  
-    			  ls_prod_col <- sapply(dirs, function(x) {strsplit(x, "\\.")})
-    			  prod <- sapply(ls_prod_col, "[[", 1)
-    			  coll <- sapply(ls_prod_col, "[[", 2)
-    			  
-    				mtr  <- cbind(prod,coll)
-    				mtr  <- tapply(INDEX=mtr[,1],X=mtr[,2],function(x){x})
-    		
-    				maxrow <- max(nrow(MODIScollection),sapply(mtr,function(x)length(x)))
-    				
-    				basemtr <- matrix(NA,ncol=nrow(mtr), nrow = maxrow)
-    				colnames(basemtr) <- names(mtr)
-    		
-    				for(u in 1:ncol(basemtr)) 
-    				{
-    					basemtr[1:length(mtr[[u]]),u] <- mtr[[u]]
-    				}
-    				
-    				## if new collections are available, 
-    				## add additional rows to 'MODIScollection'
-    				if (nrow(MODIScollection) < maxrow & nrow(MODIScollection) > 0) 
-    				{
-    				  new_rows <- matrix(data = NA, nrow = maxrow-nrow(MODIScollection), 
-    				                     ncol = ncol(MODIScollection))
-    				  new_rows <- data.frame(new_rows)
-    				  names(new_rows) <- names(MODIScollection)
-    				  
-    					MODIScollection <- rbind(MODIScollection, new_rows)
-    				}
-    					
-    				if (ncol(MODIScollection)==0)
-    				{ # relevant only for time
-    					MODIScollection <- data.frame(basemtr) # create new
-    				} else 
-    				{ # or update the available one
-    					indX    <- colnames(MODIScollection) %in% colnames(basemtr) 
-    					MODIScollection <- cbind(MODIScollection[,!indX],basemtr)
-    				}
-    			}
-    		}
-    	}
+        ftp_id <- sapply(MODIS_FTPinfo, function(i) i$name %in% server)
+        ftp_id <- which(ftp_id)[1]
+        
+        ftp <- paste0(MODIS_FTPinfo[[ftp_id]]$basepath,"/",unique(productN$PF1)[i],"/")
+        cat("Updating collections from", server[1], "for platform:",unique(productN$PLATFORM)[i],"\n")
+        
+        if(exists("dirs")) 
+        {
+          suppressWarnings(rm(dirs))
+        }
+        for (g in 1:sturheit)
+        {
+          try(dirs <- filesUrl(ftp))
+          if(exists("dirs"))
+          {
+            if(all(dirs != FALSE))
+            {
+              break
+            }
+          }
+        } 
+        
+        if (!exists("dirs")) 
+        {
+          cat("FTP is not available, using stored information from previous calls (this should be mostly fine)\n")
+        } else 
+        {
+          ## if 'product' is hosted on NTSG server, remove non-product folders 
+          ## and files
+          if (productN$SOURCE[[1]][1] == "NTSG") {
+            dirs <- dirs[grep("^MOD16", dirs)]
+            
+            # remove .pdf files  
+            if (length(grep(".pdf$", dirs)) > 0)
+              dirs <- dirs[-grep(".pdf$", dirs)]
+            
+            # remove '_MERRAGMAO' extension
+            dirs <- dirs[grep("_MERRAGMAO", dirs)]
+            dirs <- gsub("_MERRAGMAO", "", dirs)
+          }
+          
+          ## information about products and collections    			  
+          ls_prod_col <- sapply(dirs, function(x) {strsplit(x, "\\.")})
+          prod <- sapply(ls_prod_col, "[[", 1)
+          coll <- sapply(ls_prod_col, "[[", 2)
+          
+          mtr  <- cbind(prod,coll)
+          mtr  <- tapply(INDEX=mtr[,1],X=mtr[,2],function(x){x})
+          
+          maxrow <- max(nrow(MODIScollection),sapply(mtr,function(x)length(x)))
+          
+          basemtr <- matrix(NA,ncol=nrow(mtr), nrow = maxrow)
+          colnames(basemtr) <- names(mtr)
+          
+          for(u in 1:ncol(basemtr)) 
+          {
+            basemtr[1:length(mtr[[u]]),u] <- mtr[[u]]
+          }
+          
+          ## if new collections are available, 
+          ## add additional rows to 'MODIScollection'
+          if (nrow(MODIScollection) < maxrow & nrow(MODIScollection) > 0) 
+          {
+            new_rows <- matrix(data = NA, nrow = maxrow-nrow(MODIScollection), 
+                               ncol = ncol(MODIScollection))
+            new_rows <- data.frame(new_rows)
+            names(new_rows) <- names(MODIScollection)
+            
+            MODIScollection <- rbind(MODIScollection, new_rows)
+          }
+          
+          if (ncol(MODIScollection)==0)
+          { # relevant only for time
+            MODIScollection <- data.frame(basemtr) # create new
+          } else 
+          { # or update the available one
+            indX    <- colnames(MODIScollection) %in% colnames(basemtr) 
+            MODIScollection <- cbind(MODIScollection[,!indX],basemtr)
+          }
+        }
+      }
     }
+    
     #write.table(MODIScollection,file.path(opts$auxPath,"collections",fsep="/"))
     ind <- which(colnames(MODIScollection)%in%productN$PRODUCT)
 

@@ -52,10 +52,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
           {
             if (s[u] %in% c("DATE","YYYY","DDD")) 
             {
-              if (product$PRODUCT!="SRTM")
-              {
-                tmp[[u]] <- s[u]
-              }
+              tmp[[u]] <- s[u]
             } else 
             {
               tmp[[u]] <- getPart(x=product,s[u])
@@ -107,10 +104,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                 {
                   if (s[u] %in% c("DATE","YYYY","DDD")) 
                   {
-                    if (product$PRODUCT!="SRTM")
-                    {
-                      tmp[[u]] <- s[u]
-                    }
+                    tmp[[u]] <- s[u]
                   } else 
                   {
                     tmp[[u]] <- getPart(x=product,s[u])

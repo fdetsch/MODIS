@@ -37,19 +37,25 @@ NULL
 
 ##########################################
 # central setting for stubbornness 
-stubborn <- function(level="high")
-{
-    if(!is.numeric(level) & !tolower(level) %in% c("low","medium","high","veryhigh","extreme"))
-    {
-        stop("Unrecognised 'stubbornness' level!")
-    }
-    if (is.numeric(level)) 
-    {
-        round(level)    
-    } else
-    { 
-        c(5,15,50,100,1000)[which(tolower(level)==c("low","medium","high","veryhigh","extreme"))]
-    }
+stubborn <- function(level = "high") {
+  
+  ## supported 'character' levels
+  levels <- c("low", "medium", "high", "veryhigh", "extreme")
+  
+  ## if stubbornness is a 'character', try to find it in 'levels' or convert it 
+  ## to regular 'numeric'
+  if (!is.numeric(level) & !tolower(level) %in% levels) {
+    level <- suppressWarnings(try(as.numeric(level), silent = TRUE))
+    if (inherits(level, "try-error") | is.na(level))
+      stop("Unrecognised 'stubbornness' level!")
+  }
+  
+  ## round or convert 'character' level to 'numeric'
+  if (is.numeric(level)) {
+    round(level)    
+  } else { 
+    c(5, 15, 50, 100, 1000)[which(tolower(level) == levels)]
+  }
 }
 
 
@@ -492,28 +498,19 @@ return(unlist(res))
 # TODO enhancement of SENSOR/PRODUCT detection capabilities! 
 # the methods below are based on the results of strsplit().
 
-defineName <- function(x) # "x" is a MODIS,SRTM or culture-MERIS filename
+defineName <- function(x) # "x" is a MODIS or filename
 {
   
   if(missing(x)) 
   {
-    stop("Error in function 'defineName', x is missing, must be a MODIS, SRTM or culture-MERIS filename!")
+    stop("Error in function 'defineName', x is missing, must be a MODIS filename!")
   } else 
   {
     fname   <- basename(x)
     secName <- strsplit(fname,"\\.")[[1]] # for splitting with more signes "[._-]"
     
-    if (toupper(substring(secName[1],1,4))=="CULT") 
-    {
-      sensor="MERIS"
-    } else if (tolower(substring(secName[1],1,4))=="srtm")
-    {
-      sensor = "C-Band-RADAR"
-      secName <- strsplit(secName[1],"_")[[1]]
-    } else 
-    {
-      sensor="MODIS"
-    }
+    sensor="MODIS"
+    
     ###################################
     # NAME definitions (is File-specific!)
     #########################
@@ -534,32 +531,7 @@ defineName <- function(x) # "x" is a MODIS,SRTM or culture-MERIS filename
       {
         stop("Not a MODIS 'Tile', 'CMG' or 'Swath'!")
       }
-    # MERIS
-    } else if (sensor=="MERIS") 
-    {
-      product  <- getProduct(x="culture-MERIS",quiet=TRUE)
-      secName  <- strsplit(fname,MODIS_Products[MODIS_Products$PRODUCT==product$PRODUCT,]$INTERNALSEPARATOR)[[1]]
-      lastpart <- strsplit(secName[length(secName)],"\\.")[[1]]
-      secName  <- secName[-length(secName)]
-      secName  <- c(secName,lastpart)
-      if (length(secName)==6) 
-      {
-        names(secName) <- c("PRODUCT","CCC","DATE1DATE2","TILE","FORMAT","COMPRESSION")
-      } else if (length(secName)==5) 
-      {
-        names(secName) <- c("PRODUCT","CCC","DATE1DATE2","TILE","FORMAT")
-      }
-      
-    # SRTM
-    } else if (sensor=="C-Band-RADAR") 
-    {
-      product  <- getProduct(x=secName[1],quiet=TRUE)
-      secName  <- strsplit(fname,MODIS_Products[MODIS_Products$PRODUCT==product$PRODUCT,]$INTERNALSEPARATOR)[[1]]
-      lastpart <- strsplit(secName[length(secName)],"\\.")[[1]]
-      secName  <- secName[-length(secName)]
-      secName  <- c(secName,lastpart)
-      names(secName) <- c("PRODUCT","tileH","tileV","COMPRESSION") 
-    } # XXX else if .... add Products here
+    }  # XXX else if .... add Products here
   }
   return(secName)
 }
@@ -718,7 +690,42 @@ ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
             if (length(server) > 1)
               server <- server[which(server %in% opts$MODISserverOrder[hv[g]])]
               
-            out[a] <- try(download.file(url=paste(path$remotePath[id_remotepath],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=opts$quiet, cacheOK=FALSE),silent=TRUE)
+            infile <- paste(path$remotePath[id_remotepath], x[a], sep = "/", 
+                            collapse = "")
+            
+            ## adapt 'dlmethod' and 'extra' if server == "LPDAAC"
+            if (server == "LPDAAC") {
+              if (!opts$dlmethod %in% c("wget", "curl")) {
+                warning("Data download from '", server, 
+                        "' is currently only available through wget and curl.\n", 
+                        "Setting MODISoptions(dlmethod = 'wget') ",  
+                        "(or run MODISoptions(dlmethod = 'curl') to use curl instead) ...\n")
+                method <- "wget"
+              } else {
+                method <- opts$dlmethod
+              }
+              
+              # wget extras
+              extra <- if (method == "wget") {
+                paste("--load-cookies ~/.cookies.txt", 
+                      "--save-cookies ~/.cookies.txt --keep-session-cookie", 
+                      "--no-check-certificate")
+              # curl extras  
+              } else {
+                '-n -L -c ~/.cookies.txt -b ~/.cookies.txt'
+              }
+              
+            ## else use default settings
+            } else {
+              method <- opts$dlmethod
+              extra <- getOption("download.file.extra")
+            }
+            
+            out[a] <- try(
+              download.file(url = infile, destfile = destfile, mode = 'wb', 
+                            method = method, quiet = opts$quiet, 
+                            cacheOK = FALSE, extra = extra),
+                          silent = TRUE)
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!
           if (out[a]!=0 & !opts$quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 
@@ -874,6 +881,3 @@ correctPath <- function(x,isFile=FALSE)
   }
 return(x)
 }
-
-
-

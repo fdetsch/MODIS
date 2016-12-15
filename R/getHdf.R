@@ -1,5 +1,5 @@
 if ( !isGeneric("getHdf") ) {
-  setGeneric("getHdf", function(HdfName, ...)
+  setGeneric("getHdf", function(product, ...)
     standardGeneric("getHdf"))
 }
 #' Create or update a local subset of global online MODIS grid data pool
@@ -49,44 +49,35 @@ if ( !isGeneric("getHdf") ) {
 #' Observation and Science (EROS) Center, Sioux Falls, South Dakota 
 #' \url{https://lpdaac.usgs.gov/get_data}.
 #' 
-#' SRTM data is obtained through CGIAR-CSI and mirror servers. For the use this 
-#' data please read \url{http://srtm.csi.cgiar.org/SELECTION/SRT_disclaimer.htm}.
-#' Jarvis A., H.I. Reuter, A.  Nelson, E. Guevara, 2008, Hole-filled seamless 
-#' SRTM data V4, International Centre for Tropical Agriculture (CIAT), available 
-#' from \url{http://srtm.csi.cgiar.org}.
-#' 
 #' @author 
 #' Matteo Mattiuzzi
 #' 
 #' @examples 
 #' \dontrun{
-#' # one or more specific file (no regular erpression allowed here)
-#' a <- getHdf(c("MYD11A1.A2009001.h18v04.006.2015363221538.hdf", 
-#'               "MYD11A1.A2009009.h18v04.006.2015364055036.hdf", 
-#'               "MYD11A1.A2009017.h18v04.006.2015364115403.hdf"))
+#' # One or more specific file (no regular erpression allowed here)
+#' a <- getHdf(HdfName = c("MYD11A1.A2009001.h18v04.006.2015363221538.hdf", 
+#'                         "MYD11A1.A2009009.h18v04.006.2015364055036.hdf", 
+#'                         "MYD11A1.A2009017.h18v04.006.2015364115403.hdf"))
+#' a
 #' 
-#' # DO NOT RUN THE NEXT EXAMPLE (unless you need this data)!!!
-#' # Get all MODIS TERRA and AQUA 11A1 beginning from 18. October 2011 up to today.
-#' # (Can be ran in a sceduled job, for daily archive update)
-#' # getHdf(product="M.D11A1",begin="2011.10.18",tileH=18:19,tileV=4) 
+#' # Get all MODIS Terra and Aqua M*D11A1 data from 1 December 2016 up to today
+#' # (can be ran in a sceduled job for daily archive update)
+#' b1 <- getHdf(product = "M.D11A1", begin = "2016.12.01", 
+#'              tileH = 18:19, tileV = 4) 
+#' b1               
 #' 
-#' # same Tiles with a LIST extent.
-#' # approximatley 21 mB!
-#' Austria <- list(xmax=17.47,xmin=9.2,ymin=46.12,ymax=49.3)
-#' b <- getHdf(product="M.D11A1",begin="2009001",end="2009-01-02",extent=Austria)
-#' b
+#' # Same tiles with a 'list' extent
+#' Austria <- list(xmax = 17.47, xmin = 9.2, ymin = 46.12, ymax = 49.3)
+#' b2 <- getHdf(product = "M.D11A1", begin = "2016336", extent = Austria)
+#' b2
 #' 
-#' # require(mapdata)
-#' getHdf(product="M.D11A1",begin="2009.01.01",end="2009002",extent="austria")
-#' # without specification of the extent... interactive selection see: "getTile()"
-#' c <- getHdf(product="M.D11A1",begin="2009.01.01",end="2009002")
-#' c
-#' 
-#' # SRTM data
-#' # SRTM server limits downloads! (It seams to be blocked, but (normally) it continues after a while,
-#' # you have to be patient!).
-#' # The files are zips, this function only performs the download!
-#' d <- getHdf(product="SRTM",extent="austria")  
+#' # Using country boarders from 'mapdata' package
+#' c <- getHdf(product = "M.D11A1", begin = "2016306", end = "2016335",
+#'             extent = "Luxembourg")
+#' c             
+#'        
+#' # Interactive selection of spatial extent, see getTile()
+#' d <- getHdf(product = "M.D11A1", begin = "2016306", end = "2016307")
 #' d
 #' }
 #' 
@@ -94,16 +85,21 @@ if ( !isGeneric("getHdf") ) {
 #' @name getHdf
 
 ################################################################################
-### function using 'missing' input #############################################
-#' @aliases getHdf,missing-method
+### function using 'character' input ###########################################
+#' @aliases getHdf,character-method
 #' @rdname getHdf
 setMethod("getHdf",
-          signature(HdfName = "missing"),
-          function(product, 
+          signature(product = "character"),
+          function(product, HdfName,
                    begin=NULL, end=NULL, 
                    tileH=NULL, tileV=NULL, extent=NULL, 
                    collection=NULL, wait=0.5, checkIntegrity=TRUE,forceDownload=TRUE,...) 
 {
+            
+  ## if 'HdfName' is provided, call 'missing'-method          
+  if (!missing(HdfName)) 
+    getHdf(HdfName = HdfName, wait = wait, checkIntegrity = checkIntegrity, ...)
+            
   # product="MOD13Q1"; begin="2010001"; end="2010005"; tileH=NULL; tileV=NULL; extent=NULL; collection=NULL; wait=0.5; checkIntegrity=FALSE; z=1;u=1
   opts <- combineOptions(...)
 
@@ -144,100 +140,7 @@ setMethod("getHdf",
 
       # tranform dates
       tLimits <- transDate(begin=begin,end=end)
-
-    } else if (product$SENSOR=="C-Band-RADAR")
-    {
-      if (!is.null(tileH) & !is.null(tileV))
-      {   
-        tileID <- getTile(tileH=tileH,tileV=tileV,system="SRTM")$tile
-      } else 
-      {
-        tileID <- getTile(extent=extent,system="SRTM")$tile
-      }
-      ntiles <- length(tileID)
-   
-      ntiles <- length(tileID)
-      path   <- genString("SRTM")
-      files  <- paste0("srtm",tileID,".zip")
-      dir.create(path$localPath,showWarnings=FALSE,recursive=TRUE)
-
-      if (!file.exists(paste(path$localPath,"meta.zip",sep="/"))) 
-      {
-        cat("Getting SRTM metadata from: ftp://xftp.jrc.it\nThis is done once (the metadata is not used at the moment!)\n")
-        download.file("ftp://xftp.jrc.it/pub/srtmV4/SRTM_META/meta.zip",paste(path$localPath,"meta.zip",sep="/"),
-        mode='wb', method=opts$dlmethod, quiet=opts$quiet, cacheOK=TRUE)
-      }
-      if (!file.exists(paste(path$localPath,".SRTM_sizes",sep="/")))
-      {
-        sizes <- getURL(paste0(path$remotePath[[1]],"/"))
-        sizes <- strsplit(sizes, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
-        sizes <- sapply(sizes,function(x){x <- strsplit(x," ")[[1]];paste(x[length(x)],x[length(x)-5],sep=" ")})
-        names(sizes) <- NULL
-        write.table(sizes,paste(path$localPath,".SRTM_sizes",sep="/"),quote=FALSE,row.names=FALSE,col.names=FALSE)
-      }
-    
-      sizes <- read.table(paste(path$localPath,".SRTM_sizes",sep="/"))
-
-      files <- files[files %in% sizes[,1]] # remove Tiles that are not on the server
-
-      startIND <- 1:length(path$remotePath) # for better cycling over the servers
-      startIND <- rep(startIND,length(files))
-
-      cat("Be avare, that sources for SRTM data have limited the number of requests!\nNormally it suspends the download, and after a while it continues. So may you have to be patient!\n")
-
-    for(d in seq_along(files)) 
-    {
-      isOK <- TRUE
-      if (file.exists(paste0(path$localPath,"/",files[d])))
-      {
-       isOK <- checksizefun(file=paste0(path$localPath,"/",files[d]),sizeInfo=sizes,flexB=50000)$isOK # flexB!
-      }
-      if (!file.exists(paste0(path$localPath,"/",files[d]))| !isOK)
-      {
-        timeout <- options("timeout") # TEST I'm not sure if it helps (timeout is used in ?download.file)
-        options(timeout=15)
-
-        for(g in 1:sturheit) 
-        {
-          server <- names(path$remotePath)[rep(startIND[d:(d+length(path$remotePath)-1)],length=sturheit)]
-          cat("Getting SRTM data from:",server[g],"\n")
-          Sys.sleep(wait)        
-                          
-          hdf=1
-          try(
-              hdf <- download.file(
-                  paste0(path$remotePath[[server[g]]],"/", files[d]),
-                  destfile=paste0(path$localPath,"/", files[d]),
-                  mode='wb', method=opts$dlmethod, quiet=opts$quiet, cacheOK=TRUE),
-              silent=TRUE
-          )
-          if (hdf==0) 
-          {
-            SizeCheck <- checksizefun(file=paste0(path$localPath,"/", files[d]),sizeInfo=sizes,flexB=50000)
-            if(!SizeCheck$isOK) {hdf=1} # if size check fails, re-try!
-          }
-          if(hdf==0 & !opts$quiet) 
-          {
-            lastused <- server[g] 
-            if (g==1) 
-            {
-              cat("Downloaded by the first try!\n\n")
-            } else 
-            {
-              cat("Downloaded after",g,"retries!\n\n")
-            }
-          }
-          if(hdf==0) 
-          {
-            break
-          }    
-        }
-      options(timeout=as.numeric(timeout)) # set timeout back to default
-      }
-    }
-    SRTM <- paste0(path$localPath,"/",files)
-    return(invisible(SRTM))
-  }
+    } 
   
   dates  <- list()
   output <- list() # path info for the invisible output
@@ -447,11 +350,11 @@ setMethod("getHdf",
 
 
 ################################################################################
-### function using 'character' input ###########################################
-#' @aliases getHdf,character-method
+### function using 'missing' input #############################################
+#' @aliases getHdf,missing-method
 #' @rdname getHdf
 setMethod("getHdf",
-          signature(HdfName = "character"),
+          signature(product = "missing"),
           function(HdfName, wait = 0.5, checkIntegrity = TRUE, ...) {
             
   opts <- combineOptions(...)
@@ -463,6 +366,9 @@ setMethod("getHdf",
   wait <- as.numeric(wait)
   
   ## loop over 'HdfName'
+  if (inherits(HdfName, "list"))
+    HdfName <- unlist(HdfName)
+  
   HdfName <- basename(HdfName)  
   
   dates <- sapply(HdfName, function(i) {
@@ -481,19 +387,4 @@ setMethod("getHdf",
   
   ## return output
   return(invisible(dates))
-})
-
-
-################################################################################
-### function using 'list' input ################################################
-#' @aliases getHdf,list-method
-#' @rdname getHdf
-setMethod("getHdf",
-          signature(HdfName = "list"),
-          function(HdfName, wait = 0.5, checkIntegrity = TRUE, ...) {
-            
-  ## unlist 'HdfName' and call 'character' method
-  HdfName <- unlist(HdfName)
-  
-  getHdf(HdfName, wait, checkIntegrity, ...)
 })

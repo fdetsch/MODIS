@@ -4,23 +4,23 @@
 \name{getHdf}
 \alias{getHdf}
 \alias{getHdf,character-method}
-\alias{getHdf,list-method}
 \alias{getHdf,missing-method}
 \title{Create or update a local subset of global online MODIS grid data pool}
 \usage{
-\S4method{getHdf}{missing}(product, begin = NULL, end = NULL,
+\S4method{getHdf}{character}(product, HdfName, begin = NULL, end = NULL,
   tileH = NULL, tileV = NULL, extent = NULL, collection = NULL,
   wait = 0.5, checkIntegrity = TRUE, forceDownload = TRUE, ...)
 
-\S4method{getHdf}{character}(HdfName, wait = 0.5, checkIntegrity = TRUE,
-  ...)
-
-\S4method{getHdf}{list}(HdfName, wait = 0.5, checkIntegrity = TRUE, ...)
+\S4method{getHdf}{missing}(HdfName, wait = 0.5, checkIntegrity = TRUE, ...)
 }
 \arguments{
 \item{product}{\code{character}. MODIS grid product to be downloaded, see 
 \code{\link{getProduct}}. Use dot notation to address Terra and Aqua products 
 (e.g. \code{M.D13Q1}).}
+
+\item{HdfName}{\code{character} vector or \code{list}. Full HDF file name(s) 
+to download a small set of files. If specified, other file-related parameters 
+(i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored.}
 
 \item{begin}{\code{character}. Begin date of MODIS time series, see 
 \code{\link{transDate}} for formatting.}
@@ -53,10 +53,6 @@ via \code{MODIS:::getStruc} or not.}
 
 \item{...}{Arguments found in \code{\link{MODISoptions}}, sections 'STORAGE' 
 and 'DOWNLOAD'.}
-
-\item{HdfName}{\code{character} vector or \code{list}. Full HDF file name(s) 
-to download a small set of files. If specified, other file-related parameters 
-(i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored.}
 }
 \value{
 An invisible vector of downloaded data and paths.
@@ -70,33 +66,30 @@ update of the local MODIS data archive.
 }
 \examples{
 \dontrun{
-# one or more specific file (no regular erpression allowed here)
-a <- getHdf(c("MYD11A1.A2009001.h18v04.006.2015363221538.hdf", 
-              "MYD11A1.A2009009.h18v04.006.2015364055036.hdf", 
-              "MYD11A1.A2009017.h18v04.006.2015364115403.hdf"))
+# One or more specific file (no regular erpression allowed here)
+a <- getHdf(HdfName = c("MYD11A1.A2009001.h18v04.006.2015363221538.hdf", 
+                        "MYD11A1.A2009009.h18v04.006.2015364055036.hdf", 
+                        "MYD11A1.A2009017.h18v04.006.2015364115403.hdf"))
+a
 
-# DO NOT RUN THE NEXT EXAMPLE (unless you need this data)!!!
-# Get all MODIS TERRA and AQUA 11A1 beginning from 18. October 2011 up to today.
-# (Can be ran in a sceduled job, for daily archive update)
-# getHdf(product="M.D11A1",begin="2011.10.18",tileH=18:19,tileV=4) 
+# Get all MODIS Terra and Aqua M*D11A1 data from 1 December 2016 up to today
+# (can be ran in a sceduled job for daily archive update)
+b1 <- getHdf(product = "M.D11A1", begin = "2016.12.01", 
+             tileH = 18:19, tileV = 4) 
+b1               
 
-# same Tiles with a LIST extent.
-# approximatley 21 mB!
-Austria <- list(xmax=17.47,xmin=9.2,ymin=46.12,ymax=49.3)
-b <- getHdf(product="M.D11A1",begin="2009001",end="2009-01-02",extent=Austria)
-b
+# Same tiles with a 'list' extent
+Austria <- list(xmax = 17.47, xmin = 9.2, ymin = 46.12, ymax = 49.3)
+b2 <- getHdf(product = "M.D11A1", begin = "2016336", extent = Austria)
+b2
 
-# require(mapdata)
-getHdf(product="M.D11A1",begin="2009.01.01",end="2009002",extent="austria")
-# without specification of the extent... interactive selection see: "getTile()"
-c <- getHdf(product="M.D11A1",begin="2009.01.01",end="2009002")
-c
-
-# SRTM data
-# SRTM server limits downloads! (It seams to be blocked, but (normally) it continues after a while,
-# you have to be patient!).
-# The files are zips, this function only performs the download!
-d <- getHdf(product="SRTM",extent="austria")  
+# Using country boarders from 'mapdata' package
+c <- getHdf(product = "M.D11A1", begin = "2016306", end = "2016335",
+            extent = "Luxembourg")
+c             
+       
+# Interactive selection of spatial extent, see getTile()
+d <- getHdf(product = "M.D11A1", begin = "2016306", end = "2016307")
 d
 }
 
@@ -109,11 +102,5 @@ MODIS data is obtained through the online Data Pool at the NASA Land
 Processes Distributed Active Archive Center (LP DAAC), USGS/Earth Resources 
 Observation and Science (EROS) Center, Sioux Falls, South Dakota 
 \url{https://lpdaac.usgs.gov/get_data}.
-
-SRTM data is obtained through CGIAR-CSI and mirror servers. For the use this 
-data please read \url{http://srtm.csi.cgiar.org/SELECTION/SRT_disclaimer.htm}.
-Jarvis A., H.I. Reuter, A.  Nelson, E. Guevara, 2008, Hole-filled seamless 
-SRTM data V4, International Centre for Tropical Agriculture (CIAT), available 
-from \url{http://srtm.csi.cgiar.org}.
 }
 

@@ -43,7 +43,7 @@
 #'                    topic = "Global Terrestrial Evapotranspiration", server = "NTSG")
 #' }
 #'      
-#' @export addProduct                   
+# #' @export addProduct                   
 #' @name addProduct
 addProduct <- function(product, sensor = "MODIS", platform = c("Terra", "Aqua"), 
                        pf1, pf2, topic, type = c("Tile", "Swath", "CMG"), res, 

@@ -35,7 +35,7 @@
 #'                   varpath = "PRODUCT.CCC/YYYY/DDD/")
 #' }                   
 #'     
-#' @export addServer                 
+# #' @export addServer                 
 #' @name addServer
 addServer <- function(name, sensor = "MODIS", basepath, varpath, 
                       content = "images", path_ext = "inst/external", 

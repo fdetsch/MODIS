@@ -38,7 +38,7 @@
 #' MODIS:::addCollection(product = "MOD16A2", collection = 105)
 #' }
 #' 
-#' @export addCollection                     
+# #' @export addCollection                     
 #' @name addCollection
 addCollection <- function(product, collection = NA, 
                           path_ext = "inst/external", overwrite = FALSE, ...) {

@@ -1,36 +1,34 @@
-#' Get MODIS tile id(s)
+#' Get MODIS Tile ID(s)
 #' 
 #' @description 
-#' Get MODIS tile id(s) for a specific geographic area.
+#' Get MODIS, MERIS, or SRTM tile id(s) for a specific geographic area.
 #' 
-#' @param extent Extent information, see details.
-#' @param tileH \code{numeric} or \code{character}. Horizontal tile number(s) 
-#' (e.g. \code{tileH = 1:5}), see 
-#' \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.
-#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), see 
-#' \code{tileH}.
-#' @param buffer \code{numeric} (in map units). Buffers the specified 
-#' \code{extent}, negative values are allowed. If \code{extent} is a vector 
-#' object ("shp" or "character" name of a "map" object), only one value is 
-#' allowed, e.g. \code{buffer = 0.5} (\code{\link{gBuffer}} is used). In the 
-#' other cases, also \code{buffer = c(x, y)} can be specified.
-#' @param system \code{character}, defaults to \code{MODIS}. A possible 
-#' alternative is the \code{SRTM} tiling system.
+#' @param extent Extent information, see Details.
+#' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
+#' vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
+#' \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}. 
+#' Ignored if 'extent' is specified.
+#' @param buffer \code{numeric} (in map units). Buffers the specified 'extent', 
+#' negative values are allowed. If 'extent' is a vector object (\code{Spatial*} 
+#' or \code{character} name of a map object), only one value is allowed (e.g., 
+#' \code{buffer = 0.5}) and \code{\link{gBuffer}} is used. In all other cases, 
+#' also \code{buffer = c(x, y)} can be specified.
+#' @param system \code{character}, defaults to \code{"MODIS"}. Available 
+#' alternatives are \code{"MERIS"} and \code{"SRTM"}.
 #' @param zoom \code{logical}, defaults to \code{TRUE}. The interactive mode is 
-#' only activated if no other extent arguments (i.e., \code{extent}, 
-#' \code{tileH}, \code{tileV}) are specified. If \code{zoom = TRUE}, the first 
-#' two clicks on the map are defining the zoom-in area, and the next two clicks 
-#' are the download area. For large areas you can set \code{zoom = FALSE}.
+#' only activated if no other spatial extent (i.e., 'extent', 'tileH', 'tileV') 
+#' is specified. If \code{zoom = TRUE}, the first two clicks on the map are 
+#' defining the zoom-in area, and the next two clicks are the download area. For 
+#' large areas you can set \code{zoom = FALSE}.
 #' 
 #' @return 
-#' A \code{list}.
+#' A \code{MODISextent} object.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
 #' 
 #' @seealso 
-#' \strong{raster} package: \code{\link{extent}}, \code{\link{raster}}, 
-#' \code{\link{stack}}, \code{\link{brick}}, or \code{\link{shapefile}}.
+#' \code{\link{extent}}, \code{\link{map}}, \code{\link{search4map}}.
 #' 
 #' @details 
 #' \describe{
@@ -128,7 +126,7 @@
 #' getTile(extent=map("usa",plot=FALSE))
 #' 
 #' # also possible: 
-#' ext <-  map("state", region = c("new york", "new jersey", "penn"))
+#' ext <-  map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
 #' getTile(extent=ext)
 #' 
 #' # or:
@@ -146,10 +144,8 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
   # extent = "austria"; tileH = NULL; tileV = NULL; buffer = NULL; system = "MODIS"; zoom=TRUE
   
   # if extent is a former result of getTile
-  if (inherits(extent,"MODISextent"))
-  {
+  if (inherits(extent,"MODISextent")) 
     return(extent)
-  }
   
   usePoly<- TRUE # "usePoly=F" works without suggested packages, "usePoly=T" only for MODIS system + having rgdal and rgeos installed
   target <- NULL  # if extent is a raster*/Spatial* and has a different proj it is changed
@@ -192,61 +188,55 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
   {
     extent <- test
   }
-    
-  if (all(all(is.null(tileH) | is.null(tileV)) & is.null(extent))) # all NULL
-  {
-    extent <- mapSelect(zoom=zoom)
-  }
   
-  # if extent is expressed using tileV+H
-  if(all(!is.null(tileH), !is.null(tileV), is.null(extent))) # use tileV/H
-  {
-    tileH <- as.numeric(tileH)
-    tileV <- as.numeric(tileV)
+  if (is.null(extent)) {
     
-    if (system == "MODIS")
-    {
-      tiltab <- tiletable
-    }
-    
-    tt  <- tiltab[(tiltab$ih %in% tileH) & (tiltab$iv %in% tileV) & (tiltab$xmin>-999),]
-    ext <- extent(c(min(tt$xmin),max(tt$xmax),min(tt$ymin),max(tt$ymax)))
-    
-    tt$iv <- sprintf("%02d", tt$iv)
-    tt$ih <- sprintf("%02d", tt$ih)
-    
-    tileH <- sprintf("%02d",tileH)
-    tileV <- sprintf("%02d",tileV)
-    
-    if (system == "SRTM")
-    {
-      tilesSUB <- as.character(apply(tt,1, function(x)
-        {
-          paste0("_", x[2], "_",x[1])}
-        ))
-      tiles <- as.character(sapply(tileH, function(x){paste0("_",  x, "_", tileV)}))
+    # if 'tileH' and 'tileV' are missing
+    if (is.null(tileH) | is.null(tileV)) {
+      extent <- mapSelect(zoom=zoom)
       
-    } else if(system == "MODIS")
-    {
-      tilesSUB <- as.character(apply(tt,1, function(x)
-        {
+      # else  
+    } else {
+      tileH <- as.numeric(tileH)
+      tileV <- as.numeric(tileV)
+      
+      if (system == "MODIS") 
+        tiltab <- tiletable
+      
+      tt  <- tiltab[(tiltab$ih %in% tileH) & (tiltab$iv %in% tileV) & (tiltab$xmin>-999),]
+      ext <- extent(c(min(tt$xmin),max(tt$xmax),min(tt$ymin),max(tt$ymax)))
+      
+      tt$iv <- sprintf("%02d", tt$iv)
+      tt$ih <- sprintf("%02d", tt$ih)
+      
+      tileH <- sprintf("%02d",tileH)
+      tileV <- sprintf("%02d",tileV)
+      
+      if (system == "SRTM") {
+        tilesSUB <- as.character(apply(tt,1, function(x) {
+          paste0("_", x[2], "_",x[1])
+        }))
+        tiles <- as.character(sapply(tileH, function(x){paste0("_",  x, "_", tileV)}))
+        
+      } else if (system == "MODIS") {
+        tilesSUB <- as.character(apply(tt,1, function(x) {
           paste0("h", x[2], "v",  x[1])
-        }
-        ))
-      tiles <- as.character(sapply(tileH, function(x){paste0("h", x, "v", tileV)}))
+        }))
+        tiles <- as.character(sapply(tileH, function(x){paste0("h", x, "v", tileV)}))
+      }
+      
+      if (!all(tiles %in% tilesSUB))  # all possible tiles vs all available
+      {
+        rem <- paste0(tiles[!tiles %in% tilesSUB],collapse=", ")
+        cat(paste0("The following 'tiles' do not exist:\n",rem,"\n"))
+        tiles <- tilesSUB
+        tileH <- unique(tt$ih)
+        tileV <- unique(tt$iv)
+      }
+      result <- list( tile = tiles, tileH = as.numeric(tileH), tileV = as.numeric(tileV), extent = extent, system = system, target=NULL)
+      class(result) <- "MODISextent"
+      return(result)
     }
-    
-    if (!all(tiles %in% tilesSUB))  # all possible tiles vs all available
-    {
-      rem <- paste0(tiles[!tiles %in% tilesSUB],collapse=", ")
-      cat(paste0("The following 'tiles' do not exist:\n",rem,"\n"))
-      tiles <- tilesSUB
-      tileH <- unique(tt$ih)
-      tileV <- unique(tt$iv)
-    }
-    result <- list( tile = tiles, tileH = as.numeric(tileH), tileV = as.numeric(tileV), extent = extent, system = system, target=NULL)
-    class(result) <- "MODISextent"
-    return(result)
   }
   
   # if CHARACTER (country name of MAP)     
@@ -259,7 +249,7 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     }
     extent <- maps::map("worldHires", extent, plot = FALSE, fill=TRUE)
   }
-    
+  
   # if MAP (from mapdata/maps)
   fromMap <- FALSE
   if (inherits(extent, "map"))
@@ -274,7 +264,7 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
       extent <- extent(c(extent$range[1],extent$range[2],extent$range[3],extent$range[4]))
     }
   }
-
+  
   # if raster* object or Spatial*
   if (length(grep(class(extent),pattern="Raster*"))==1 | length(grep(class(extent),pattern="Spatial*"))==1)
   {
@@ -304,7 +294,7 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     }
     target <- list(outProj = outProj, extent = extent(ext), pixelSize = pixelSize) 
   }
-
+  
   if (length(grep(class(extent), pattern="^SpatialPolygon*")==1) & !usePoly)
   {
     extent <- extent(extent)
@@ -349,7 +339,7 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
       extent@ymin <- extent@ymin - buffer[2]
       extent@ymax <- extent@ymax + buffer[2]
     }
-  
+    
   } else if (inherits(extent,"SpatialPolygonsDataFrame") & !is.null(buffer))
   {
     if (length(buffer)>1)
@@ -379,8 +369,13 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
       if (extent@ymax >  60){extent@ymax <-  60;  warning("Maximum Latitude is out of SRTM coverage, extent is trimmed to max LAT 60\n")}
     }
     
-    minTile <- tiltab[((tiltab$xmin <= extent$xmin & tiltab$xmax >= extent$xmin) & (tiltab$ymin <= extent$ymin & tiltab$ymax >= extent$ymin)),c("iv","ih")]
-    maxTile <- tiltab[((tiltab$xmin <= extent$xmax & tiltab$xmax >= extent$xmax) & (tiltab$ymin <= extent$ymax & tiltab$ymax >= extent$ymax)),c("iv","ih")]
+    xmn <- raster::xmin(extent); xmx <- raster::xmax(extent)
+    ymn <- raster::ymin(extent); ymx <- raster::ymax(extent)
+    
+    minTile <- tiltab[(tiltab$xmin <= xmn & xmn <= tiltab$xmax) & 
+                        (tiltab$ymin <= ymn & ymn <= tiltab$ymax), c("iv", "ih")]
+    maxTile <- tiltab[(tiltab$xmin <= xmx & xmx <= tiltab$xmax) & 
+                        (tiltab$ymin <= ymx & ymx <= tiltab$ymax), c("iv", "ih")]
     tiles   <- rbind(maxTile,minTile)
     
     tileV <- as.vector(min(tiles[1]):max(tiles[1]))
@@ -389,11 +384,11 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     vmax  <- max(tiltab$iv)
     hmax  <- max(tiltab$ih)
     
-    if (min(tileH) < 0 || max(tileH) > hmax) 
+    if (min(tileH) < 0 | max(tileH) > hmax) 
     {
       stop(paste("'tileH' number(s) must be between 0 and",hmax, sep = ""))
     }
-    if (min(tileV) < 0 || max(tileV) > vmax) 
+    if (min(tileV) < 0 | max(tileV) > vmax) 
     {
       stop(paste("'tileV' number(s) must be between 0 and",vmax, sep = ""))
     }
@@ -438,7 +433,7 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     {
       sp::proj4string(spos) <- sp::proj4string(sr) # sr
     }
-     
+    
     selected <- sr[spos,] # sr 
     
     tileH  <- unique(as.numeric(selected@data$h))
@@ -467,7 +462,7 @@ mapSelect <- function(zoom=TRUE)
     loc  <- rbind(unlist(loc1), unlist(loc2))
     #
     p    <- rbind(c(min(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]), max(loc[, "y"])),
-    c(max(loc[, "x"]), max(loc[, "y"])), c(max(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]),min(loc[,"y"])))
+                  c(max(loc[, "x"]), max(loc[, "y"])), c(max(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]),min(loc[,"y"])))
     lines(p, col = "red")            
     
     Sys.sleep(0.5)
@@ -482,7 +477,7 @@ mapSelect <- function(zoom=TRUE)
   loc  <- rbind(unlist(loc1), unlist(loc2))
   #
   p    <- rbind(c(min(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]), max(loc[, "y"])),
-  c(max(loc[, "x"]), max(loc[, "y"])), c(max(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]),min(loc[,"y"])))
+                c(max(loc[, "x"]), max(loc[, "y"])), c(max(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]),min(loc[,"y"])))
   lines(p, col = "red")
   
   extent <- extent(c(min(loc[, "x"]), max(loc[, "x"]), min(loc[, "y"]), max(loc[, "y"])))
@@ -507,90 +502,90 @@ m2SP <- function (map, IDs, proj4string = CRS(as.character(NA)))
   #require(maps)
   if (missing(IDs)) 
     stop("IDs required")
-    xyList <- st1(cbind(map$x, map$y))
-    if (length(xyList) != length(IDs)) 
-        stop("map and IDs differ in length")
-    tab <- table(factor(IDs))
-    n <- length(tab)
-    IDss <- names(tab)
-    reg <- match(IDs, IDss)
-    belongs <- lapply(1:n, function(x) which(x == reg))
-    Srl <- vector(mode = "list", length = n)
-    for (i in 1:n) {
-        nParts <- length(belongs[[i]])
-        srl <- vector(mode = "list", length = nParts)
-        for (j in 1:nParts) {
-            crds <- xyList[[belongs[[i]][j]]]
-            if (nrow(crds) == 3) 
-                crds <- rbind(crds, crds[1, ])
-            srl[[j]] <- Polygon(coords = crds)
-        }
-        Srl[[i]] <- Polygons(srl, ID = IDss[i])
+  xyList <- st1(cbind(map$x, map$y))
+  if (length(xyList) != length(IDs)) 
+    stop("map and IDs differ in length")
+  tab <- table(factor(IDs))
+  n <- length(tab)
+  IDss <- names(tab)
+  reg <- match(IDs, IDss)
+  belongs <- lapply(1:n, function(x) which(x == reg))
+  Srl <- vector(mode = "list", length = n)
+  for (i in 1:n) {
+    nParts <- length(belongs[[i]])
+    srl <- vector(mode = "list", length = nParts)
+    for (j in 1:nParts) {
+      crds <- xyList[[belongs[[i]][j]]]
+      if (nrow(crds) == 3) 
+        crds <- rbind(crds, crds[1, ])
+      srl[[j]] <- Polygon(coords = crds)
     }
-    res <- as.SpatialPolygons.PolygonsList(Srl, proj4string = proj4string)
-    res
+    Srl[[i]] <- Polygons(srl, ID = IDss[i])
+  }
+  res <- as.SpatialPolygons.PolygonsList(Srl, proj4string = proj4string)
+  res
 }
 # function 'map2SpatialLines' from package 'maptools' 
 m2SL <- function (map, IDs = NULL, proj4string = CRS(as.character(NA))) 
 {
-#    require(maps)
-    xyList <- st1(cbind(map$x, map$y))
-    if (is.null(IDs)) 
-        IDs <- as.character(1:length(xyList))
-    if (length(xyList) != length(IDs)) 
-        stop("map and IDs differ in length")
-    tab <- table(factor(IDs))
-    n <- length(tab)
-    IDss <- names(tab)
-    reg <- match(IDs, IDss)
-    belongs <- lapply(1:n, function(x) which(x == reg))
-    Srl <- vector(mode = "list", length = n)
-    for (i in 1:n) {
-        nParts <- length(belongs[[i]])
-        srl <- vector(mode = "list", length = nParts)
-        for (j in 1:nParts) {
-            crds <- xyList[[belongs[[i]][j]]]
-            if (nrow(crds) > 1) 
-                srl[[j]] <- Line(coords = crds)
-            else srl[[j]] <- Line(coords = rbind(crds, crds))
-        }
-        Srl[[i]] <- Lines(srl, ID = IDss[i])
+  #    require(maps)
+  xyList <- st1(cbind(map$x, map$y))
+  if (is.null(IDs)) 
+    IDs <- as.character(1:length(xyList))
+  if (length(xyList) != length(IDs)) 
+    stop("map and IDs differ in length")
+  tab <- table(factor(IDs))
+  n <- length(tab)
+  IDss <- names(tab)
+  reg <- match(IDs, IDss)
+  belongs <- lapply(1:n, function(x) which(x == reg))
+  Srl <- vector(mode = "list", length = n)
+  for (i in 1:n) {
+    nParts <- length(belongs[[i]])
+    srl <- vector(mode = "list", length = nParts)
+    for (j in 1:nParts) {
+      crds <- xyList[[belongs[[i]][j]]]
+      if (nrow(crds) > 1) 
+        srl[[j]] <- Line(coords = crds)
+      else srl[[j]] <- Line(coords = rbind(crds, crds))
     }
-    res <- SpatialLines(Srl, proj4string = proj4string)
-    res
+    Srl[[i]] <- Lines(srl, ID = IDss[i])
+  }
+  res <- SpatialLines(Srl, proj4string = proj4string)
+  res
 }
 
 
 # function '.NAmat2xyList' from package 'maptools' 
 st1 <- function (xy) 
 {
+  NAs <- unclass(attr(na.omit(xy), "na.action"))
+  if ((length(NAs) == 1L) && (NAs == nrow(xy))) {
+    xy <- xy[-nrow(xy)]
+    NAs <- NULL
+  }
+  diffNAs <- diff(NAs)
+  if (any(diffNAs == 1)) {
+    xy <- xy[-(NAs[which(diffNAs == 1)] + 1), ]
     NAs <- unclass(attr(na.omit(xy), "na.action"))
-    if ((length(NAs) == 1L) && (NAs == nrow(xy))) {
-        xy <- xy[-nrow(xy)]
-        NAs <- NULL
+  }
+  nParts <- length(NAs) + 1L
+  if (!is.null(NAs) && nrow(xy) == NAs[length(NAs)]) 
+    nParts <- nParts - 1
+  res <- vector(mode = "list", length = nParts)
+  from <- integer(nParts)
+  to <- integer(nParts)
+  from[1] <- 1
+  to[nParts] <- nrow(xy)
+  if (!is.null(NAs) && nrow(xy) == NAs[length(NAs)]) 
+    to[nParts] <- to[nParts] - 1
+  if (nParts > 1) {
+    for (i in 2:nParts) {
+      to[(i - 1)] <- NAs[(i - 1)] - 1
+      from[i] <- NAs[(i - 1)] + 1
     }
-    diffNAs <- diff(NAs)
-    if (any(diffNAs == 1)) {
-        xy <- xy[-(NAs[which(diffNAs == 1)] + 1), ]
-        NAs <- unclass(attr(na.omit(xy), "na.action"))
-    }
-    nParts <- length(NAs) + 1L
-    if (!is.null(NAs) && nrow(xy) == NAs[length(NAs)]) 
-        nParts <- nParts - 1
-    res <- vector(mode = "list", length = nParts)
-    from <- integer(nParts)
-    to <- integer(nParts)
-    from[1] <- 1
-    to[nParts] <- nrow(xy)
-    if (!is.null(NAs) && nrow(xy) == NAs[length(NAs)]) 
-        to[nParts] <- to[nParts] - 1
-    if (nParts > 1) {
-        for (i in 2:nParts) {
-            to[(i - 1)] <- NAs[(i - 1)] - 1
-            from[i] <- NAs[(i - 1)] + 1
-        }
-    }
-    for (i in 1:nParts) res[[i]] <- xy[from[i]:to[i], , drop = FALSE]
-    res
+  }
+  for (i in 1:nParts) res[[i]] <- xy[from[i]:to[i], , drop = FALSE]
+  res
 }
 

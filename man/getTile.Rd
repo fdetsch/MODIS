@@ -2,41 +2,39 @@
 % Please edit documentation in R/getTile.R
 \name{getTile}
 \alias{getTile}
-\title{Get MODIS tile id(s)}
+\title{Get MODIS Tile ID(s)}
 \usage{
 getTile(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL,
   system = "MODIS", zoom = TRUE)
 }
 \arguments{
-\item{extent}{Extent information, see details.}
+\item{extent}{Extent information, see Details.}
 
-\item{tileH}{\code{numeric} or \code{character}. Horizontal tile number(s) 
-(e.g. \code{tileH = 1:5}), see 
-\url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
+vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
+\url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}. 
+Ignored if 'extent' is specified.}
 
-\item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), see 
-\code{tileH}.}
+\item{buffer}{\code{numeric} (in map units). Buffers the specified 'extent', 
+negative values are allowed. If 'extent' is a vector object (\code{Spatial*} 
+or \code{character} name of a map object), only one value is allowed (e.g., 
+\code{buffer = 0.5}) and \code{\link{gBuffer}} is used. In all other cases, 
+also \code{buffer = c(x, y)} can be specified.}
 
-\item{buffer}{\code{numeric} (in map units). Buffers the specified 
-\code{extent}, negative values are allowed. If \code{extent} is a vector 
-object ("shp" or "character" name of a "map" object), only one value is 
-allowed, e.g. \code{buffer = 0.5} (\code{\link{gBuffer}} is used). In the 
-other cases, also \code{buffer = c(x, y)} can be specified.}
-
-\item{system}{\code{character}, defaults to \code{MODIS}. A possible 
-alternative is the \code{SRTM} tiling system.}
+\item{system}{\code{character}, defaults to \code{"MODIS"}. Available 
+alternatives are \code{"MERIS"} and \code{"SRTM"}.}
 
 \item{zoom}{\code{logical}, defaults to \code{TRUE}. The interactive mode is 
-only activated if no other extent arguments (i.e., \code{extent}, 
-\code{tileH}, \code{tileV}) are specified. If \code{zoom = TRUE}, the first 
-two clicks on the map are defining the zoom-in area, and the next two clicks 
-are the download area. For large areas you can set \code{zoom = FALSE}.}
+only activated if no other spatial extent (i.e., 'extent', 'tileH', 'tileV') 
+is specified. If \code{zoom = TRUE}, the first two clicks on the map are 
+defining the zoom-in area, and the next two clicks are the download area. For 
+large areas you can set \code{zoom = FALSE}.}
 }
 \value{
-A \code{list}.
+A \code{MODISextent} object.
 }
 \description{
-Get MODIS tile id(s) for a specific geographic area.
+Get MODIS, MERIS, or SRTM tile id(s) for a specific geographic area.
 }
 \details{
 \describe{
@@ -134,7 +132,7 @@ getTile(extent="usa")
 getTile(extent=map("usa",plot=FALSE))
 
 # also possible: 
-ext <-  map("state", region = c("new york", "new jersey", "penn"))
+ext <-  map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
 getTile(extent=ext)
 
 # or:
@@ -149,7 +147,6 @@ getTile(extent=c("austria","germany","switzerland"),system="SRTM")
 Matteo Mattiuzzi
 }
 \seealso{
-\strong{raster} package: \code{\link{extent}}, \code{\link{raster}}, 
-\code{\link{stack}}, \code{\link{brick}}, or \code{\link{shapefile}}.
+\code{\link{extent}}, \code{\link{map}}, \code{\link{search4map}}.
 }
 

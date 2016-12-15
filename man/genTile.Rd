@@ -2,7 +2,7 @@
 % Please edit documentation in R/genTile.R
 \name{genTile}
 \alias{genTile}
-\title{Generate tiling system}
+\title{Generate Global Tiling System}
 \usage{
 genTile(tileSize = 1, offset = 0, StartNameFrom = c(0, 0),
   extent = list(xmin = -180, xmax = 180, ymin = -90, ymax = 90))
@@ -27,18 +27,18 @@ This function generates a matrix with bounding box information for a
 global tiling system (based on Lat/Lon).
 }
 \examples{
-\dontrun{
-e1 <- genTile() # 1x1 degree tiling system.  
-# 10x10 degree tiling system with offset to be aligned to Geoland2 Dataset
-e2 <- genTile(tileSize=10,offset=(1/112)/2)
-# Tiling system for SRTMv4 data (CGIAR-CSI) 
-e3 <- genTile(tileSize=5,StartNameFrom = c(1, 1), 
-              extent=list(xmin = -180, xmax = 180, ymin = -60,ymax = 60)) 
-
+# 1x1 degree tiling system
+e1 <- genTile()  
 head(e1)
+  
+# 10x10 degree tiling system with offset to be aligned to Geoland2 Dataset
+e2 <- genTile(tileSize = 10, offset = (1/112) / 2)
 head(e2)
-head(e3)
-}
+
+# Tiling system for SRTMv4 data (CGIAR-CSI) 
+e3 <- genTile(tileSize = 5, StartNameFrom = c(1, 1), 
+              extent = list(xmin = -180, xmax = 180, ymin = -60,ymax = 60)) 
+head(e3)               
 
 }
 \author{

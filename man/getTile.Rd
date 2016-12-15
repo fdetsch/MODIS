@@ -22,7 +22,7 @@ or \code{character} name of a map object), only one value is allowed (e.g.,
 also \code{buffer = c(x, y)} can be specified.}
 
 \item{system}{\code{character}, defaults to \code{"MODIS"}. Available 
-alternatives are \code{"MERIS"} and \code{"SRTM"}.}
+alternatives are \code{"MERIS"} and \code{"SRTM"} (see Note).}
 
 \item{zoom}{\code{logical}, defaults to \code{TRUE}. The interactive mode is 
 only activated if no other spatial extent (i.e., 'extent', 'tileH', 'tileV') 
@@ -34,7 +34,7 @@ large areas you can set \code{zoom = FALSE}.}
 A \code{MODISextent} object.
 }
 \description{
-Get MODIS, MERIS, or SRTM tile id(s) for a specific geographic area.
+Get MODIS, MERIS, or SRTM tile ID(s) for a specific geographic area.
 }
 \details{
 \describe{
@@ -72,6 +72,13 @@ If an extent is specified through \code{tileV, tileH} arguments, no cropping
 is performed and the full un-cutted tile(s) (if more than one then also 
 mosaicked) is/are processed!
 }
+\note{
+\strong{MODIS} does no longer support the automated download of MERIS and 
+SRTM data. At least as far as the latter is concerned, easy data access is 
+granted through \code{\link{getData}}. Despite this limitation, 
+\code{\link{getTile}} may still be used to identify MERIS and SRTM tile IDs 
+for manual download based on a user-defined spatial extent.
+}
 \examples{
 \dontrun{
 # ex 1 ############
@@ -80,66 +87,49 @@ mosaicked) is/are processed!
 getTile()
 
 # ex 2 ############
-# "extent" specified with a vector file (map or shp)
-japan <- getTile(extent="Japan")
-japan
-# and here the same "extent" using the bounding box 
-getTile(extent=japan$extent)
+# 'extent' specified with a 'Spatial*' object (taken from ?rgdal::readOGR)
+dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
+Up <- rgdal::readOGR(dsn, "Up")
+getTile(extent = Up)
 
 # ex 3 ############
-# with tileH and tileV
-getTile(tileH=18:19,tileV=4)
+# with 'tileH' and 'tileV'
+getTile(tileH = 18:19, tileV = 4)
 
 # ex 4 ############
-# with extent of class "list"
-Austria <- list(ymin=46.12,ymax=49.3,xmin=9.2,xmax=17.47)
-getTile(extent=Austria)
-getTile(extent=Austria,buffer=10)
-getTile(extent=Austria,buffer=c(0,10)) 
+# with 'extent' of class 'list'
+Austria <- list(ymin = 46.12, ymax = 49.3, xmin = 9.2, xmax = 17.47)
+getTile(extent = Austria)
+getTile(extent = Austria, buffer = 10)
+getTile(extent = Austria, buffer = c(0, 10))  # x, y
 
 # ex 5 ############
-# with extent or raster* object from raster package
-# rasterObject
-rasterObject <- raster(xmn=9.2,xmx=17.47,ymn=46.12,ymx=49.3)
-getTile(extent=rasterObject)
+# with 'extent' or 'Raster*' object from "raster" package
+rasterObject <- raster(xmn = 9.2, xmx = 17.47, ymn = 46.12, ymx = 49.3, 
+                       crs = "+init=epsg:4326")
+getTile(extent = rasterObject)
+getTile(extent = extent(rasterObject))
 
-# raster extent
-ext <- extent(rasterObject)
-getTile(extent=ext)
-
-# rasterObject in UTM33N
-CRS <- "+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-rasterObject <- projectExtent(rasterObject,CRS)
-extent(rasterObject)
-projection(rasterObject)
-getTile(extent=rasterObject) 
+# also works for projected data
+rasterObject2 <- projectExtent(rasterObject, crs = "+init=epsg:32633")
+getTile(extent = rasterObject2)
 
 # ex 6 #################
-require(mapdata)
-# Character name of a map contained in "map("worldHires",extent,plot=FALSE)".
-# Use with caution! The following example includes much more areas than the main USA. 
-map("worldHires","usa")
+# Character name of a map contained in map("worldHires", plot = FALSE)$names
+getTile(extent = "Austria")
+getTile(extent = c("Austria", "Germany"))
 
-# Maybe before using this option run a test map("worldHires",yourCharacterExtent).
-# Check awailability of maps with: 
-map("worldHires",plot=FALSE)$names
-# or 
-search4map("Gua")
+# Search for specific map name patterns (use with caution):
+m1 <- search4map("Per")
+getTile(extent = m2)
 
-getTile(extent="usa")
-# it is also possible to put an map object. In this specific example the low resolution map is used!
-# in such case polygon matching is used see ex 2
-getTile(extent=map("usa",plot=FALSE))
+# Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
+m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
+getTile(extent = m2)
 
-# also possible: 
-ext <-  map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
-getTile(extent=ext)
-
-# or:
-getTile(extent=c("austria","germany","switzerland"))
-
-# SRTM data
-getTile(extent=c("austria","germany","switzerland"),system="SRTM")
+# SRTM and MERIS data
+getTile(extent = c("austria", "germany", "switzerland"), system = "SRTM")
+getTile(extent = c("austria", "germany", "switzerland"), system = "MERIS")
 }
 
 }

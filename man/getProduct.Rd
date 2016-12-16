@@ -2,7 +2,7 @@
 % Please edit documentation in R/getProduct.R
 \name{getProduct}
 \alias{getProduct}
-\title{Check and create product-related information}
+\title{Check and Create Product-Related Information}
 \usage{
 getProduct(x = NULL, quiet = FALSE)
 }

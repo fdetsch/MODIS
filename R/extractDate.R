@@ -1,4 +1,4 @@
-#' Extract dates from (MODIS) files
+#' Extract Dates from (MODIS) Files
 #' 
 #' @description 
 #' This function helps to extract dates from a vector of files.

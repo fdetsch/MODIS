@@ -2,7 +2,7 @@
 % Please edit documentation in R/detectBitInfo.R
 \name{detectBitInfo}
 \alias{detectBitInfo}
-\title{List MODIS QA (Quality) SDS information: bitShift and bitMask}
+\title{List MODIS Quality Information}
 \usage{
 detectBitInfo(product, what = "all", warn = TRUE)
 }

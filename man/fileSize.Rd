@@ -2,7 +2,7 @@
 % Please edit documentation in R/fileSize.R
 \name{fileSize}
 \alias{fileSize}
-\title{Size in Byte of file(s)}
+\title{Get Size of File(s)}
 \usage{
 fileSize(file, units = "B")
 }

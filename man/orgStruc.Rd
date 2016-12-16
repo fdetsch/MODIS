@@ -2,7 +2,7 @@
 % Please edit documentation in R/orgStruc.R
 \name{orgStruc}
 \alias{orgStruc}
-\title{Re-organise MODIS files in the local data archive}
+\title{Reorganise MODIS Files in Local Data Archive}
 \usage{
 orgStruc(from, to, structure, pattern, move = FALSE, quiet = FALSE)
 }

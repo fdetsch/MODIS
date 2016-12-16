@@ -2,7 +2,7 @@
 % Please edit documentation in R/delHdf.R
 \name{delHdf}
 \alias{delHdf}
-\title{Delete local MODIS grid files}
+\title{Delete Local MODIS Grid Files}
 \usage{
 delHdf(product, collection = NULL, extent = "global", tileV = NULL,
   tileH = NULL, begin = NULL, end = NULL, ask = TRUE, ...)

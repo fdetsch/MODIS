@@ -2,7 +2,7 @@
 % Please edit documentation in R/getCollection.R
 \name{getCollection}
 \alias{getCollection}
-\title{Get available collections of MODIS product(s)}
+\title{Get Available Collections of MODIS Product(s)}
 \usage{
 getCollection(product, collection = NULL, newest = TRUE,
   forceCheck = FALSE, as = "character", quiet = TRUE, ...)

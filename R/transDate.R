@@ -1,4 +1,4 @@
-#' MODIS date conversion and testing
+#' MODIS Date Conversion and Testing
 #'   
 #' @description 
 #' This function converts a sequence of input dates to 'YYYY-MM-DD' and 

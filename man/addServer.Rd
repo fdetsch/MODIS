@@ -2,7 +2,7 @@
 % Please edit documentation in R/addServer.R
 \name{addServer}
 \alias{addServer}
-\title{Add a new remote server to 'MODIS' inventory}
+\title{Add New Remote Server to MODIS Inventory}
 \usage{
 addServer(name, sensor = "MODIS", basepath, varpath, content = "images",
   path_ext = "inst/external", overwrite = FALSE, ...)

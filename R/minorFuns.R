@@ -1,4 +1,4 @@
-#' Minor MODIS package functions
+#' Minor MODIS Package Functions
 #'
 #' @description 
 #' Compendium of minor \strong{MODIS} package-related functions.

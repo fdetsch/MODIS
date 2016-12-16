@@ -2,7 +2,7 @@
 % Please edit documentation in R/extractDate.R
 \name{extractDate}
 \alias{extractDate}
-\title{Extract dates from (MODIS) files}
+\title{Extract Dates from (MODIS) Files}
 \usage{
 extractDate(files, pos1 = 10, pos2 = 16, asDate = FALSE,
   format = "\%Y\%j")

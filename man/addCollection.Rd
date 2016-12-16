@@ -2,7 +2,7 @@
 % Please edit documentation in R/addCollection.R
 \name{addCollection}
 \alias{addCollection}
-\title{Add a new product column to 'MODIS' collections}
+\title{Add New Product to MODIS Collections}
 \usage{
 addCollection(product, collection = NA, path_ext = "inst/external",
   overwrite = FALSE, ...)

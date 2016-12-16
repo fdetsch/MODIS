@@ -2,7 +2,7 @@
 % Please edit documentation in R/whittaker.R
 \name{whittaker.raster}
 \alias{whittaker.raster}
-\title{Filter vegetation index with modified Whittaker approach}
+\title{Filter Vegetation Index with Modified Whittaker Approach}
 \usage{
 whittaker.raster(vi, w = NULL, t = NULL, timeInfo = orgTime(vi),
   lambda = 5000, nIter = 3, outputAs = "single", collapse = FALSE,

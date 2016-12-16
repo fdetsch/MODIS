@@ -2,7 +2,7 @@
 % Please edit documentation in R/runGdal.R
 \name{runGdal}
 \alias{runGdal}
-\title{Process MODIS hdf with GDAL}
+\title{Process MODIS HDF with GDAL}
 \usage{
 runGdal(product, collection = NULL, begin = NULL, end = NULL,
   extent = NULL, tileH = NULL, tileV = NULL, buffer = 0,

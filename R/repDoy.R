@@ -1,4 +1,4 @@
-#' "Repair" DOY values in MODIS 'composite_day_of_the_year' SDS
+#' Repair MODIS "composite_day_of_the_year" SDS
 #' 
 #' @description 
 #' Currently works only for MODIS 16 days composites! In MODIS composites, the 

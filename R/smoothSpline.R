@@ -1,4 +1,4 @@
-#' Filter time series imagery with a cubic spline
+#' Filter Time Series Imagery with a Cubic Spline
 #' 
 #' @description 
 #' This function uses the \code{\link{smooth.spline}} function to filter a 

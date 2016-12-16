@@ -2,7 +2,7 @@ if ( !isGeneric("getHdf") ) {
   setGeneric("getHdf", function(product, ...)
     standardGeneric("getHdf"))
 }
-#' Create or update a local subset of global online MODIS grid data pool
+#' Create or Update Local Subset of Online MODIS Data Pool
 #' 
 #' @description 
 #' Create or update a local user-defined subset of the global MODIS grid data 

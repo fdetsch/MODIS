@@ -1,4 +1,4 @@
-#' Re-organise MODIS files in the local data archive
+#' Reorganise MODIS Files in Local Data Archive
 #' 
 #' @description 
 #' Re-organise the storage structure of your MODIS archive according to the 

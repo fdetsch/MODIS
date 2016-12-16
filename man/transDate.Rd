@@ -2,7 +2,7 @@
 % Please edit documentation in R/transDate.R
 \name{transDate}
 \alias{transDate}
-\title{MODIS date conversion and testing}
+\title{MODIS Date Conversion and Testing}
 \usage{
 transDate(begin = NULL, end = NULL)
 }

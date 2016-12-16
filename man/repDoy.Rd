@@ -2,7 +2,7 @@
 % Please edit documentation in R/repDoy.R
 \name{repDoy}
 \alias{repDoy}
-\title{"Repair" DOY values in MODIS 'composite_day_of_the_year' SDS}
+\title{Repair MODIS "composite_day_of_the_year" SDS}
 \usage{
 repDoy(pixX, layerDate = NULL, bias = 0)
 }

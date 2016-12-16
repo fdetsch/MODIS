@@ -2,7 +2,7 @@
 % Please edit documentation in R/preStack.R
 \name{preStack}
 \alias{preStack}
-\title{Organise (MODIS) files in preparation for stacking}
+\title{Organise (MODIS) Files in Preparation for Stacking}
 \usage{
 preStack(pattern = "*", path = "./", files = NULL, timeInfo = NULL)
 }

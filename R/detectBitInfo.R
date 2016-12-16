@@ -1,4 +1,4 @@
-#' List MODIS QA (Quality) SDS information: bitShift and bitMask
+#' List MODIS Quality Information
 #' 
 #' @description 
 #' This function returns MODIS QA information for a specific product. It gets 

@@ -1,4 +1,4 @@
-#' Add a new remote server to 'MODIS' inventory
+#' Add New Remote Server to MODIS Inventory
 #' 
 #' @description 
 #' \code{addServer} is a non-exported helper function to add a new entry to the 

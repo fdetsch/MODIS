@@ -2,7 +2,7 @@
 % Please edit documentation in R/arcStats.R
 \name{arcStats}
 \alias{arcStats}
-\title{Get summarisation of local MODIS hdf data}
+\title{Get Summary of Local MODIS Data}
 \usage{
 arcStats(product, collection = NULL, extent = "global",
   begin = "2000.01.01", end = format(Sys.time(), "\%Y.\%m.\%d"),

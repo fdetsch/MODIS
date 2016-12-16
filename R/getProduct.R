@@ -1,4 +1,4 @@
-#' Check and create product-related information
+#' Check and Create Product-Related Information
 #' 
 #' @description 
 #' On user side, it is a funtion to find the desidered product. On package site, 

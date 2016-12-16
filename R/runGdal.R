@@ -1,4 +1,4 @@
-#' Process MODIS hdf with GDAL
+#' Process MODIS HDF with GDAL
 #' 
 #' @description 
 #' Downloads MODIS grid data from archive (FTP or local) and processes the 

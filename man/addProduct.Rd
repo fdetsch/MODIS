@@ -2,7 +2,7 @@
 % Please edit documentation in R/addProduct.R
 \name{addProduct}
 \alias{addProduct}
-\title{Add a new satellite product to 'MODIS' inventory}
+\title{Add New Product to MODIS Inventory}
 \usage{
 addProduct(product, sensor = "MODIS", platform = c("Terra", "Aqua"), pf1,
   pf2, topic, type = c("Tile", "Swath", "CMG"), res, temp_res,

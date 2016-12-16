@@ -1,4 +1,4 @@
-#' Run Modis Reprojection Tool ('MRT-grid') with specified parameters
+#' Run MODIS Reprojection Tool with Specified Parameters
 #' 
 #' @description 
 #' Specifying input parameters, this function gets MODIS grid data from the 

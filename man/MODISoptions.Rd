@@ -2,7 +2,7 @@
 % Please edit documentation in R/MODISoptions.R
 \name{MODISoptions}
 \alias{MODISoptions}
-\title{Set or retrieve permanent MODIS package options}
+\title{Set or Retrieve Permanent MODIS Package Options}
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
   dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness,

@@ -1,4 +1,4 @@
-#' Size in Byte of file(s)
+#' Get Size of File(s)
 #' 
 #' @description 
 #' Function for getting size of any files.

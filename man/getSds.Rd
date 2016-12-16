@@ -2,7 +2,7 @@
 % Please edit documentation in R/getSds.R
 \name{getSds}
 \alias{getSds}
-\title{List SDS in a MODIS grid file}
+\title{List SDS Layers in an .HDF File}
 \usage{
 getSds(HdfName, SDSstring = NULL, method = "gdal")
 }

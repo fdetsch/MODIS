@@ -4,7 +4,7 @@
 \alias{extractBits}
 \alias{makeWeights}
 \alias{maskWater}
-\title{Extract bit-encoded information, create weights raster}
+\title{Extract Bit-Encoded Information and Create Weights Raster}
 \usage{
 extractBits(x, bitShift = 2, bitMask = 15, filename = "", ...)
 
@@ -55,7 +55,7 @@ weighting information in functions like \code{\link{whittaker.raster}} or
 }
 \section{Functions}{
 \itemize{
-\item \code{extractBits}: Extract bit-encoded information from Raster* file
+\item \code{extractBits}: Extract bit-encoded information from \code{Raster*} file
 
 \item \code{maskWater}: Masks water (additional information required)
 }}

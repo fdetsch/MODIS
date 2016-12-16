@@ -1,4 +1,4 @@
-#' Filter vegetation index with modified Whittaker approach
+#' Filter Vegetation Index with Modified Whittaker Approach
 #' 
 #' @description 
 #' Use a modified Whittaker filter function (see References) from package 

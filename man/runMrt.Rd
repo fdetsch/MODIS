@@ -2,7 +2,7 @@
 % Please edit documentation in R/runMrt.R
 \name{runMrt}
 \alias{runMrt}
-\title{Run Modis Reprojection Tool ('MRT-grid') with specified parameters}
+\title{Run MODIS Reprojection Tool with Specified Parameters}
 \source{
 You can obtain MRT-grid after registration from: 
 \url{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}.

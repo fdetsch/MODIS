@@ -1,4 +1,4 @@
-#' Get summarisation of local MODIS hdf data
+#' Get Summary of Local MODIS Data
 #' 
 #' @description 
 #' In the same manner as \code{\link{getHdf}}, this function quantifies the 

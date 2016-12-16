@@ -6,7 +6,7 @@
 \alias{orgTime,Date-method}
 \alias{orgTime,Raster-method}
 \alias{orgTime,character-method}
-\title{Handles input and output dates used for filtering}
+\title{Handle Input and Output Dates Used for Filtering}
 \usage{
 \S4method{orgTime}{character}(files, nDays = "asIn", begin = NULL,
   end = NULL, pillow = 75, pos1 = 10, pos2 = 16, format = "\%Y\%j")

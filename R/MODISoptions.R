@@ -1,4 +1,4 @@
-#' Set or retrieve permanent MODIS package options
+#' Set or Retrieve Permanent MODIS Package Options
 #' 
 #' @description 
 #' Set or retrieve persistant \strong{MODIS} package options (per user or 

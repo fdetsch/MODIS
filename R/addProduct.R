@@ -1,4 +1,4 @@
-#' Add a new satellite product to 'MODIS' inventory
+#' Add New Product to MODIS Inventory
 #' 
 #' @description 
 #' \code{addProduct} is a non-exported helper function to add a new entry to the 

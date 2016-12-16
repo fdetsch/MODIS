@@ -1,4 +1,4 @@
-#' Get available collections of MODIS product(s)
+#' Get Available Collections of MODIS Product(s)
 #' 
 #' @description 
 #' Checks and retrieves available MODIS collection(s) for a given product.

@@ -1,4 +1,4 @@
-#' Delete local MODIS grid files
+#' Delete Local MODIS Grid Files
 #' 
 #' @description 
 #' Delete MODIS grid files to reduce the local storage.

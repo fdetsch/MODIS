@@ -2,7 +2,7 @@ if ( !isGeneric("orgTime") ) {
   setGeneric("orgTime", function(files, ...)
     standardGeneric("orgTime"))
 }
-#' Handles input and output dates used for filtering
+#' Handle Input and Output Dates Used for Filtering
 #' 
 #' @description 
 #' This function lets you define the period to be filtered, the output temporal 

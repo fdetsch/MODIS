@@ -1,4 +1,4 @@
-#' List SDS in a MODIS grid file
+#' List SDS Layers in an .HDF File
 #' 
 #' @description 
 #' This function lists the names of all scientific datasets (SDS) contained in a 

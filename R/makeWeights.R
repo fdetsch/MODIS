@@ -1,4 +1,4 @@
-#' Extract bit-encoded information, create weights raster
+#' Extract Bit-Encoded Information and Create Weights Raster
 #' 
 #' @description 
 #' This function applies \code{\link{bitAnd}} and \code{\link{bitShiftR}} 
@@ -132,7 +132,7 @@
 #' }
 #' }
 #' 
-#' @describeIn makeWeights Extract bit-encoded information from Raster* file
+#' @describeIn makeWeights Extract bit-encoded information from \code{Raster*} file
 #' @aliases extractBits
 #' @export extractBits
 extractBits <- function(x, bitShift=2, bitMask=15, filename='',...)

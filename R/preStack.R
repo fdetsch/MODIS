@@ -1,4 +1,4 @@
-#' Organise (MODIS) files in preparation for stacking
+#' Organise (MODIS) Files in Preparation for Stacking
 #' 
 #' @description 
 #' This function lets you sort a vector of filenames according to date. It is 

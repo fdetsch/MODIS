@@ -5,7 +5,7 @@
 \alias{getHdf}
 \alias{getHdf,character-method}
 \alias{getHdf,missing-method}
-\title{Create or update a local subset of global online MODIS grid data pool}
+\title{Create or Update Local Subset of Online MODIS Data Pool}
 \usage{
 \S4method{getHdf}{character}(product, HdfName, begin = NULL, end = NULL,
   tileH = NULL, tileV = NULL, extent = NULL, collection = NULL,

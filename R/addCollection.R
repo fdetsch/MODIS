@@ -1,4 +1,4 @@
-#' Add a new product column to 'MODIS' collections
+#' Add New Product to MODIS Collections
 #' 
 #' @description 
 #' \code{addCollection} is a non-exported helper function to add a new product 

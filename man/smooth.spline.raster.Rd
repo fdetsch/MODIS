@@ -2,7 +2,7 @@
 % Please edit documentation in R/smoothSpline.R
 \name{smooth.spline.raster}
 \alias{smooth.spline.raster}
-\title{Filter time series imagery with a cubic spline}
+\title{Filter Time Series Imagery with a Cubic Spline}
 \usage{
 smooth.spline.raster(x, w = NULL, t = NULL, groupYears = TRUE,
   timeInfo = orgTime(x), df = 6, outDirPath = "./", ...)

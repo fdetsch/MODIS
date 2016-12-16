@@ -3,7 +3,7 @@
 \name{minorFuns}
 \alias{minorFuns}
 \alias{search4map}
-\title{Minor MODIS package functions}
+\title{Minor MODIS Package Functions}
 \usage{
 search4map(pattern = "", database = "worldHires", plot = FALSE)
 }

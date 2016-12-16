@@ -6,10 +6,6 @@ transDate():
 # add 'format' argument
 # 'Date' method?
 
-whittaker.raster():
-# fix integer bug (see github)
-# maybe add `derivate = 1`
-
 longer term changes:
 - instead of having a ~/.MODISopts file create a directory where to store MODISopts, ftpsettings, product specfic info (instead of using the auxiliary folder)
 - what about removing runMrt support?
@@ -21,9 +17,15 @@ longer term changes:
 - I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
 
 any functions:
-- 'quiet' argument -> should be part of options list automatically; same for 'cores'?
+- 'quiet' argument -> should be part of options list automatically (?)
   
 getHdf()
 - 'HdfName' with regular expression
 
-  
+detectBitInfo()
+- recent products supported? (see whittaker.raster)
+
+MODISoptions() 
+- MODIS::MODISoptions() fails when package is not attached
+  (Error in match.fun(FUN) : node stack overflow
+   Error during wrapup: node stack overflow)

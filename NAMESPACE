@@ -29,6 +29,8 @@ export(smooth.spline.raster)
 export(temporalComposite)
 export(transDate)
 export(whittaker.raster)
+if (.Platform$OS.type=="windows") importFrom(utils,shortPathName)
+
 import(RCurl)
 import(XML)
 import(bitops)

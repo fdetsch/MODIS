@@ -63,7 +63,7 @@ getSds <- function(HdfName,SDSstring=NULL,method="gdal")
             sdsRaw <- system(paste("gdalinfo ", HdfName,sep=""),intern=TRUE) 
         } else if (.Platform$OS=="windows")
         {
-            usar <- gsub(shortPathName(HdfName),pattern="\\\\",replacement="/")
+            usar <- gsub(utils::shortPathName(HdfName),pattern="\\\\",replacement="/")
             if (is.null(opts$gdalPath))
             {
                 cmd <- paste('gdalinfo ', usar,sep="")

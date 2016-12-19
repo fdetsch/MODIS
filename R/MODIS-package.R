@@ -21,6 +21,7 @@
 #' @importFrom methods as
 #' @importFrom stats na.omit smooth.spline
 #' @importFrom utils capture.output download.file installed.packages read.table vi write.csv write.table
+#' @rawNamespace if (.Platform$OS.type=="windows") importFrom(utils,shortPathName)
 #'
 #' @keywords package
 #'

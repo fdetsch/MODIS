@@ -253,7 +253,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
                 minone <- FALSE
                 if(length(fwt)==1)
                 {
-                    fwtP <- shQuote(shortPathName(normalizePath(paste0(fwt,"/gdalinfo.exe"),winslash="/")))
+                    fwtP <- shQuote(utils::shortPathName(normalizePath(paste0(fwt,"/gdalinfo.exe"),winslash="/")))
                     fwtV <- shell(paste0(fwtP, " --version"),intern=TRUE)
                     fwtV <- strsplit(strsplit(fwtV,",")[[1]][1]," ")[[1]][2]
                   
@@ -268,7 +268,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
                 }
                 if(length(osg)==1)
                 {
-                    osgP <- shQuote(shortPathName(normalizePath(paste0(osg,"/gdalinfo.exe"),winslash="/")))
+                    osgP <- shQuote(utils::shortPathName(normalizePath(paste0(osg,"/gdalinfo.exe"),winslash="/")))
                     osgV <- shell(paste0(osgP, " --version"),intern=TRUE)
                     osgV <- strsplit(strsplit(osgV,",")[[1]][1]," ")[[1]][2]
                   
@@ -868,7 +868,7 @@ correctPath <- function(x,isFile=FALSE)
   {  
     if (.Platform$OS.type=="windows")
     {
-      x <- gsub(shortPathName(normalizePath(x,winslash="/",mustWork=FALSE)),pattern="\\\\",replacement="/")
+      x <- gsub(utils::shortPathName(normalizePath(x,winslash="/",mustWork=FALSE)),pattern="\\\\",replacement="/")
     } else
     {
       x <- path.expand(x)

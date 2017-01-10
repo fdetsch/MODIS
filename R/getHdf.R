@@ -91,29 +91,28 @@ if ( !isGeneric("getHdf") ) {
 setMethod("getHdf",
           signature(product = "character"),
           function(product, HdfName,
-                   begin=NULL, end=NULL, 
-                   tileH=NULL, tileV=NULL, extent=NULL, 
-                   collection=NULL, wait=0.5, checkIntegrity=TRUE,forceDownload=TRUE,...) 
-{
+                   begin = NULL, end = NULL, 
+                   tileH = NULL, tileV = NULL, extent = NULL, 
+                   collection = NULL, wait = 0.5, 
+                   checkIntegrity = TRUE, forceDownload = TRUE, ...) {
             
   ## if 'HdfName' is provided, call 'missing'-method          
   if (!missing(HdfName)) 
     getHdf(HdfName = HdfName, wait = wait, checkIntegrity = checkIntegrity, ...)
             
-  # product="MOD13Q1"; begin="2010001"; end="2010005"; tileH=NULL; tileV=NULL; extent=NULL; collection=NULL; wait=0.5; checkIntegrity=FALSE; z=1;u=1
   opts <- combineOptions(...)
-
+            
   ## if 'quiet' is not available, show full console output
   if (!"quiet" %in% names(opts))
     opts$quiet <- FALSE
-
+  
   sturheit <- stubborn(level=opts$stubbornness)
   wait     <- as.numeric(wait)
-
+  
   # TODO HdfName as regex
   if (missing(product))
     stop("Please provide a supported 'product', see getProduct().\n")
-
+  
   #######
   # check product
   product <- getProduct(x=product,quiet=TRUE)
@@ -123,35 +122,35 @@ setMethod("getHdf",
     product$CCC <- getCollection(product=product,quiet=TRUE, forceCheck = TRUE)[[1]]
   } else
   {
-      product$CCC <- sprintf("%03d",as.numeric(unlist(collection)[1]))
-    }
-    #########
-
-    if (product$SENSOR[1]=="MODIS")
+    product$CCC <- sprintf("%03d",as.numeric(unlist(collection)[1]))
+  }
+  #########
+  
+  if (product$SENSOR[1]=="MODIS")
+  {
+    if (is.null(begin)) 
     {
-      if (is.null(begin)) 
-      {
-        cat("No begin(-date) set, getting data from the beginning\n")
-      } 
-      if (is.null(end))
-      {
-        cat("No end(-date) set, getting data up to the most actual\n")
-      } 
-
-      # tranform dates
-      tLimits <- transDate(begin=begin,end=end)
+      cat("No begin(-date) set, getting data from the beginning\n")
     } 
+    if (is.null(end))
+    {
+      cat("No end(-date) set, getting data up to the most actual\n")
+    } 
+    
+    # tranform dates
+    tLimits <- transDate(begin=begin,end=end)
+  } 
   
   dates  <- list()
   output <- list() # path info for the invisible output
   l=0
-       
+  
   for(z in seq_along(product$PRODUCT))
   { # Platforms MOD/MYD
-
+    
     if (product$TYPE[z]=="Swath") 
     {
-        cat("'Swath'-products not yet supported, jumping to the next.\n")
+      cat("'Swath'-products not yet supported, jumping to the next.\n")
     } else 
     {
       todo <- paste0(product$PRODUCT[z],".",product$CCC)
@@ -185,7 +184,7 @@ setMethod("getHdf",
           # priority server from which structure will be tried to retrieve first
           server <- server[which(server == opts$MODISserverOrder[1])]
         }
-          
+        
         ## this time, suppress console output from `getStruc`
         jnk <- capture.output(
           onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
@@ -226,10 +225,10 @@ setMethod("getHdf",
           suboutput <- list()
           l=l+1                
           dates[[l]] <- datedirs[us]
-
+          
           dates[[l]] <- cbind(as.character(dates[[l]]),matrix(rep(NA, length(dates[[l]])*ntiles),ncol=ntiles,nrow=length(dates[[l]])))
           colnames(dates[[l]]) <- c("date",tileID)
-
+          
           for (i in 1:nrow(dates[[l]]))
           { # i=1
             #cat(dates[[l]][i,1],"\n")
@@ -247,13 +246,13 @@ setMethod("getHdf",
               if (length(dir(path$localPath,pattern=dates[[l]][i,j+1]))>0)
               { # if available locally
                 HDF <- dir(path$localPath,pattern=dates[[l]][i,j+1]) # extract HDF file
-
+                
                 if (length(HDF)>1)
                 { # in very recent files sometimes there is more than 1 file/tile/date if so get the most recent processing date
                   select <- list()
                   for (d in 1:length(HDF))
                   { 
-                      select[[d]]<- strsplit(HDF[d],"\\.")[[1]][5]
+                    select[[d]]<- strsplit(HDF[d],"\\.")[[1]][5]
                   }
                   HDF <- HDF[which.max(unlist(select))]        
                 }
@@ -264,15 +263,15 @@ setMethod("getHdf",
             
             if (sum(mtr)!=0 & (onlineInfo$online | is.na(onlineInfo$online) | forceDownload)) 
             { # if one or more of the tiles in the given date is missing, its necessary to go online
-
+              
               if(exists("ftpfiles")) 
               {
-                  rm(ftpfiles)
+                rm(ftpfiles)
               }
               
               for (g in 1:sturheit)
               { # get list of FILES in remote dir
-  #                        server <- names(path$remotePath)[g%%length(path$remotePath)+1]
+                #                        server <- names(path$remotePath)[g%%length(path$remotePath)+1]
                 ftpfiles <- try(filesUrl(path$remotePath[[which(names(path$remotePath)==onlineInfo$source)]]),silent=TRUE)
                 
                 if(ftpfiles[1]==FALSE)
@@ -294,14 +293,14 @@ setMethod("getHdf",
               if (ftpfiles[1] != "total 0") 
               {
                 ftpfiles <- unlist(lapply(strsplit(ftpfiles," "),function(x){x[length(x)]})) # found empty dir!
-
+                
                 for(j in 1:ntiles)
                 { # j=1
                   if(mtr[j]==1)
                   { # if tile is missing get it
                     onFtp <- grep(ftpfiles,pattern=dates[[l]][i,j+1],value=TRUE)
                     HDF   <- grep(onFtp,pattern=".hdf$",value=TRUE)
-
+                    
                     if(length(HDF)>0)
                     {
                       if (length(HDF)>1) 
@@ -313,11 +312,11 @@ setMethod("getHdf",
                         }
                         HDF <- HDF[which.max(unlist(select))]        
                       }
-
+                      
                       dates[[l]][i,j+1] <- HDF
                       hdf <- ModisFileDownloader(HDF, wait=wait, quiet=opts$quiet)
                       mtr[j] <- hdf
-
+                      
                     } else 
                     { 
                       dates[[l]][i,j+1] <- NA 
@@ -331,11 +330,11 @@ setMethod("getHdf",
             }
             if(checkIntegrity)
             { # after each 'i' do the sizeCheck
-              isIn <- doCheckIntegrity(paste0(path$localPath,dates[[l]][i,-1]), wait=wait, quiet=opts$quiet,...)
+              isIn <- doCheckIntegrity(paste0(path$localPath,dates[[l]][i,-1]), wait=wait, opts = opts)
             }
-          suboutput[[i]] <- paste0(path$localPath,dates[[l]][i,-1])                    
+            suboutput[[i]] <- paste0(path$localPath,dates[[l]][i,-1])                    
           } # end i
-
+          
           output[[l]] <-  as.character(unlist(suboutput))
           names(output)[l] <- todo[u]
         } else 
@@ -344,9 +343,9 @@ setMethod("getHdf",
         }
       } 
     }
-    }
-    return(invisible(output))
-}) ## END: FTP vs ARC check and download 
+  }
+  return(invisible(output))
+          }) ## END: FTP vs ARC check and download 
 
 
 ################################################################################
@@ -357,34 +356,34 @@ setMethod("getHdf",
           signature(product = "missing"),
           function(HdfName, wait = 0.5, checkIntegrity = TRUE, ...) {
             
-  opts <- combineOptions(...)
+            opts <- combineOptions(...)
             
-  ## if 'quiet' is not available, show full console output
-  if (!"quiet" %in% names(opts))
-    opts$quiet <- FALSE
-  
-  wait <- as.numeric(wait)
-  
-  ## loop over 'HdfName'
-  if (inherits(HdfName, "list"))
-    HdfName <- unlist(HdfName)
-  
-  HdfName <- basename(HdfName)  
-  
-  dates <- sapply(HdfName, function(i) {
-
-    path <- genString(i, opts = opts)
-    path$localPath <- setPath(path$localPath)
-    
-    if (!file.exists(paste0(path$localPath, "/", i))) 
-      ModisFileDownloader(i, wait = wait, opts = opts)
-
-    if(checkIntegrity)
-      jnk <- doCheckIntegrity(i, wait = wait, opts = opts)
-
-    paste0(path$local, "/", i)
-  })
-  
-  ## return output
-  return(invisible(dates))
-})
+            ## if 'quiet' is not available, show full console output
+            if (!"quiet" %in% names(opts))
+              opts$quiet <- FALSE
+            
+            wait <- as.numeric(wait)
+            
+            ## loop over 'HdfName'
+            if (inherits(HdfName, "list"))
+              HdfName <- unlist(HdfName)
+            
+            HdfName <- basename(HdfName)  
+            
+            dates <- sapply(HdfName, function(i) {
+              
+              path <- genString(i, opts = opts)
+              path$localPath <- setPath(path$localPath)
+              
+              if (!file.exists(paste0(path$localPath, "/", i))) 
+                ModisFileDownloader(i, wait = wait, opts = opts)
+              
+              if(checkIntegrity)
+                jnk <- doCheckIntegrity(i, wait = wait, opts = opts)
+              
+              paste0(path$local, "/", i)
+            })
+            
+            ## return output
+            return(invisible(dates))
+          })

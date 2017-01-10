@@ -19,16 +19,11 @@
 #' @examples 
 #' getProduct() # list available products
 #' 
-#' getProduct("MxD11C3") # 'x' for backward compatibility
-#' getProduct("MxD11C3", quiet = TRUE)
-#' 
 #' # or use regular expression style
 #' getProduct("M.D11C3")
-#' getProduct("M.D11C")
+#' getProduct("M*D11C")
 #' 
-#' getProduct("MOD14$")
-#' getProduct("MOD14")
-#' 
+#' # or get information about specific product
 #' internal_info <- getProduct("MOD11C3", quiet = TRUE) 
 #' internal_info
 #' 

@@ -56,8 +56,8 @@ settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE},
 write settings to 'systemwide', presumed you have write access to 
 \code{paste(R.home(component="etc"), '/', '.MODIS_opts.R', sep='')}.}
 
-\item{quiet}{\code{logical}. If \code{TRUE} (default), options are printed to 
-the console.}
+\item{quiet}{\code{logical}. If \code{FALSE} (default), options are printed 
+to the console.}
 
 \item{save}{\code{logical}. If \code{TRUE} (default), settings are permanent.}
 

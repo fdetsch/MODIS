@@ -40,8 +40,8 @@
 #' settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
 #' write settings to 'systemwide', presumed you have write access to 
 #' \code{paste(R.home(component="etc"), '/', '.MODIS_opts.R', sep='')}.
-#' @param quiet \code{logical}. If \code{TRUE} (default), options are printed to 
-#' the console.
+#' @param quiet \code{logical}. If \code{FALSE} (default), options are printed 
+#' to the console.
 #' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
 #' @param checkTools \code{logical}, defaults to \code{TRUE}. Check if external 
 #' tools (i.e., GDAL and MRT) are installed and reachable through R.
@@ -96,8 +96,8 @@
 #' @name MODISoptions
 MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, 
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
-                         dlmethod, stubbornness, systemwide = FALSE, quiet=FALSE, 
-                         save=TRUE, checkTools = TRUE)
+                         dlmethod, stubbornness, systemwide = FALSE, 
+                         quiet=FALSE, save=TRUE, checkTools = TRUE)
 {
   # This function collects the package options from up to 3 files and creates the .MODIS_opts.R file (location depending on systemwide=T/F, see below):
   # 1. package installation directory (factory defaults); 

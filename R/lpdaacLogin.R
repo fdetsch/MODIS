@@ -14,7 +14,7 @@
 #' \code{invisible()}.
 #' 
 #' @author 
-#' Matteo Mattiuzzi
+#' Matteo Mattiuzzi and Florian Detsch
 #' 
 #' @seealso 
 #' \itemize{

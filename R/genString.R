@@ -4,7 +4,8 @@
 
 # 'date' is the date of an existing file! result from getStruc() and passed as single date! For format see ?transDate
 
-genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, remote=TRUE, ...)
+genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, remote=TRUE, 
+                      opts = NULL, ...)
 {
   product <- getProduct(x=x,quiet=TRUE)
 
@@ -16,7 +17,8 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
 
   if(length(product$CCC)==0)
   {
-    product$CCC <- getCollection(product=product$PRODUCT,collection=collection)[[1]]
+    product$CCC <- getCollection(product=product$PRODUCT,collection=collection, 
+                                 checkTools = FALSE)[[1]]
   }
      
   if (!is.null(date)) 
@@ -24,9 +26,12 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
     product$DATE <- list(paste0("A",transDate(date)$beginDOY)) # generates MODIS file date format "AYYYYDDD"
   }
 
-  opts         <- combineOptions(...)
+  ## if options have not been passed down, create them from '...'
+  if (is.null(opts))
+    opts <- combineOptions(checkTools = FALSE, ...)
+  
   opts$auxPath <- setPath(opts$auxPath)
-  remotePath   <- localPath <- NULL    
+  remotePath <- localPath <- NULL    
     
   if (is.null(product$DATE)) # if x is a PRODUCT and date is not provided 
   { 
@@ -47,10 +52,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
           {
             if (s[u] %in% c("DATE","YYYY","DDD")) 
             {
-              if (product$PRODUCT!="SRTM")
-              {
-                tmp[[u]] <- s[u]
-              }
+              tmp[[u]] <- s[u]
             } else 
             {
               tmp[[u]] <- getPart(x=product,s[u])
@@ -102,16 +104,17 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                 {
                   if (s[u] %in% c("DATE","YYYY","DDD")) 
                   {
-                    if (product$PRODUCT!="SRTM")
-                    {
-                      tmp[[u]] <- s[u]
-                    }
+                    tmp[[u]] <- s[u]
                   } else 
                   {
                     tmp[[u]] <- getPart(x=product,s[u])
                   }
                 }                                
-                string[[l]] <- paste0(unlist(tmp),collapse=".")    
+                string[[l]] <- paste0(unlist(tmp),collapse=".")
+                
+                ## append '_MERRAGMAO' if product is hosted at NTSG
+                if ("NTSG" %in% unlist(product$SOURCE) & i == 2)
+                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
               }
             }
           remotePath[[n]] <- path.expand(paste(stringX$basepath,paste0(unlist(string),collapse="/"),sep="/"))
@@ -183,6 +186,27 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                 tmp[[u]] <- getPart(x=product,s[u])
               }
               string[[l]] <- paste0(unlist(tmp),collapse=".")
+              
+              ## if working on NTSG server
+              if ("NTSG" %in% unlist(product$SOURCE)) {
+                # add '_MERRAGMAO' suffix
+                if (i == 2)
+                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
+                
+                # add leading 'Y' to year
+                if (i == 3) 
+                  string[[l]] <- paste0("Y", string[[l]])
+                  
+                # add leading 'D' to day of year 
+                if (i == 4)
+                  
+                  # MOD16A2
+                  if (product$PRODUCT == "MOD16A2")
+                    string[[l]] <- paste0("D", string[[l]])
+                  else 
+                    string[[l]] <- ""
+              }
+
             }
           }
           n=n+1

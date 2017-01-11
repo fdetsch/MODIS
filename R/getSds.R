@@ -1,7 +1,34 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2011
-# Licence GPL v3
-
+#' List SDS Layers in an .HDF File
+#' 
+#' @description 
+#' This function lists the names of all scientific datasets (SDS) contained in a 
+#' specified MODIS grid HDF file.
+#' 
+#' @param HdfName \code{character}. (Absolute) filename from which to extract 
+#' SDS names.
+#' @param SDSstring \code{character}, see Value.
+#' @param method \code{character}, defaults to \code{"gdal"}. Caution: on 
+#' Windows, the default 'GDAL' installation doesn't support HDF4 files. Install 
+#' 'FWTools' or use \code{method = "mrt"} instead.
+#' 
+#' @return 
+#' A \code{list} or \code{character}. If \code{SDSstring} is provided, the 
+#' function reports extracted SDS and a formatted SDSsting (e.g., "11101"). If 
+#' not provided, the SDS names in \code{HdfName} are returned.  Consult the MRT 
+#' manual for details.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' getSds(HdfName="XXX.hdf")
+#' getSds(HdfName="/path/XXX.hdf",method="gdal") # require GDAL (FWTools on Windows)
+#' getSds(HdfName="/path/XXX.hdf",method="mrt") # require MRTool
+#' }
+#' 
+#' @export getSds
+#' @name getSds
 getSds <- function(HdfName,SDSstring=NULL,method="gdal") 
 {
 
@@ -22,11 +49,11 @@ getSds <- function(HdfName,SDSstring=NULL,method="gdal")
     
     HdfName <- HdfName[1]
     
-    checkTool <- checkTools(tool=method,quiet=TRUE)[[method]][[method]]
+    checkTool <- checkTools(tool=method,quiet=TRUE, opts = opts)[[method]][[method]]
     
     if (!checkTool)
     {
-        stop("Method ",method, " does not work. Is ", method," installed properly on your system? Run: 'checkTools()' to check out which metods should work on your system!")
+        stop("Method ",method, " does not work. Is ", method," installed properly on your system? Run: 'MODIS:::checkTools()' to check out which metods should work on your system!")
     }
 
     if (method=="GDAL")
@@ -36,7 +63,7 @@ getSds <- function(HdfName,SDSstring=NULL,method="gdal")
             sdsRaw <- system(paste("gdalinfo ", HdfName,sep=""),intern=TRUE) 
         } else if (.Platform$OS=="windows")
         {
-            usar <- gsub(shortPathName(HdfName),pattern="\\\\",replacement="/")
+            usar <- gsub(utils::shortPathName(HdfName),pattern="\\\\",replacement="/")
             if (is.null(opts$gdalPath))
             {
                 cmd <- paste('gdalinfo ', usar,sep="")

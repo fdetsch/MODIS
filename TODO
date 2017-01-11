@@ -1,0 +1,31 @@
+getProduct():
+# improvement of automatic sensor detection 
+# make a class modisproduct
+
+transDate():
+# add 'format' argument
+# 'Date' method?
+
+longer term changes:
+- instead of having a ~/.MODISopts file create a directory where to store MODISopts, ftpsettings, product specfic info (instead of using the auxiliary folder)
+- what about removing runMrt support?
+- reduce the capability of functions eg:
+    completely separate getHdf from runGdal (also getProduct, getCollection etc should be removed from those functions.
+    This should allow runGdal to run in a more general manner like a input file list that is crunched. This should result in some more lines to code when using runGdal but is also allows more freedom and performance. AND last but not least at all also much easier handling of the package development.
+- allow only one product at the time. At that moment is is possible to do runGdal(product="M.D13",... this would process all M.D 13 products in one go by walking down the list produced by getProduct("M.D13"). 
+  MOD and MYD should still be run by one call, but not eg: MxD13A1 and MxD13A2. This change would simplify a lot the package development.
+- I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
+
+any functions:
+- 'quiet' argument -> should be part of options list automatically (?)
+  
+getHdf()
+- 'HdfName' with regular expression
+
+detectBitInfo()
+- recent products supported? (see whittaker.raster)
+
+MODISoptions() 
+- MODIS::MODISoptions() fails when package is not attached
+  (Error in match.fun(FUN) : node stack overflow
+   Error during wrapup: node stack overflow)

@@ -7,7 +7,7 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
     resamplingType <- "near"
   }
   
-  resamplingType <- trim(tolower(as.character(resamplingType)))
+  resamplingType <- raster::trim(tolower(as.character(resamplingType)))
   tool           <- toupper(tool)
   
   if (!tool %in% c("GDAL","MRT"))
@@ -113,8 +113,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE)
 
   if (tool=="GDAL") # EPRS:xxxx or xxxx or "+proj=sin...." 
   { # EPSGinfo is lazy loaded (see: minorFuns.R)
-    require(rgdal)
-    
+
     inW <- getOption("warn")
     on.exit(options(warn=inW))
     options(warn=-1)
@@ -129,7 +128,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE)
           proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
       } else
       {
-        stop("Could not convert 'outProj' argunemt",proj, "to a sp:::CRS compatible string!")
+        stop("Could not convert 'outProj' argunemt",proj, "to a sp::CRS compatible string!")
       }
     } else if(!is.na(as.numeric(proj)))
     {
@@ -208,7 +207,7 @@ checkGdalDriver <- function(path=NULL)
   }
 }
 
-combineOptions <- function(...) 
+combineOptions <- function(checkTools = TRUE, ...) 
 {
   opts <- options()
   opts <- opts[grep(names(opts),pattern="^MODIS_*.")] # isolate MODIS_opts
@@ -219,7 +218,7 @@ combineOptions <- function(...)
     {
       warning("MODIS_Opts file not found, run '?MODISoptions' to see and set permanent package defaults!\n")
     }
-    MODISoptions(save=FALSE,quiet=TRUE)    
+    MODISoptions(save=FALSE,quiet=TRUE, checkTools = checkTools)    
     opts <- options() # collects all options
     opts <- opts[grep(names(opts),pattern="^MODIS_*.")] # isolate MODIS_opts
   }

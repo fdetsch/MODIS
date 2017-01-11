@@ -1,47 +1,69 @@
+#' Minor MODIS Package Functions
+#'
+#' @description 
+#' Compendium of minor \strong{MODIS} package-related functions.
+#' 
+#' @param pattern Regular expression passed to \code{\link{grep}}.
+#' @param database \code{character}. Defaults to \code{"worldHires"}, see 
+#' \code{\link{map}} for available options.
+#' @param plot \code{logical}, defaults to \code{FALSE}. If \code{TRUE}, search 
+#' results are displayed.
+#' 
+#' @return 
+#' A \code{list} of length 2. The first entry is the call to create the given 
+#' map, whereas the second entry represents the names of areas within the 
+#' search. 
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @seealso 
+#' \code{\link{getTile}}, \code{\link{map}}, \code{\link{grep}}.
+#' 
+#' @examples 
+#' \dontrun{
+#' search4map()
+#' 
+#' search4map(pattern="USA",plot=TRUE)
+#' search4map(database="state",plot=TRUE)?map
+#' 
+#' search4map(database="italy",pattern="Bolz",plot=TRUE)
+#' 
+#' search4map(pattern="Sicily",plot=TRUE)
+#' }
+#' 
+#' @name minorFuns
+NULL
+
 ##########################################
 # central setting for stubbornness 
-stubborn <- function(level="high")
-{
-    if(!is.numeric(level) & !tolower(level) %in% c("low","medium","high","veryhigh","extreme"))
-    {
-        stop("Unrecognised 'stubbornness' level!")
-    }
-    if (is.numeric(level)) 
-    {
-        round(level)    
-    } else
-    { 
-        c(5,15,50,100,1000)[which(tolower(level)==c("low","medium","high","veryhigh","extreme"))]
-    }
+stubborn <- function(level = "high") {
+  
+  ## supported 'character' levels
+  levels <- c("low", "medium", "high", "veryhigh", "extreme")
+  
+  ## if stubbornness is a 'character', try to find it in 'levels' or convert it 
+  ## to regular 'numeric'
+  if (!is.numeric(level) & !tolower(level) %in% levels) {
+    level <- suppressWarnings(try(as.numeric(level), silent = TRUE))
+    if (inherits(level, "try-error") | is.na(level))
+      stop("Unrecognised 'stubbornness' level!")
+  }
+  
+  ## round or convert 'character' level to 'numeric'
+  if (is.numeric(level)) {
+    round(level)    
+  } else { 
+    c(5, 15, 50, 100, 1000)[which(tolower(level) == levels)]
+  }
 }
 
-file.size <- function(file,units="B")
-{
-    units <- toupper(units)
-    unit <- c(1,1024,1048576,1073741824,1073741824*1024) 
-    names(unit) <- c("B","KB", "MB", "GB","TB")
-        
-    if (!units %in% names(unit))
-    {
-        stop('unit must be one of: "B", "KB", "MB", "GB" or "TB"')
-    } 
-    
-    file <- file.info(file)
-    file <- file[!file$isdir,"size"]
-    
-    res <- file/unit[toupper(units)]
-    return(res)
-}
 
 checksizefun <- function(file,sizeInfo=NULL,flexB=0)
 {
     # determine reference size
     if (is.null(sizeInfo))
     {
-        if (!require(XML)) 
-        {
-            stop("You need to install the 'XML' package: install.packages('XML')")
-        }
         xmlfile  <- paste0(file,".xml")
         xmlfile  <- xmlParse(xmlfile)
         MetaSize <- getNodeSet(xmlfile, "/GranuleMetaDataFile/GranuleURMetaData/DataFiles/DataFileContainer/FileSize" )
@@ -57,7 +79,7 @@ checksizefun <- function(file,sizeInfo=NULL,flexB=0)
         return(res)
     }
     
-    FileSize <- as.numeric(file.size(file))
+    FileSize <- as.numeric(fileSize(file))
     if (flexB!=0)
     {
         isOK <- (MetaSize >= FileSize-flexB & MetaSize <= FileSize+flexB)
@@ -70,14 +92,12 @@ return(res)
 }
 
 
+#' @describeIn minorFuns Simplifies search for \strong{mapdata}-based extents
+#' @aliases search4map
+#' @export search4map
 search4map <- function(pattern="",database='worldHires',plot=FALSE)
 {
-  if (!require(mapdata))
-  {
-    stop("This function requires 'mapdata', please install it first: install.packages('mapdata')")
-  }
-  
-  areas <- grep(x=map(database,plot=FALSE)$names,pattern=pattern,value=TRUE,ignore.case=TRUE)
+  areas <- grep(x=maps::map(database,plot=FALSE)$names,pattern=pattern,value=TRUE,ignore.case=TRUE)
   
   if (length(areas)==0)
   {
@@ -88,7 +108,7 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
   
   if (plot)
   {
-    map(database,areas)
+    maps::map(database,areas)
     map.axes() 
     box()
     grid(36,18,col="blue",lwd=0.5)
@@ -106,7 +126,7 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
   }
 }
 
-checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
+checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
 {
     tool <- toupper(tool)
     
@@ -174,7 +194,9 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
     {
         GDAL <- FALSE
         gdv  <- NA
-        opts <- combineOptions()
+        
+        if (is.null(opts))
+          opts <- combineOptions(checkTools = FALSE)
         
         if (.Platform$OS=="unix")
         {    
@@ -199,7 +221,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
                 GDAL <- TRUE
                 
                 gdv <- strsplit(gdaltext,",")[[1]][1]
-                gdv <- trim(gsub(gdv,pattern="GDAL",replacement=""))
+                gdv <- raster::trim(gsub(gdv,pattern="GDAL",replacement=""))
                 gdv <- as.numeric(strsplit(gdv,"\\.")[[1]])
             }
             GDAL <- list(GDAL=GDAL,version=gdaltext,vercheck=gdv)
@@ -231,7 +253,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
                 minone <- FALSE
                 if(length(fwt)==1)
                 {
-                    fwtP <- shQuote(shortPathName(normalizePath(paste0(fwt,"/gdalinfo.exe"),winslash="/")))
+                    fwtP <- shQuote(utils::shortPathName(normalizePath(paste0(fwt,"/gdalinfo.exe"),winslash="/")))
                     fwtV <- shell(paste0(fwtP, " --version"),intern=TRUE)
                     fwtV <- strsplit(strsplit(fwtV,",")[[1]][1]," ")[[1]][2]
                   
@@ -246,7 +268,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
                 }
                 if(length(osg)==1)
                 {
-                    osgP <- shQuote(shortPathName(normalizePath(paste0(osg,"/gdalinfo.exe"),winslash="/")))
+                    osgP <- shQuote(utils::shortPathName(normalizePath(paste0(osg,"/gdalinfo.exe"),winslash="/")))
                     osgV <- shell(paste0(osgP, " --version"),intern=TRUE)
                     osgV <- strsplit(strsplit(osgV,",")[[1]][1]," ")[[1]][2]
                   
@@ -273,7 +295,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE)
                 }
                 GDAL <- TRUE
                 gdv <- strsplit(gdaltext,",")[[1]][1]
-                gdv <- trim(gsub(gdv,pattern="GDAL",replacement=""))
+                gdv <- raster::trim(gsub(gdv,pattern="GDAL",replacement=""))
                 gdv <- as.numeric(strsplit(gdv,"\\.")[[1]])
 
             }
@@ -335,6 +357,8 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
     gdalOutDriver <- grep(gdalOutDriver,pattern="\\(rw",value=TRUE) # this regex must be preciser
     name          <- sapply(gdalOutDriver,function(x){strsplit(x,"\\(")[[1]][1]})
     name          <- gsub(as.character(name), pattern=" ", replacement="")
+    #tnauss
+    name          <- sapply(name, function(x){return(strsplit(x, "-")[[1]][1])})
     
     description <- as.character(sapply(gdalOutDriver,function(x){strsplit(x,"\\): ")[[1]][2]}))
     
@@ -474,28 +498,19 @@ return(unlist(res))
 # TODO enhancement of SENSOR/PRODUCT detection capabilities! 
 # the methods below are based on the results of strsplit().
 
-defineName <- function(x) # "x" is a MODIS,SRTM or culture-MERIS filename
+defineName <- function(x) # "x" is a MODIS or filename
 {
   
   if(missing(x)) 
   {
-    stop("Error in function 'defineName', x is missing, must be a MODIS, SRTM or culture-MERIS filename!")
+    stop("Error in function 'defineName', x is missing, must be a MODIS filename!")
   } else 
   {
     fname   <- basename(x)
     secName <- strsplit(fname,"\\.")[[1]] # for splitting with more signes "[._-]"
     
-    if (toupper(substring(secName[1],1,4))=="CULT") 
-    {
-      sensor="MERIS"
-    } else if (tolower(substring(secName[1],1,4))=="srtm")
-    {
-      sensor = "C-Band-RADAR"
-      secName <- strsplit(secName[1],"_")[[1]]
-    } else 
-    {
-      sensor="MODIS"
-    }
+    sensor="MODIS"
+    
     ###################################
     # NAME definitions (is File-specific!)
     #########################
@@ -516,52 +531,10 @@ defineName <- function(x) # "x" is a MODIS,SRTM or culture-MERIS filename
       {
         stop("Not a MODIS 'Tile', 'CMG' or 'Swath'!")
       }
-    # MERIS
-    } else if (sensor=="MERIS") 
-    {
-      product  <- getProduct(x="culture-MERIS",quiet=TRUE)
-      secName  <- strsplit(fname,MODIS_Products[MODIS_Products$PRODUCT==product$PRODUCT,]$INTERNALSEPARATOR)[[1]]
-      lastpart <- strsplit(secName[length(secName)],"\\.")[[1]]
-      secName  <- secName[-length(secName)]
-      secName  <- c(secName,lastpart)
-      if (length(secName)==6) 
-      {
-        names(secName) <- c("PRODUCT","CCC","DATE1DATE2","TILE","FORMAT","COMPRESSION")
-      } else if (length(secName)==5) 
-      {
-        names(secName) <- c("PRODUCT","CCC","DATE1DATE2","TILE","FORMAT")
-      }
-      
-    # SRTM
-    } else if (sensor=="C-Band-RADAR") 
-    {
-      product  <- getProduct(x=secName[1],quiet=TRUE)
-      secName  <- strsplit(fname,MODIS_Products[MODIS_Products$PRODUCT==product$PRODUCT,]$INTERNALSEPARATOR)[[1]]
-      lastpart <- strsplit(secName[length(secName)],"\\.")[[1]]
-      secName  <- secName[-length(secName)]
-      secName  <- c(secName,lastpart)
-      names(secName) <- c("PRODUCT","tileH","tileV","COMPRESSION") 
-    } # XXX else if .... add Products here
+    }  # XXX else if .... add Products here
   }
   return(secName)
 }
-
-#### install dependencies and suggested
-
-checkDeps <- function()
-{
-    needed <- c('RCurl', 'rgeos', 'rgdal', 'maps', 'mapdata', 'parallel', 'ptw', 'XML')
-    if (all(needed %in% installed.packages()[,1]))
-    {
-        cat("All suggested packages are installed\n")
-    } else {
-        missingP <- !needed %in% installed.packages()[,1]
-        missingP <- paste0(needed[missingP],collapse="', '")
-
-        cat("To install all required and suggested packages run:\n\tsetRepositories() # activate CRAN, R-forge, and Omegahat and then: \n\tinstall.packages(c('",missingP,"'),dependencies=TRUE)\n\n")
-    }
-}
-
 
 # this function selects elements of a list by "row".
 listPather <- function(x,index)
@@ -580,7 +553,6 @@ listPather <- function(x,index)
 # list files in a Url
 filesUrl <- function(url)
 {
-    require(RCurl)
 
     if (substr(url,nchar(url),nchar(url))!="/")
     {
@@ -591,38 +563,61 @@ filesUrl <- function(url)
     options(warn=-1)
     on.exit(options(warn=iw))
 
-    try(co <- getURLContent(url),silent=TRUE)
-    
-    if (!exists("co")) {return(FALSE)}
-    
-    if (substring(url,1,4)=="http")
-    {
-        if(!require(XML))
-        {
-            stop("Missing dependency, please install the 'XML' package.")
-        }
-             
+    ## default method (e.g. LPDAAC, LAADS)
+    if (length(grep("ntsg", url)) == 0) {
+      
+      try(co <- RCurl::getURLContent(url),silent=TRUE)
+      
+      if (!exists("co")) {return(FALSE)}
+      
+      if (substring(url,1,4)=="http")
+      {
         co     <- htmlTreeParse(co)
         co     <- co$children[[1]][[2]][[2]]
         co     <- sapply(co$children, function(el) xmlGetAttr(el, "href"))
         co     <- as.character(unlist(co))
         co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
         fnames <- co[-1] 
-         
-     } else 
-     {
+        
+      } else 
+      {
         co <- strsplit(co, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
-       
+        
         co   <- strsplit(co," ")
         elim <- grep(co,pattern="total")
         if(length(elim)==1)
         {
-            co <- co[-elim]
+          co <- co[-elim]
         }
         fnames <- basename(sapply(co,function(x){x[length(x)]}))
-     }
-     fnames <- gsub(fnames,pattern="/",replacement="")
+      }
+      
+    ## NTSG method; if not used, connection breakdowns are likely to occur  
+    } else {
+      
+      # 'MODIS' options
+      opts <- combineOptions()
+      
+      # download website to opts$auxPath
+      file_out_dn <- opts$auxPath
+      file_out_bn <- unlist(strsplit(url, "/"))
+      file_out <- paste(file_out_dn, file_out_bn[length(file_out_bn)], sep = "/")
+      download.file(url = url, destfile = file_out, quiet = TRUE, method = "libcurl")
+      
+      # extract information from website content
+      content <- readLines(file_out)
+      
+      fnames <- sapply(content, function(i) {
+        unlist(strsplit(i, " "))[length(unlist(strsplit(i, " ")))]
+      })
+      names(fnames) <- NULL
 
+      # remove temporary file and return output
+      invisible(file.remove(file_out))
+    }
+
+    ## format and return    
+    fnames <- gsub(fnames,pattern="/",replacement="")
     return(fnames)
 }
 
@@ -640,13 +635,20 @@ makeRandomString <- function(n=1, length=12)
 }
 
 # this function care about the download of files. Based on remotePath (result of genString) it alterates the effort on available sources and stops after succeded download or by reacing the stubbornness thresshold.
-ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
+ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
 {
     x <- basename(x)
 
-    opts              <- combineOptions(...)
+    ## if options have not been passed down, create them from '...'
+    if (is.null(opts))
+      opts <- combineOptions(...)
+    
     opts$stubbornness <- stubborn(opts$stubbornness)
 
+    ## if 'quiet' is not available, show full console output
+    if (!"quiet" %in% names(opts))
+      opts$quiet <- FALSE
+    
     iw <- options()$warn 
     options(warn=-1)
     on.exit(options(warn=iw))
@@ -655,7 +657,7 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
     
     for (a in seq_along(x))
     {  # a=1
-        path           <- genString(x[a],...)
+        path <- genString(x[a], opts = opts)
         path$localPath <- setPath(path$localPath)
         
         hv <- seq_along(opts$MODISserverOrder)
@@ -663,7 +665,7 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
         g=1
         while(g <= opts$stubbornness) 
         {     
-          if (!quiet)
+          if (!opts$quiet)
           {
               cat("\nGetting file from:",opts$MODISserverOrder[hv[g]],"\n############################\n")
           }
@@ -674,12 +676,61 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
             out[a] <- system(paste0("aria2c -x 3 --file-allocation=none ",paste(path$remotePath[which(names(path$remotePath)==opts$MODISserverOrder[hv[g]])],x[a],sep="/",collapse="")," -d ", dirname(destfile)))
           } else
           {
-            out[a] <- try(download.file(url=paste(path$remotePath[which(names(path$remotePath)==opts$MODISserverOrder[hv[g]])],x[a],sep="/",collapse=""),destfile=destfile,mode='wb', method=opts$dlmethod, quiet=quiet, cacheOK=FALSE),silent=TRUE)
+
+            ## if server is 'LPDAAC' or 'LAADS', consider MODISserverOrder
+            if (any(names(path$remotePath) %in% opts$MODISserverOrder[hv[g]])) {
+              id_remotepath <- which(names(path$remotePath) == opts$MODISserverOrder[hv[g]])
+            
+            ## if not (e.g. when server is 'NTSG'), simply take the first `path$remotePath` entry
+            } else {
+              id_remotepath <- 1
+            }
+              
+            server <- names(path$remotePath)
+            if (length(server) > 1)
+              server <- server[which(server %in% opts$MODISserverOrder[hv[g]])]
+              
+            infile <- paste(path$remotePath[id_remotepath], x[a], sep = "/", 
+                            collapse = "")
+            
+            ## adapt 'dlmethod' and 'extra' if server == "LPDAAC"
+            if (server == "LPDAAC") {
+              if (!opts$dlmethod %in% c("wget", "curl")) {
+                warning("Data download from '", server, 
+                        "' is currently only available through wget and curl.\n", 
+                        "Setting MODISoptions(dlmethod = 'wget') ",  
+                        "(or run MODISoptions(dlmethod = 'curl') to use curl instead) ...\n")
+                method <- "wget"
+              } else {
+                method <- opts$dlmethod
+              }
+              
+              # wget extras
+              extra <- if (method == "wget") {
+                paste("--load-cookies ~/.cookies.txt", 
+                      "--save-cookies ~/.cookies.txt --keep-session-cookie", 
+                      "--no-check-certificate")
+              # curl extras  
+              } else {
+                '-n -L -c ~/.cookies.txt -b ~/.cookies.txt'
+              }
+              
+            ## else use default settings
+            } else {
+              method <- opts$dlmethod
+              extra <- getOption("download.file.extra")
+            }
+            
+            out[a] <- try(
+              download.file(url = infile, destfile = destfile, mode = 'wb', 
+                            method = method, quiet = opts$quiet, 
+                            cacheOK = FALSE, extra = extra),
+                          silent = TRUE)
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!
-          if (out[a]!=0 & !quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 
-          if (out[a]==0 & !quiet & g>1) {cat("Downloaded after:",g,"re-tries\n\n")}
-          if (out[a]==0 & !quiet & g==1) {cat("Downloaded by the first try!\n\n")}
+          if (out[a]!=0 & !opts$quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 
+          if (out[a]==0 & !opts$quiet & g>1) {cat("Downloaded after:",g,"re-tries\n\n")}
+          if (out[a]==0 & !opts$quiet & g==1) {cat("Downloaded by the first try!\n\n")}
           if (out[a]==0) {break}    
           Sys.sleep(wait)
           g=g+1    
@@ -688,59 +739,66 @@ ModisFileDownloader <- function(x, quiet=FALSE, wait=wait,...)
 return(!as.logical(out)) 
 }
 
-doCheckIntegrity <- function(x, quiet=FALSE, wait=wait,...)
-{
-    x <- basename(x)
-
+doCheckIntegrity <- function(x, wait = 0.5, opts = NULL, ...) {
+  
+  x <- basename(x)
+  
+  ## if options have not been passed down, create them from '...'
+  if (is.null(opts))
     opts <- combineOptions(...)
-    opts$stubbornness <- stubborn(opts$stubbornness)
-
-    out <- rep(NA,length=length(x))
-        
-    for (a in seq_along(x))
+  
+  opts$stubbornness <- stubborn(opts$stubbornness)
+  
+  ## if 'quiet' is not available, show full console output
+  if (!"quiet" %in% names(opts))
+    opts$quiet <- FALSE
+  
+  out <- rep(NA,length=length(x))
+  
+  for (a in seq_along(x))
+  { 
+    if(basename(x[a])=="NA")
+    {
+      out[a] <- NA
+    } else
     { 
-        if(basename(x[a])=="NA")
+      path <- genString(x[a], opts = opts)
+      path$localPath <- setPath(path$localPath) 
+      
+      hv <- 1:length(path$remotePath)
+      hv <- rep(hv,length=opts$stubbornness)
+      g=1
+      while(g <= opts$stubbornness) 
+      {     
+        if (g==1)
         {
-            out[a] <- NA
-        } else
-        { 
-            path <- genString(x[a],...)
-            path$localPath <- setPath(path$localPath) 
-            
-            hv <- 1:length(path$remotePath)
-            hv <- rep(hv,length=opts$stubbornness)
-            g=1
-            while(g <= opts$stubbornness) 
-            {     
-                if (g==1)
-                {
-                    out[a] <- checkIntegrity(x = x[a],...)
-                }
-                
-                if (is.na(out[a]))
-                {
-                    unlink(x[a])
-                    break
-                }
-                if (!out[a])
-                {
-                    if (!quiet)
-                    {
-                        cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
-                    }
-                    unlink(x[a])
-                    out[a] <- ModisFileDownloader(x[a], quiet=quiet,...)
-                } else if (out[a]) 
-                {
-                    break
-                }
-                
-                out[a] <- checkIntegrity(x = x[a],...)
-                g=g+1
-            }
+          out[a] <- checkIntegrity(x = x[a], opts = opts)
         }
+        
+        if (is.na(out[a]))
+        {
+          unlink(x[a])
+          break
+        }
+        if (!out[a])
+        {
+          if (!opts$quiet)
+          {
+            cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
+          }
+          unlink(x[a])
+          out[a] <- ModisFileDownloader(x[a], wait = wait, opts = opts)
+        } else if (out[a]) 
+        {
+          break
+        }
+        
+        out[a] <- checkIntegrity(x = x[a], opts = opts)
+        g=g+1
+      }
     }
-return(as.logical(out)) 
+  }
+  return(as.logical(out)) 
 }
 
 # setPath for localArcPath and outDirPath
@@ -810,7 +868,7 @@ correctPath <- function(x,isFile=FALSE)
   {  
     if (.Platform$OS.type=="windows")
     {
-      x <- gsub(shortPathName(normalizePath(x,winslash="/",mustWork=FALSE)),pattern="\\\\",replacement="/")
+      x <- gsub(utils::shortPathName(normalizePath(x,winslash="/",mustWork=FALSE)),pattern="\\\\",replacement="/")
     } else
     {
       x <- path.expand(x)
@@ -823,6 +881,3 @@ correctPath <- function(x,isFile=FALSE)
   }
 return(x)
 }
-
-
-

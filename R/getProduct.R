@@ -1,11 +1,34 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : August 2011
-# Licence GPL v3
- 
-# TODO:
-# improvement of automatic sensor detection 
-# make a class modisproduct
-    
+#' Check and Create Product-Related Information
+#' 
+#' @description 
+#' On user side, it is a funtion to find the desidered product. On package site, 
+#' it generates central internal information to hande files.  
+#' 
+#' @param x \code{character}. MODIS filename, product name or regular expression 
+#' (for the latter, see argument \code{pattern} in \code{\link{grep}} for 
+#' details). If not specified, all available products are returned.
+#' @param quiet \code{logical}, defaults to \code{FALSE}.
+#' 
+#' @return 
+#' An invisible \code{list} with usable information for other functions, see 
+#' examples.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' getProduct() # list available products
+#' 
+#' # or use regular expression style
+#' getProduct("M.D11C3")
+#' getProduct("M*D11C")
+#' 
+#' # or get information about specific product
+#' internal_info <- getProduct("MOD11C3", quiet = TRUE) 
+#' internal_info
+#' 
+#' @export getProduct
+#' @name getProduct
 getProduct <- function(x=NULL,quiet=FALSE) 
 {    
 
@@ -52,76 +75,62 @@ getProduct <- function(x=NULL,quiet=FALSE)
     
     if (isFile)
     { # in this case it must be a filename
-        fname <- unlist(strsplit(inbase,info$INTERNALSEPARATOR[1]))
-        fname <- unlist(strsplit(fname,"\\."))
-
-        if (info$SENSOR[1] == "MODIS") 
-        { # file TEST
-            
-            if (info$TYPE == "Tile") 
-            { # file check.
-             
-                Tpat    <- "h[0-3][0-9]v[0-1][0-9]"
-                isok <- all((grep(fname[2],pattern=Tpat)) + (substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
-            
-            } else if (info$TYPE == "CMG") 
-            {
-            
-                isok <- all((substr(fname[2],1,1) == "A") + (fname[5]=="hdf") + (length(fname)==5))
-            
-            } else if (info$TYPE == "Swath")
-            {
-                isok <- all((substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
-           
-            } else 
-            {
-                isok <- FALSE
-            }
-            
-            if (!isok)
-            {   
-            
-                stop("Check filename:", inbase,"\nIt seams to be not supported...if it should please send some feedback! matteo.mattiuzzi@boku.ac.at") 
-            
-            }
-               
-            PD <- substr(info$PRODUCT[1], 4, nchar(as.character(info$PRODUCT[1])))
-              
-            if (info$TYPE=="Tile") 
-            {
-                names(fname) <- c("PRODUCT","DATE","TILE","CCC","PROCESSINGDATE","FORMAT")
-            
-            } else if (info$TYPE=="CMG") 
-            {
-                names(fname) <- c("PRODUCT","DATE","CCC","PROCESSINGDATE","FORMAT")
-            
-            } else if (info$TYPE=="Swath") 
-            { 
-                names(fname) <- c("PRODUCT","DATE","TIME","CCC","PROCESSINGDATE","FORMAT")
-           
-            } else 
-            {
-                stop("Not a 'Tile', 'CMG' or 'Swath'! Product not supported. See: 'getProduct()'!")
-            }
-            request <- x
-            names(request) <- "request"
-            result <- c(request,fname,info)
-            result <- result[!duplicated(names(result))]
-            result <- as.list(sapply(result,function(x)as.character(x)))
-
-            return(invisible(result))  
-          
-      } else if (info$SENSOR[1] %in% c("MERIS","C-Band-RADAR")) 
+      fname <- unlist(strsplit(inbase,info$INTERNALSEPARATOR[1]))
+      fname <- unlist(strsplit(fname,"\\."))
+      
+      if (info$TYPE == "Tile") 
+      { # file check.
+        
+        Tpat    <- "h[0-3][0-9]v[0-1][0-9]"
+        isok <- all((grep(fname[2],pattern=Tpat)) + (substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
+        
+      } else if (info$TYPE == "CMG") 
       {
-          return(
-              invisible(
-                  list(request = as.character(info$PRODUCT), PF1 = NULL, 
-                  PF2 = NULL, PD = NULL, PLATFORM = as.character(info$PLATFORM),
-                  TYPE = as.character(info$TYPE), PRODUCT = as.character(info$PRODUCT),
-                  SENSOR = as.character(info$SENSOR), SOURCE=info$SOURCE)
-              )
-          )
-      }         
+        
+        isok <- all((substr(fname[2],1,1) == "A") + (fname[5]=="hdf") + (length(fname)==5))
+        
+      } else if (info$TYPE == "Swath")
+      {
+        isok <- all((substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
+        
+      } else 
+      {
+        isok <- FALSE
+      }
+      
+      if (!isok)
+      {   
+        
+        stop("Check filename:", inbase,"\nIt seams to be not supported...if it should please send some feedback! matteo.mattiuzzi@boku.ac.at") 
+        
+      }
+      
+      PD <- substr(info$PRODUCT[1], 4, nchar(as.character(info$PRODUCT[1])))
+      
+      if (info$TYPE=="Tile") 
+      {
+        names(fname) <- c("PRODUCT","DATE","TILE","CCC","PROCESSINGDATE","FORMAT")
+        
+      } else if (info$TYPE=="CMG") 
+      {
+        names(fname) <- c("PRODUCT","DATE","CCC","PROCESSINGDATE","FORMAT")
+        
+      } else if (info$TYPE=="Swath") 
+      { 
+        names(fname) <- c("PRODUCT","DATE","TIME","CCC","PROCESSINGDATE","FORMAT")
+        
+      } else 
+      {
+        stop("Not a 'Tile', 'CMG' or 'Swath'! Product not supported. See: 'getProduct()'!")
+      }
+      request <- x
+      names(request) <- "request"
+      result <- c(request,fname,info)
+      result <- result[!duplicated(names(result))]
+      result <- as.list(sapply(result,function(x)as.character(x)))
+      
+      return(invisible(result))  
+      
     } else  # if not a file
     {
         if (!quiet) 
@@ -145,17 +154,7 @@ getProduct <- function(x=NULL,quiet=FALSE)
                 )
             )
     
-        } else if (info$SENSOR[1] %in% c("MERIS","C-Band-RADAR"))
-        {
-            return(
-                invisible(
-                    list(request = as.character(info$PRODUCT), PF1 = NULL,
-                    PF2 = NULL, PD = NULL, PLATFORM = as.character(info$PLATFORM),
-                    TYPE = as.character(info$TYPE), PRODUCT = as.character(info$PRODUCT),
-                    SENSOR = as.character(info$SENSOR), SOURCE=info$SOURCE)
-                )       
-            )
-        }         
+        } ## else if ... (add additional sensors)        
     }
 }
 

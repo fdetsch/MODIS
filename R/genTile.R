@@ -1,12 +1,48 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : January 2012
-# Licence GPL v3
-
-genTile <- function(tileSize=1,offset=0,StartNameFrom=c(0,0),extent=list(xmin=-180,xmax=180,ymin=-90,ymax=90)) 
+#' Generate Global Tiling System
+#' 
+#' @description 
+#' This function generates a matrix with bounding box information for a 
+#' global tiling system (based on Lat/Lon). 
+#' 
+#' @param tileSize \code{numeric}, size of a single tile in degrees (EPSG:4326).
+#' @param offset \code{numeric}, shifts the tiling system in upper-left 
+#' direction.
+#' @param StartNameFrom \code{numeric}. \code{c(Lat-Direction,Lon-Direction)} 
+#' start number in the naming of the tiles.
+#' @param extent \code{list}. Tile system extent information, basically the 
+#' coverage of the data on server.
+#' 
+#' @return 
+#' A \code{matrix}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @seealso 
+#' \code{\link{getTile}}.
+#' 
+#' @examples 
+#' # 1x1 degree tiling system
+#' e1 <- genTile()  
+#' head(e1)
+#'   
+#' # 10x10 degree tiling system with offset to be aligned to Geoland2 Dataset
+#' e2 <- genTile(tileSize = 10, offset = (1/112) / 2)
+#' head(e2)
+#' 
+#' # Tiling system for SRTMv4 data (CGIAR-CSI) 
+#' e3 <- genTile(tileSize = 5, StartNameFrom = c(1, 1), 
+#'               extent = list(xmin = -180, xmax = 180, ymin = -60,ymax = 60)) 
+#' head(e3)               
+#' 
+#' @export genTile
+#' @name genTile
+genTile <- function(tileSize = 1, offset = 0, StartNameFrom = c(0, 0),
+                    extent = list(xmin = -180, xmax = 180, ymin = -90, ymax = 90)) 
 {
 
     # offset is used in case of pixel centrum reference. In such case the offset is res/2
-    if (offset!=0) {cat("Warning! Tiles crossing LAT extremas (-90 and +90) are not meaningfull for now! For those tiles the resulting shift in LON is not computed!\n")} 
+    if (offset!=0) {cat("Warning! Tiles crossing LAT extremas (-90 and +90) are not meaningful for now! For those tiles the resulting shift in LON is not computed!\n")} 
     
     # set origin in UL
     LON <- seq(extent$xmin,extent$xmax,by=tileSize)

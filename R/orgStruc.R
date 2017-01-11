@@ -1,7 +1,50 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date: August 2011
-# Licence GPL v3
-
+#' Reorganise MODIS Files in Local Data Archive
+#' 
+#' @description 
+#' Re-organise the storage structure of your MODIS archive according to the 
+#' settings in \code{options("MODIS_arcStructure")}. Depending on the specified 
+#' \code{'source'} , you can also use this function to gather all MODIS grid 
+#' files on you computer and organise them according to '~/.MODIS_opts.R'. The 
+#' main purpose is to organise the archive, but it is also possible to copy a 
+#' subset of files to a desidered location!
+#' 
+#' @param from \code{character}. Local path to look for MODIS files, defaults to 
+#' \code{options("MODIS_localArcPath")} (see \code{\link{MODISoptions}}).
+#' @param to \code{character}. Target folder to move (or copy) MODIS files to, 
+#' defaults to \code{options("MODIS_localArcPath")}.
+#' @param structure \code{character}. Storage structure, defaults to 
+#' \code{options("MODIS_arcStructure")} (see Examples).
+#' @param pattern Regular expression passed to \code{\link{list.files}}. Insert 
+#' a pattern if you want to extract specific files from your archiv.
+#' @param move \code{logical}. If \code{TRUE} (default), files are moved and 
+#' duplicated files are deleted. If \code{FALSE}, files are just copied and thus 
+#' remain in the origin folder. Note that the copying process performs rather 
+#' slowly when dealing with large files, e.g. 250-m 'MOD13Q1'.
+#' @param quiet \code{logical}, defaults to \code{FALSE}.
+#' 
+#' @return 
+#' If \code{quiet = FALSE}, information on how many files have been moved (or 
+#' copied) and deleted is printed to the console.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' # MOVE all MODIS grid data to the directory and structure as defined in 
+# '~/.MODIS_opts.R' file; see also
+#' # options("MODIS_localArcPath", "MODIS_arcStructure")
+#' orgStruc(move = TRUE)
+#' 
+#' # COPY all MOD13Q1 from 2001 to folder "~/MyFiles/MOD13Q1.collection/"
+#' orgStruc(pattern="MOD13Q1.A2001*.",to="~/MyFiles",structure="PRODUCT.CCC")
+#' 
+#' # COPY all MOD13Q1 to folder "~/MyFiles/"
+#' orgStruc(pattern="MOD13Q1.*.",to="~/MyFiles",structure="") 
+#' }
+#' 
+#' @export orgStruc
+#' @name orgStruc
 orgStruc <- function(from,to,structure, pattern, move=FALSE, quiet=FALSE)
 {	
 	

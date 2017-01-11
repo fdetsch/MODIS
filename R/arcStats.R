@@ -1,18 +1,68 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date : July 2012
-# Licence GPL v3
-
-
+#' Get Summary of Local MODIS Data
+#' 
+#' @description 
+#' In the same manner as \code{\link{getHdf}}, this function quantifies the 
+#' availability of local MODIS hdf data and gives you an overview (plot or/and 
+#' table) of locally available MODIS grid hdf files. 
+#' 
+#' @param product \code{character}, see \code{\link{getProduct}}. MODIS grid 
+#' product to be checked.
+#' @param collection \code{character} or \code{integer}, see 
+#' \code{\link{getCollection}}. MODIS product version. 
+#' @param extent Extent information, defaults to \code{'global'}. See
+#' \code{\link{getTile}}.
+#' @param begin \code{character}. Begin date of MODIS time series, see 
+#' \code{\link{transDate}}.
+#' @param end \code{character}. End date, defaults to \code{'Today'} expressed in 
+#' a function. 
+#' @param asMap Controls output type. Possible options are \code{TRUE} (png), 
+#' \code{FALSE} (csv) or \code{'both'}.
+#' @param outName \code{character}. Name of output file, defaults to 
+#' 'product.collection.YYYYMMDDHHMMSS.png' (or *.csv) of the function call or, 
+#' if applicable, 'product.collection.extent.YYYYMMDDHHMMSS.png' (or *.csv).
+#' @param ... Arguments passed to \code{\link{MODISoptions}}, most importantly 
+#' \code{outProj} and \code{outDirPath}.
+#' 
+#' @return 
+#' An invisible \code{NULL} (provably this will change to a matrix-like object 
+#' similar to the '*.csv' output). If \code{asMap= TRUE}, a 'table.csv' and a 
+#' 'image.png' file(s) in \code{outDirPath}.
+#' 
+#' @author 
+#' Matteo Mattiuzzi
+#' 
+#' @examples 
+#' \dontrun{
+#' # arcStats result on a webserver:
+#' # "http://ivfl-info.boku.ac.at/index.php/eo-data-processing/status-of-the-local-archive"
+#' #
+#' # The following examples are expecting that you have some data stored locally!
+#' ########################################################### 
+#' # generates 2 png's and 2 csv's one for TERRA one for AQUA
+#' arcStats(product="M.D13Q1")
+#' 
+#' # generates 2 png's and 2 csv's one for TERRA one for AQUA with the specified countries.
+#' arcStats(product="M.D13Q1",extent=c("austria","germany","italy"))
+#' 
+#' # generates 1 png and 1 csv for AQUA.
+#' arcStats(product="MYD13Q1",begin="2005001",outName="MyDataStart2005")
+#' 
+#' # generates 1 png for AQUA for the selected area and plots it in 'Sinusoidal'.
+#' arcStats(product="MYD13Q1",begin="2005001",asMap=TRUE, outName="InteractiveSelection2005",
+#'          extent=getTile(), outProj="asIn")
+#' 
+#' # generates 1 png for AQUA for the selected area and plots it in 'Geographic' Coordinates.
+#' arcStats(product="MYD13Q1",begin="2005001",asMap=TRUE, outName="InteractiveSelection2005",
+#'          extent=getTile(), outProj="GEOGRAPHIC")
+#' }
+#' 
+#' @export arcStats
+#' @name arcStats
 arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.01", end=format(Sys.time(), "%Y.%m.%d"), asMap=TRUE, outName=NULL,...)
 {  
 # product="MYD17A2"; collection="005"; extent=list(xmin=-20,xmax=40,ymin=10, ymax=20); begin="2000.08.01"; end="2000.08.21"; asMap="both"; outName=NULL;u=1;z=1
 # product="MOD13Q1"; collection="005"; extent='global'; begin="2000.08.01"; end="2004.08.21"; asMap="both"; outName=NULL;u=1;z=1
  
-    if (!require(rgdal))
-    {
-        stop("Please install 'rgdal': install.packages('rgdal')")
-    }
-
     date4name <- format(Sys.time(), "%Y%m%d%H%M%S") 
           
     if(is.null(outName))
@@ -110,7 +160,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
           
           if (length(n)!=0)
           {
-              meanSize <- mean(file.size(n,units="Mb")) 
+              meanSize <- mean(fileSize(n,units="Mb")) 
               n <- sapply(n,function(x)
               {
                   date <- strsplit(normalizePath(dirname(x),winslash="/"),"/")[[1]]
@@ -135,16 +185,6 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
       # mapping 
       if (isTRUE(asMap)|tolower(asMap)=="both")
       {
-#                if (!(require(maptools)))
-#                {
-#                    stop("Please install maptools package: install.packages('maptools')")
-#                }
-          
-          if (!(require(mapdata)))
-          {
-              stop("Please install mapdata package: install.packages('mapdata')")
-          }
-
           srx <- sr
           srx@data <- data.frame(percent=(round(table$percent)))
            
@@ -163,17 +203,17 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
                  
           if(extent[1]=="global")
           {
-              globe <- map("world",plot=FALSE)
+              globe <- maps::map("world",plot=FALSE)
           } else
           {
-              globe <- map("worldHires",plot=FALSE,xlim=xlim,ylim=ylim)
+              globe <- maps::map("worldHires",plot=FALSE,xlim=xlim,ylim=ylim)
               xax   <- xax[xax$x>=min(xlim) & xax$x<=max(xlim),]
               yax   <- yax[yax$y>=min(ylim) & yax$y<=max(ylim),]
           }  
-          coordinates(xax) <- ~x+y
-          coordinates(yax) <- ~x+y 
-          proj4string(xax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-          proj4string(yax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"                               
+          sp::coordinates(xax) <- ~x+y
+          sp::coordinates(yax) <- ~x+y 
+          sp::proj4string(xax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
+          sp::proj4string(yax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"                               
           
           globe$x[!is.na(globe$x) & globe$x > 180] <- 180
           
@@ -183,7 +223,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
           #invisible(set_ll_warn(TRUE)) # shouldn't be necessary becaus of the trimming
           #iwa <- options()$warn
           #options(warn=-1)
-          proj4string(globe) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
+          sp::proj4string(globe) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
           #options(warn=iwa)
              
           if(!isLonLat(opts$outProj))
@@ -195,11 +235,11 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
               xlim <- c(xmin(tmp),xmax(tmp))
               ylim <- c(ymin(tmp),ymax(tmp))
               
-              xax <- spTransform(xax,CRS(opts$outProj))
-              yax <- spTransform(yax,CRS(opts$outProj))
+              xax <- sp::spTransform(xax,CRS(opts$outProj))
+              yax <- sp::spTransform(yax,CRS(opts$outProj))
 
-              globe <- spTransform(globe,CRS(opts$outProj))
-              srx   <- spTransform(srx,CRS(opts$outProj))
+              globe <- sp::spTransform(globe,CRS(opts$outProj))
+              srx   <- sp::spTransform(srx,CRS(opts$outProj))
           }
           
           xax <- as.data.frame(xax)[,c("x","tileID")]

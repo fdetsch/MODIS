@@ -6,7 +6,7 @@ Acquisition and Processing of MODIS Products
 
 ### Installation
 
-As of 2017-01-10, **MODIS** is finally available from [CRAN](https://cran.r-project.org/package=devtools) and can be installed via 
+As of 2017-01-10, **MODIS** is finally available from [CRAN](https://cran.r-project.org/package=MODIS) and can be installed via 
 
 
 ```S
@@ -14,7 +14,7 @@ install.packages("MODIS")
 ```
 
 
-To install the development version of the package, first install [devtools](https://cran.r-project.org/package=devtools) and subsequently run
+To install the development version of the package, first install **[devtools](https://cran.r-project.org/package=devtools)** and subsequently run
 
 ```S
 devtools::install_github("MatMatt/MODIS", ref = "develop")

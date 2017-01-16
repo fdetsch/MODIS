@@ -599,18 +599,26 @@ filesUrl <- function(url)
       opts <- combineOptions()
       
       # download website to opts$auxPath
-      file_out_dn <- opts$auxPath
-      file_out_bn <- unlist(strsplit(url, "/"))
-      file_out <- paste(file_out_dn, file_out_bn[length(file_out_bn)], sep = "/")
-      download.file(url = url, destfile = file_out, quiet = TRUE, method = "libcurl")
+      file_out <- paste0(opts$auxPath, "/index.html")
+      jnk <- capture.output(
+        download.file(url = url, destfile = file_out, quiet = TRUE, method = "wget")
+      )
       
       # extract information from website content
       content <- readLines(file_out)
       
-      fnames <- sapply(content, function(i) {
-        unlist(strsplit(i, " "))[length(unlist(strsplit(i, " ")))]
-      })
-      names(fnames) <- NULL
+      fnames <- sapply(
+        strsplit(
+          sapply(
+            lapply(strsplit(content, "<a href=")[[1]], function(i) {
+              strsplit(i, "</a>")[[1]]
+            }), 
+            "[[", 1), 
+          ">"), 
+        "[[", 2)
+      
+      fnames <- fnames[grep("^MOD16.*MERRAGMAO$|^Y2|^D|^MOD16.*hdf$", fnames)]
+      fnames <- gsub("_MERRAGMAO", "", fnames)
 
       # remove temporary file and return output
       invisible(file.remove(file_out))
@@ -714,6 +722,11 @@ ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
               } else {
                 '-n -L -c ~/.cookies.txt -b ~/.cookies.txt'
               }
+              
+            ## else if server == "NTSG", choose 'wget' as download method  
+            } else if (server == "NTSG") {
+              method <- "wget"
+              extra <- getOption("download.file.extra")
               
             ## else use default settings
             } else {

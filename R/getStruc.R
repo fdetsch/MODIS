@@ -165,34 +165,29 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
       startPath <- strsplit(path$remotePath$NTSG,"YYYY")[[1]][1] # cut away everything behind YYYY
       opt <- options("warn")
       options("warn"=-1)
-      rm(years)
-      
-      once <- TRUE
-      for (g in 1:sturheit)
-      {
-        cat("Downloading structure from 'NTSG'-server! Try:", g, "\n")
-        years <- try(filesUrl(startPath))
-        
-        ## remove 'Geotiff' folder; applies for 'MOD16A3' only
-        if (length(grep("Geotiff", years) > 0))
-          years <- years[-grep("Geotiff", years)]
-        
-        years_new <- gsub("^Y", "", years)
 
-        if(g < (sturheit/2))
-        {
-          Sys.sleep(wait)
-        } else
-        {
-          if(once & (30 > wait)) {cat("Server problems, trying with 'wait=",max(30,wait),"\n")}
-          once <- FALSE                        
-          Sys.sleep(max(30,wait))
-        }
-        if(exists("years"))
-        {    
+      once <- TRUE
+      for (g in 1:sturheit) {
+        
+        cat("Downloading structure from 'NTSG'-server! Try:", g, "\n")
+        years <- try(filesUrl(startPath), silent = TRUE)
+        
+        if (!inherits(years, "try-error")) {
+          years_new <- gsub("^Y", "", years)
           break
+          
+        } else {  
+          
+          if (g < (sturheit/2)) {
+            Sys.sleep(wait)
+          } else {
+            if (once & (30 > wait)) {
+              cat("Encountering server problems, now trying with 'wait = 30'...\n")
+            }
+            once <- FALSE                        
+            Sys.sleep(max(30,wait))
+          }
         }
-        cat("                                                      \r") 
       }
       options("warn"=opt$warn)
       

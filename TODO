@@ -29,3 +29,17 @@ MODISoptions()
 - MODIS::MODISoptions() fails when package is not attached
   (Error in match.fun(FUN) : node stack overflow
    Error during wrapup: node stack overflow)
+
+runGdal()
+- follwoing issue #15 (https://github.com/MatMatt/MODIS/issues/15), the runGdal 
+  command included therein fails with a fresh installation of the MODIS package. 
+  The corresponding error message is (possibly related to non-existing 
+  'outDirPath'):
+Error in readChar(con, 5L, useBytes = TRUE) : cannot open the connection
+In addition: Warning messages:
+1: In dir.create(dir_aux) :
+  cannot create dir 'C:\Users\fdetsch\Documents\MODIS_ARC\PROCESSED\.auxiliaries', reason 'No such file or directory'
+2: In file.create(to[okay]) :
+  cannot create file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', reason 'No such file or directory'
+3: In readChar(con, 5L, useBytes = TRUE) :
+  cannot open compressed file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', probable reason 'No such file or directory'

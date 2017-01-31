@@ -189,7 +189,7 @@ setMethod("getHdf",
         jnk <- capture.output(
           onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
                                  collection = product$CCC, begin = tLimits$begin, 
-                                 end = tLimits$end, wait = 0)
+                                 end = tLimits$end, wait = wait)
         )
         
         if(!is.na(onlineInfo$online))
@@ -314,7 +314,7 @@ setMethod("getHdf",
                       }
                       
                       dates[[l]][i,j+1] <- HDF
-                      hdf <- ModisFileDownloader(HDF, wait=wait, quiet=opts$quiet)
+                      hdf <- ModisFileDownloader(HDF, wait=wait, opts = opts)
                       mtr[j] <- hdf
                       
                     } else 

@@ -124,20 +124,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
           cat("FTP is not available, using stored information from previous calls (this should be mostly fine)\n")
         } else 
         {
-          ## if 'product' is hosted on NTSG server, remove non-product folders 
-          ## and files
-          if (productN$SOURCE[[1]][1] == "NTSG") {
-            dirs <- dirs[grep("^MOD16", dirs)]
-            
-            # remove .pdf files  
-            if (length(grep(".pdf$", dirs)) > 0)
-              dirs <- dirs[-grep(".pdf$", dirs)]
-            
-            # remove '_MERRAGMAO' extension
-            dirs <- dirs[grep("_MERRAGMAO", dirs)]
-            dirs <- gsub("_MERRAGMAO", "", dirs)
-          }
-          
+
           ## information about products and collections    			  
           ls_prod_col <- sapply(dirs, function(x) {strsplit(x, "\\.")})
           prod <- sapply(ls_prod_col, "[[", 1)

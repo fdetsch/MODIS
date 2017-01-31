@@ -119,8 +119,8 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
   # opt <- list()
   
   opts <- combineOptions(...)
-  
-  outDirPath     <- setPath(opts$outDirPath)
+
+  outDirPath     <- setPath(outDirPath)
   bitShift       <- opts$bitShift
   bitMask        <- opts$bitMask
   threshold      <- opts$threshold

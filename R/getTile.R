@@ -3,16 +3,22 @@
 #' @description 
 #' Get MODIS, MERIS, or SRTM tile ID(s) for a specific geographic area.
 #' 
-#' @param extent Extent information, see Details.
+#' @param extent Extent information, see Details. Ignored when \code{tileH} and
+#' \code{tileV} are specified.
 #' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
 #' vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
-#' \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}. 
-#' Ignored if 'extent' is specified.
-#' @param buffer \code{numeric} (in map units). Buffers the specified 'extent', 
-#' negative values are allowed. If 'extent' is a vector object (\code{Spatial*} 
-#' or \code{character} name of a map object), only one value is allowed (e.g., 
-#' \code{buffer = 0.5}) and \code{\link{gBuffer}} is used. In all other cases, 
-#' also \code{buffer = c(x, y)} can be specified.
+#' \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.
+#' @param buffer \code{numeric}. Buffers the specified 'extent', negative values
+#' are allowed. 
+#' \tabular{l}{If 'extent' is a vector type object (e.g. \code{\link{map}}, shp file...)
+#' \code{buffer} is specified in map units, usually meters or degrees and  
+#' only one value is allowed (e.g., \code{buffer = 0.5}) and \code{\link{gBuffer}} 
+#' is used.}
+#' \tabular{l}{If 'extent' is a \code{raster}, \code{\link{extend}} or 
+#' \code{\link{crop}} are used. In such case the \code{buffer} is meant as number 
+#' of pixels to be added/removed.  See \code{\link{extend}} for details.} 
+#' \tabular{l}{If 'extent' is an \code{\link{Extent}} object, \code{buffer} is
+#' passes to \code{\link{extend}}, see there the details.}
 #' @param system \code{character}, defaults to \code{"MODIS"}. Available 
 #' alternatives are \code{"MERIS"} and \code{"SRTM"} (see Note).
 #' @param zoom \code{logical}, defaults to \code{TRUE}. The interactive mode is 
@@ -115,121 +121,112 @@
 #' 
 #' # Search for specific map name patterns (use with caution):
 #' m1 <- search4map("Per")
-#' getTile(extent = m2)
+#' getTile(extent = m1)
 #' 
 #' # Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 #' m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
 #' getTile(extent = m2)
 #' 
-#' # SRTM and MERIS data
-#' getTile(extent = c("austria", "germany", "switzerland"), system = "SRTM")
-#' getTile(extent = c("austria", "germany", "switzerland"), system = "MERIS")
+#' # SRTM and MERIS data (does not work at the moment)
+#' #getTile(extent = c("austria", "germany", "switzerland"), system = "SRTM")
+#' #getTile(extent = c("austria", "germany", "switzerland"), system = "MERIS")
 #' }
 #' 
 #' @export getTile
 #' @name getTile
 getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, system = "MODIS", zoom = TRUE)
 {
+  if(toupper(system)=='MODIS')
+  {
+    out <- getTileMODIS(extent = extent, tileH = tileH, tileV = tileV, buffer = buffer, zoom = zoom)
+  }
+  return(out)
+}
+
+getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, zoom = TRUE)
+{
   # debug:
-  # extent = "austria"; tileH = NULL; tileV = NULL; buffer = NULL; system = "MODIS"; zoom=TRUE
+  # extent = "austria"; tileH = NULL; tileV = NULL; buffer = NULL; zoom=TRUE
   
   # if extent is a former result of getTile
-  if (inherits(extent,"MODISextent")) 
+  if (inherits(extent,"MODISextent"))
+  {
     return(extent)
-  
-  usePoly<- TRUE # "usePoly=F" works without suggested packages, "usePoly=T" only for MODIS system + having rgdal and rgeos installed
-  target <- NULL  # if extent is a raster*/Spatial* and has a different proj it is changed
-  system <- toupper(system)
-  
-  if (system == "MERIS") {
-    # generate tiling structure of Culture-Meris data
-    tiltab  <- genTile(tileSize = 5)
-    usePoly <- FALSE
-  } else if (system == "SRTM") {
-    # generate tiling structure of SRTMv4 data
-    tiltab  <- genTile(tileSize = 5, extent=list(xmin=-180, xmax=180, ymin=-60, ymax=60), StartNameFrom=c(1,1))
-    usePoly <- FALSE
   }
   
-  # supported extent: shp, list, raster-Extent/-Layer/-Brick/-Stack, map or blank
-  # everything (except 'shp' and 'map') merges to an raster 'Extent' object
-  # 'shp' and 'map' to a sp Polygon object (since the exact conture is used not the bounding box of the extent)
-  # argument extent is prioritary to tileV/H.
-  
-  # if extent is a raster or a "path/name" to a rasterfile.
-  if(inherits(extent,"character") & length(extent)==1)
+  # if 'tileH' and 'tileV' are present, exit function after that
+  if (!is.null(tileH) & !is.null(tileV)) 
   {
-    if (file.exists(extent))
-    {
-      if (extension(extent)!= ".shp")
-      {
-        test <- try(raster(extent), silent=TRUE)
-        if (!inherits(test,"try-error"))
-        {
-          extent  <- test
-        }
-      }
-    }
-  }
-  
-  # if extent is a shapefileNAME    
-  test <- try(shapefile(extent), silent=TRUE)
-  if (!inherits(test,"try-error"))
-  {
-    extent <- test
-  }
-  
-  if (is.null(extent)) {
+    tiltab <- tiletable
     
-    # if 'tileH' and 'tileV' are missing
-    if (is.null(tileH) | is.null(tileV)) {
-      extent <- mapSelect(zoom=zoom)
-      
-      # else  
-    } else {
-      tileH <- as.numeric(tileH)
-      tileV <- as.numeric(tileV)
-      
-      if (system == "MODIS") 
-        tiltab <- tiletable
-      
-      tt  <- tiltab[(tiltab$ih %in% tileH) & (tiltab$iv %in% tileV) & (tiltab$xmin>-999),]
-      ext <- extent(c(min(tt$xmin),max(tt$xmax),min(tt$ymin),max(tt$ymax)))
-      
-      tt$iv <- sprintf("%02d", tt$iv)
-      tt$ih <- sprintf("%02d", tt$ih)
-      
-      tileH <- sprintf("%02d",tileH)
-      tileV <- sprintf("%02d",tileV)
-      
-      if (system == "SRTM") {
-        tilesSUB <- as.character(apply(tt,1, function(x) {
-          paste0("_", x[2], "_",x[1])
-        }))
-        tiles <- as.character(sapply(tileH, function(x){paste0("_",  x, "_", tileV)}))
-        
-      } else if (system == "MODIS") {
-        tilesSUB <- as.character(apply(tt,1, function(x) {
-          paste0("h", x[2], "v",  x[1])
-        }))
-        tiles <- as.character(sapply(tileH, function(x){paste0("h", x, "v", tileV)}))
-      }
-      
-      if (!all(tiles %in% tilesSUB))  # all possible tiles vs all available
-      {
-        rem <- paste0(tiles[!tiles %in% tilesSUB],collapse=", ")
-        cat(paste0("The following 'tiles' do not exist:\n",rem,"\n"))
-        tiles <- tilesSUB
-        tileH <- unique(tt$ih)
-        tileV <- unique(tt$iv)
-      }
-      result <- list( tile = tiles, tileH = as.numeric(tileH), tileV = as.numeric(tileV), extent = extent, system = system, target=NULL)
-      class(result) <- "MODISextent"
-      return(result)
+    tileH <- as.numeric(tileH)
+    tileV <- as.numeric(tileV)
+    
+    tt     <- tiltab[(tiltab$ih %in% tileH) & (tiltab$iv %in% tileV) & (tiltab$xmin>-999),]
+    ext    <- extent(c(min(tt$xmin),max(tt$xmax),min(tt$ymin),max(tt$ymax)))
+    
+    tt$iv <- sprintf("%02d", tt$iv)
+    tt$ih <- sprintf("%02d", tt$ih)
+    
+    tileH <- sprintf("%02d",tileH)
+    tileV <- sprintf("%02d",tileV)
+    
+    tilesSUB <- as.character(apply(tt,1, function(x) {
+      paste0("h", x[2], "v",  x[1])
+    }))
+    tiles <- as.character(sapply(tileH, function(x){paste0("h", x, "v", tileV)}))
+    
+    if (!all(tiles %in% tilesSUB))  # all possible tiles vs all available
+    {
+      rem <- paste0(tiles[!tiles %in% tilesSUB],collapse=", ")
+      cat(paste0("The following 'tiles' do not exist:\n",rem,"\n"))
+      tiles <- tilesSUB
+      tileH <- unique(tt$ih)
+      tileV <- unique(tt$iv)
     }
+    result <- list( tile = tiles, tileH = as.numeric(tileH), tileV = as.numeric(tileV), extent = extent, system = 'MODIS', target=NULL)
+    class(result) <- "MODISextent"
+    return(result)
+  }
+
+  usePoly <- TRUE # "usePoly=F" works without suggested packages, "usePoly=T" only for MODIS system + having rgdal and rgeos installed
+  target  <- NULL  # if extent is a raster*/Spatial* and has a different proj it is changed, the information is added here
+  fromMap <- FALSE
+  crs <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0' # shall be projection(MODIS:::sr)
+  
+  # if extent is null, do mapSelect. Output class extent. 
+  if(is.null(extent))
+  {
+    extent  <- mapSelect(zoom=zoom)
+    # outProj <- crs # not sure about that
+  }  
+  
+  # list input. Output class extent. TODO a check for correctness
+  if (inherits(extent, "list")) 
+  {
+    if (length(extent$extent) == 4) 
+    {
+      extent <- extent$extent
+    }
+    extent <- extent(c(min(extent$xmin,extent$xmax), max(extent$xmin,extent$xmax), min(extent$ymin,extent$ymax), max(extent$ymin,extent$ymax)))
   }
   
-  # if CHARACTER (country name of MAP)     
+  # filename string to Raster/vector conversion
+  if(inherits(extent,"character") & length(extent)==1) # lengh>1 it should be only a mapname for maps:::map
+  {
+    if (raster::extension(extent)=='.shp')
+    {
+      extent <- shapefile(extent)
+    } else 
+    {
+      if (file.exists(extent))
+      {
+        extent <- raster(extent)
+      }
+    }
+  }  
+  
+  # character (country name of MAP) to maps::map conversion     
   if (inherits(extent, "character"))
   {
     try(testm <- maps::map("worldHires", extent, plot = FALSE),silent = TRUE)
@@ -240,200 +237,87 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, sy
     extent <- maps::map("worldHires", extent, plot = FALSE, fill=TRUE)
   }
   
-  # if MAP (from mapdata/maps)
-  fromMap <- FALSE
+  # maps::map (from mapdata/maps) to SpatialPolygons
   if (inherits(extent, "map"))
   {
-    if (system == "MODIS")
-    {
-      extent  <- m2SP(extent, extent$names,CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
-      fromMap <- TRUE
-      usePoly <- TRUE            
-    } else
-    {
-      extent <- extent(c(extent$range[1],extent$range[2],extent$range[3],extent$range[4]))
-    }
+    extent  <- m2SP(extent, extent$names, CRS(crs))
   }
   
-  # if raster* object or Spatial*
-  if (length(grep(class(extent),pattern="Raster*"))==1 | length(grep(class(extent),pattern="Spatial*"))==1)
+  if(!is.null(buffer))
   {
-    ext     <- extent
-    outProj <- projection(ext)
-    
-    if (!isLonLat(ext)) 
-    { 
-      if(length(grep(class(extent),pattern="Raster*"))==1)
+    if(length(grep(class(extent), pattern="^Spatial*")==1))
+    {
+      if (length(buffer)>1)
       {
-        extent <- projectExtent(ext,"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+        buffer <- buffer[1]
+        warning(paste0("'buffer' on a vector object must have length==1. Using only the first element of 'buffer': ",buffer))
+      }
+      if(isLonLat(extent))
+      {
+        # gBuffer not allowed on LatLon, use fake CRS to bypass this. Found in: 
+        # http://stackoverflow.com/questions/9735466/how-to-compute-a-line-buffer-with-spatiallinesdataframe
+        win                     <- getOption("warn") 
+        options(warn=-2)
+        inproj                  <- sp::proj4string(extent)
+        sp::proj4string(extent) <- CRS("+init=epsg:3395")
+        extent                  <- gBuffer(extent,width=buffer)
+        sp::proj4string(extent) <- CRS(inproj)
+        options(warn=win)
       } else
       {
-        extent <- spTransform(ext,CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+        extent <- gBuffer(extent, width=buffer)
       }
-    }
-    
-    pixelSize <- NULL    
-    if(length(grep(class(extent),pattern="Raster*"))==1)
+    } else if (length(grep(class(extent), pattern="^Raster*")==1))
     {
-      pixelSize <- res(ext)
-      extent    <- extent(extent)
-    }
-    if (fromMap) # this is required because if it exists it would overrule defaut 'outProj' in this case not desidered
+      if (buffer[1]>0) # this is a simplification. As in theory we could have buffer=c(-1,1)? 
+      {
+        extent <- extend(extent,buffer)  
+      } else
+      {
+        extent <- crop(extent,buffer)  
+      }  
+    } else if(inherits(extent,"Extent"))
     {
-      outProj <- NULL
+      extent <- extend(extent,buffer)  
     }
-    target <- list(outProj = outProj, extent = extent(ext), pixelSize = pixelSize) 
   }
   
-  if (length(grep(class(extent), pattern="^SpatialPolygon*")==1) & !usePoly)
+  # this needs to be done in order to use rgdal:::over to intersect geometies 
+  if (length(grep(class(extent),pattern="Raster*"))==1 | length(grep(class(extent),pattern="Spatial*"))==1)
   {
-    extent <- extent(extent)
-  }
-  # TODO; Quick and dirty
-  if(length(grep(class(extent), pattern="^SpatialLine*"))==1 | length(grep(class(extent), pattern="^SpatialPoint*"))==1)
-  {
-    extent  <- extent(extent)
-    usePoly <- FALSE
-  }
-  
-  if (inherits(extent, "list")) 
-  {
-    if (length(extent$extent) == 4) 
+    target <- list(outProj = projection(extent), extent = extent(extent), pixelSize = NULL) 
+    
+    if(length(grep(class(extent), pattern="Raster*"))==1)
     {
-      extent <- extent$extent
-    }
-    extent <- extent(c(min(extent$xmin,extent$xmax), max(extent$xmin,extent$xmax), min(extent$ymin,extent$ymax), max(extent$ymin,extent$ymax)))
-  }
-  
-  if (inherits(extent,"Extent"))
-  {    
-    # if min/max is inverted
-    Txmax <- max(extent@xmin,extent@xmax)
-    Txmin <- min(extent@xmin,extent@xmax)
-    Tymax <- max(extent@ymin,extent@ymax)
-    Tymin <- min(extent@ymin,extent@ymax)
-    
-    extent@ymin <- Tymin
-    extent@ymax <- Tymax
-    extent@xmin <- Txmin
-    extent@xmax <- Txmax        
-    
-    if (!is.null(buffer)) 
-    {
-      if (length(buffer) == 1) 
-      {
-        buffer <- c(buffer, buffer)
-      }
-      extent@xmin <- extent@xmin - buffer[1]
-      extent@xmax <- extent@xmax + buffer[1]
-      extent@ymin <- extent@ymin - buffer[2]
-      extent@ymax <- extent@ymax + buffer[2]
-    }
-    
-  } else if (inherits(extent,"SpatialPolygonsDataFrame") & !is.null(buffer))
-  {
-    if (length(buffer)>1)
-    {
-      buffer <- buffer[1]
-      warning(paste0("'buffer' on a vector object must have length==1. Using only the first element of 'buffer': ",buffer[1]))
-    }
-    
-    # gBuffer doesn't allow buffer on LatLon, fake CRS bypass this. Found in: 
-    # http://stackoverflow.com/questions/9735466/how-to-compute-a-line-buffer-with-spatiallinesdataframe
-    win                 <- getOption("warn") 
-    options(warn=-2)
-    inproj              <- sp::proj4string(extent)
-    sp::proj4string(extent) <- CRS("+init=epsg:3395")
-    extent              <- gBuffer(extent,width=buffer)
-    sp::proj4string(extent) <- CRS(inproj)
-    options(warn=win)
-  }
-  
-  if(!usePoly)
-  {
-    if (system == "SRTM") 
-    {
-      if (extent@ymin >  60){stop("Latitudes are higer than SRTM coverage! Select an area inside Latitudes -60/+60\n")}
-      if (extent@ymax < -60){stop("Latitudes are lower than SRTM coverage! Select an area inside Latitudes -60/+60\n")}
-      if (extent@ymin < -60){extent@ymin <- -60; warning("Minimum Latitude is out of SRTM coverage, extent is trimmed to min LAT -60\n")}
-      if (extent@ymax >  60){extent@ymax <-  60;  warning("Maximum Latitude is out of SRTM coverage, extent is trimmed to max LAT 60\n")}
-    }
-    
-    xmn <- raster::xmin(extent); xmx <- raster::xmax(extent)
-    ymn <- raster::ymin(extent); ymx <- raster::ymax(extent)
-    
-    minTile <- tiltab[(tiltab$xmin <= xmn & xmn <= tiltab$xmax) & 
-                        (tiltab$ymin <= ymn & ymn <= tiltab$ymax), c("iv", "ih")]
-    maxTile <- tiltab[(tiltab$xmin <= xmx & xmx <= tiltab$xmax) & 
-                        (tiltab$ymin <= ymx & ymx <= tiltab$ymax), c("iv", "ih")]
-    tiles   <- rbind(maxTile,minTile)
-    
-    tileV <- as.vector(min(tiles[1]):max(tiles[1]))
-    tileH <- as.vector(min(tiles[2]):max(tiles[2]))
-    
-    vmax  <- max(tiltab$iv)
-    hmax  <- max(tiltab$ih)
-    
-    if (min(tileH) < 0 | max(tileH) > hmax) 
-    {
-      stop(paste("'tileH' number(s) must be between 0 and",hmax, sep = ""))
-    }
-    if (min(tileV) < 0 | max(tileV) > vmax) 
-    {
-      stop(paste("'tileV' number(s) must be between 0 and",vmax, sep = ""))
-    }
-    
-    vsize <- nchar(vmax)
-    hsize <- nchar(hmax)
-    tiles <- list()
-    
-    for (i in seq(along = tileH)) 
-    {
-      if (system == "SRTM")
-      {
-        tiles[[i]] <- paste("_", sprintf(paste("%0", hsize, "d", sep = ""), tileH[i]), "_", sprintf(paste("%0", hsize, "d", sep = ""), tileV), sep = "")
-      } else 
-      {
-        tiles[[i]] <- paste("h", sprintf(paste("%0", hsize, "d", sep = ""), tileH[i]), "v", sprintf(paste("%0", hsize, "d", sep = ""), tileV), sep = "")                        
-      }
-    }
-    result <- list(tile = unlist(tiles), tileH = tileH, tileV = tileV,extent = extent, system = system, target = target)
-    class(result) <- "MODISextent"
-    return(result)
-    
-  } else 
-  {
-    if(length(grep(class(extent),pattern="Spatial*"))==1) 
-    {
-      po <- vector(mode='list',length=length(extent))
-      for(u in seq_along(extent))
-      {
-        po[[u]] <- Polygon(extent@polygons[[u]]@Polygons[[1]]@coords,hole=FALSE)
-      }    
-      extent <- extent(extent)
+      target$pixelSize <- res(extent)
+      extent <- extent(projectExtent(extent,crs))
     } else
     {
-      po <- list(Polygon(cbind(c(extent@xmin,extent@xmax,extent@xmax,extent@xmin,extent@xmin),c(extent@ymax,extent@ymax,extent@ymin,extent@ymin,extent@ymax)),hole=FALSE))
+      extent <- spTransform(extent,CRS(crs))
     }
-    
-    pos  <- Polygons(po,"selection")
-    spos <- SpatialPolygons(list(pos))
-    
-    if (is.na(sp::proj4string(spos)))
-    {
-      sp::proj4string(spos) <- sp::proj4string(sr) # sr
-    }
-    
-    selected <- sr[spos,] # sr 
-    
-    tileH  <- unique(as.numeric(selected@data$h))
-    tileV  <- unique(as.numeric(selected@data$v))
-    result <- as.character(apply(selected@data,1,function(x) {paste("h",sprintf("%02d",x[2]),"v",sprintf("%02d",x[3]),sep="")}))
-    result <- list(tile = result, tileH = tileH, tileV = tileV, extent = extent, system = system, target = target)
-    class(result) <- "MODISextent"
-    return(result)
+  } 
+  if(inherits(extent,'Extent'))
+  {
+    extent <- as(extent, 'SpatialPolygons')
   }
+  
+  if (is.na(sp::proj4string(extent)))
+  {
+    sp::proj4string(extent) <- crs
+  }
+  
+  selected <- sr[extent,] # sr 
+  
+  tileH  <- unique(as.numeric(selected@data$h))
+  tileV  <- unique(as.numeric(selected@data$v))
+  
+  result <- as.character(apply(selected@data,1,function(x) {paste("h",sprintf("%02d",x[2]),"v",sprintf("%02d",x[3]),sep="")}))
+  result <- list(tile = result, tileH = tileH, tileV = tileV, extent = extent, system = 'MODIS', target = target)
+  class(result) <- "MODISextent"
+  return(result)
 }
+ 
+
 
 
 mapSelect <- function(zoom=TRUE)
@@ -578,4 +462,3 @@ st1 <- function (xy)
   for (i in 1:nParts) res[[i]] <- xy[from[i]:to[i], , drop = FALSE]
   res
 }
-

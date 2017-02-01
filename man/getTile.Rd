@@ -8,18 +8,24 @@ getTile(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL,
   system = "MODIS", zoom = TRUE)
 }
 \arguments{
-\item{extent}{Extent information, see Details.}
+\item{extent}{Extent information, see Details. Ignored when \code{tileH} and
+\code{tileV} are specified.}
 
 \item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
 vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
-\url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}. 
-Ignored if 'extent' is specified.}
+\url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.}
 
-\item{buffer}{\code{numeric} (in map units). Buffers the specified 'extent', 
-negative values are allowed. If 'extent' is a vector object (\code{Spatial*} 
-or \code{character} name of a map object), only one value is allowed (e.g., 
-\code{buffer = 0.5}) and \code{\link{gBuffer}} is used. In all other cases, 
-also \code{buffer = c(x, y)} can be specified.}
+\item{buffer}{\code{numeric}. Buffers the specified 'extent', negative values
+are allowed. 
+\tabular{l}{If 'extent' is a vector type object (e.g. \code{\link{map}}, shp file...)
+\code{buffer} is specified in map units, usually meters or degrees and  
+only one value is allowed (e.g., \code{buffer = 0.5}) and \code{\link{gBuffer}} 
+is used.}
+\tabular{l}{If 'extent' is a \code{raster}, \code{\link{extend}} or 
+\code{\link{crop}} are used. In such case the \code{buffer} is meant as number 
+of pixels to be added/removed.  See \code{\link{extend}} for details.} 
+\tabular{l}{If 'extent' is an \code{\link{Extent}} object, \code{buffer} is
+passes to \code{\link{extend}}, see there the details.}}
 
 \item{system}{\code{character}, defaults to \code{"MODIS"}. Available 
 alternatives are \code{"MERIS"} and \code{"SRTM"} (see Note).}
@@ -121,22 +127,21 @@ getTile(extent = c("Austria", "Germany"))
 
 # Search for specific map name patterns (use with caution):
 m1 <- search4map("Per")
-getTile(extent = m2)
+getTile(extent = m1)
 
 # Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
 getTile(extent = m2)
 
-# SRTM and MERIS data
-getTile(extent = c("austria", "germany", "switzerland"), system = "SRTM")
-getTile(extent = c("austria", "germany", "switzerland"), system = "MERIS")
+# SRTM and MERIS data (does not work at the moment)
+#getTile(extent = c("austria", "germany", "switzerland"), system = "SRTM")
+#getTile(extent = c("austria", "germany", "switzerland"), system = "MERIS")
 }
 
-}
-\author{
-Matteo Mattiuzzi
 }
 \seealso{
 \code{\link{extent}}, \code{\link{map}}, \code{\link{search4map}}.
 }
-
+\author{
+Matteo Mattiuzzi
+}

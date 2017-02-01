@@ -20,7 +20,11 @@ any functions:
 - 'quiet' argument -> should be part of options list automatically (?)
   
 getHdf()
-- 'HdfName' with regular expression
+- 'HdfName' with regular expression 
+comment Matteo: could be bit tricky:  
+  1. the implementation as the unknown Julian date of production is always unknown.
+  https://lpdaac.usgs.gov/dataset_discovery/modis 
+  2. the use as a little mistake/imprecision would lead to huge differences in the output, and potentially costing a lot of exec time. 
 
 detectBitInfo()
 - recent products supported? (see whittaker.raster)
@@ -31,7 +35,7 @@ MODISoptions()
    Error during wrapup: node stack overflow)
 
 runGdal()
-- follwoing issue #15 (https://github.com/MatMatt/MODIS/issues/15), the runGdal 
+- following issue #15 (https://github.com/MatMatt/MODIS/issues/15), the runGdal 
   command included therein fails with a fresh installation of the MODIS package. 
   The corresponding error message is (possibly related to non-existing 
   'outDirPath'):
@@ -43,3 +47,8 @@ In addition: Warning messages:
   cannot create file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', reason 'No such file or directory'
 3: In readChar(con, 5L, useBytes = TRUE) :
   cannot open compressed file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', probable reason 'No such file or directory'
+  
+-getTile()
+  we could consider to remove buffer to semplify the conding. Buffer could be done indipendently (not with MODIS). Benefits remove dep to rgeos, more freedom for users to apply a buffer.
+  add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 
+  

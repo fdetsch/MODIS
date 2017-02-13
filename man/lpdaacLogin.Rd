@@ -26,9 +26,6 @@ lpdaacLogin()
 }
 
 }
-\author{
-Matteo Mattiuzzi
-}
 \seealso{
 \itemize{
 \item{\url{http://docs.opendap.org/index.php/DAP_Clients_-_Authentication#LDAP} 
@@ -36,4 +33,6 @@ Matteo Mattiuzzi
 \item{\url{https://github.com/MatMatt/MODIS/issues/10}}
 }
 }
-
+\author{
+Matteo Mattiuzzi and Florian Detsch
+}

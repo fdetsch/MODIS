@@ -78,10 +78,9 @@ runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDS
         job="ExampleUTMdelme", outProj="UTM")
 }
 }
-\author{
-Matteo Mattiuzzi and Forrest Stevens
-}
 \seealso{
 \code{\link{getHdf}}.
 }
-
+\author{
+Matteo Mattiuzzi and Forrest Stevens
+}

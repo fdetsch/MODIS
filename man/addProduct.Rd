@@ -60,10 +60,9 @@ MODIS:::addProduct(product = "MOD16A2", sensor = "MODIS", platform = "Combined",
 }
      
 }
-\author{
-Florian Detsch
-}
 \seealso{
 \code{MODIS:::MODIS_Products}, \code{\link{getProduct}}.
 }
-
+\author{
+Florian Detsch
+}

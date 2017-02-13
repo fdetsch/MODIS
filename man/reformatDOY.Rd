@@ -44,10 +44,9 @@ unique(rfm[])
 }
 
 }
-\author{
-Florian Detsch
-}
 \seealso{
 \code{\link{repDoy}}.
 }
-
+\author{
+Florian Detsch
+}

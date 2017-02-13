@@ -42,4 +42,4 @@ Imports:
     XML
 URL: https://github.com/MatMatt/MODIS
 ByteCompile: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

@@ -47,4 +47,3 @@ extractDate(files,pos1=8,pos2=15,asDate=TRUE,format="\\\%Y\\\%m\\\%d")
 \author{
 Matteo Mattiuzzi
 }
-

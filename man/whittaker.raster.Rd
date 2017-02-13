@@ -118,9 +118,6 @@ whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrit
 }
 
 }
-\author{
-Matteo Mattiuzzi and Agustin Lobo
-}
 \references{
 Modified Whittaker smoother, according to Atzberger & Eilers 2011 
 International Journal of Digital Earth 4(5):365-386.\cr
@@ -129,4 +126,6 @@ Implementation in R: Agustin Lobo 2012
 \seealso{
 \code{\link{smooth.spline.raster}}, \code{\link{raster}}.
 }
-
+\author{
+Matteo Mattiuzzi and Agustin Lobo
+}

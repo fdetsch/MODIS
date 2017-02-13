@@ -81,4 +81,3 @@ doyOk <- writeStop(doyOk)
 \author{
 Matteo Mattiuzzi
 }
-

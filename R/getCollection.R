@@ -62,7 +62,9 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     {
         stop("Please provide a valid product")
     }
-    productN <- getProduct(x=product,quiet=TRUE)
+    productN <- getProduct(x = ifelse(product %in% c("MOD14", "MYD14"), 
+                                      paste0("^", product, "$"), product), 
+                           quiet = TRUE)
     if (is.null(productN)) 
     {
         stop("Unknown product")

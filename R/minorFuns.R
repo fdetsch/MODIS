@@ -566,9 +566,9 @@ filesUrl <- function(url)
     ## default method (e.g. LPDAAC, LAADS)
     if (length(grep("ntsg", url)) == 0) {
       
-      try(co <- RCurl::getURLContent(url),silent=TRUE)
+      co <- try(RCurl::getURLContent(url),silent=TRUE)
       
-      if (!exists("co")) {return(FALSE)}
+      if (inherits(co, "try-error")) return(FALSE)
       
       if (substring(url,1,4)=="http")
       {

@@ -47,8 +47,13 @@ In addition: Warning messages:
   cannot create file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', reason 'No such file or directory'
 3: In readChar(con, 5L, useBytes = TRUE) :
   cannot open compressed file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', probable reason 'No such file or directory'
+- an 'HdfName' argument (just like in getHdf()) could be of advantage in the 
+  sense that if one (or numerous) local .hdf file is specified, an online 
+  retrieval (of collection, available dates, etc.) is entirely turned off
   
 -getTile()
   we could consider to remove buffer to semplify the conding. Buffer could be done indipendently (not with MODIS). Benefits remove dep to rgeos, more freedom for users to apply a buffer.
   add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 
   
+MODISoptions()
+- here, a 'wait' argument could be helpful which may then be passed to getHdf, runGdal, etc. dynamically. This would also safe the additional parameter definition in each function supporting a 'wait' parameter.

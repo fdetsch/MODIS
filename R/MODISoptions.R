@@ -461,7 +461,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   }
   # this is fixed
   options(MODIS_arcStructure='/SENSOR/PRODUCT.CCC/DATE')
-  return(invisible())
+  return(invisible(opt))
 }
 
 

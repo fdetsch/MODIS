@@ -57,3 +57,17 @@ In addition: Warning messages:
   
 MODISoptions()
 - here, a 'wait' argument could be helpful which may then be passed to getHdf, runGdal, etc. dynamically. This would also safe the additional parameter definition in each function supporting a 'wait' parameter.
+
+detectBitInfo()
+- update QA information in look-up table
+- implement quality control routines for various products?
+
+Build and Reload
+- fails when no 'MODIS' installation is available in .libPaths():
+  Error in read.table(system.file("external", "tiletable.txt", package = "MODIS"),  : 
+    no lines available in input
+  Calls: suppressPackageStartupMessages ... load_code -> lapply -> FUN -> eval -> eval -> read.table
+  In addition: Warning message:
+  In file(file, "rt") :
+    file("") only supports open = "w+" and open = "w+b": using the former
+  Execution halted

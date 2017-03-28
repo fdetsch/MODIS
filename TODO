@@ -71,3 +71,9 @@ Build and Reload
   In file(file, "rt") :
     file("") only supports open = "w+" and open = "w+b": using the former
   Execution halted
+  
+whittaker.raster()  
+- 'character' input seems to fail
+
+temporalComposite()
+- find a solution for arguments passed to extractDate() (ie pos1, pos2, format)

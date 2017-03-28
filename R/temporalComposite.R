@@ -8,6 +8,8 @@
 #' @param x \code{Raster*} or \code{character}. MODIS vegetation index.
 #' @param y \code{Raster*} or \code{character}. MODIS
 #' "composite_day_of_the_year" SDS associated with 'x'.
+#' @param pos1,pos2 \code{integer}. The first (last) element of the date string 
+#' in 'x', defaults to the MODIS Land Products naming convention.
 #' @param interval \code{character}. Time period for aggregation, see
 #' \code{\link{aggInterval}}.
 #' @param fun \code{function}. See \code{\link{overlay}}.
@@ -42,7 +44,7 @@
 #'
 #' @export temporalComposite
 #' @name temporalComposite
-temporalComposite <- function(x, y,
+temporalComposite <- function(x, y, pos1 = 10, pos2 = 16,
                               interval = c("month", "fortnight"),
                               fun = function(x) max(x, na.rm = TRUE),
                               cores = 1L, filename = "", ...) {
@@ -54,7 +56,7 @@ temporalComposite <- function(x, y,
   y <- MODIS::reformatDOY(y, cores = cores)
 
   ## create half-monthly time series
-  dates_mod <- MODIS::extractDate(x, asDate = TRUE)$inputLayerDates
+  dates_mod <- MODIS::extractDate(x, pos1 = pos1, pos2 = pos2, asDate = TRUE)$inputLayerDates
   dates_seq <- aggInterval(dates_mod, interval[1])
 
   ## initialize parallel cluster with required variables

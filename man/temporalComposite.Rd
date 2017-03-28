@@ -4,14 +4,18 @@
 \alias{temporalComposite}
 \title{Calculate MODIS Composite Images}
 \usage{
-temporalComposite(x, y, interval = c("month", "fortnight"),
-  fun = function(x) max(x, na.rm = TRUE), cores = 1L, filename = "", ...)
+temporalComposite(x, y, pos1 = 10, pos2 = 16, interval = c("month",
+  "fortnight"), fun = function(x) max(x, na.rm = TRUE), cores = 1L,
+  filename = "", ...)
 }
 \arguments{
 \item{x}{\code{Raster*} or \code{character}. MODIS vegetation index.}
 
 \item{y}{\code{Raster*} or \code{character}. MODIS
 "composite_day_of_the_year" SDS associated with 'x'.}
+
+\item{pos1, pos2}{\code{integer}. The first (last) element of the date string 
+in 'x', defaults to the MODIS Land Products naming convention.}
 
 \item{interval}{\code{character}. Time period for aggregation, see
 \code{\link{aggInterval}}.}

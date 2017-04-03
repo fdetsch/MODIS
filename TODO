@@ -50,10 +50,12 @@ In addition: Warning messages:
 - an 'HdfName' argument (just like in getHdf()) could be of advantage in the 
   sense that if one (or numerous) local .hdf file is specified, an online 
   retrieval (of collection, available dates, etc.) is entirely turned off
+- include scale factor during SDS extraction?  
   
--getTile()
-  we could consider to remove buffer to semplify the conding. Buffer could be done indipendently (not with MODIS). Benefits remove dep to rgeos, more freedom for users to apply a buffer.
-  add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 
+getTile()
+- we could consider to remove buffer to simplify the coding. Buffer could be done independently (not with MODIS). Benefits: remove dep to rgeos, more freedom for users to apply a buffer.
+- add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 
+- interactive tile selection / polygon drawing via mapview could be an option
   
 MODISoptions()
 - here, a 'wait' argument could be helpful which may then be passed to getHdf, runGdal, etc. dynamically. This would also safe the additional parameter definition in each function supporting a 'wait' parameter.
@@ -74,6 +76,10 @@ Build and Reload
   
 whittaker.raster()  
 - 'character' input seems to fail
+- re-enable parallel features
+- set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
+- output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
 
 temporalComposite()
 - find a solution for arguments passed to extractDate() (ie pos1, pos2, format)
+- implement other aggregation levels (e.g., quaterly, yearly, maybe even arbitrary?)

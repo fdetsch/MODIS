@@ -53,10 +53,11 @@ plot(mmvc[[1:4]])
 }
 
 }
+\author{
+Florian Detsch
+}
 \seealso{
 \code{\link{aggInterval}}, \code{\link{overlay}},
 \code{\link{writeRaster}}.
 }
-\author{
-Florian Detsch
-}
+

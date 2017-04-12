@@ -5,7 +5,7 @@
 \title{Filter Vegetation Index with Modified Whittaker Approach}
 \usage{
 whittaker.raster(vi, w = NULL, t = NULL, timeInfo = orgTime(vi),
-  lambda = 5000, nIter = 3, outputAs = "single", collapse = FALSE,
+  lambda = 5000, nIter = 3L, outputAs = "single", collapse = FALSE,
   prefixSuffix = c("MCD", "ndvi"), outDirPath = ".",
   outlierThreshold = NULL, mergeDoyFun = "max", ...)
 }
@@ -118,6 +118,9 @@ whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrit
 }
 
 }
+\author{
+Matteo Mattiuzzi and Agustin Lobo
+}
 \references{
 Modified Whittaker smoother, according to Atzberger & Eilers 2011 
 International Journal of Digital Earth 4(5):365-386.\cr
@@ -126,6 +129,4 @@ Implementation in R: Agustin Lobo 2012
 \seealso{
 \code{\link{smooth.spline.raster}}, \code{\link{raster}}.
 }
-\author{
-Matteo Mattiuzzi and Agustin Lobo
-}
+

@@ -41,9 +41,10 @@ e3 <- genTile(tileSize = 5, StartNameFrom = c(1, 1),
 head(e3)               
 
 }
-\seealso{
-\code{\link{getTile}}.
-}
 \author{
 Matteo Mattiuzzi
 }
+\seealso{
+\code{\link{getTile}}.
+}
+

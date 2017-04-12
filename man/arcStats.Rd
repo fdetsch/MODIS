@@ -73,3 +73,4 @@ arcStats(product="MYD13Q1",begin="2005001",asMap=TRUE, outName="InteractiveSelec
 \author{
 Matteo Mattiuzzi
 }
+

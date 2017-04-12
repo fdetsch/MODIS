@@ -28,7 +28,6 @@ Compendium of minor \strong{MODIS} package-related functions.
 \itemize{
 \item \code{search4map}: Simplifies search for \strong{mapdata}-based extents
 }}
-
 \examples{
 \dontrun{
 search4map()
@@ -42,9 +41,10 @@ search4map(pattern="Sicily",plot=TRUE)
 }
 
 }
-\seealso{
-\code{\link{getTile}}, \code{\link{map}}, \code{\link{grep}}.
-}
 \author{
 Matteo Mattiuzzi
 }
+\seealso{
+\code{\link{getTile}}, \code{\link{map}}, \code{\link{grep}}.
+}
+

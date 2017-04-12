@@ -32,3 +32,4 @@ thought to be used on results from \code{\link{runGdal}} or
 \author{
 Matteo Mattiuzzi
 }
+

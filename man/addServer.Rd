@@ -45,10 +45,9 @@ MODIS:::addServer(name = "NTSG", sensor = "MODIS",
 }                   
     
 }
-\author{
-Florian Detsch
-}
 \seealso{
 \code{MODIS:::MODIS_FTPinfo}.
 }
-
+\author{
+Florian Detsch
+}

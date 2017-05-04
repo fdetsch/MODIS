@@ -115,4 +115,3 @@ MODISoptions(localArcPath="/another/path/than/default")
 \author{
 Matteo Mattiuzzi and Steven Mosher
 }
-

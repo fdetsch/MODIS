@@ -62,7 +62,7 @@ The filtered data and a text file with the dates of the output layers.
 }
 \description{
 Use a modified Whittaker filter function (see References) from package 
-\strong{ptw} to filter a vegetation index (VI) time serie of satellite data.
+\strong{ptw} to filter a vegetation index (VI) time series of satellite data.
 }
 \details{
 The argument \code{lambda} is passed to \code{MODIS:::miwhitatzb1}. You can 
@@ -73,6 +73,9 @@ differ from the output because of the \code{pillow} argument in
 \code{orgTime}. But it can also be set as \code{character} (i.e., 
 \code{lambda = "1000"}). In this case, the adaption to the time series length 
 is not performed.\cr
+
+If available, the function will automatically use open multi-core clusters
+for parallel processing (see \code{\link{beginCluster}} and Examples).
 }
 \note{
 Currently tested on MODIS and Landsat data. Using M*D13, it is also possible 
@@ -118,9 +121,6 @@ whittaker.raster(vi=vi, wt=wt, inT=inT, timeInfo=timeInfo, lambda=5000, overwrit
 }
 
 }
-\author{
-Matteo Mattiuzzi and Agustin Lobo
-}
 \references{
 Modified Whittaker smoother, according to Atzberger & Eilers 2011 
 International Journal of Digital Earth 4(5):365-386.\cr
@@ -129,4 +129,6 @@ Implementation in R: Agustin Lobo 2012
 \seealso{
 \code{\link{smooth.spline.raster}}, \code{\link{raster}}.
 }
-
+\author{
+Matteo Mattiuzzi and Agustin Lobo
+}

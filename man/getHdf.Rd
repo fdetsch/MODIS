@@ -94,13 +94,12 @@ d
 }
 
 }
-\author{
-Matteo Mattiuzzi
-}
 \references{
 MODIS data is obtained through the online Data Pool at the NASA Land 
 Processes Distributed Active Archive Center (LP DAAC), USGS/Earth Resources 
 Observation and Science (EROS) Center, Sioux Falls, South Dakota 
 \url{https://lpdaac.usgs.gov/get_data}.
 }
-
+\author{
+Matteo Mattiuzzi
+}

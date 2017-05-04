@@ -40,10 +40,9 @@ aggInterval(dates)
 aggInterval(dates, interval = "fortnight")
 
 }
-\author{
-Florian Detsch
-}
 \seealso{
 \code{\link{transDate}}.
 }
-
+\author{
+Florian Detsch
+}

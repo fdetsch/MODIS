@@ -139,10 +139,9 @@ getTile(extent = m2)
 }
 
 }
-\author{
-Matteo Mattiuzzi
-}
 \seealso{
 \code{\link{extent}}, \code{\link{map}}, \code{\link{search4map}}.
 }
-
+\author{
+Matteo Mattiuzzi
+}

@@ -125,10 +125,9 @@ runGdal( job="LSTaustria", product="MOD11A1", tileH=18:19,tileV=4, begin="201000
 }
 
 }
-\author{
-Matteo Mattiuzzi, Florian Detsch
-}
 \seealso{
 \code{\link{getHdf}}, \code{\link{runMrt}}.
 }
-
+\author{
+Matteo Mattiuzzi, Florian Detsch
+}

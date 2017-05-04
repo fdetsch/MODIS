@@ -3,9 +3,9 @@
 \docType{methods}
 \name{orgTime}
 \alias{orgTime}
+\alias{orgTime,character-method}
 \alias{orgTime,Date-method}
 \alias{orgTime,Raster-method}
-\alias{orgTime,character-method}
 \title{Handle Input and Output Dates Used for Filtering}
 \usage{
 \S4method{orgTime}{character}(files, nDays = "asIn", begin = NULL,
@@ -84,10 +84,9 @@ orgTime(dates.v1)
 }
 
 }
-\author{
-Matteo Mattiuzzi, Florian Detsch
-}
 \seealso{
 \code{\link{seq.Date}}.
 }
-
+\author{
+Matteo Mattiuzzi, Florian Detsch
+}

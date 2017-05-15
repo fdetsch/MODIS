@@ -4,8 +4,8 @@
 \alias{getTile}
 \title{Get MODIS Tile ID(s)}
 \usage{
-getTile(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL,
-  system = "MODIS", zoom = TRUE)
+getTile(extent = NULL, tileH = NULL, tileV = NULL, system = "MODIS",
+  zoom = TRUE)
 }
 \arguments{
 \item{extent}{Extent information, see Details. Ignored when \code{tileH} and
@@ -14,18 +14,6 @@ getTile(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL,
 \item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
 vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
 \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.}
-
-\item{buffer}{\code{numeric}. Buffers the specified 'extent', negative values
-are allowed. 
-\tabular{l}{If 'extent' is a vector type object (e.g. \code{\link{map}}, shp file...)
-\code{buffer} is specified in map units, usually meters or degrees and  
-only one value is allowed (e.g., \code{buffer = 0.5}) and \code{\link{gBuffer}} 
-is used.}
-\tabular{l}{If 'extent' is a \code{raster}, \code{\link{extend}} or 
-\code{\link{crop}} are used. In such case the \code{buffer} is meant as number 
-of pixels to be added/removed.  See \code{\link{extend}} for details.} 
-\tabular{l}{If 'extent' is an \code{\link{Extent}} object, \code{buffer} is
-passes to \code{\link{extend}}, see there the details.}}
 
 \item{system}{\code{character}, defaults to \code{"MODIS"}. Available 
 alternatives are \code{"MERIS"} and \code{"SRTM"} (see Note).}
@@ -106,8 +94,6 @@ getTile(tileH = 18:19, tileV = 4)
 # with 'extent' of class 'list'
 Austria <- list(ymin = 46.12, ymax = 49.3, xmin = 9.2, xmax = 17.47)
 getTile(extent = Austria)
-getTile(extent = Austria, buffer = 10)
-getTile(extent = Austria, buffer = c(0, 10))  # x, y
 
 # ex 5 ############
 # with 'extent' or 'Raster*' object from "raster" package

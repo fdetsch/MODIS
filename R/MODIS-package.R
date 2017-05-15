@@ -14,7 +14,7 @@
 #' \cr
 #' \emph{Maintainer:} Matteo Mattiuzzi \email{matteo@@mattiuzzi.com}
 #'
-#' @import bitops mapdata parallel ptw raster RCurl rgeos rgdal sp XML
+#' @import bitops mapdata parallel ptw raster RCurl rgdal sp XML
 #' @importFrom grDevices dev.new dev.off png
 #' @importFrom graphics abline box grid locator title
 #' @importFrom maps map.axes

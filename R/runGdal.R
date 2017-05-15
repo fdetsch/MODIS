@@ -16,7 +16,6 @@
 #' see \code{\link{getTile}}.
 #' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
 #' see \code{tileH}.
-#' @param buffer \code{numeric} (in map units), see \code{\link{getTile}}.
 #' @param SDSstring \code{character}, see \code{\link{getSds}}.
 #' @param job \code{character}. Name of the current job for the creation of the 
 #' output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
@@ -110,7 +109,7 @@
 #' @name runGdal
 runGdal <- function(product, collection=NULL, 
                     begin=NULL, end=NULL, 
-                    extent=NULL, tileH=NULL, tileV=NULL, buffer=0, 
+                    extent=NULL, tileH=NULL, tileV=NULL, 
                     SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, 
                     forceDownload=TRUE, overwrite = FALSE, ...)
 {
@@ -162,7 +161,7 @@ runGdal <- function(product, collection=NULL,
      
     if (product$TYPE[1]=="Tile" | (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & product$TYPE[1]=="CMG"))
     {
-        extent <- getTile(extent=extent, tileH=tileH, tileV=tileV, buffer=buffer)
+        extent <- getTile(extent=extent, tileH=tileH, tileV=tileV)
     } else
     {
         extent <- NULL

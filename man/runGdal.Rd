@@ -5,9 +5,9 @@
 \title{Process MODIS HDF with GDAL}
 \usage{
 runGdal(product, collection = NULL, begin = NULL, end = NULL,
-  extent = NULL, tileH = NULL, tileV = NULL, buffer = 0,
-  SDSstring = NULL, job = NULL, checkIntegrity = TRUE, wait = 0.5,
-  forceDownload = TRUE, overwrite = FALSE, ...)
+  extent = NULL, tileH = NULL, tileV = NULL, SDSstring = NULL,
+  job = NULL, checkIntegrity = TRUE, wait = 0.5, forceDownload = TRUE,
+  overwrite = FALSE, ...)
 }
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}.}
@@ -28,8 +28,6 @@ see \code{\link{getTile}}.}
 
 \item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), 
 see \code{tileH}.}
-
-\item{buffer}{\code{numeric} (in map units), see \code{\link{getTile}}.}
 
 \item{SDSstring}{\code{character}, see \code{\link{getSds}}.}
 

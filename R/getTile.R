@@ -8,17 +8,6 @@
 #' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
 #' vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
 #' \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.
-#' @param buffer \code{numeric}. Buffers the specified 'extent', negative values
-#' are allowed. 
-#' \tabular{l}{If 'extent' is a vector type object (e.g. \code{\link{map}}, shp file...)
-#' \code{buffer} is specified in map units, usually meters or degrees and  
-#' only one value is allowed (e.g., \code{buffer = 0.5}) and \code{\link{gBuffer}} 
-#' is used.}
-#' \tabular{l}{If 'extent' is a \code{raster}, \code{\link{extend}} or 
-#' \code{\link{crop}} are used. In such case the \code{buffer} is meant as number 
-#' of pixels to be added/removed.  See \code{\link{extend}} for details.} 
-#' \tabular{l}{If 'extent' is an \code{\link{Extent}} object, \code{buffer} is
-#' passes to \code{\link{extend}}, see there the details.}
 #' @param system \code{character}, defaults to \code{"MODIS"}. Available 
 #' alternatives are \code{"MERIS"} and \code{"SRTM"} (see Note).
 #' @param zoom \code{logical}, defaults to \code{TRUE}. The interactive mode is 
@@ -100,8 +89,6 @@
 #' # with 'extent' of class 'list'
 #' Austria <- list(ymin = 46.12, ymax = 49.3, xmin = 9.2, xmax = 17.47)
 #' getTile(extent = Austria)
-#' getTile(extent = Austria, buffer = 10)
-#' getTile(extent = Austria, buffer = c(0, 10))  # x, y
 #' 
 #' # ex 5 ############
 #' # with 'extent' or 'Raster*' object from "raster" package
@@ -134,19 +121,19 @@
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, system = "MODIS", zoom = TRUE)
+getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, system = "MODIS", zoom = TRUE)
 {
   if(toupper(system)=='MODIS')
   {
-    out <- getTileMODIS(extent = extent, tileH = tileH, tileV = tileV, buffer = buffer, zoom = zoom)
+    out <- getTileMODIS(extent = extent, tileH = tileH, tileV = tileV, zoom = zoom)
   }
   return(out)
 }
 
-getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NULL, zoom = TRUE)
+getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, zoom = TRUE)
 {
   # debug:
-  # extent = "austria"; tileH = NULL; tileV = NULL; buffer = NULL; zoom=TRUE
+  # extent = "austria"; tileH = NULL; tileV = NULL; zoom=TRUE
   
   # if extent is a former result of getTile
   if (inherits(extent,"MODISextent"))
@@ -189,7 +176,6 @@ getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NUL
     return(result)
   }
 
-  usePoly <- TRUE # "usePoly=F" works without suggested packages, "usePoly=T" only for MODIS system + having rgdal and rgeos installed
   target  <- NULL  # if extent is a raster*/Spatial* and has a different proj it is changed, the information is added here
   fromMap <- FALSE
   crs <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0' # shall be projection(MODIS:::sr)
@@ -241,45 +227,6 @@ getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, buffer = NUL
   if (inherits(extent, "map"))
   {
     extent  <- m2SP(extent, extent$names, CRS(crs))
-  }
-  
-  if(!is.null(buffer))
-  {
-    if(length(grep(class(extent), pattern="^Spatial*")==1))
-    {
-      if (length(buffer)>1)
-      {
-        buffer <- buffer[1]
-        warning(paste0("'buffer' on a vector object must have length==1. Using only the first element of 'buffer': ",buffer))
-      }
-      if(isLonLat(extent))
-      {
-        # gBuffer not allowed on LatLon, use fake CRS to bypass this. Found in: 
-        # http://stackoverflow.com/questions/9735466/how-to-compute-a-line-buffer-with-spatiallinesdataframe
-        win                     <- getOption("warn") 
-        options(warn=-2)
-        inproj                  <- sp::proj4string(extent)
-        sp::proj4string(extent) <- CRS("+init=epsg:3395")
-        extent                  <- gBuffer(extent,width=buffer)
-        sp::proj4string(extent) <- CRS(inproj)
-        options(warn=win)
-      } else
-      {
-        extent <- gBuffer(extent, width=buffer)
-      }
-    } else if (length(grep(class(extent), pattern="^Raster*")==1))
-    {
-      if (buffer[1]>0) # this is a simplification. As in theory we could have buffer=c(-1,1)? 
-      {
-        extent <- extend(extent,buffer)  
-      } else
-      {
-        extent <- crop(extent,buffer)  
-      }  
-    } else if(inherits(extent,"Extent"))
-    {
-      extent <- extend(extent,buffer)  
-    }
   }
   
   # this needs to be done in order to use rgdal:::over to intersect geometies 

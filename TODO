@@ -33,6 +33,7 @@ MODISoptions()
 - MODIS::MODISoptions() fails when package is not attached
   (Error in match.fun(FUN) : node stack overflow
    Error during wrapup: node stack overflow)
+- Check for presence of .netrc file (<-> LP DAAC support)   
 
 runGdal()
 - following issue #15 (https://github.com/MatMatt/MODIS/issues/15), the runGdal 
@@ -51,9 +52,20 @@ In addition: Warning messages:
   sense that if one (or numerous) local .hdf file is specified, an online 
   retrieval (of collection, available dates, etc.) is entirely turned off
 - include scale factor during SDS extraction?  
+- runGdal("M*D14A1", ...) resulted in the following error after finishing Terra-MODIS:
+  Error in names(lst_ofile) <- avDates : 
+  'names' attribute [61] must be the same length as the vector [60]
+- last note confirmed, error occurs if some, but not the requested tile are 
+  available in an online date folder (LP DAAC and LAADS):
+  Error in names(lst_ofile) <- avDates : 
+  'names' attribute [790] must be the same length as the vector [789]
+In addition: Warning messages:
+1: In runGdal("M*D14A1", extent = readRDS("inst/extdata/uniformExtent.rds"),  :
+  No file found for date: 2001-06-26
+2: In runGdal("M*D14A1", extent = readRDS("inst/extdata/uniformExtent.rds"),  :
+  No file found for date: 2017-04-23
   
 getTile()
-- we could consider to remove buffer to simplify the coding. Buffer could be done independently (not with MODIS). Benefits: remove dep to rgeos, more freedom for users to apply a buffer.
 - add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 
 - interactive tile selection / polygon drawing via mapview could be an option
   
@@ -63,6 +75,9 @@ MODISoptions()
 detectBitInfo()
 - update QA information in look-up table
 - implement quality control routines for various products?
+
+qualityControl
+- method based on maximum value from preceding / current / succeeding image (i.e., from user-defined window) as proposed by Yang et al. (2013, http://dx.doi.org/10.1109/LGRS.2012.2219576)
 
 Build and Reload
 - fails when no 'MODIS' installation is available in .libPaths():
@@ -75,10 +90,9 @@ Build and Reload
   Execution halted
   
 whittaker.raster()  
-- 'character' input seems to fail
-- re-enable parallel features
 - set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
+- return 'Raster*' object rather than 'list'
 
 temporalComposite()
 - find a solution for arguments passed to extractDate() (ie pos1, pos2, format)

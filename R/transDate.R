@@ -26,17 +26,14 @@
 #'                
 #' @export transDate
 #' @name transDate
-transDate <- function(begin=NULL, end=NULL)
-{
-  if(is.null(begin)) 
-  {
-	  begin <- "1972.01.01" # Start with Landsat 1 
-	}
+transDate <- function(begin = NULL, end = NULL) {
+  
+  if (is.null(begin)) 
+    begin <- "1972.01.01" # Start with Landsat 1 
 
   if (is.null(end)) 
-  {
-	  end <- strftime(Sys.Date(),"%Y.%m.%d") # actual date
-  } 
+	  end <- strftime(Sys.Date(), "%Y.%m.%d") # actual date
+
 
   ## if 'begin' dates come in '%Y%j' format, reformat to '%Y.%m.%d'
   if (any(nchar(begin) == 7)) {
@@ -90,8 +87,3 @@ transDate <- function(begin=NULL, end=NULL)
 
   return(list(begin=begin,end=end,beginDOY=beginDOY,endDOY=endDOY))
 }
-
-
-
-
-

@@ -5,8 +5,7 @@
 \title{Calculate MODIS Composite Images}
 \usage{
 temporalComposite(x, y, pos1 = 10, pos2 = 16, interval = c("month",
-  "fortnight"), fun = function(x) max(x, na.rm = TRUE), cores = 1L,
-  filename = "", ...)
+  "fortnight"), fun = max, na.rm = TRUE, cores = 1L, filename = "", ...)
 }
 \arguments{
 \item{x}{\code{Raster*} or \code{character}. MODIS vegetation index.}
@@ -20,7 +19,7 @@ in 'x', defaults to the MODIS Land Products naming convention.}
 \item{interval}{\code{character}. Time period for aggregation, see
 \code{\link{aggInterval}}.}
 
-\item{fun}{\code{function}. See \code{\link{overlay}}.}
+\item{fun, na.rm}{\code{function}. See \code{\link{overlay}}.}
 
 \item{cores}{\code{integer}. Number of cores for parallel processing.}
 
@@ -38,15 +37,12 @@ composites.
 }
 \examples{
 \dontrun{
-runGdal("MOD13Q1", collection = getCollection("MOD13Q1", forceCheck = TRUE),
-        begin = "2015001", end = "2015365", extent = "Luxembourg",
-        job = "temporalComposite", SDSstring = "100000000010")
+tfs <- runGdal("MOD13A1", collection = getCollection("MOD13Q1", forceCheck = TRUE),
+            begin = "2015001", end = "2015365", extent = "Luxembourg",
+            job = "temporalComposite", SDSstring = "100000000010")
 
-ndvi <- list.files(paste0(getOption("MODIS_outDirPath"), "/temporalComposite"),
-                   pattern = "NDVI.tif", full.names = TRUE)
-
-cdoy <- list.files(paste0(getOption("MODIS_outDirPath"), "/temporalComposite"),
-                   pattern = "day_of_the_year.tif", full.names = TRUE)
+ndvi <- sapply(tfs[[1]], "[[", 1)
+cdoy <- sapply(tfs[[1]], "[[", 2)
 
 mmvc <- temporalComposite(ndvi, cdoy)
 plot(mmvc[[1:4]])

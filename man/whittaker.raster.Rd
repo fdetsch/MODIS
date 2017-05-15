@@ -5,7 +5,7 @@
 \title{Filter Vegetation Index with Modified Whittaker Approach}
 \usage{
 whittaker.raster(vi, w = NULL, t = NULL, timeInfo = orgTime(vi),
-  lambda = 5000, nIter = 3L, outputAs = "single", collapse = FALSE,
+  lambda = 5000, nIter = 3, outputAs = "single", collapse = FALSE,
   prefixSuffix = c("MCD", "ndvi"), outDirPath = ".",
   outlierThreshold = NULL, mergeDoyFun = "max", ...)
 }
@@ -62,7 +62,7 @@ The filtered data and a text file with the dates of the output layers.
 }
 \description{
 Use a modified Whittaker filter function (see References) from package 
-\strong{ptw} to filter a vegetation index (VI) time series of satellite data.
+\strong{ptw} to filter a vegetation index (VI) time serie of satellite data.
 }
 \details{
 The argument \code{lambda} is passed to \code{MODIS:::miwhitatzb1}. You can 
@@ -73,9 +73,6 @@ differ from the output because of the \code{pillow} argument in
 \code{orgTime}. But it can also be set as \code{character} (i.e., 
 \code{lambda = "1000"}). In this case, the adaption to the time series length 
 is not performed.\cr
-
-If available, the function will automatically use open multi-core clusters
-for parallel processing (see \code{\link{beginCluster}} and Examples).
 }
 \note{
 Currently tested on MODIS and Landsat data. Using M*D13, it is also possible 

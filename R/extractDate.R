@@ -14,8 +14,9 @@
 #' See \code{\link{strptime}} for modifications.
 #' 
 #' @return 
-#' If \code{asDate = FALSE}, a \code{character} vector; else a \code{Date} 
-#' vector extracted from \code{files}.
+#' A \code{list} with the following entries: 'inputLayerDates', 'pos1', 'pos2', 
+#' 'asDate' and, optionally, 'format'. If \code{asDate = FALSE}, 
+#' 'inputLayerDates' are represented as \code{character}, else as \code{Date}.
 #' 
 #' @author 
 #' Matteo Mattiuzzi

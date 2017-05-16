@@ -26,14 +26,17 @@ Depends:
     raster
 Imports:
     bitops,
+    devtools,
     grDevices,
     graphics,
+    mapedit,
     maps,
     methods,
     parallel,
     ptw,
     RCurl,
     rgdal,
+    sf,
     sp,
     stats,
     utils,

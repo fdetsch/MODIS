@@ -4,8 +4,7 @@
 \alias{getTile}
 \title{Get MODIS Tile ID(s)}
 \usage{
-getTile(extent = NULL, tileH = NULL, tileV = NULL, system = "MODIS",
-  zoom = TRUE)
+getTile(extent = NULL, tileH = NULL, tileV = NULL)
 }
 \arguments{
 \item{extent}{Extent information, see Details. Ignored when \code{tileH} and
@@ -14,21 +13,12 @@ getTile(extent = NULL, tileH = NULL, tileV = NULL, system = "MODIS",
 \item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
 vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
 \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.}
-
-\item{system}{\code{character}, defaults to \code{"MODIS"}. Available 
-alternatives are \code{"MERIS"} and \code{"SRTM"} (see Note).}
-
-\item{zoom}{\code{logical}, defaults to \code{TRUE}. The interactive mode is 
-only activated if no other spatial extent (i.e., 'extent', 'tileH', 'tileV') 
-is specified. If \code{zoom = TRUE}, the first two clicks on the map are 
-defining the zoom-in area, and the next two clicks are the download area. For 
-large areas you can set \code{zoom = FALSE}.}
 }
 \value{
 A \code{MODISextent} object.
 }
 \description{
-Get MODIS, MERIS, or SRTM tile ID(s) for a specific geographic area.
+Get MODIS tile ID(s) for a specific geographic area.
 }
 \details{
 \describe{
@@ -67,11 +57,9 @@ is performed and the full un-cutted tile(s) (if more than one then also
 mosaicked) is/are processed!
 }
 \note{
-\strong{MODIS} does no longer support the automated download of MERIS and 
-SRTM data. At least as far as the latter is concerned, easy data access is 
-granted through \code{\link{getData}}. Despite this limitation, 
-\code{\link{getTile}} may still be used to identify MERIS and SRTM tile IDs 
-for manual download based on a user-defined spatial extent.
+\strong{MODIS} does no longer support the tile identification and automated 
+download of MERIS and SRTM data. At least as far as the latter is concerned, 
+easy data access is granted through \code{\link{getData}}.
 }
 \examples{
 \dontrun{
@@ -118,10 +106,6 @@ getTile(extent = m1)
 # Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
 getTile(extent = m2)
-
-# SRTM and MERIS data (does not work at the moment)
-#getTile(extent = c("austria", "germany", "switzerland"), system = "SRTM")
-#getTile(extent = c("austria", "germany", "switzerland"), system = "MERIS")
 }
 
 }

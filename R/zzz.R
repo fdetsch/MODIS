@@ -1,8 +1,10 @@
 .onLoad <- function(lib, pkg) {
   
   ## leaflet.extras
-  if (!"leaflet.extras" %in% utils::installed.packages() |
-      utils::packageVersion("leaflet.extras") < '0.1.9009') {
+  avl <- length(find.package("leaflet.extras", quiet = TRUE)) > 0
+  vld <- ifelse(avl, utils::packageVersion("leaflet.extras") >= '0.1.9009', FALSE)
+
+  if (any(!avl, !vld)) {
     if ("leaflet.extras" %in% loadedNamespaces()) {
       detach("package:leaflet.extras", unload = TRUE)
     }
@@ -11,8 +13,10 @@
   }
   
   ## mapedit
-  if (!"mapedit" %in% utils::installed.packages() |
-      utils::packageVersion("mapedit") < '0.0.2') {
+  avl <- length(find.package("mapedit", quiet = TRUE)) > 0
+  vld <- ifelse(avl, utils::packageVersion("mapedit") >= '0.0.2', FALSE)
+  
+  if (any(!avl, !vld)) {
     if ("mapedit" %in% loadedNamespaces()) {
       detach("package:mapedit", unload = TRUE)
     }

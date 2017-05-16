@@ -1,20 +1,13 @@
 #' Get MODIS Tile ID(s)
 #' 
 #' @description 
-#' Get MODIS, MERIS, or SRTM tile ID(s) for a specific geographic area.
+#' Get MODIS tile ID(s) for a specific geographic area.
 #' 
 #' @param extent Extent information, see Details. Ignored when \code{tileH} and
 #' \code{tileV} are specified.
 #' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
 #' vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
 #' \url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.
-#' @param system \code{character}, defaults to \code{"MODIS"}. Available 
-#' alternatives are \code{"MERIS"} and \code{"SRTM"} (see Note).
-#' @param zoom \code{logical}, defaults to \code{TRUE}. The interactive mode is 
-#' only activated if no other spatial extent (i.e., 'extent', 'tileH', 'tileV') 
-#' is specified. If \code{zoom = TRUE}, the first two clicks on the map are 
-#' defining the zoom-in area, and the next two clicks are the download area. For 
-#' large areas you can set \code{zoom = FALSE}.
 #' 
 #' @return 
 #' A \code{MODISextent} object.
@@ -26,11 +19,9 @@
 #' \code{\link{extent}}, \code{\link{map}}, \code{\link{search4map}}.
 #' 
 #' @note 
-#' \strong{MODIS} does no longer support the automated download of MERIS and 
-#' SRTM data. At least as far as the latter is concerned, easy data access is 
-#' granted through \code{\link{getData}}. Despite this limitation, 
-#' \code{\link{getTile}} may still be used to identify MERIS and SRTM tile IDs 
-#' for manual download based on a user-defined spatial extent.
+#' \strong{MODIS} does no longer support the tile identification and automated 
+#' download of MERIS and SRTM data. At least as far as the latter is concerned, 
+#' easy data access is granted through \code{\link{getData}}. 
 #' 
 #' @details 
 #' \describe{
@@ -113,44 +104,28 @@
 #' # Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 #' m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
 #' getTile(extent = m2)
-#' 
-#' # SRTM and MERIS data (does not work at the moment)
-#' #getTile(extent = c("austria", "germany", "switzerland"), system = "SRTM")
-#' #getTile(extent = c("austria", "germany", "switzerland"), system = "MERIS")
 #' }
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(extent = NULL, tileH = NULL, tileV = NULL, system = "MODIS", zoom = TRUE)
-{
-  if(toupper(system)=='MODIS')
-  {
-    out <- getTileMODIS(extent = extent, tileH = tileH, tileV = tileV, zoom = zoom)
-  }
-  return(out)
-}
+getTile <- function(extent = NULL, tileH = NULL, tileV = NULL) {
 
-getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, zoom = TRUE)
-{
   # debug:
-  # extent = "austria"; tileH = NULL; tileV = NULL; zoom=TRUE
+  # extent = "austria"; tileH = NULL; tileV = NULL
   
   # if extent is a former result of getTile
-  if (inherits(extent,"MODISextent"))
-  {
+  if (inherits(extent, "MODISextent"))
     return(extent)
-  }
-  
+
   # if 'tileH' and 'tileV' are present, exit function after that
-  if (!is.null(tileH) & !is.null(tileV)) 
-  {
-    tiltab <- tiletable
-    
+  if (!is.null(tileH) & !is.null(tileV)) {
+
     tileH <- as.numeric(tileH)
     tileV <- as.numeric(tileV)
     
-    tt     <- tiltab[(tiltab$ih %in% tileH) & (tiltab$iv %in% tileV) & (tiltab$xmin>-999),]
-    ext    <- extent(c(min(tt$xmin),max(tt$xmax),min(tt$ymin),max(tt$ymax)))
+    tt <- tiletable[(tiletable$ih %in% tileH) & 
+                      (tiletable$iv %in% tileV) & (tiletable$xmin >- 999), ]
+    ext <- extent(c(min(tt$xmin), max(tt$xmax), min(tt$ymin), max(tt$ymax)))
     
     tt$iv <- sprintf("%02d", tt$iv)
     tt$ih <- sprintf("%02d", tt$ih)
@@ -181,10 +156,8 @@ getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, zoom = TRUE)
   crs <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0' # shall be projection(MODIS:::sr)
   
   # if extent is null, do mapSelect. Output class extent. 
-  if(is.null(extent))
-  {
-    extent  <- mapSelect(zoom=zoom)
-    # outProj <- crs # not sure about that
+  if(is.null(extent)) {
+    extent  <- mapSelect()
   }  
   
   # list input. Output class extent. TODO a check for correctness
@@ -253,7 +226,7 @@ getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, zoom = TRUE)
     sp::proj4string(extent) <- crs
   }
   
-  selected <- sr[extent,] # sr 
+  selected <- raster::crop(sr, extent)
   
   tileH  <- unique(as.numeric(selected@data$h))
   tileV  <- unique(as.numeric(selected@data$v))
@@ -267,53 +240,13 @@ getTileMODIS <- function(extent = NULL, tileH = NULL, tileV = NULL, zoom = TRUE)
 
 
 
-mapSelect <- function(zoom=TRUE)
-{
-  dev.new(width=9,height=7)
-  maps::map("worldHires")
-  map.axes() 
-  grid(36,18,col="blue",lwd=0.5)
-  abline(h=0,col="yellow",lwd=1)
-  if(zoom) 
-  {
-    title("ZOOM-IN by selecting UL and LR points with the mouse!")            
-    # code taken from function raster::drawExtent
-    loc1 <- locator(n = 1, type = "p", pch = "+", col = "red")
-    loc2 <- locator(n = 1, type = "p", pch = "+", col = "red")
-    loc  <- rbind(unlist(loc1), unlist(loc2))
-    #
-    p    <- rbind(c(min(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]), max(loc[, "y"])),
-                  c(max(loc[, "x"]), max(loc[, "y"])), c(max(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]),min(loc[,"y"])))
-    lines(p, col = "red")            
-    
-    Sys.sleep(0.5)
-    maps::map("worldHires",xlim=c(min(loc[, "x"]),max(loc[, "x"])),ylim=c(min(loc[,"y"]),max(loc[, "y"])))
-    map.axes() 
-    grid(36,18,col="blue",lwd=0.5)            
-  }
-  title("Set UL and LR points with the mouse!")
-  # code taken from function raster::drawExtent
-  loc1 <- locator(n = 1, type = "p", pch = "+", col = "red")
-  loc2 <- locator(n = 1, type = "p", pch = "+", col = "red")
-  loc  <- rbind(unlist(loc1), unlist(loc2))
-  #
-  p    <- rbind(c(min(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]), max(loc[, "y"])),
-                c(max(loc[, "x"]), max(loc[, "y"])), c(max(loc[, "x"]), min(loc[,"y"])), c(min(loc[, "x"]),min(loc[,"y"])))
-  lines(p, col = "red")
+mapSelect <- function() {
   
-  extent <- extent(c(min(loc[, "x"]), max(loc[, "x"]), min(loc[, "y"]), max(loc[, "y"])))
-  
-  Sys.sleep(0.6)
-  if(zoom)
-  {
-    text(x=min(loc[, "x"])+((max(loc[, "x"])-min(loc[, "x"]))/2),y=min(loc[,"y"])+((max(loc[, "y"])-min(loc[,"y"]))/2),"OK, extent is set!\nclosing window...",cex=3)    
-  } else 
-  {
-    text(x=-4,y=21,"OK, extent is set!\nclosing window...",cex=5)
-  }
-  Sys.sleep(1.6)
-  dev.off()
-  return(extent)
+  shp <- system.file("external", "modis_latlonWGS84_grid_world.shp", package = "MODIS")
+  grd <- sf::st_read(shp, quiet = TRUE)
+
+  sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red")) 
+  return(as(sel, "Spatial"))
 }
 
 # in order to avoid dependency the following functions are copied (nearly identical) from 'maptools' (v 0.8-26) package

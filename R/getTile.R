@@ -153,11 +153,15 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL) {
 
   target  <- NULL  # if extent is a raster*/Spatial* and has a different proj it is changed, the information is added here
   fromMap <- FALSE
-  crs <- '+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0' # shall be projection(MODIS:::sr)
+  prj <- sp::CRS("+init=epsg:4326")
   
   # if extent is null, do mapSelect. Output class extent. 
   if(is.null(extent)) {
-    extent  <- mapSelect()
+    # extent  <- mapSelect()
+    grd <- sf::st_as_sf(sr, quiet = TRUE)
+    sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red"), 
+                                   style_false = list(fillColor = "blue")) 
+    extent <- as(sel, "Spatial")
   }  
   
   # list input. Output class extent. TODO a check for correctness
@@ -199,23 +203,28 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL) {
   # maps::map (from mapdata/maps) to SpatialPolygons
   if (inherits(extent, "map"))
   {
-    extent  <- m2SP(extent, extent$names, CRS(crs))
+    extent  <- m2SP(extent, extent$names, prj)
   }
   
   # this needs to be done in order to use rgdal:::over to intersect geometies 
-  if (length(grep(class(extent),pattern="Raster*"))==1 | length(grep(class(extent),pattern="Spatial*"))==1)
-  {
-    target <- list(outProj = projection(extent), extent = extent(extent), pixelSize = NULL) 
-    
-    if(length(grep(class(extent), pattern="Raster*"))==1)
-    {
-      target$pixelSize <- res(extent)
-      extent <- extent(projectExtent(extent,crs))
-    } else
-    {
-      extent <- spTransform(extent,CRS(crs))
+  if (inherits(extent, c("Raster", "Spatial"))) {
+    target <- list(outProj = raster::projection(extent)
+                   , extent = raster::extent(extent)
+                   , pixelSize = NULL) 
+
+    if (inherits(extent, "Raster"))
+      target$pixelSize <- raster::res(extent)
+      
+    # if required, spTransform() extent object
+    if (!raster::compareCRS(extent, prj)) {
+      extent <- if (inherits(extent, "Raster")) {
+        raster::extent(raster::projectExtent(extent, prj))
+      } else {
+        sp::spTransform(extent, prj)
+      }
     }
   } 
+  
   if(inherits(extent,'Extent'))
   {
     extent <- as(extent, 'SpatialPolygons')
@@ -223,7 +232,7 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL) {
   
   if (is.na(sp::proj4string(extent)))
   {
-    sp::proj4string(extent) <- crs
+    sp::proj4string(extent) <- prj
   }
   
   selected <- raster::crop(sr, extent)
@@ -245,7 +254,8 @@ mapSelect <- function() {
   shp <- system.file("external", "modis_latlonWGS84_grid_world.shp", package = "MODIS")
   grd <- sf::st_read(shp, quiet = TRUE)
 
-  sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red")) 
+  sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red"), 
+                                 style_false = list(fillColor = "blue")) 
   return(as(sel, "Spatial"))
 }
 

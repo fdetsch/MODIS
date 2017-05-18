@@ -4,8 +4,9 @@
 \alias{temporalComposite}
 \title{Calculate MODIS Composite Images}
 \usage{
-temporalComposite(x, y, pos1 = 10, pos2 = 16, interval = c("month",
-  "fortnight"), fun = max, na.rm = TRUE, cores = 1L, filename = "", ...)
+temporalComposite(x, y, timeInfo = extractDate(x, asDate =
+  TRUE)$inputLayerDates, interval = c("month", "fortnight"), fun = max,
+  na.rm = TRUE, cores = 1L, filename = "", ...)
 }
 \arguments{
 \item{x}{\code{Raster*} or \code{character}. MODIS vegetation index.}
@@ -13,8 +14,9 @@ temporalComposite(x, y, pos1 = 10, pos2 = 16, interval = c("month",
 \item{y}{\code{Raster*} or \code{character}. MODIS
 "composite_day_of_the_year" SDS associated with 'x'.}
 
-\item{pos1, pos2}{\code{integer}. The first (last) element of the date string 
-in 'x', defaults to the MODIS Land Products naming convention.}
+\item{timeInfo}{\code{Date} vector corresponding to all input layers. If not 
+further specified, this is tried to be created through invoking 
+\code{\link{extractDate}} upon 'x', assuming standard MODIS file names.}
 
 \item{interval}{\code{character}. Time period for aggregation, see
 \code{\link{aggInterval}}.}
@@ -37,8 +39,7 @@ composites.
 }
 \examples{
 \dontrun{
-tfs <- runGdal("MOD13A1", collection = getCollection("MOD13Q1", forceCheck = TRUE),
-            begin = "2015001", end = "2015365", extent = "Luxembourg",
+tfs <- runGdal("MOD13A1", begin = "2015001", end = "2015365", extent = "Luxembourg",
             job = "temporalComposite", SDSstring = "100000000010")
 
 ndvi <- sapply(tfs[[1]], "[[", 1)

@@ -8,8 +8,9 @@
 #' @param x \code{Raster*} or \code{character}. MODIS vegetation index.
 #' @param y \code{Raster*} or \code{character}. MODIS
 #' "composite_day_of_the_year" SDS associated with 'x'.
-#' @param pos1,pos2 \code{integer}. The first (last) element of the date string 
-#' in 'x', defaults to the MODIS Land Products naming convention.
+#' @param timeInfo \code{Date} vector corresponding to all input layers. If not 
+#' further specified, this is tried to be created through invoking 
+#' \code{\link{extractDate}} upon 'x', assuming standard MODIS file names.
 #' @param interval \code{character}. Time period for aggregation, see
 #' \code{\link{aggInterval}}.
 #' @param fun,na.rm \code{function}. See \code{\link{overlay}}.
@@ -28,8 +29,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' tfs <- runGdal("MOD13A1", collection = getCollection("MOD13Q1", forceCheck = TRUE),
-#'             begin = "2015001", end = "2015365", extent = "Luxembourg",
+#' tfs <- runGdal("MOD13A1", begin = "2015001", end = "2015365", extent = "Luxembourg",
 #'             job = "temporalComposite", SDSstring = "100000000010")
 #' 
 #' ndvi <- sapply(tfs[[1]], "[[", 1)
@@ -41,7 +41,8 @@
 #'
 #' @export temporalComposite
 #' @name temporalComposite
-temporalComposite <- function(x, y, pos1 = 10, pos2 = 16,
+temporalComposite <- function(x, y, 
+                              timeInfo = extractDate(x, asDate = TRUE)$inputLayerDates,
                               interval = c("month", "fortnight"),
                               fun = max, na.rm = TRUE,
                               cores = 1L, filename = "", ...) {
@@ -53,19 +54,18 @@ temporalComposite <- function(x, y, pos1 = 10, pos2 = 16,
   y <- reformatDOY(y, cores = cores)
 
   ## create half-monthly time series
-  dates_mod <- extractDate(x, pos1 = pos1, pos2 = pos2, asDate = TRUE)$inputLayerDates
-  dates_seq <- aggInterval(dates_mod, interval[1])
+  dates_seq <- aggInterval(timeInfo, interval[1])
 
   ## initialize parallel cluster with required variables
   cl <- parallel::makePSOCKcluster(cores)
   on.exit(parallel::stopCluster(cl))
   
-  parallel::clusterExport(cl, c("x", "y", "fun", "dates_mod", "dates_seq"),
+  parallel::clusterExport(cl, c("x", "y", "fun", "timeInfo", "dates_seq"),
                           envir = environment())
 
   ## generate temporal composites
   lst_seq <- parallel::parLapply(cl, 1:length(dates_seq$begin), function(i) {
-    dff <- dates_mod - dates_seq$begin[i]
+    dff <- timeInfo - dates_seq$begin[i]
     ids <- which(dff <= 16 & dff >= (-16))
 
     if (length(ids) == 0)

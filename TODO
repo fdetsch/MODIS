@@ -2,10 +2,6 @@ getProduct():
 # improvement of automatic sensor detection 
 # make a class modisproduct
 
-transDate():
-# add 'format' argument
-# 'Date' method?
-
 longer term changes:
 - instead of having a ~/.MODISopts file create a directory where to store MODISopts, ftpsettings, product specfic info (instead of using the auxiliary folder)
 - what about removing runMrt support?
@@ -32,7 +28,8 @@ detectBitInfo()
 MODISoptions() 
 - MODIS::MODISoptions() fails when package is not attached
   (Error in match.fun(FUN) : node stack overflow
-   Error during wrapup: node stack overflow)
+   Error during wrapup: node stack overflow) <-> when not attached, 
+   MODIS:::combineOptions() cannot finish
 - Check for presence of .netrc file (<-> LP DAAC support)   
 
 runGdal()
@@ -67,7 +64,7 @@ In addition: Warning messages:
   
 getTile()
 - add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 
-- interactive tile selection / polygon drawing via mapview could be an option
+- interactive polygon drawing via mapedit
   
 MODISoptions()
 - here, a 'wait' argument could be helpful which may then be passed to getHdf, runGdal, etc. dynamically. This would also safe the additional parameter definition in each function supporting a 'wait' parameter.
@@ -92,7 +89,6 @@ Build and Reload
 whittaker.raster()  
 - set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
-- return 'Raster*' object rather than 'list'
 
 temporalComposite()
 - find a solution for arguments passed to extractDate() (ie pos1, pos2, format)

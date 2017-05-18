@@ -58,7 +58,7 @@ weighting \code{"w"} is available, and \code{\link{weighted.mean}} if it is.}
 \code{filename}).}
 }
 \value{
-The filtered data and a text file with the dates of the output layers.
+A Whittaker-smoothened \code{RasterStack}.
 }
 \description{
 Use a modified Whittaker filter function (see References) from package 

@@ -40,7 +40,7 @@
 #' \code{filename}).
 #' 
 #' @return 
-#' The filtered data and a text file with the dates of the output layers.
+#' A Whittaker-smoothened \code{RasterStack}.
 #' 
 #' @details 
 #' The argument \code{lambda} is passed to \code{MODIS:::miwhitatzb1}. You can 
@@ -394,7 +394,7 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
   }
   
   writeStopMODIS(b,timeInfo,outputAs,collapse)
-  return(b)
+  return(raster::stack(b))
 }
 
 

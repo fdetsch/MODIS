@@ -4,14 +4,14 @@
 \alias{aggInterval}
 \title{Create (Half-)Monthly Composite Periods}
 \usage{
-aggInterval(x, interval = c("month", "fortnight"))
+aggInterval(x, interval = c("month", "year", "fortnight"))
 }
 \arguments{
 \item{x}{\code{numeric} year or \code{Date} object.}
 
 \item{interval}{\code{character}. Time period for aggregation. Currently
-available options are "month" (default) and "fortnight" (i.e., every 1st and
-15th day of the month).}
+available options are "month" (default), "year" and "fortnight" (i.e., every 
+1st and 15th day of the month).}
 }
 \value{
 A \code{list} with the following slots:
@@ -35,9 +35,13 @@ respective start and end date only, this function creates full-year
 }
 \examples{
 dates <- c(2015, 2016)
+intervals <- c("month", "year", "fortnight")
 
-aggInterval(dates)
-aggInterval(dates, interval = "fortnight")
+lst <- lapply(intervals, function(i) {
+  aggInterval(dates, interval = i)
+}); names(lst) <- intervals
+
+print(lst)
 
 }
 \seealso{

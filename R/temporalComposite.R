@@ -24,12 +24,13 @@
 #' Florian Detsch
 #'
 #' @seealso
-#' \code{\link{aggInterval}}, \code{\link{overlay}},
-#' \code{\link{writeRaster}}.
+#' \code{\link{aggInterval}}, \code{\link{calc}}, \code{\link{writeRaster}}.
 #'
 #' @examples
 #' \dontrun{
-#' tfs <- runGdal("MOD13A1", begin = "2015001", end = "2015365", extent = "Luxembourg",
+#' library(mapview)
+#' frc <- as(subset(franconia, district == "Mittelfranken"), "Spatial")
+#' tfs <- runGdal("MOD13A1", begin = "2015001", end = "2016366", extent = frc,
 #'             job = "temporalComposite", SDSstring = "100000000010")
 #' 
 #' ndvi <- sapply(tfs[[1]], "[[", 1)
@@ -43,7 +44,7 @@
 #' @name temporalComposite
 temporalComposite <- function(x, y, 
                               timeInfo = extractDate(x, asDate = TRUE)$inputLayerDates,
-                              interval = c("month", "fortnight"),
+                              interval = c("month", "year", "fortnight"),
                               fun = max, na.rm = TRUE,
                               cores = 1L, filename = "", ...) {
 
@@ -60,7 +61,7 @@ temporalComposite <- function(x, y,
   cl <- parallel::makePSOCKcluster(cores)
   on.exit(parallel::stopCluster(cl))
   
-  parallel::clusterExport(cl, c("x", "y", "fun", "timeInfo", "dates_seq"),
+  parallel::clusterExport(cl, c("x", "y", "fun", "na.rm", "timeInfo", "dates_seq"),
                           envir = environment())
 
   ## generate temporal composites
@@ -81,7 +82,7 @@ temporalComposite <- function(x, y,
     })
 
     rst <- raster::stack(lst)
-    suppressWarnings(rst <- raster::overlay(rst, fun = fun, na.rm = na.rm))
+    suppressWarnings(rst <- raster::calc(rst, fun = fun, na.rm = na.rm))
     names(rst) <- paste0("A", dates_seq$beginDOY[i])
     return(rst)
   })

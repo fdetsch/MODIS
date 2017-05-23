@@ -5,8 +5,8 @@
 \title{Calculate MODIS Composite Images}
 \usage{
 temporalComposite(x, y, timeInfo = extractDate(x, asDate =
-  TRUE)$inputLayerDates, interval = c("month", "fortnight"), fun = max,
-  na.rm = TRUE, cores = 1L, filename = "", ...)
+  TRUE)$inputLayerDates, interval = c("month", "year", "fortnight"),
+  fun = max, na.rm = TRUE, cores = 1L, filename = "", ...)
 }
 \arguments{
 \item{x}{\code{Raster*} or \code{character}. MODIS vegetation index.}
@@ -39,7 +39,9 @@ composites.
 }
 \examples{
 \dontrun{
-tfs <- runGdal("MOD13A1", begin = "2015001", end = "2015365", extent = "Luxembourg",
+library(mapview)
+frc <- as(subset(franconia, district == "Mittelfranken"), "Spatial")
+tfs <- runGdal("MOD13A1", begin = "2015001", end = "2016366", extent = frc,
             job = "temporalComposite", SDSstring = "100000000010")
 
 ndvi <- sapply(tfs[[1]], "[[", 1)
@@ -51,8 +53,7 @@ plot(mmvc[[1:4]])
 
 }
 \seealso{
-\code{\link{aggInterval}}, \code{\link{overlay}},
-\code{\link{writeRaster}}.
+\code{\link{aggInterval}}, \code{\link{calc}}, \code{\link{writeRaster}}.
 }
 \author{
 Florian Detsch

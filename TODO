@@ -89,7 +89,3 @@ Build and Reload
 whittaker.raster()  
 - set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
-
-temporalComposite()
-- find a solution for arguments passed to extractDate() (ie pos1, pos2, format)
-- implement other aggregation levels (e.g., quaterly, yearly, maybe even arbitrary?)

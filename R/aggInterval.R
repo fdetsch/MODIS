@@ -10,8 +10,8 @@
 #'
 #' @param x \code{numeric} year or \code{Date} object.
 #' @param interval \code{character}. Time period for aggregation. Currently
-#' available options are "month" (default) and "fortnight" (i.e., every 1st and
-#' 15th day of the month).
+#' available options are "month" (default), "year" and "fortnight" (i.e., every 
+#' 1st and 15th day of the month).
 #'
 #' @return
 #' A \code{list} with the following slots:
@@ -33,43 +33,61 @@
 #'
 #' @examples
 #' dates <- c(2015, 2016)
-#'
-#' aggInterval(dates)
-#' aggInterval(dates, interval = "fortnight")
+#' intervals <- c("month", "year", "fortnight")
+#' 
+#' lst <- lapply(intervals, function(i) {
+#'   aggInterval(dates, interval = i)
+#' }); names(lst) <- intervals
+#' 
+#' print(lst)
 #'
 #' @export aggInterval
 #' @name aggInterval
-aggInterval <- function(x, interval = c("month", "fortnight")) {
-
+aggInterval <- function(x, interval = c("month", "year", "fortnight")) {
+  
   ## if 'Date' is specified, convert to 'numeric'
   if (inherits(x, "Date"))
     x <- as.numeric(strftime(x, "%Y"))
 
-  ## create start date sequence
-  st <- lapply(min(x):max(x), function(i) {
-    do.call(c, lapply(formatC(1:12, width = 2, flag = "0"), function(j) {
-      as.Date(paste(i, j, if (interval[1] == "month") "01" else c("01", "15"),
-                    sep = "-"))
-    }))
-  })
+  
+  ### monthly or fortnightly aggregation -----  
+  
+  if (interval[1] != "year") {
+    
+    ## create start date sequence
+    st <- lapply(min(x):max(x), function(i) {
+      do.call(c, lapply(formatC(1:12, width = 2, flag = "0"), function(j) {
+        as.Date(paste(i, j, if (interval[1] == "month") "01" else c("01", "15"),
+                      sep = "-"))
+      }))
+    })
+    
+    st <- do.call(c, st)
+    
+    ## create end date sequence
+    nd <- lapply(1:length(st), function(i) {
+      if (i < length(st)) {
+        st[i + 1] - 1
+      } else {
+        st[i] + ifelse(interval[1] == "month", 30, 16)
+      }
+    })
+    
+    nd <- do.call(c, nd)
+    
+    
+  ### annual aggregation -----
+    
+  } else {
+    st <- as.Date(paste0(min(x):max(x), "-01-01"))
+    nd <- as.Date(paste0(min(x):max(x), "-12-31"))
+  }
 
-  st <- do.call(c, st)
-  st_doy <- suppressWarnings(MODIS::transDate(st)$beginDOY)
-
-
-  ## create end date sequence
-  nd <- lapply(1:length(st), function(i) {
-    if (i < length(st)) {
-      st[i + 1] - 1
-    } else {
-      st[i] + ifelse(interval[1] == "month", 30, 16)
-    }
-  })
-
-  nd <- do.call(c, nd)
-  nd_doy <- suppressWarnings(MODIS::transDate(nd)$beginDOY)
-
+  st_doy <- MODIS::transDate(st)$beginDOY
+  nd_doy <- MODIS::transDate(nd)$beginDOY
+  
   ## return named list
   list(begin = st, end = nd,
        beginDOY = st_doy, endDOY = nd_doy)
 }
+  

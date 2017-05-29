@@ -161,7 +161,7 @@ runGdal <- function(product, collection=NULL,
      
     if (product$TYPE[1]=="Tile" | (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & product$TYPE[1]=="CMG"))
     {
-        extent <- getTile(extent=extent, tileH=tileH, tileV=tileV)
+        extent <- getTile(x=extent, tileH=tileH, tileV=tileV)
     } else
     {
         extent <- NULL

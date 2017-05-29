@@ -4,10 +4,10 @@
 \alias{getTile}
 \title{Get MODIS Tile ID(s)}
 \usage{
-getTile(extent = NULL, tileH = NULL, tileV = NULL)
+getTile(x = NULL, tileH = NULL, tileV = NULL)
 }
 \arguments{
-\item{extent}{Extent information, see Details. Ignored when \code{tileH} and
+\item{x}{Extent information, see Details. Ignored when \code{tileH} and
 \code{tileV} are specified.}
 
 \item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
@@ -23,13 +23,9 @@ Get MODIS tile ID(s) for a specific geographic area.
 \details{
 \describe{
 \tabular{ll}{
-  \code{extent}:\cr
+  \code{x}:\cr
   \cr 
   
-  If \code{list}:\cr 
-  \tab Then LatLon coordinates in the following form:\cr 
-  \tab \code{list(xmin = numeric, xmax = numeric, ymax = numeric, ymin = numeric)}.\cr
-  \cr
   If \code{character}:\cr
   \tab The country name of a \code{map} object (see \code{\link{map}}), you 
   can use \code{\link{search4map}} to find a map by regular expression.\cr
@@ -72,40 +68,35 @@ getTile()
 # 'extent' specified with a 'Spatial*' object (taken from ?rgdal::readOGR)
 dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
 Up <- rgdal::readOGR(dsn, "Up")
-getTile(extent = Up)
+getTile(x = Up)
 
 # ex 3 ############
 # with 'tileH' and 'tileV'
 getTile(tileH = 18:19, tileV = 4)
 
 # ex 4 ############
-# with 'extent' of class 'list'
-Austria <- list(ymin = 46.12, ymax = 49.3, xmin = 9.2, xmax = 17.47)
-getTile(extent = Austria)
-
-# ex 5 ############
 # with 'extent' or 'Raster*' object from "raster" package
 rasterObject <- raster(xmn = 9.2, xmx = 17.47, ymn = 46.12, ymx = 49.3, 
                        crs = "+init=epsg:4326")
-getTile(extent = rasterObject)
-getTile(extent = extent(rasterObject))
+getTile(x = rasterObject)
+getTile(x = extent(rasterObject))
 
 # also works for projected data
 rasterObject2 <- projectExtent(rasterObject, crs = "+init=epsg:32633")
-getTile(extent = rasterObject2)
+getTile(x = rasterObject2)
 
-# ex 6 #################
+# ex 5 #################
 # Character name of a map contained in map("worldHires", plot = FALSE)$names
-getTile(extent = "Austria")
-getTile(extent = c("Austria", "Germany"))
+getTile(x = "Austria")
+getTile(x = c("Austria", "Germany"))
 
 # Search for specific map name patterns (use with caution):
 m1 <- search4map("Per")
-getTile(extent = m1)
+getTile(x = m1)
 
 # Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
-getTile(extent = m2)
+getTile(x = m2)
 }
 
 }

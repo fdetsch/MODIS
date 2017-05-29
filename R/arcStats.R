@@ -95,10 +95,10 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
 
     if (extent[1]=="global")
     {  
-        ext <- getTile(extent=extent(raster()))
+        ext <- getTile(x = raster::extent(raster::raster()))
     } else 
     {
-        ext <- getTile(extent=extent)
+        ext <- getTile(x = extent)
     }
 
     for (z in seq_along(product$PRODUCT))

@@ -3,7 +3,7 @@
 #' @description 
 #' Get MODIS tile ID(s) for a specific geographic area.
 #' 
-#' @param extent Extent information, see Details. Ignored when \code{tileH} and
+#' @param x Extent information, see Details. Ignored when \code{tileH} and
 #' \code{tileV} are specified.
 #' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
 #' vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
@@ -26,13 +26,9 @@
 #' @details 
 #' \describe{
 #' \tabular{ll}{
-#'   \code{extent}:\cr
+#'   \code{x}:\cr
 #'   \cr 
 #'   
-#'   If \code{list}:\cr 
-#'   \tab Then LatLon coordinates in the following form:\cr 
-#'   \tab \code{list(xmin = numeric, xmax = numeric, ymax = numeric, ymin = numeric)}.\cr
-#'   \cr
 #'   If \code{character}:\cr
 #'   \tab The country name of a \code{map} object (see \code{\link{map}}), you 
 #'   can use \code{\link{search4map}} to find a map by regular expression.\cr
@@ -70,62 +66,48 @@
 #' # 'extent' specified with a 'Spatial*' object (taken from ?rgdal::readOGR)
 #' dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
 #' Up <- rgdal::readOGR(dsn, "Up")
-#' getTile(extent = Up)
+#' getTile(x = Up)
 #' 
 #' # ex 3 ############
 #' # with 'tileH' and 'tileV'
 #' getTile(tileH = 18:19, tileV = 4)
 #' 
 #' # ex 4 ############
-#' # with 'extent' of class 'list'
-#' Austria <- list(ymin = 46.12, ymax = 49.3, xmin = 9.2, xmax = 17.47)
-#' getTile(extent = Austria)
-#' 
-#' # ex 5 ############
 #' # with 'extent' or 'Raster*' object from "raster" package
 #' rasterObject <- raster(xmn = 9.2, xmx = 17.47, ymn = 46.12, ymx = 49.3, 
 #'                        crs = "+init=epsg:4326")
-#' getTile(extent = rasterObject)
-#' getTile(extent = extent(rasterObject))
+#' getTile(x = rasterObject)
+#' getTile(x = extent(rasterObject))
 #' 
 #' # also works for projected data
 #' rasterObject2 <- projectExtent(rasterObject, crs = "+init=epsg:32633")
-#' getTile(extent = rasterObject2)
+#' getTile(x = rasterObject2)
 #' 
-#' # ex 6 #################
+#' # ex 5 #################
 #' # Character name of a map contained in map("worldHires", plot = FALSE)$names
-#' getTile(extent = "Austria")
-#' getTile(extent = c("Austria", "Germany"))
+#' getTile(x = "Austria")
+#' getTile(x = c("Austria", "Germany"))
 #' 
 #' # Search for specific map name patterns (use with caution):
 #' m1 <- search4map("Per")
-#' getTile(extent = m1)
+#' getTile(x = m1)
 #' 
 #' # Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 #' m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
-#' getTile(extent = m2)
+#' getTile(x = m2)
 #' }
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(extent = NULL, tileH = NULL, tileV = NULL) {
+getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
 
-  # debug:
-  # extent = "austria"; tileH = NULL; tileV = NULL
-  
-  # if extent is a former result of getTile
-  if (inherits(extent, "MODISextent"))
-    return(extent)
-
-  # if 'tileH' and 'tileV' are present, exit function after that
-  if (!is.null(tileH) & !is.null(tileV)) {
-
-    tileH <- as.numeric(tileH)
-    tileV <- as.numeric(tileV)
+  if (all(!is.null(tileH), !is.null(tileV))) {
+    tileH <- if (!is.numeric(tileH)) as.numeric(tileH)
+    tileV <- if (!is.numeric(tileV)) as.numeric(tileV)
     
     tt <- tiletable[(tiletable$ih %in% tileH) & 
                       (tiletable$iv %in% tileV) & (tiletable$xmin >- 999), ]
-    ext <- extent(c(min(tt$xmin), max(tt$xmax), min(tt$ymin), max(tt$ymax)))
+    ext <- raster::extent(c(min(tt$xmin), max(tt$xmax), min(tt$ymin), max(tt$ymax)))
     
     tt$iv <- sprintf("%02d", tt$iv)
     tt$ih <- sprintf("%02d", tt$ih)
@@ -146,7 +128,7 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL) {
       tileH <- unique(tt$ih)
       tileV <- unique(tt$iv)
     }
-    result <- list( tile = tiles, tileH = as.numeric(tileH), tileV = as.numeric(tileV), extent = extent, system = 'MODIS', target=NULL)
+    result <- list( tile = tiles, tileH = as.numeric(tileH), tileV = as.numeric(tileV), extent = ext, system = 'MODIS', target=NULL)
     class(result) <- "MODISextent"
     return(result)
   }
@@ -155,108 +137,98 @@ getTile <- function(extent = NULL, tileH = NULL, tileV = NULL) {
   fromMap <- FALSE
   prj <- sp::CRS("+init=epsg:4326")
   
-  # if extent is null, do mapSelect. Output class extent. 
-  if(is.null(extent)) {
-    # extent  <- mapSelect()
-    grd <- sf::st_as_sf(sr, quiet = TRUE)
-    sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red"), 
-                                   style_false = list(fillColor = "blue")) 
-    extent <- as(sel, "Spatial")
+  # if 'x' is null, do mapSelect. Output class extent. 
+  if (is.null(x)) {
+    x <- mapSelect()
   }  
   
-  # list input. Output class extent. TODO a check for correctness
-  if (inherits(extent, "list")) 
-  {
-    if (length(extent$extent) == 4) 
-    {
-      extent <- extent$extent
-    }
-    extent <- extent(c(min(extent$xmin,extent$xmax), max(extent$xmin,extent$xmax), min(extent$ymin,extent$ymax), max(extent$ymin,extent$ymax)))
-  }
-  
   # filename string to Raster/vector conversion
-  if(inherits(extent,"character") & length(extent)==1) # lengh>1 it should be only a mapname for maps:::map
+  if(inherits(x,"character") & length(x)==1) # lengh>1 it should be only a mapname for maps:::map
   {
-    if (raster::extension(extent)=='.shp')
+    if (raster::extension(x)=='.shp')
     {
-      extent <- shapefile(extent)
+      x <- shapefile(x)
     } else 
     {
-      if (file.exists(extent))
+      if (file.exists(x))
       {
-        extent <- raster(extent)
+        x <- raster(x)
       }
     }
   }  
   
   # character (country name of MAP) to maps::map conversion     
-  if (inherits(extent, "character"))
+  if (inherits(x, "character"))
   {
-    try(testm <- maps::map("worldHires", extent, plot = FALSE),silent = TRUE)
+    try(testm <- maps::map("worldHires", x, plot = FALSE),silent = TRUE)
     if (!exists("testm"))
     {
-      stop(paste0("Country name not valid. Check availability/spelling, i.e. try if it works with: map('worldHires,'",extent, "'), or use '?search4map' function"))
+      stop(paste0("Country name not valid. Check availability/spelling, i.e. try if it works with: map('worldHires,'",x, "'), or use '?search4map' function"))
     }
-    extent <- maps::map("worldHires", extent, plot = FALSE, fill=TRUE)
+    x <- maps::map("worldHires", x, plot = FALSE, fill=TRUE)
   }
   
   # maps::map (from mapdata/maps) to SpatialPolygons
-  if (inherits(extent, "map"))
-  {
-    extent  <- m2SP(extent, extent$names, prj)
+  if (inherits(x, "map")) {
+    x  <- m2SP(x, x$names, prj)
   }
   
   # this needs to be done in order to use rgdal:::over to intersect geometies 
-  if (inherits(extent, c("Raster", "Spatial"))) {
-    target <- list(outProj = raster::projection(extent)
-                   , extent = raster::extent(extent)
+  if (inherits(x, c("Raster", "Spatial"))) {
+    target <- list(outProj = raster::projection(x)
+                   , extent = raster::extent(x)
                    , pixelSize = NULL) 
-
-    if (inherits(extent, "Raster"))
-      target$pixelSize <- raster::res(extent)
+    
+    if (inherits(x, "Raster"))
+      target$pixelSize <- raster::res(x)
       
     # if required, spTransform() extent object
-    if (!raster::compareCRS(extent, prj)) {
-      extent <- if (inherits(extent, "Raster")) {
-        raster::extent(raster::projectExtent(extent, prj))
+    if (!raster::compareCRS(x, prj)) {
+      x <- if (inherits(x, "Raster")) {
+        raster::extent(raster::projectExtent(x, prj))
       } else {
-        sp::spTransform(extent, prj)
+        sp::spTransform(x, prj)
       }
     }
-  } 
-  
-  if(inherits(extent,'Extent'))
-  {
-    extent <- as(extent, 'SpatialPolygons')
+    
+  # sf method  
+  } else if (inherits(x, "sf")) {
+    target <- list(outProj = sf::st_crs(x)$proj4string
+                   , extent = raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
+                   , pixelSize = NULL)
+    
+    if (!raster::compareCRS(target$outProj, prj)) {
+      x <- sf::st_transform(x, prj@projargs)
+    }
   }
   
-  if (is.na(sp::proj4string(extent)))
-  {
-    sp::proj4string(extent) <- prj
+  if (inherits(x, 'Extent')) {
+    x <- as(x, 'SpatialPolygons')
+    sp::proj4string(x) <- prj
   }
   
-  selected <- raster::crop(sr, extent)
-  
+  if (inherits(x, "sf"))
+    x <- methods::as(x, "Spatial")
+
+  selected <- raster::crop(sr, x)
   tileH  <- unique(as.numeric(selected@data$h))
   tileV  <- unique(as.numeric(selected@data$v))
   
   result <- as.character(apply(selected@data,1,function(x) {paste("h",sprintf("%02d",x[2]),"v",sprintf("%02d",x[3]),sep="")}))
-  result <- list(tile = result, tileH = tileH, tileV = tileV, extent = extent, system = 'MODIS', target = target)
+  result <- list(tile = result, tileH = tileH, tileV = tileV, extent = x, system = 'MODIS', target = target)
   class(result) <- "MODISextent"
   return(result)
 }
  
 
 
-
 mapSelect <- function() {
   
-  shp <- system.file("external", "modis_latlonWGS84_grid_world.shp", package = "MODIS")
-  grd <- sf::st_read(shp, quiet = TRUE)
-
-  sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red"), 
-                                 style_false = list(fillColor = "blue")) 
-  return(as(sel, "Spatial"))
+  grd <- sf::st_as_sf(sr, quiet = TRUE)
+  sel <- mapedit::selectFeatures(grd)
+  # sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red"), 
+  #                                style_false = list(fillColor = "blue")) 
+  return(sel)
 }
 
 # in order to avoid dependency the following functions are copied (nearly identical) from 'maptools' (v 0.8-26) package

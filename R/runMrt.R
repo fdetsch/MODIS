@@ -172,7 +172,7 @@ runMrt <- function(...)
             ntiles=1 
         } else 
         {
-            opts$extent <- getTile(extent=opts$extent,tileH=opts$tileH,tileV=opts$tileV)
+            opts$extent <- getTile(x=opts$extent,tileH=opts$tileH,tileV=opts$tileV)
             ntiles    <- length(opts$extent$tile)
         }
     

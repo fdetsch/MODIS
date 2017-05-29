@@ -7,12 +7,14 @@
 getTile(x = NULL, tileH = NULL, tileV = NULL)
 }
 \arguments{
-\item{x}{Extent information, see Details. Ignored when \code{tileH} and
+\item{x}{Extent information, see Details. Ignored if \code{tileH} and
 \code{tileV} are specified.}
 
 \item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
-vertical tile number(s) (e.g., \code{tileH = 1:5}), see 
-\url{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}.}
+vertical tile number(s) of the 
+\href{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}{MODIS Sinusoidal grid}
+(e.g., \code{tileH = 1:5}). If specified, no cropping is performed and the 
+full tile(s) (if more than one then also mosaicked) is (are) processed!}
 }
 \value{
 A \code{MODISextent} object.
@@ -21,36 +23,33 @@ A \code{MODISextent} object.
 Get MODIS tile ID(s) for a specific geographic area.
 }
 \details{
-\describe{
+If \code{x} is of class (see Examples for use cases)
 \tabular{ll}{
-  \code{x}:\cr
+  \code{missing}:\cr
+  \tab If 'tileH,tileV' are specified, 'x' will be ignored. If no such tile 
+  indices are provided and 'x' is missing, a viewer window pops up that 
+  allows interactive tile selection from the global MODIS Sinusoidal grid.\cr
   \cr 
-  
-  If \code{character}:\cr
-  \tab The country name of a \code{map} object (see \code{\link{map}}), you 
-  can use \code{\link{search4map}} to find a map by regular expression.\cr
-  \tab Or the file name (plus path) of a raster image or ESRI shapefile (shp).\cr
+  \code{character}:\cr
+  \tab Either the country name of a \code{map} object (see \code{\link{map}})
+  or a valid file path of a raster image or ESRI shapefile (shp). The former 
+  approach also supports pattern matching via regular expressions.\cr
+  \cr
+  \code{Raster*}:\cr
+  \tab Spatial extent, resolution, and projection of the specified 
+  \code{Raster*} are determined automatically. This information is used by 
+  \code{\link{runGdal}} to create perfectly matching files. If the 
+  \code{Raster*} comes with no valid CRS, 
+  \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
+  \cr
+  \code{Extent}:\cr
+  \tab Boundary coordinates from \code{Extent} objects are assumed to be in 
+  \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as well as 
+  such objects have no projection information attached.\cr
   \cr
   Other:\cr
-  \tab If \code{Raster*}.\cr
-  \tab Using a \code{Raster*} object as \code{extent}, the function 
-  automatically determines the extent, resolution, and projection. This will 
-  be used by \code{\link{runGdal}} creating perfectly matching files. If the 
-  raster file has not a valid CRS string, LatLon is assumed.\cr
-\tab Using an \code{extent} object, it must be in LatLon, as the extent 
-object has no projection information attached.\cr
-\tab If ESRI shapefile (shp) or \code{map} object, a call to 
-\code{\link{over}} is performed to determine the MODIS tile containg the 
-extent. This often considerably reduces the number of required tiles, but can 
-lead to NO-DATA areas if not all tiles had to be downloaded in the bounding 
-box of 'extent'! 
+  \tab \code{Spatial}, \code{sf}, or \code{map} object.
 }
-}
-
-PS:\cr
-If an extent is specified through \code{tileV, tileH} arguments, no cropping 
-is performed and the full un-cutted tile(s) (if more than one then also 
-mosaicked) is/are processed!
 }
 \note{
 \strong{MODIS} does no longer support the tile identification and automated 
@@ -60,43 +59,46 @@ easy data access is granted through \code{\link{getData}}.
 \examples{
 \dontrun{
 # ex 1 ############
-# drawing the extent. NOTE: It is not possible to draw a date-line crossing area!
-# draw extent with zoom, for smaller extents
+# interactive tile selection
 getTile()
 
-# ex 2 ############
-# 'extent' specified with a 'Spatial*' object (taken from ?rgdal::readOGR)
+# ex 2: Spatial (taken from ?rgdal::readOGR) ############
 dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
 Up <- rgdal::readOGR(dsn, "Up")
-getTile(x = Up)
+getTile(Up)
 
-# ex 3 ############
-# with 'tileH' and 'tileV'
+# ex 3: sf ############
+library(mapview)
+getTile(franconia)
+
+# ex 4: tileH,tileV ############
 getTile(tileH = 18:19, tileV = 4)
 
-# ex 4 ############
-# with 'extent' or 'Raster*' object from "raster" package
-rasterObject <- raster(xmn = 9.2, xmx = 17.47, ymn = 46.12, ymx = 49.3, 
-                       crs = "+init=epsg:4326")
-getTile(x = rasterObject)
-getTile(x = extent(rasterObject))
+# ex 5: Raster* with valid CRS ############
+rst1 <- raster(xmn = 9.2, xmx = 17.47, ymn = 46.12, ymx = 49.3)
+getTile(rst1)
 
-# also works for projected data
-rasterObject2 <- projectExtent(rasterObject, crs = "+init=epsg:32633")
-getTile(x = rasterObject2)
+# this also works for projected data
+rst3 <- projectExtent(rst1, crs = "+init=epsg:32633")
+getTile(rst3)
 
-# ex 5 #################
-# Character name of a map contained in map("worldHires", plot = FALSE)$names
-getTile(x = "Austria")
-getTile(x = c("Austria", "Germany"))
+# ex 6: Raster* without CRS or, alternatively, Extent -> treated as EPSG:4326 ############
+mat2 <- matrix(seq(180 * 360), byrow = TRUE, ncol = 360)
+rst2 <- raster(mat2)
+getTile(rst2)
+getTile(extent(rst1))
 
-# Search for specific map name patterns (use with caution):
+# ex 7: map names as returned by search4map() ############
+getTile("Austria")
+getTile(c("Austria", "Germany"))
+
+# or search for specific map name patterns (use with caution):
 m1 <- search4map("Per")
-getTile(x = m1)
+getTile(m1)
 
-# Or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
-m2 <- map("state", region = c("new york", "new jersey", "penn"), fill = TRUE)
-getTile(x = m2)
+# or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
+m2 <- map("state", region = "new jersey", fill = TRUE)
+getTile(m2)
 }
 
 }
@@ -104,5 +106,5 @@ getTile(x = m2)
 \code{\link{extent}}, \code{\link{map}}, \code{\link{search4map}}.
 }
 \author{
-Matteo Mattiuzzi
+Matteo Mattiuzzi, Florian Detsch
 }

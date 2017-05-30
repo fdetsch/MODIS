@@ -197,7 +197,7 @@ setMethod("getHdf",
           if (!onlineInfo$online & length(opts$MODISserverOrder)==2 & 
               server %in% c("LPDAAC", "LAADS"))
           {
-            cat(server," seams not online, trying on '",server_alt,"':\n",sep="")
+            cat(server," seems not online, trying on '",server_alt,"':\n",sep="")
             onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC,
                                    begin = tLimits$begin, end = tLimits$end, 
                                    wait = 0, server = server_alt)

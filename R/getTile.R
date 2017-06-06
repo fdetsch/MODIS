@@ -101,11 +101,11 @@
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
+getTile <- function(x, tileH = NULL, tileV = NULL) {
 
   if (all(!is.null(tileH), !is.null(tileV))) {
-    tileH <- if (!is.numeric(tileH)) as.numeric(tileH)
-    tileV <- if (!is.numeric(tileV)) as.numeric(tileV)
+    if (!is.numeric(tileH)) tileH <- as.numeric(tileH)
+    if (!is.numeric(tileV)) tileV <- as.numeric(tileV)
     
     tt <- tiletable[(tiletable$ih %in% tileH) & 
                       (tiletable$iv %in% tileV) & (tiletable$xmin >- 999), ]
@@ -140,7 +140,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
   prj <- sp::CRS("+init=epsg:4326")
   
   # if 'x' is null, do mapSelect. Output class extent. 
-  if (is.null(x)) {
+  if (missing(x)) {
     x <- mapSelect()
   }  
   
@@ -230,8 +230,7 @@ mapSelect <- function() {
   
   grd <- sf::st_as_sf(sr, quiet = TRUE)
   sel <- mapedit::selectFeatures(grd)
-  # sel <- mapedit::selectFeatures(grd, style_true = list(fillColor = "red"), 
-  #                                style_false = list(fillColor = "blue")) 
+
   return(sel)
 }
 

@@ -8,6 +8,7 @@ New features:
 Bugfixes:
 
   * Fixed 'condition has length > 1' warning message from `transDate()` when specifying multiple 'begin' or 'end' dates.
+  * Fixed 'no non-missing arguments to min (max); returning Inf' warning message from `getTile()` when 'x' was missing and 'tileH' or 'tileV' were specified as `numeric`. 
 
 Changes:
 

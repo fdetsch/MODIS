@@ -643,7 +643,7 @@ makeRandomString <- function(n=1, length=12)
 }
 
 # this function care about the download of files. Based on remotePath (result of genString) it alterates the effort on available sources and stops after succeded download or by reacing the stubbornness thresshold.
-ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
+ModisFileDownloader <- function(x, opts = NULL, ...)
 {
     x <- basename(x)
 
@@ -745,14 +745,14 @@ ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
           if (out[a]==0 & !opts$quiet & g>1) {cat("Downloaded after:",g,"re-tries\n\n")}
           if (out[a]==0 & !opts$quiet & g==1) {cat("Downloaded by the first try!\n\n")}
           if (out[a]==0) {break}    
-          Sys.sleep(wait)
+          Sys.sleep(opts$wait)
           g=g+1    
         }
     }
 return(!as.logical(out)) 
 }
 
-doCheckIntegrity <- function(x, wait = 0.5, opts = NULL, ...) {
+doCheckIntegrity <- function(x, opts = NULL, ...) {
   
   x <- basename(x)
   
@@ -800,7 +800,7 @@ doCheckIntegrity <- function(x, wait = 0.5, opts = NULL, ...) {
             cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
           }
           unlink(x[a])
-          out[a] <- ModisFileDownloader(x[a], wait = wait, opts = opts)
+          out[a] <- ModisFileDownloader(x[a], opts = opts)
         } else if (out[a]) 
         {
           break

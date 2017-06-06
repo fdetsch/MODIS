@@ -6,7 +6,7 @@
 \usage{
 runGdal(product, collection = NULL, begin = NULL, end = NULL,
   extent = NULL, tileH = NULL, tileV = NULL, SDSstring = NULL,
-  job = NULL, checkIntegrity = TRUE, wait = 0.5, forceDownload = TRUE,
+  job = NULL, checkIntegrity = TRUE, forceDownload = TRUE,
   overwrite = FALSE, ...)
 }
 \arguments{
@@ -36,15 +36,13 @@ output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
 
 \item{checkIntegrity}{\code{logical}, see \code{\link{getHdf}}.}
 
-\item{wait}{\code{numeric}, see \code{\link{getHdf}}.}
-
 \item{forceDownload}{\code{logical}, see \code{\link{getHdf}}.}
 
 \item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines 
 whether or not to overwrite existing SDS output files.}
 
-\item{...}{Additional arguments passed to \code{MODIS:::combineOptions()}, 
-see also \code{\link{MODISoptions}}.}
+\item{...}{Additional arguments passed to \code{MODIS:::combineOptions()} (eg
+'wait'), see also \code{\link{MODISoptions}}.}
 }
 \value{
 A \code{list} of the same length as 'product'. Each product slot holds a 

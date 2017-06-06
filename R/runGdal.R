@@ -20,12 +20,11 @@
 #' @param job \code{character}. Name of the current job for the creation of the 
 #' output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
 #' @param checkIntegrity \code{logical}, see \code{\link{getHdf}}. 
-#' @param wait \code{numeric}, see \code{\link{getHdf}}.
 #' @param forceDownload \code{logical}, see \code{\link{getHdf}}.
 #' @param overwrite \code{logical}, defaults to \code{FALSE}. Determines 
 #' whether or not to overwrite existing SDS output files.
-#' @param ... Additional arguments passed to \code{MODIS:::combineOptions()}, 
-#' see also \code{\link{MODISoptions}}.
+#' @param ... Additional arguments passed to \code{MODIS:::combineOptions()} (eg
+#' 'wait'), see also \code{\link{MODISoptions}}.
 #' 
 #' @return 
 #' A \code{list} of the same length as 'product'. Each product slot holds a 
@@ -110,7 +109,7 @@
 runGdal <- function(product, collection=NULL, 
                     begin=NULL, end=NULL, 
                     extent=NULL, tileH=NULL, tileV=NULL, 
-                    SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, 
+                    SDSstring=NULL, job=NULL, checkIntegrity=TRUE, 
                     forceDownload=TRUE, overwrite = FALSE, ...)
 {
     opts <- combineOptions(...)
@@ -243,7 +242,7 @@ runGdal <- function(product, collection=NULL,
               getHdf(product=prodname, collection=coll, begin=avDates[l], end=avDates[l],
                tileH=extent$tileH, tileV=extent$tileV, checkIntegrity=checkIntegrity, 
                stubbornness=opts$stubbornness, MODISserverOrder=opts$MODISserverOrder, 
-               forceDownload = forceDownload)
+               forceDownload = forceDownload, wait = opts$wait)
             )
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()

@@ -20,6 +20,7 @@ outDirPath   <- '~/MODIS_ARC/PROCESSED'
 # consult '?MODISoptions' for more details
 dlmethod     <- 'auto' # Download method passed to ?download.file, 'auto' is always a good choice, if you encouter problems (like 'file not found') switch to 'wget'
 stubbornness <- 'high' # How stubborn should MODIS re-try to connect to ftp/http?
+wait <- 0.5
 
 #########################
 # 3.) Processing defaults

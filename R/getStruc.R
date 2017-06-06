@@ -2,17 +2,17 @@
 # Date: August 2011
 # Licence GPL v3
 
-# product="MOD13Q1"; collection=NULL; server="LPDAAC"; begin=NULL; end=NULL; forceCheck=FALSE; wait=0; stubbornness=1
+# product="MOD13Q1"; collection=NULL; server="LPDAAC"; begin=NULL; end=NULL; forceCheck=FALSE
 
-getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserverOrder")[1], begin=NULL, end=NULL, forceCheck=FALSE, wait=1, stubbornness=10)
+getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserverOrder")[1], begin=NULL, end=NULL, forceCheck=FALSE, ...)
 {
   server <- toupper(server)[1]
   if(!server %in% c("LPDAAC", "LAADS", "NTSG"))
   {
     stop("getStruc() Error! Server must be one of 'LPDAAC', 'LAADS' or 'NTSG'.")
   }
-  opts     <- combineOptions()
-  sturheit <- stubborn(level=stubbornness)
+  opts     <- combineOptions(...)
+  sturheit <- stubborn(level = opts$stubbornness)
   
   setPath(opts$auxPath, ask=FALSE)
   #########################
@@ -115,7 +115,7 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
         {    
           break
         }
-        Sys.sleep(wait)
+        Sys.sleep(opts$wait)
       }
       FtpDayDirs <- as.Date(as.character(FtpDayDirs),"%Y.%m.%d")
     } else if (server=="LAADS")
@@ -134,12 +134,12 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
         
         if(g < (sturheit/2))
         {
-          Sys.sleep(wait)
+          Sys.sleep(opts$wait)
         } else
         {
-          if(once & (30 > wait)) {cat("Server problems, trying with 'wait=",max(30,wait),"\n")}
+          if(once & (30 > opts$wait)) {cat("Server problems, trying with 'wait=",max(30,opts$wait),"\n")}
           once <- FALSE                        
-          Sys.sleep(max(30,wait))
+          Sys.sleep(max(30,opts$wait))
         }
         if(exists("years"))
         {    
@@ -179,13 +179,13 @@ getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserv
         } else {  
           
           if (g < (sturheit/2)) {
-            Sys.sleep(wait)
+            Sys.sleep(opts$wait)
           } else {
-            if (once & (30 > wait)) {
+            if (once & (30 > opts$wait)) {
               cat("Encountering server problems, now trying with 'wait = 30'...\n")
             }
             once <- FALSE                        
-            Sys.sleep(max(30,wait))
+            Sys.sleep(max(30,opts$wait))
           }
         }
       }

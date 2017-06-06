@@ -271,7 +271,7 @@ runMrt <- function(...)
                                     shell(paste("mrtmosaic -i \"",paraname,"\" -o \"", normalizePath(outDir) ,"\\",TmpMosNam,"\" -s \"",SDSstringIntern$SDSstring,"\"" ,sep=""))
                                 }
                                 unlink(paraname)
-                                Sys.sleep(0.5) # without wait the skript can break here. "wait" is a try but it seams to work!!!
+                                Sys.sleep(opts$wait) # without wait the skript can break here. "wait" is a try but it seams to work!!!
                             }
             
                             basenam <- strsplit(files[q],"/")[[1]]

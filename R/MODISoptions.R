@@ -36,6 +36,10 @@
 #' @param stubbornness \code{numeric}. The number of retries after the target 
 #' server has refused a connection. Higher values increase the chance of getting 
 #' the file, but also lead to hanging functions if the server is down.
+#' @param wait \code{numeric} waiting time (in seconds) inserted after each 
+#' internal online download call via \code{\link{download.file}} or 
+#' \code{\link{getURL}}. Reduces the chance of FTP connection errors that 
+#' frequently occur after many requests.
 #' @param systemwide \code{logical}. If \code{FALSE} (default), 'user'-wide 
 #' settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
 #' write settings to 'systemwide', presumed you have write access to 
@@ -96,8 +100,8 @@
 #' @name MODISoptions
 MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, 
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
-                         dlmethod, stubbornness, systemwide = FALSE, 
-                         quiet=FALSE, save=TRUE, checkTools = TRUE)
+                         dlmethod, stubbornness, wait, systemwide = FALSE, 
+                         quiet = FALSE, save = TRUE, checkTools = TRUE)
 {
   # This function collects the package options from up to 3 files and creates the .MODIS_opts.R file (location depending on systemwide=T/F, see below):
   # 1. package installation directory (factory defaults); 
@@ -107,8 +111,6 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   # The final settings are written in to the user specific file 3.
   # options are not tested here! only generated!
   
-  # debug: systemwide = FALSE; quiet=FALSE; save=TRUE
-
   # container for all options
   opts  <- new.env()
   

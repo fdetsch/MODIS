@@ -5,7 +5,7 @@
 \title{Set or Retrieve Permanent MODIS Package Options}
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
-  dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness,
+  dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait,
   systemwide = FALSE, quiet = FALSE, save = TRUE, checkTools = TRUE)
 }
 \arguments{
@@ -50,6 +50,11 @@ installed and made available through the PATH environmental variable.}
 \item{stubbornness}{\code{numeric}. The number of retries after the target 
 server has refused a connection. Higher values increase the chance of getting 
 the file, but also lead to hanging functions if the server is down.}
+
+\item{wait}{\code{numeric} waiting time (in seconds) inserted after each 
+internal online download call via \code{\link{download.file}} or 
+\code{\link{getURL}}. Reduces the chance of FTP connection errors that 
+frequently occur after many requests.}
 
 \item{systemwide}{\code{logical}. If \code{FALSE} (default), 'user'-wide 
 settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 

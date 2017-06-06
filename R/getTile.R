@@ -101,7 +101,7 @@
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(x, tileH = NULL, tileV = NULL) {
+getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
 
   if (all(!is.null(tileH), !is.null(tileV))) {
     if (!is.numeric(tileH)) tileH <- as.numeric(tileH)
@@ -140,7 +140,7 @@ getTile <- function(x, tileH = NULL, tileV = NULL) {
   prj <- sp::CRS("+init=epsg:4326")
   
   # if 'x' is null, do mapSelect. Output class extent. 
-  if (missing(x)) {
+  if (is.null(x)) {
     x <- mapSelect()
   }  
   

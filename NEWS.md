@@ -10,6 +10,7 @@ Bugfixes:
   * 'condition has length > 1' warning message from `transDate()` when specifying multiple 'begin' or 'end' dates.
   * 'no non-missing arguments to min (max); returning Inf' warning message from `getTile()` when 'x' was missing and 'tileH' or 'tileV' were specified as `numeric`. 
   * ''begin' and 'end' dates seem to be confused, reordering dates...' warning message from `aggInterval()` when actual end date (ie end of current fortnightly/monthly time interval) lies in the future.
+  * 'length of 'dimnames' [2] not equal to array extent' error in `temporalComposite()` when only one layer is available for a particular aggregation period. 
 
 Changes:
 

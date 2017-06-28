@@ -81,8 +81,12 @@ temporalComposite <- function(x, y,
       raster::setValues(raster::subset(x, j), val)
     })
 
-    rst <- raster::stack(lst)
-    suppressWarnings(rst <- raster::calc(rst, fun = fun, na.rm = na.rm))
+    rst <- if (length(lst) == 1) {
+      lst[[1]]
+    } else {
+      rst <- raster::stack(lst)
+      suppressWarnings(rst <- raster::calc(rst, fun = fun, na.rm = na.rm))
+    }
     names(rst) <- paste0("A", dates_seq$beginDOY[i])
     return(rst)
   })

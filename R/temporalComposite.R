@@ -48,8 +48,8 @@ temporalComposite <- function(x, y,
                               fun = max, na.rm = TRUE,
                               cores = 1L, filename = "", ...) {
 
-  if (inherits(x, "character")) names(x) <- NULL; x <- raster::stack(x)
-  if (inherits(y, "character")) names(y) <- NULL; y <- raster::stack(y)
+  if (inherits(x, "character")) { names(x) <- NULL; x <- raster::stack(x) }
+  if (inherits(y, "character")) { names(y) <- NULL; y <- raster::stack(y) }
 
   ## append year to "composite_day_of_the_year"
   y <- reformatDOY(y, cores = cores)

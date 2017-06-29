@@ -21,6 +21,7 @@ Description: Download and processing functionalities for the Moderate Resolution
 License: GPL (>= 3) | file LICENSE
 LazyData: TRUE
 Depends:
+    leaflet.extras,
     mapdata,
     R (>= 2.10),
     raster

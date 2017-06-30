@@ -98,10 +98,6 @@ setMethod("getHdf",
             
   opts <- combineOptions(...)
             
-  ## if 'quiet' is not available, show full console output
-  if (!"quiet" %in% names(opts))
-    opts$quiet <- FALSE
-  
   sturheit <- stubborn(level=opts$stubbornness)
   wait     <- as.numeric(opts$wait)
   
@@ -353,10 +349,6 @@ setMethod("getHdf",
           function(HdfName, checkIntegrity = TRUE, ...) {
             
             opts <- combineOptions(...)
-            
-            ## if 'quiet' is not available, show full console output
-            if (!"quiet" %in% names(opts))
-              opts$quiet <- FALSE
             
             wait <- as.numeric(opts$wait)
             

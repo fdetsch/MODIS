@@ -84,7 +84,7 @@
 #' @name runMrt
 runMrt <- function(...)
 {
-    MODISoptions(save=FALSE,quiet=TRUE)
+    MODISoptions(save=FALSE)
     
     opts <- combineOptions(...)
     if (!opts$mrtOk)

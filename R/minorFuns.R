@@ -652,10 +652,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
       opts <- combineOptions(...)
     
     opts$stubbornness <- stubborn(opts$stubbornness)
-
-    ## if 'quiet' is not available, show full console output
-    if (!"quiet" %in% names(opts))
-      opts$quiet <- FALSE
+    opts$quiet <- as.logical(opts$quiet)
     
     iw <- options()$warn 
     options(warn=-1)
@@ -761,10 +758,6 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
     opts <- combineOptions(...)
   
   opts$stubbornness <- stubborn(opts$stubbornness)
-  
-  ## if 'quiet' is not available, show full console output
-  if (!"quiet" %in% names(opts))
-    opts$quiet <- FALSE
   
   out <- rep(NA,length=length(x))
   

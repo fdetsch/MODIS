@@ -4,6 +4,7 @@ New features:
 
   * `getTile()` now supports interactive tile selection from the MODIS Sinusoidal grid powered by **mapedit** (https://github.com/r-spatial/mapedit).
   * Creation of yearly composite layers has been made available through `temporalComposite()` and `aggInterval()`.
+  * Meaning of 'quiet' argument in `MODISoptions()` has changed and now determines whether `getHdf()` (or `runGdal()`) print download information to the console. 
 
 Bugfixes:
 

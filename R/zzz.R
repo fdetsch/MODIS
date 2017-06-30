@@ -14,8 +14,9 @@
 }
 
 .onAttach <- function(lib, pkg) {
-  packageStartupMessage(
-    x <- capture.output(MODISoptions(save=FALSE, checkTools=FALSE, quiet=TRUE))
-  )
+  packageStartupMessage({
+    x <- capture.output(MODISoptions(save=FALSE, checkTools=FALSE))
+    rm(x)
+  })
 }
 

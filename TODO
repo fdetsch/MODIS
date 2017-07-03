@@ -61,6 +61,8 @@ In addition: Warning messages:
   No file found for date: 2001-06-26
 2: In runGdal("M*D14A1", extent = readRDS("inst/extdata/uniformExtent.rds"),  :
   No file found for date: 2017-04-23
+- hand over more than one product (no regular expression!) to getProduct(), eg `getProduct(c("MOD11A2", "MOD13A2"))`. 
+- speed up when downloaded hdf / processed tif files are already present
   
 getTile()
 - add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 

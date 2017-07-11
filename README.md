@@ -2,6 +2,14 @@
 
 Acquisition and Processing of MODIS Products
 
+
+====
+
+### News
+
+**MODIS_1.1.0** is now available for [download](https://cran.r-project.org/package=MODIS). Please refer to [NEWS](https://github.com/MatMatt/MODIS/blob/master/NEWS.md) for a detailed change log.
+
+
 ====
 
 ### Installation

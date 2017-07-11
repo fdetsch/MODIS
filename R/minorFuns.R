@@ -566,9 +566,9 @@ filesUrl <- function(url)
     ## default method (e.g. LPDAAC, LAADS)
     if (length(grep("ntsg", url)) == 0) {
       
-      try(co <- RCurl::getURLContent(url),silent=TRUE)
+      co <- try(RCurl::getURLContent(url),silent=TRUE)
       
-      if (!exists("co")) {return(FALSE)}
+      if (inherits(co, "try-error")) return(FALSE)
       
       if (substring(url,1,4)=="http")
       {
@@ -599,18 +599,26 @@ filesUrl <- function(url)
       opts <- combineOptions()
       
       # download website to opts$auxPath
-      file_out_dn <- opts$auxPath
-      file_out_bn <- unlist(strsplit(url, "/"))
-      file_out <- paste(file_out_dn, file_out_bn[length(file_out_bn)], sep = "/")
-      download.file(url = url, destfile = file_out, quiet = TRUE, method = "libcurl")
+      file_out <- paste0(opts$auxPath, "/index.html")
+      jnk <- capture.output(
+        download.file(url = url, destfile = file_out, quiet = TRUE, method = "wget")
+      )
       
       # extract information from website content
       content <- readLines(file_out)
       
-      fnames <- sapply(content, function(i) {
-        unlist(strsplit(i, " "))[length(unlist(strsplit(i, " ")))]
-      })
-      names(fnames) <- NULL
+      fnames <- sapply(
+        strsplit(
+          sapply(
+            lapply(strsplit(content, "<a href=")[[1]], function(i) {
+              strsplit(i, "</a>")[[1]]
+            }), 
+            "[[", 1), 
+          ">"), 
+        "[[", 2)
+      
+      fnames <- fnames[grep("^MOD16.*MERRAGMAO$|^Y2|^D|^MOD16.*hdf$", fnames)]
+      fnames <- gsub("_MERRAGMAO", "", fnames)
 
       # remove temporary file and return output
       invisible(file.remove(file_out))
@@ -635,7 +643,7 @@ makeRandomString <- function(n=1, length=12)
 }
 
 # this function care about the download of files. Based on remotePath (result of genString) it alterates the effort on available sources and stops after succeded download or by reacing the stubbornness thresshold.
-ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
+ModisFileDownloader <- function(x, opts = NULL, ...)
 {
     x <- basename(x)
 
@@ -644,10 +652,7 @@ ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
       opts <- combineOptions(...)
     
     opts$stubbornness <- stubborn(opts$stubbornness)
-
-    ## if 'quiet' is not available, show full console output
-    if (!"quiet" %in% names(opts))
-      opts$quiet <- FALSE
+    opts$quiet <- as.logical(opts$quiet)
     
     iw <- options()$warn 
     options(warn=-1)
@@ -715,6 +720,11 @@ ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
                 '-n -L -c ~/.cookies.txt -b ~/.cookies.txt'
               }
               
+            ## else if server == "NTSG", choose 'wget' as download method  
+            } else if (server == "NTSG") {
+              method <- "wget"
+              extra <- getOption("download.file.extra")
+              
             ## else use default settings
             } else {
               method <- opts$dlmethod
@@ -732,14 +742,14 @@ ModisFileDownloader <- function(x, wait = 0.5, opts = NULL, ...)
           if (out[a]==0 & !opts$quiet & g>1) {cat("Downloaded after:",g,"re-tries\n\n")}
           if (out[a]==0 & !opts$quiet & g==1) {cat("Downloaded by the first try!\n\n")}
           if (out[a]==0) {break}    
-          Sys.sleep(wait)
+          Sys.sleep(opts$wait)
           g=g+1    
         }
     }
 return(!as.logical(out)) 
 }
 
-doCheckIntegrity <- function(x, wait = 0.5, opts = NULL, ...) {
+doCheckIntegrity <- function(x, opts = NULL, ...) {
   
   x <- basename(x)
   
@@ -748,10 +758,6 @@ doCheckIntegrity <- function(x, wait = 0.5, opts = NULL, ...) {
     opts <- combineOptions(...)
   
   opts$stubbornness <- stubborn(opts$stubbornness)
-  
-  ## if 'quiet' is not available, show full console output
-  if (!"quiet" %in% names(opts))
-    opts$quiet <- FALSE
   
   out <- rep(NA,length=length(x))
   
@@ -787,7 +793,7 @@ doCheckIntegrity <- function(x, wait = 0.5, opts = NULL, ...) {
             cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
           }
           unlink(x[a])
-          out[a] <- ModisFileDownloader(x[a], wait = wait, opts = opts)
+          out[a] <- ModisFileDownloader(x[a], opts = opts)
         } else if (out[a]) 
         {
           break

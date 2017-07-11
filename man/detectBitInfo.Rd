@@ -32,4 +32,3 @@ detectBitInfo("MYD17A2")
 \author{
 Matteo Mattiuzzi
 }
-

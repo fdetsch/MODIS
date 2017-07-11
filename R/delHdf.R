@@ -70,7 +70,7 @@ delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=
         ext <- getTile(tileV=tileV,tileH=tileH)
     } else if (extent[1]!="global")
     { 
-        ext <- getTile(extent=extent)
+        ext <- getTile(x = extent)
     } else 
     {
         ext      <- list()

@@ -45,10 +45,9 @@ MODIS:::addCollection(product = "MOD16A2", collection = 105)
 }
 
 }
-\author{
-Florian Detsch
-}
 \seealso{
 \code{MODIS:::collections}.
 }
-
+\author{
+Florian Detsch
+}

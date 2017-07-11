@@ -49,12 +49,14 @@ reformatDOY <- function(x, cores = 1L, ...) {
     x <- raster::stack(x)
     
   ## extract required date information
-  dts <- MODIS::extractDate(x, ...)$inputLayerDates
+  dts <- extractDate(x, ...)$inputLayerDates
   yrs <- as.numeric(substr(dts, 1, 4))
   dys <- as.numeric(substr(dts, 5, 7))
 
   ## initialize parallel cluster and export required objects
   cl <- parallel::makePSOCKcluster(cores)
+  on.exit(parallel::stopCluster(cl))
+  
   parallel::clusterExport(cl, c("x", "yrs", "dys"), envir = environment())
 
   ## loop over layers
@@ -87,9 +89,6 @@ reformatDOY <- function(x, cores = 1L, ...) {
     })
   )
 
-  ## stop cluster
-  parallel::stopCluster(cl)
-  
   ## if length(x) == 1, return 'RasterLayer'
   if (raster::nlayers(rfm) == 1) {
     rfm[[1]]

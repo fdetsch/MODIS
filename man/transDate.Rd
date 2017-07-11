@@ -7,12 +7,9 @@
 transDate(begin = NULL, end = NULL)
 }
 \arguments{
-\item{begin}{\code{character}. Begin date(s) of time series, see 
-\code{\link{transDate}}. If not provided, this defaults to 
-\code{"1972-01-01"}.}
-
-\item{end}{\code{character}. End date of MODIS time series. If not provided, 
-this defaults to \code{Sys.Date()}.}
+\item{begin, end}{\code{character} or \code{Date}. Begin (end) date of MODIS 
+time series, see Note. If not provided, this defaults to \code{"1972-01-01"} 
+(\code{Sys.Date()}).}
 }
 \value{
 A \code{list} of begin and end dates formatted according to 'YYYY-MM-DD' 
@@ -23,14 +20,22 @@ A \code{list} of begin and end dates formatted according to 'YYYY-MM-DD'
 This function converts a sequence of input dates to 'YYYY-MM-DD' and 
 'YYYYDDD'.
 }
+\note{
+If input dates are supplied as \code{character}, this function either expects 
+7-digit strings in the MODIS intrinsic form \code{'\%Y\%j'} or, alternatively, 
+10-digit strings in the form \code{'\%Y-\%m-\%d'} where the two field separators 
+need to be uniform (see Examples).
+}
 \examples{
 transDate()
-transDate(begin="2009.01.01")
-transDate(end="2009.01.01")
-transDate(begin="2009-01-01",end="2011.03.16")
+transDate(begin = "2009.01.01") # ends with current date
+transDate(end = "2009.01.01") # starts with Landsat 1
+transDate(begin = c("2009-01-01", "2010-01-01"), end = "2011.03.16")
                
 }
-\author{
-Matteo Mattiuzzi
+\seealso{
+\code{\link{strptime}}.
 }
-
+\author{
+Matteo Mattiuzzi, Florian Detsch
+}

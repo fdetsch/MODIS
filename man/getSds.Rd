@@ -37,4 +37,3 @@ getSds(HdfName="/path/XXX.hdf",method="mrt") # require MRTool
 \author{
 Matteo Mattiuzzi
 }
-

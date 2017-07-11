@@ -97,10 +97,9 @@ smooth.spline.raster(x=vi,w=w,t=t,timeInfo=timeInfo)
 }
 
 }
-\author{
-Matteo Mattiuzzi
-}
 \seealso{
 \code{\link{whittaker.raster}}, \code{\link{raster}}.
 }
-
+\author{
+Matteo Mattiuzzi
+}

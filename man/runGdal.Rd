@@ -5,9 +5,9 @@
 \title{Process MODIS HDF with GDAL}
 \usage{
 runGdal(product, collection = NULL, begin = NULL, end = NULL,
-  extent = NULL, tileH = NULL, tileV = NULL, buffer = 0,
-  SDSstring = NULL, job = NULL, checkIntegrity = TRUE, wait = 0.5,
-  forceDownload = TRUE, overwrite = FALSE, ...)
+  extent = NULL, tileH = NULL, tileV = NULL, SDSstring = NULL,
+  job = NULL, checkIntegrity = TRUE, forceDownload = TRUE,
+  overwrite = FALSE, ...)
 }
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}.}
@@ -29,8 +29,6 @@ see \code{\link{getTile}}.}
 \item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), 
 see \code{tileH}.}
 
-\item{buffer}{\code{numeric} (in map units), see \code{\link{getTile}}.}
-
 \item{SDSstring}{\code{character}, see \code{\link{getSds}}.}
 
 \item{job}{\code{character}. Name of the current job for the creation of the 
@@ -38,15 +36,13 @@ output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
 
 \item{checkIntegrity}{\code{logical}, see \code{\link{getHdf}}.}
 
-\item{wait}{\code{numeric}, see \code{\link{getHdf}}.}
-
 \item{forceDownload}{\code{logical}, see \code{\link{getHdf}}.}
 
 \item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines 
 whether or not to overwrite existing SDS output files.}
 
-\item{...}{Additional arguments passed to \code{MODIS:::combineOptions()}, 
-see also \code{\link{MODISoptions}}.}
+\item{...}{Additional arguments passed to \code{MODIS:::combineOptions()} (eg
+'wait'), see also \code{\link{MODISoptions}}.}
 }
 \value{
 A \code{list} of the same length as 'product'. Each product slot holds a 
@@ -125,10 +121,9 @@ runGdal( job="LSTaustria", product="MOD11A1", tileH=18:19,tileV=4, begin="201000
 }
 
 }
-\author{
-Matteo Mattiuzzi, Florian Detsch
-}
 \seealso{
 \code{\link{getHdf}}, \code{\link{runMrt}}.
 }
-
+\author{
+Matteo Mattiuzzi, Florian Detsch
+}

@@ -4,8 +4,9 @@
 \alias{temporalComposite}
 \title{Calculate MODIS Composite Images}
 \usage{
-temporalComposite(x, y, interval = c("month", "fortnight"),
-  fun = function(x) max(x, na.rm = TRUE), cores = 1L, filename = "", ...)
+temporalComposite(x, y, timeInfo = extractDate(x, asDate =
+  TRUE)$inputLayerDates, interval = c("month", "year", "fortnight"),
+  fun = max, na.rm = TRUE, cores = 1L, filename = "", ...)
 }
 \arguments{
 \item{x}{\code{Raster*} or \code{character}. MODIS vegetation index.}
@@ -13,10 +14,14 @@ temporalComposite(x, y, interval = c("month", "fortnight"),
 \item{y}{\code{Raster*} or \code{character}. MODIS
 "composite_day_of_the_year" SDS associated with 'x'.}
 
+\item{timeInfo}{\code{Date} vector corresponding to all input layers. If not 
+further specified, this is tried to be created through invoking 
+\code{\link{extractDate}} upon 'x', assuming standard MODIS file names.}
+
 \item{interval}{\code{character}. Time period for aggregation, see
 \code{\link{aggInterval}}.}
 
-\item{fun}{\code{function}. See \code{\link{overlay}}.}
+\item{fun, na.rm}{\code{function}. See \code{\link{overlay}}.}
 
 \item{cores}{\code{integer}. Number of cores for parallel processing.}
 
@@ -34,26 +39,22 @@ composites.
 }
 \examples{
 \dontrun{
-runGdal("MOD13Q1", collection = getCollection("MOD13Q1", forceCheck = TRUE),
-        begin = "2015001", end = "2015365", extent = "Luxembourg",
-        job = "temporalComposite", SDSstring = "100000000010")
+library(mapview)
+frc <- as(subset(franconia, district == "Mittelfranken"), "Spatial")
+tfs <- runGdal("MOD13A1", begin = "2015001", end = "2016366", extent = frc,
+            job = "temporalComposite", SDSstring = "100000000010")
 
-ndvi <- list.files(paste0(getOption("MODIS_outDirPath"), "/temporalComposite"),
-                   pattern = "NDVI.tif", full.names = TRUE)
-
-cdoy <- list.files(paste0(getOption("MODIS_outDirPath"), "/temporalComposite"),
-                   pattern = "day_of_the_year.tif", full.names = TRUE)
+ndvi <- sapply(tfs[[1]], "[[", 1)
+cdoy <- sapply(tfs[[1]], "[[", 2)
 
 mmvc <- temporalComposite(ndvi, cdoy)
 plot(mmvc[[1:4]])
 }
 
 }
+\seealso{
+\code{\link{aggInterval}}, \code{\link{calc}}, \code{\link{writeRaster}}.
+}
 \author{
 Florian Detsch
 }
-\seealso{
-\code{\link{aggInterval}}, \code{\link{overlay}},
-\code{\link{writeRaster}}.
-}
-

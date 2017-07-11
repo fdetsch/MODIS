@@ -9,9 +9,9 @@
 \usage{
 \S4method{getHdf}{character}(product, HdfName, begin = NULL, end = NULL,
   tileH = NULL, tileV = NULL, extent = NULL, collection = NULL,
-  wait = 0.5, checkIntegrity = TRUE, forceDownload = TRUE, ...)
+  checkIntegrity = TRUE, forceDownload = TRUE, ...)
 
-\S4method{getHdf}{missing}(HdfName, wait = 0.5, checkIntegrity = TRUE, ...)
+\S4method{getHdf}{missing}(HdfName, checkIntegrity = TRUE, ...)
 }
 \arguments{
 \item{product}{\code{character}. MODIS grid product to be downloaded, see 
@@ -39,10 +39,6 @@ see \code{tileH}.}
 \item{collection}{\code{character} or \code{integer}. Desired MODIS product 
 collection, see MODIS pages or \code{\link{getCollection}} for more information.}
 
-\item{wait}{\code{numeric}. Inserts a break (in seconds) after every internal 
-call to \code{\link{download.file}} or \code{\link{getURL}}, which reduces 
-the chance of FTP connection errors that frequently occur after many requests.}
-
 \item{checkIntegrity}{\code{logical}. If \code{TRUE} (default), the size of 
 each downloaded file is checked. In case of inconsistencies, the function 
 tries to re-download broken files.}
@@ -51,8 +47,7 @@ tries to re-download broken files.}
 download data irrespective of whether online information could be retrieved 
 via \code{MODIS:::getStruc} or not.}
 
-\item{...}{Arguments found in \code{\link{MODISoptions}}, sections 'STORAGE' 
-and 'DOWNLOAD'.}
+\item{...}{Further arguments passed to \code{\link{MODISoptions}}, eg 'wait'.}
 }
 \value{
 An invisible vector of downloaded data and paths.
@@ -94,13 +89,12 @@ d
 }
 
 }
-\author{
-Matteo Mattiuzzi
-}
 \references{
 MODIS data is obtained through the online Data Pool at the NASA Land 
 Processes Distributed Active Archive Center (LP DAAC), USGS/Earth Resources 
 Observation and Science (EROS) Center, Sioux Falls, South Dakota 
 \url{https://lpdaac.usgs.gov/get_data}.
 }
-
+\author{
+Matteo Mattiuzzi
+}

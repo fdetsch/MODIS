@@ -16,17 +16,15 @@
 #' see \code{\link{getTile}}.
 #' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
 #' see \code{tileH}.
-#' @param buffer \code{numeric} (in map units), see \code{\link{getTile}}.
 #' @param SDSstring \code{character}, see \code{\link{getSds}}.
 #' @param job \code{character}. Name of the current job for the creation of the 
 #' output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
 #' @param checkIntegrity \code{logical}, see \code{\link{getHdf}}. 
-#' @param wait \code{numeric}, see \code{\link{getHdf}}.
 #' @param forceDownload \code{logical}, see \code{\link{getHdf}}.
 #' @param overwrite \code{logical}, defaults to \code{FALSE}. Determines 
 #' whether or not to overwrite existing SDS output files.
-#' @param ... Additional arguments passed to \code{MODIS:::combineOptions()}, 
-#' see also \code{\link{MODISoptions}}.
+#' @param ... Additional arguments passed to \code{MODIS:::combineOptions()} (eg
+#' 'wait'), see also \code{\link{MODISoptions}}.
 #' 
 #' @return 
 #' A \code{list} of the same length as 'product'. Each product slot holds a 
@@ -110,18 +108,18 @@
 #' @name runGdal
 runGdal <- function(product, collection=NULL, 
                     begin=NULL, end=NULL, 
-                    extent=NULL, tileH=NULL, tileV=NULL, buffer=0, 
-                    SDSstring=NULL, job=NULL, checkIntegrity=TRUE, wait=0.5, 
+                    extent=NULL, tileH=NULL, tileV=NULL, 
+                    SDSstring=NULL, job=NULL, checkIntegrity=TRUE, 
                     forceDownload=TRUE, overwrite = FALSE, ...)
 {
     opts <- combineOptions(...)
 
-    if(!opts$gdalOk)
-    {
+    if(!opts$gdalOk) {
         stop("GDAL not installed or configured, read in '?MODISoptions' for help")
     }
-    # absolutly needed
-    product <- getProduct(product,quiet=TRUE)
+    
+    # absolutely needed
+    product <- getProduct(product, quiet=TRUE)
     
     # optional and if missing it is added here:
     product$CCC <- getCollection(product,collection=collection)
@@ -162,134 +160,28 @@ runGdal <- function(product, collection=NULL,
      
     if (product$TYPE[1]=="Tile" | (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & product$TYPE[1]=="CMG"))
     {
-        extent <- getTile(extent=extent, tileH=tileH, tileV=tileV, buffer=buffer)
+        extent <- getTile(x=extent, tileH=tileH, tileV=tileV)
     } else
     {
         extent <- NULL
     }
 
-    #### outProj
-    t_srs <- NULL
-    cat("########################\n")
-    if(!is.null(extent$target$outProj))
-    {
-      outProj <- checkOutProj(extent$target$outProj,tool="GDAL")
-      cat("outProj          = ",outProj ," (Specified by raster*/spatial* object)\n")
-    } else
-    {
-      outProj <- checkOutProj(opts$outProj,tool="GDAL")
-      cat("outProj          = ",outProj,"\n")
-    }
-    if (outProj == "asIn")
-    {
-        if (product$SENSOR[1]=="MODIS")
-        {
-            if (product$TYPE[1]=="Tile")
-            {
-                outProj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-            } else 
-            {
-                outProj <- "+proj=longlat +ellps=clrk66 +no_defs" # CMG proj
-            }
-        }  
-    }
-    t_srs <- paste0(' -t_srs ',shQuote(outProj))
     
-    #### pixelSize
-    if(!is.null(extent$target$pixelSize))
-    {
-      pixelSize <- extent$target$pixelSize
-      cat("pixelSize        = ",pixelSize ," (Specified by raster* object)\n")
-    } else 
-    {
-      pixelSize <- opts$pixelSize
-      cat("pixelSize        = ",pixelSize,"\n")
-    } 
-
-    tr <- NULL
-    if (pixelSize[1]!="asIn")
-    {
-      if (length(pixelSize)==1)
-      {
-        tr <- paste(" -tr",pixelSize,pixelSize)
-      } else
-      {
-        tr <- paste0(" -tr ", paste0(pixelSize,collapse=" "))
-      }
-    }
+    ### GDAL command line arguments -----
     
-    #### resamplingType
-    opts$resamplingType <- checkResamplingType(opts$resamplingType, tool="gdal")
-    cat("resamplingType   = ", opts$resamplingType,"\n")
-    rt <- paste0(" -r ",opts$resamplingType)
+    ## obligatory arguments
+    t_srs <- OutProj(product, extent, opts) # outProj
+    tr <- PixelSize(extent, opts)           # pixelSize
+    rt <- ResamplingType(opts)              # resamplingType
+    s_srs <- InProj(product)                # inProj
+    te <- TargetExtent(extent,              # targetExtent
+                       outProj = strsplit(t_srs, "'")[[1]][2]) 
     
-    #### inProj (s_srs)    
-    if (product$SENSOR[1]=="MODIS")
-    {
-      if (product$TYPE[1]=="Tile")
-      {
-        s_srs <- paste0(' -s_srs ',shQuote("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"))
-      } else 
-      {
-        s_srs <- paste0(' -s_srs ',shQuote("+proj=longlat +ellps=clrk66 +no_defs"))
-      }
-    } 
-    #### te (target @extent)
-    te <- NULL # if extent comes from tileV/H
-    if (!is.null(extent$target$extent)) # all extents but not tileV/H
-    {
-      if (is.null(extent$target$outProj)) # map or list extents (always LatLon)
-      {
-        rx <- raster(extent$target$extent,crs="+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") 
-        rx <- projectExtent(rx,outProj)
-        rx <- extent(rx) 
-      } else
-      {
-        rx <- extent$target$extent
-      }
-      te <- paste(" -te", rx@xmin, rx@ymin, rx@xmax, rx@ymax)  
-    } 
-    if (is.null(extent$target))
-    {
-      if(!is.null(extent$extent))
-      {
-        rx <- raster(extent$extent,crs="+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") 
-        rx <- projectExtent(rx,outProj)
-        rx <- extent(rx) 
-        te <- paste(" -te", rx@xmin, rx@ymin, rx@xmax, rx@ymax)  
-      }
-    }
-    
-    #### generate non-obligatory GDAL arguments
-    # GeoTiff BLOCKYSIZE and compression. See: http://www.gdal.org/frmt_gtiff.html            
-    if(is.null(opts$blockSize))
-    {
-      bs <- NULL
-    } else
-    {
-      opts$blockSize <- as.integer(opts$blockSize)
-      bs <- paste0(" -co BLOCKYSIZE=",opts$blockSize)
-    }
-      
-    # compress output data
-    if(is.null(opts$compression))
-    {
-      cp <- " -co compress=lzw -co predictor=2"
-    } else if (isTRUE(opts$compression))
-    {
-      cp <- " -co compress=lzw -co predictor=2"
-    } else
-    {
-      cp <- NULL
-    }
-    ####
-    
-    ## if 'quiet = FALSE' or not available, show full console output
-    q <- if ("quiet" %in% names(opts)) {
-      if (opts$quiet) " -q" else NULL
-    } else {
-      NULL
-    }
+    ## non-obligatory arguments (GTiff blocksize and compression, see 
+    ## http://www.gdal.org/frmt_gtiff.html)
+    bs <- BlockSize(opts)                   # blockSize
+    cp <- OutputCompression(opts)           # compression
+    q <- QuietOutput(opts)                  # quiet
     
     lst_product <- vector("list", length(product$PRODUCT))
     for (z in seq_along(product$PRODUCT)) {
@@ -350,7 +242,7 @@ runGdal <- function(product, collection=NULL,
               getHdf(product=prodname, collection=coll, begin=avDates[l], end=avDates[l],
                tileH=extent$tileH, tileV=extent$tileV, checkIntegrity=checkIntegrity, 
                stubbornness=opts$stubbornness, MODISserverOrder=opts$MODISserverOrder, 
-               forceDownload = forceDownload)
+               forceDownload = forceDownload, wait = opts$wait)
             )
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()

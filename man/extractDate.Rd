@@ -23,8 +23,9 @@ Defaults to MODIS date style (i.e., \code{"\%Y\%j"} for year and julian day).
 See \code{\link{strptime}} for modifications.}
 }
 \value{
-If \code{asDate = FALSE}, a \code{character} vector; else a \code{Date} 
-vector extracted from \code{files}.
+A \code{list} with the following entries: 'inputLayerDates', 'pos1', 'pos2', 
+'asDate' and, optionally, 'format'. If \code{asDate = FALSE}, 
+'inputLayerDates' are represented as \code{character}, else as \code{Date}.
 }
 \description{
 This function helps to extract dates from a vector of files.
@@ -47,4 +48,3 @@ extractDate(files,pos1=8,pos2=15,asDate=TRUE,format="\\\%Y\\\%m\\\%d")
 \author{
 Matteo Mattiuzzi
 }
-

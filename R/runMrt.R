@@ -84,7 +84,7 @@
 #' @name runMrt
 runMrt <- function(...)
 {
-    MODISoptions(save=FALSE,quiet=TRUE)
+    MODISoptions(save=FALSE)
     
     opts <- combineOptions(...)
     if (!opts$mrtOk)
@@ -172,7 +172,7 @@ runMrt <- function(...)
             ntiles=1 
         } else 
         {
-            opts$extent <- getTile(extent=opts$extent,tileH=opts$tileH,tileV=opts$tileV,buffer=opts$buffer)
+            opts$extent <- getTile(x=opts$extent,tileH=opts$tileH,tileV=opts$tileV)
             ntiles    <- length(opts$extent$tile)
         }
     
@@ -271,7 +271,7 @@ runMrt <- function(...)
                                     shell(paste("mrtmosaic -i \"",paraname,"\" -o \"", normalizePath(outDir) ,"\\",TmpMosNam,"\" -s \"",SDSstringIntern$SDSstring,"\"" ,sep=""))
                                 }
                                 unlink(paraname)
-                                Sys.sleep(0.5) # without wait the skript can break here. "wait" is a try but it seams to work!!!
+                                Sys.sleep(opts$wait) # without wait the skript can break here. "wait" is a try but it seams to work!!!
                             }
             
                             basenam <- strsplit(files[q],"/")[[1]]

@@ -57,4 +57,3 @@ Delete MODIS grid files to reduce the local storage.
 \author{
 Matteo Mattiuzzi
 }
-

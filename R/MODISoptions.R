@@ -36,15 +36,23 @@
 #' @param stubbornness \code{numeric}. The number of retries after the target 
 #' server has refused a connection. Higher values increase the chance of getting 
 #' the file, but also lead to hanging functions if the server is down.
+#' @param wait \code{numeric} waiting time (in seconds) inserted after each 
+#' internal online download call via \code{\link{download.file}} or 
+#' \code{\link{getURL}}. Reduces the chance of FTP connection errors that 
+#' frequently occur after many requests.
 #' @param systemwide \code{logical}. If \code{FALSE} (default), 'user'-wide 
 #' settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
 #' write settings to 'systemwide', presumed you have write access to 
 #' \code{paste(R.home(component="etc"), '/', '.MODIS_opts.R', sep='')}.
-#' @param quiet \code{logical}. If \code{FALSE} (default), options are printed 
-#' to the console.
+#' @param quiet \code{logical} passed eg to \code{\link{download.file}} which is 
+#' called from inside \code{\link{getHdf}}. 
 #' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
 #' @param checkTools \code{logical}, defaults to \code{TRUE}. Check if external 
 #' tools (i.e., GDAL and MRT) are installed and reachable through R.
+#' 
+#' @return 
+#' The most relevant \strong{MODIS} options are printed to the console. Use 
+#' \code{\link{capture.output}} to prevent this behavior.
 #' 
 #' @details 
 #' These settings are permanent, easy to change and take effect immediately!
@@ -81,7 +89,7 @@
 #' workable .netrc file is provided through \code{\link{lpdaacLogin}}. 
 #' 
 #' @author 
-#' Matteo Mattiuzzi and Steven Mosher
+#' Matteo Mattiuzzi, Steven Mosher and Florian Detsch
 #' 
 #' @examples 
 #' \dontrun{
@@ -96,8 +104,8 @@
 #' @name MODISoptions
 MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, 
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
-                         dlmethod, stubbornness, systemwide = FALSE, 
-                         quiet=FALSE, save=TRUE, checkTools = TRUE)
+                         dlmethod, stubbornness, wait, quiet, 
+                         systemwide = FALSE, save = TRUE, checkTools = TRUE)
 {
   # This function collects the package options from up to 3 files and creates the .MODIS_opts.R file (location depending on systemwide=T/F, see below):
   # 1. package installation directory (factory defaults); 
@@ -107,8 +115,6 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   # The final settings are written in to the user specific file 3.
   # options are not tested here! only generated!
   
-  # debug: systemwide = FALSE; quiet=FALSE; save=TRUE
-
   # container for all options
   opts  <- new.env()
   
@@ -225,6 +231,9 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   {
     opt$stubbornness <- stubbornness
   }
+  
+  if (!missing(wait)) opt$wait <- wait
+  if (!missing(quiet)) opt$quiet <- quiet
   
   if(!missing(resamplingType))
   {
@@ -371,6 +380,8 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     }
     write(paste0('dlmethod         <- \'',opt$dlmethod,'\'' ), filename)
     write(paste0('stubbornness     <- \'',opt$stubbornness,'\''), filename)
+    write(paste0('wait             <- \'',opt$wait,'\''), filename)
+    write(paste0('quiet            <- \'',opt$quiet,'\''), filename)
     write('  ', filename)
     
     write('#########################', filename)
@@ -408,29 +419,28 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     close(filename)
   }
   
-  if (!quiet) 
-  {
-    cat('\nSTORAGE:\n')
-    cat('_______________\n')
-    cat('localArcPath :', normalizePath(opt$localArcPath,"/",FALSE), '\n' )
-    cat('outDirPath   :', normalizePath(opt$outDirPath,"/",FALSE), '\n\n\n')
-    
-    cat('DOWNLOAD:\n')
-    cat('_______________\n')
-    cat('MODISserverOrder :', paste(opt$MODISserverOrder,collapse=", "),'\n')
-    cat('dlmethod         :', opt$dlmethod,'\n')
-    cat('stubbornness     :', opt$stubbornness,'\n\n\n')
-    
-    cat('PROCESSING:\n')
-    cat('_______________\n')
-    cat('GDAL           :', gdalVersion, '\n')
-    cat('MRT            :', mrtVersion, '\n')
-    cat('pixelSize      :', opt$pixelSize, '\n')
-    cat('outProj        :', opt$outProj, '\n')
-    cat('resamplingType :', opt$resamplingType, '\n')
-    cat('dataFormat     :', opt$dataFormat, '\n\n\n')
-  }
+  cat('\nSTORAGE:\n')
+  cat('_______________\n')
+  cat('localArcPath :', normalizePath(opt$localArcPath,"/",FALSE), '\n' )
+  cat('outDirPath   :', normalizePath(opt$outDirPath,"/",FALSE), '\n\n\n')
   
+  cat('DOWNLOAD:\n')
+  cat('_______________\n')
+  cat('MODISserverOrder :', paste(opt$MODISserverOrder,collapse=", "),'\n')
+  cat('dlmethod         :', opt$dlmethod,'\n')
+  cat('stubbornness     :', opt$stubbornness,'\n')
+  cat('wait             :', opt$wait, "\n")
+  cat('quiet            :', opt$quiet, "\n\n\n")
+  
+  cat('PROCESSING:\n')
+  cat('_______________\n')
+  cat('GDAL           :', gdalVersion, '\n')
+  cat('MRT            :', mrtVersion, '\n')
+  cat('pixelSize      :', opt$pixelSize, '\n')
+  cat('outProj        :', opt$outProj, '\n')
+  cat('resamplingType :', opt$resamplingType, '\n')
+  cat('dataFormat     :', opt$dataFormat, '\n\n\n')
+
   # remove ftpstring* from opt (old "~/.MODIS_Opts.R" style)
   oldftp <- grep(names(opt),pattern="^ftpstring*")
   

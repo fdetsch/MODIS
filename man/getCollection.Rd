@@ -59,10 +59,9 @@ getCollection(product="M.D11C3",forceCheck=TRUE)
 }
 
 }
-\author{
-Matteo Mattiuzzi
-}
 \seealso{
 \code{\link{getProduct}}.
 }
-
+\author{
+Matteo Mattiuzzi
+}

@@ -21,4 +21,3 @@ Forrest Stevens, Steven Mosher, Bradley Evans, Agustin Lobo, Florian Detsch
 \emph{Maintainer:} Matteo Mattiuzzi \email{matteo@mattiuzzi.com}
 }
 \keyword{package}
-

@@ -5,8 +5,8 @@
 \title{Set or Retrieve Permanent MODIS Package Options}
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
-  dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness,
-  systemwide = FALSE, quiet = FALSE, save = TRUE, checkTools = TRUE)
+  dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait, quiet,
+  systemwide = FALSE, save = TRUE, checkTools = TRUE)
 }
 \arguments{
 \item{localArcPath}{\code{character}, defaults to \code{"~/MODIS_ARC"}. 
@@ -51,18 +51,27 @@ installed and made available through the PATH environmental variable.}
 server has refused a connection. Higher values increase the chance of getting 
 the file, but also lead to hanging functions if the server is down.}
 
+\item{wait}{\code{numeric} waiting time (in seconds) inserted after each 
+internal online download call via \code{\link{download.file}} or 
+\code{\link{getURL}}. Reduces the chance of FTP connection errors that 
+frequently occur after many requests.}
+
+\item{quiet}{\code{logical} passed eg to \code{\link{download.file}} which is 
+called from inside \code{\link{getHdf}}.}
+
 \item{systemwide}{\code{logical}. If \code{FALSE} (default), 'user'-wide 
 settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
 write settings to 'systemwide', presumed you have write access to 
 \code{paste(R.home(component="etc"), '/', '.MODIS_opts.R', sep='')}.}
 
-\item{quiet}{\code{logical}. If \code{FALSE} (default), options are printed 
-to the console.}
-
 \item{save}{\code{logical}. If \code{TRUE} (default), settings are permanent.}
 
 \item{checkTools}{\code{logical}, defaults to \code{TRUE}. Check if external 
 tools (i.e., GDAL and MRT) are installed and reachable through R.}
+}
+\value{
+The most relevant \strong{MODIS} options are printed to the console. Use 
+\code{\link{capture.output}} to prevent this behavior.
 }
 \description{
 Set or retrieve persistant \strong{MODIS} package options (per user or 
@@ -113,6 +122,5 @@ MODISoptions(localArcPath="/another/path/than/default")
 
 }
 \author{
-Matteo Mattiuzzi and Steven Mosher
+Matteo Mattiuzzi, Steven Mosher and Florian Detsch
 }
-

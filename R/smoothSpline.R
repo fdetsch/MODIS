@@ -115,21 +115,15 @@ smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = 
         stop("Argument dataFormat='",dataFormat,"' in 'smooth.spline.raster()' is unknown/not supported. Please run 'writeFormats()' (column 'name') so list available dataFormat's")
     }
     
-    if(!inherits(x,"Raster")) 
-    {
-        x <- stack(x, quick=TRUE)
-    }
-    
-    if(!inherits(w,"Raster") & !is.null(w)) 
-    {
-        w <- stack(w, quick=TRUE)
-    }
+    if (!inherits(x, "Raster")) 
+      x <- raster::stack(x)
 
-    if(!inherits(t,"Raster") & !is.null(t)) 
-    {
-        t <- stack(t, quick=TRUE)
-    }
-   
+    if (!inherits(w, "Raster") & !is.null(w)) 
+      w <- raster::stack(w)
+
+    if (!inherits(t, "Raster") & !is.null(t)) 
+      t <- raster::stack(t)
+
     tsLength <- as.numeric(max(timeInfo$inputLayerDates) - (min(timeInfo$inputLayerDates)-1)) 
     tsLayers <- length(unique(timeInfo$inputLayerDates))
 

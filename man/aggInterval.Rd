@@ -2,16 +2,17 @@
 % Please edit documentation in R/aggInterval.R
 \name{aggInterval}
 \alias{aggInterval}
-\title{Create (Half-)Monthly Composite Periods}
+\title{Create Periods for Temporal Composites}
 \usage{
-aggInterval(x, interval = c("month", "fortnight"))
+aggInterval(x, interval = c("month", "year", "fortnight"))
 }
 \arguments{
-\item{x}{\code{numeric} year or \code{Date} object.}
+\item{x}{\code{Date} object, see eg default value of 'timeInfo' in 
+\code{\link{temporalComposite}}.}
 
 \item{interval}{\code{character}. Time period for aggregation. Currently
-available options are "month" (default) and "fortnight" (i.e., every 1st and
-15th day of the month).}
+available options are "month" (default), "year" and "fortnight" (i.e., every 
+1st and 15th day of the month).}
 }
 \value{
 A \code{list} with the following slots:
@@ -31,19 +32,26 @@ monthly) from native 16-day MODIS composites usually requires the definition
 of date sequences based on which the "composite_day_of_the_year" SDS is
 further processed. Complementing \code{\link{transDate}}, which returns the
 respective start and end date only, this function creates full-year
-(half-)monthly composite periods from a user-defined temporal range.
+(half-)monthly or annual composite periods from a user-defined temporal range.
 }
 \examples{
-dates <- c(2015, 2016)
+dates <- do.call("c", lapply(2015:2016, function(i) {
+  start <- as.Date(paste0(i, "-01-01"))
+  end <- as.Date(paste0(i, "-12-31"))
+  seq(start, end, 16)
+}))
 
-aggInterval(dates)
-aggInterval(dates, interval = "fortnight")
+intervals <- c("month", "year", "fortnight")
+lst <- lapply(intervals, function(i) {
+  aggInterval(dates, interval = i)
+}); names(lst) <- intervals
 
-}
-\author{
-Florian Detsch
+print(lst)
+
 }
 \seealso{
 \code{\link{transDate}}.
 }
-
+\author{
+Florian Detsch
+}

@@ -1,10 +1,10 @@
 Package: MODIS
 Type: Package
 Title: Acquisition and Processing of MODIS Products
-Version: 1.0.0
-Date: 2016-12-16
+Version: 1.1.0
+Date: 2017-07-03
 Authors@R: c(
-	person("Matteo", "Mattiuzzi", role = c("cre", "aut"),  email = "matteo@mattiuzzi.com"),
+	person("Matteo", "Mattiuzzi", role = c("aut")),
 	person("Jan", "Verbesselt", role = "ctb"),
 	person("Tomislav", "Hengl", role = "ctb"),
 	person("Anja", "Klisch", role = "ctb"),
@@ -13,8 +13,7 @@ Authors@R: c(
 	person("Bradley", "Evans", role = "ctb"),
 	person("Agustin", "Lobo", role = "ctb"), 
 	person("Koen", "Hufkens", role = "ctb"),
-	person("Florian", "Detsch", role = "ctb"))
-Maintainer: Matteo Mattiuzzi <matteo@mattiuzzi.com>
+	person("Florian", "Detsch", role = c("cre", "aut"), email = "fdetsch@web.de"))
 Description: Download and processing functionalities for the Moderate Resolution
     Imaging Spectroradiometer (MODIS). The package provides automated access to the
     global online data archives (LPDAAC and LAADS) and processing capabilities such
@@ -26,20 +25,22 @@ Depends:
     R (>= 2.10),
     raster
 Imports:
-    bitops, 
+    bitops,
+    devtools,
     grDevices,
     graphics,
+    mapedit,
     maps,
     methods,
     parallel,
-    ptw, 
+    ptw,
     RCurl,
     rgdal,
-    rgeos,
+    sf,
     sp,
     stats,
-    utils, 
+    utils,
     XML
 URL: https://github.com/MatMatt/MODIS
 ByteCompile: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

@@ -20,10 +20,12 @@ outDirPath   <- '~/MODIS_ARC/PROCESSED'
 # consult '?MODISoptions' for more details
 dlmethod     <- 'auto' # Download method passed to ?download.file, 'auto' is always a good choice, if you encouter problems (like 'file not found') switch to 'wget'
 stubbornness <- 'high' # How stubborn should MODIS re-try to connect to ftp/http?
+wait <- 0.5
+quiet <- FALSE
 
 #########################
 # 3.) Processing defaults
-# It is highly racommanded to not modify here, at least not 'resamplingType' as there are several layers that require NN (i.e. VI_Quality, Day of the year,...)!
+# It is highly recommended to not modify here, at least not 'resamplingType' as there are several layers that require NN (i.e. VI_Quality, Day of the year,...)!
 # consult '?MODISoptions' for more details
   
 resamplingType <- 'NN' 

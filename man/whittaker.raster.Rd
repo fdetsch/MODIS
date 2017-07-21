@@ -81,13 +81,13 @@ this function is currently under heavy development.
 }
 \examples{
 \dontrun{
-# The full capacity of the following functions is currently avaliable only with M*D13 data.
-# !! The function is very new, double check the result !!
-
-# You need to extract: 'vegetation index', 'VI_Quality layer', and 'composite day of the year'.
-# runGdal(product="MOD13A2",begin="2004340",extent="sicily",end="2006070",
-# job="fullCapa",SDSstring="101000000010")
-# You can download this dataset from (2.6 MB): 
+# The following function will download bit more than 1 year of MOD13A1 (~180mB) and therefore
+# take while to execute! Data will be downloaded to options("MODIS_localArcPath") and processed 
+# to 'paste0(options("MODIS_outDirPath"),"fullCapa")'
+# You need to extract: 'vegetation index', 'VI_Quality layer', and 'composite day of the year',
+# this is expressed by the argument 'SDSstring'
+runGdal(product="MOD13A2",begin="2004340",extent="irland",end="2006020", job="fullCapa",
+SDSstring="101000000010")
 path <- paste0(options("MODIS_outDirPath"),"fullCapa")
 
 # the only obligatory dataset is the vegetatino index 
@@ -99,7 +99,6 @@ vi <- preStack(path=path, pattern="*_NDVI.tif$")
 # For spline functions (in general) the beginning and the end of the time series
 # is always problematic. So there is the argument "pillow" (default 75 days) that adds
 # (if available) some more layers on the two endings.
-
 timeInfo <- orgTime(vi,nDays=16,begin="2005001",end="2005365",pillow=40)
 
 # now re-run "preStack" with two differences, 'files' (output of the first 'preStack' call)

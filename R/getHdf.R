@@ -157,12 +157,12 @@ setMethod("getHdf",
         {
           if (!is.null(tileH) & !is.null(tileV)) 
           {
-            extent <- getTile(tileH=tileH,tileV=tileV)
+            ext <- getTile(tileH=tileH,tileV=tileV)
           } else
           {
-            extent <- getTile(x = extent)
+            ext <- getTile(x = extent)
           }
-          tileID <- extent$tile
+          tileID <- ext$tile
           ntiles <- length(tileID)
         }
         

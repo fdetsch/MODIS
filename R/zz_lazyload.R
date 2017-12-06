@@ -1,18 +1,27 @@
 # lazy loading
 ##########################################
 
-tiletable <- read.table(system.file("external", "tiletable.txt", package="MODIS"), header=TRUE)
+suppressWarnings(
+  avl <- "MODIS" %in% installed.packages()
+)
 
-# save(tileNames,file="~/tileNames.RData") # in chase of changes
-load(system.file("external", "tileNames.RData", package="MODIS"))
+ofl = ifelse(!avl
+             , file.path(getwd(), "inst/external")
+             , system.file("external", package = "MODIS"))
+ofl = gsub("/R/inst/external", "/inst/external", ofl)
+
+tiletable <- read.table(file.path(ofl, "tiletable.txt"), header = TRUE)
+
+# save(tileNames,file="~/tileNames.RData") # in case of changes
+load(file.path(ofl, "tileNames.RData"))
 
 # load MODIS Tiles (sr)
-load(system.file("external", "MODIS_TilesPolys.RData", package="MODIS"))
+load(file.path(ofl, "MODIS_TilesPolys.RData"))
 
-# save(MODIS_Products,file="~/MODIS_Products.RData") # in chase of changes
-load(system.file("external", "MODIS_Products.RData", package="MODIS"))
+# save(MODIS_Products,file="~/MODIS_Products.RData") # in case of changes
+load(file.path(ofl, "MODIS_Products.RData"))
 
-load(system.file("external", "collections.RData", package="MODIS"))
+load(file.path(ofl, "collections.RData"))
 
 ## pitty that this does not work like that!
 ## lazy load gdal EPSG
@@ -21,14 +30,14 @@ load(system.file("external", "collections.RData", package="MODIS"))
 #    EPSGinfo <- make_EPSG() # if rgdal, make it new!
 #} else
 #{
-    # save(EPSGinfo,file="~/EPSGinfo.RData") # periodically safed manually by Admin (last up: October2014)
-    load(system.file("external", "EPSGinfo.RData", package="MODIS"))
+# save(EPSGinfo,file="~/EPSGinfo.RData") # periodically safed manually by Admin (last up: October2014)
+load(file.path(ofl, "EPSGinfo.RData"))
 #}
 ###
 
 # FTP information
-# save(MODIS_FTPinfo,file="~/MODIS_FTPinfo.RData") # in chase of changes
-load(system.file("external", "MODIS_FTPinfo.RData", package="MODIS")) 
+# save(MODIS_FTPinfo,file="~/MODIS_FTPinfo.RData") # in case of changes
+load(file.path(ofl, "MODIS_FTPinfo.RData")) 
 
 # mrtOutDriver  <- c("raw binary","HDF-EOS","GeoTiff","HDF4Image","GTiff")
 

@@ -43,7 +43,7 @@
 #' @param systemwide \code{logical}. If \code{FALSE} (default), 'user'-wide 
 #' settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
 #' write settings to 'systemwide', presumed you have write access to 
-#' \code{paste(R.home(component="etc"), '/', '.MODIS_opts.R', sep='')}.
+#' \code{paste(R.home(component="etc"), '/', '.MODIS_Opts.R', sep='')}.
 #' @param quiet \code{logical} passed eg to \code{\link{download.file}} which is 
 #' called from inside \code{\link{getHdf}}. 
 #' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
@@ -107,10 +107,11 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
                          dlmethod, stubbornness, wait, quiet, 
                          systemwide = FALSE, save = TRUE, checkTools = TRUE)
 {
-  # This function collects the package options from up to 3 files and creates the .MODIS_opts.R file (location depending on systemwide=T/F, see below):
+  # This function collects the package options from up to 3 files and creates 
+  # the .MODIS_Opts.R file (location depending on systemwide=T/F, see below):
   # 1. package installation directory (factory defaults); 
-  # 2. /R/etc/.MODIS_opts.R for system wide settings (all users of a machine) and 
-  # 3. user home "~/.MODIS_opts.R", for user specific settings. 
+  # 2. /R/etc/.MODIS_Opts.R for system wide settings (all users of a machine) and 
+  # 3. user home "~/.MODIS_Opts.R", for user specific settings. 
   # settings are collected in direction 1-3 and each time overwritten if available
   # The final settings are written in to the user specific file 3.
   # options are not tested here! only generated!
@@ -120,8 +121,14 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   
   ##################################
   # 1. factory defaults -----
-  eval(parse(file.path(find.package("MODIS"), "external", "MODIS_Opts.R")),
-       envir = opts) 
+  ofl = suppressWarnings(
+    system.file("external", "MODIS_Opts.R", package = "MODIS")
+  )
+  
+  if (ofl == "")
+    ofl = file.path(getwd(), "inst/external/MODIS_Opts.R")
+  
+  eval(parse(ofl), envir = opts) 
   
   # 2. system wide -----
   sysopts <- paste(R.home(component = "etc"), '.MODIS_Opts.R', sep = '/')
@@ -343,7 +350,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   
   if (save)
   {    
-    #  create the '.MODIS_opts.R' file
+    #  create the '.MODIS_Opts.R' file
     filename <- file(optfile, open="wt")
     
     write(paste('# This file contains ', whose,' default values for the R package \'MODIS\'.',sep=""), filename)

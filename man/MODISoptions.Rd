@@ -62,7 +62,7 @@ called from inside \code{\link{getHdf}}.}
 \item{systemwide}{\code{logical}. If \code{FALSE} (default), 'user'-wide 
 settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
 write settings to 'systemwide', presumed you have write access to 
-\code{paste(R.home(component="etc"), '/', '.MODIS_opts.R', sep='')}.}
+\code{paste(R.home(component="etc"), '/', '.MODIS_Opts.R', sep='')}.}
 
 \item{save}{\code{logical}. If \code{TRUE} (default), settings are permanent.}
 

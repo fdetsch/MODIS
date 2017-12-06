@@ -4,7 +4,7 @@
 #' Re-organise the storage structure of your MODIS archive according to the 
 #' settings in \code{options("MODIS_arcStructure")}. Depending on the specified 
 #' \code{'source'} , you can also use this function to gather all MODIS grid 
-#' files on you computer and organise them according to '~/.MODIS_opts.R'. The 
+#' files on you computer and organise them according to '~/.MODIS_Opts.R'. The 
 #' main purpose is to organise the archive, but it is also possible to copy a 
 #' subset of files to a desidered location!
 #' 
@@ -32,7 +32,7 @@
 #' @examples 
 #' \dontrun{
 #' # MOVE all MODIS grid data to the directory and structure as defined in 
-# '~/.MODIS_opts.R' file; see also
+# '~/.MODIS_Opts.R' file; see also
 #' # options("MODIS_localArcPath", "MODIS_arcStructure")
 #' orgStruc(move = TRUE)
 #' 

@@ -158,7 +158,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
       }
                
       namesFTP <- names(MODIS_FTPinfo)
-      Hmany <- grep(namesFTP,pattern="^ftpstring*.") # get ftpstrings in ./MODIS_opts.R
+      Hmany <- grep(namesFTP,pattern="^ftpstring*.") # get ftpstrings in ./MODIS_Opts.R
   
       remotePath <- list()
       n = 0

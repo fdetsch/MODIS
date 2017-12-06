@@ -175,7 +175,7 @@ runGdal <- function(product, collection=NULL,
     rt <- ResamplingType(opts)              # resamplingType
     s_srs <- InProj(product)                # inProj
     te <- TargetExtent(extent,              # targetExtent
-                       outProj = strsplit(t_srs, "'")[[1]][2]) 
+                       outProj = strsplit(t_srs, "'|\"")[[1]][2]) 
     
     ## non-obligatory arguments (GTiff blocksize and compression, see 
     ## http://www.gdal.org/frmt_gtiff.html)

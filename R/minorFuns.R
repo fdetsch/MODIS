@@ -711,13 +711,17 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
               }
               
               # wget extras
+              ofl = path.expand("~/.cookies.txt")
+              if (!file.exists(ofl))
+                jnk = file.create(ofl)
+              
               extra <- if (method == "wget") {
-                paste("--load-cookies ~/.cookies.txt", 
-                      "--save-cookies ~/.cookies.txt --keep-session-cookie", 
-                      "--no-check-certificate")
-              # curl extras  
+                paste("--load-cookies", ofl
+                      , "--save-cookies", ofl
+                      , "--keep-session-cookie --no-check-certificate")
+                # curl extras  
               } else {
-                '-n -L -c ~/.cookies.txt -b ~/.cookies.txt'
+                paste('-n -L -c', ofl, '-b', ofl)
               }
               
             ## else if server == "NTSG", choose 'wget' as download method  

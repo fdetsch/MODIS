@@ -145,7 +145,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
         
         if (!quiet)
         {
-            cat("Checking availabillity of MRT:\n")
+            cat("Checking availability of MRT:\n")
         }
     
         if(mrtH=="") 
@@ -202,7 +202,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
         {    
             if (!quiet)
             {
-                cat("Checking availabillity of GDAL:\n")
+                cat("Checking availability of GDAL:\n")
             }
             
             cmd      <- paste0(opts$gdalPath,'gdalinfo --version')            

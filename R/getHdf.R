@@ -23,8 +23,8 @@ if ( !isGeneric("getHdf") ) {
 #' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
 #' see \code{tileH}.
 #' @param extent See Details in \code{\link{getTile}}.
-#' @param collection \code{character} or \code{integer}. Desired MODIS product 
-#' collection, see MODIS pages or \code{\link{getCollection}} for more information.
+#' @param collection Desired MODIS product collection as \code{character}, 
+#' \code{integer}, or \code{list} as returned by \code{\link{getCollection}}.
 #' @param HdfName \code{character} vector or \code{list}. Full HDF file name(s) 
 #' to download a small set of files. If specified, other file-related parameters 
 #' (i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored. 

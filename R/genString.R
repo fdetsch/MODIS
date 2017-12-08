@@ -113,8 +113,9 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                 string[[l]] <- paste0(unlist(tmp),collapse=".")
                 
                 ## append '_MERRAGMAO' if product is hosted at NTSG
-                if ("NTSG" %in% unlist(product$SOURCE) & i == 2)
-                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
+                if ("NTSG" == stringX$name & i == 2)
+                  string[[l]] <- gsub("(\\.){1}(\\d){3}$", ".105_MERRAGMAO"
+                                      , string[[l]])
               }
             }
           remotePath[[n]] <- path.expand(paste(stringX$basepath,paste0(unlist(string),collapse="/"),sep="/"))
@@ -188,10 +189,11 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
               string[[l]] <- paste0(unlist(tmp),collapse=".")
               
               ## if working on NTSG server
-              if ("NTSG" %in% unlist(product$SOURCE)) {
+              if ("NTSG" == stringX$name) {
                 # add '_MERRAGMAO' suffix
                 if (i == 2)
-                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
+                  string[[l]] <- gsub("(\\.){1}(\\d){3}$", ".105_MERRAGMAO"
+                                      , string[[l]])
                 
                 # add leading 'Y' to year
                 if (i == 3) 

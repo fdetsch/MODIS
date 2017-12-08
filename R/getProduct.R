@@ -40,7 +40,7 @@ getProduct <- function(x=NULL,quiet=FALSE)
         return(products[order(products$PRODUCT),])
     }
 
-    if (is.list(x) && names(x) %in% c("request", "PRODUCT", "TOPIC", "DATE", "TILE", "TILEV", "TILEH", "CCC", "PROCESSINGDATE", "FORMAT", "SENSOR", "PLATFORM", "PF1", "PF2", "TOPIC", "TYPE", "RES", "TEMP_RES", "INTERNALSEPARATOR")) 
+    if (is.list(x) && names(x) %in% c("request", "PRODUCT", "TOPIC", "DATE", "TILE", "TILEV", "TILEH", "CCC", "PROCESSINGDATE", "FORMAT", "SENSOR", "PLATFORM", "PF1", "PF2", "PF3", "TOPIC", "TYPE", "RES", "TEMP_RES", "INTERNALSEPARATOR")) 
     {
         # if TRUE than it is a result from a getProduct() call. A good idea would be to have a CLASS for it!
         return(x)
@@ -148,7 +148,8 @@ getProduct <- function(x=NULL,quiet=FALSE)
             return(
                 invisible(
                     list(request = inbase, PF1 = as.character(info$PF1),
-                    PF2 = as.character(info$PF2), PD = PD, PLATFORM = as.character(info$PLATFORM),
+                    PF2 = as.character(info$PF2), PF3 = as.character(info$PF3)
+                    , PD = PD, PLATFORM = as.character(info$PLATFORM),
                     TYPE = as.character(info$TYPE), PRODUCT = as.character(info$PRODUCT),
                     SENSOR = as.character(info$SENSOR), SOURCE=info$SOURCE)
                 )

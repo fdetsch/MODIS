@@ -190,9 +190,11 @@ setMethod("getHdf",
               server %in% c("LPDAAC", "LAADS"))
           {
             cat(server," seems not online, trying on '",server_alt,"':\n",sep="")
-            onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC,
-                                   begin = tLimits$begin, end = tLimits$end, 
-                                   wait = 0, server = server_alt)
+            jnk = capture.output(
+              onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC,
+                                     begin = tLimits$begin, end = tLimits$end, 
+                                     wait = wait, server = server_alt)
+            )
           }
           if(is.null(onlineInfo$dates))
           {
@@ -222,15 +224,14 @@ setMethod("getHdf",
           colnames(dates[[l]]) <- c("date",tileID)
           
           for (i in 1:nrow(dates[[l]]))
-          { # i=1
-            #cat(dates[[l]][i,1],"\n")
-            #flush.console()
-            
+          { 
             year <- format(as.Date(dates[[l]][i,1]), "%Y")
             doy  <- as.integer(format(as.Date(dates[[l]][i,1]), "%j"))
             doy  <- sprintf("%03d",doy)
             mtr  <- rep(1,ntiles) # for file availability flaging
-            path <- genString(x=strsplit(todo[u],"\\.")[[1]][1],collection=strsplit(todo[u],"\\.")[[1]][2],date=dates[[l]][i,1])
+            path <- genString(x = strsplit(todo[u], "\\.")[[1]][1]
+                              , collection = strsplit(todo[u], "\\.")[[1]][2]
+                              , date = dates[[l]][i, 1])
             
             for(j in 1:ntiles)
             {  
@@ -284,13 +285,28 @@ setMethod("getHdf",
               
               if (ftpfiles[1] != "total 0") 
               {
-                ftpfiles <- unlist(lapply(strsplit(ftpfiles," "),function(x){x[length(x)]})) # found empty dir!
+                ftpfiles <- unlist(lapply(strsplit(ftpfiles," "), function(x) {
+                  x[length(x)]
+                })) # found empty dir!
+                
+                if (onlineInfo$source == "NTSG") {
+                  ftpfiles = gsub(paste0("\\.", product$CCC, "\\.")
+                                  , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
+                                  , ftpfiles)
+                }
                 
                 for(j in 1:ntiles)
                 { # j=1
                   if(mtr[j]==1)
                   { # if tile is missing get it
-                    onFtp <- grep(ftpfiles,pattern=dates[[l]][i,j+1],value=TRUE)
+                    dts = dates[[l]][i, j+1]
+                    if (onlineInfo$source == "NTSG") {
+                      dts = gsub(paste0("\\.", product$CCC, "\\.")
+                                 , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
+                                 , dts)
+                      dts = paste(c(strsplit(dts, "\\.")[[1]][1:4], "*.hdf"), collapse = ".")
+                    }
+                    onFtp = grep(ftpfiles,pattern = dts,value = TRUE)
                     HDF   <- grep(onFtp,pattern=".hdf$",value=TRUE)
                     
                     if(length(HDF)>0)

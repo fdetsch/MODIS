@@ -11,6 +11,8 @@ longer term changes:
 - allow only one product at the time. At that moment is is possible to do runGdal(product="M.D13",... this would process all M.D 13 products in one go by walking down the list produced by getProduct("M.D13"). 
   MOD and MYD should still be run by one call, but not eg: MxD13A1 and MxD13A2. This change would simplify a lot the package development.
 - I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
+- Accelerate 'Downloading structure on ...'
+- Any file in 'inst/external' no longer required? 
 
 any functions:
 - 'quiet' argument -> should be part of options list automatically (?)
@@ -75,16 +77,11 @@ detectBitInfo()
 qualityControl
 - method based on maximum value from preceding / current / succeeding image (i.e., from user-defined window) as proposed by Yang et al. (2013, http://dx.doi.org/10.1109/LGRS.2012.2219576)
 
-Build and Reload
-- fails when no 'MODIS' installation is available in .libPaths():
-  Error in read.table(system.file("external", "tiletable.txt", package = "MODIS"),  : 
-    no lines available in input
-  Calls: suppressPackageStartupMessages ... load_code -> lapply -> FUN -> eval -> eval -> read.table
-  In addition: Warning message:
-  In file(file, "rt") :
-    file("") only supports open = "w+" and open = "w+b": using the former
-  Execution halted
-  
 whittaker.raster()  
 - set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
+
+MOD16 data download from LP DAAC (not available on LAADS)
+MODIS:::checkTools('GDAL') -> whole output from MODISoptions()
+MODIS:::genString("MOD16A2") creates 'DATE' folder in file.path(localArcPath, "MODIS\MOD16A2.006")
+Take care of Collection 105 on NTSG

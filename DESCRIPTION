@@ -44,3 +44,4 @@ Imports:
 URL: https://github.com/MatMatt/MODIS
 ByteCompile: TRUE
 RoxygenNote: 6.0.1
+Suggests: testthat

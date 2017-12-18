@@ -4,16 +4,17 @@
 \alias{extractDate}
 \title{Extract Dates from (MODIS) Files}
 \usage{
-extractDate(files, pos1 = 10, pos2 = 16, asDate = FALSE,
-  format = "\%Y\%j")
+extractDate(files, pos1, pos2, asDate = FALSE, format = "\%Y\%j")
 }
 \arguments{
-\item{files}{\code{character} vector of filenames from which to extract 
-dates.}
+\item{files}{A \code{character} vector of filenames from which to extract 
+dates. Alternatively, a \code{Raster*} with date information in its layer 
+\code{\link[raster]{names}}.}
 
-\item{pos1}{\code{integer}, start of date string in \code{files}.}
-
-\item{pos2}{\code{integer}, end of date string.}
+\item{pos1, pos2}{Start and end of date string in \code{files} as 
+\code{integer}. If missing, positions are tried to be retrieved from a 
+look-up table provided that 'files' comply with the MODIS standard naming 
+convention.}
 
 \item{asDate}{\code{logical}. If \code{TRUE}, the result is converted to a 
 \code{Date} object.}
@@ -31,18 +32,16 @@ A \code{list} with the following entries: 'inputLayerDates', 'pos1', 'pos2',
 This function helps to extract dates from a vector of files.
 }
 \examples{
-\dontrun{
 # example on HDF files
 files <- c("MOD13Q1.A2010209.h18v03.005.2010239071130.hdf",
            "MOD13Q1.A2010225.h18v03.005.2010254043849.hdf")
 extractDate(files)
-extractDate(files,asDate=TRUE)
+extractDate(files, asDate = TRUE)
 
 # on any other file 
-files <- c("Myfile_20010101.XXX","Myfile_20010115.XXX","Myfile_20010204.XXX")
-extractDate(files,pos1=8,pos2=15)
-extractDate(files,pos1=8,pos2=15,asDate=TRUE,format="\\\%Y\\\%m\\\%d")
-}
+files <- c("Myfile_20010101.XXX", "Myfile_20010115.XXX", "Myfile_20010204.XXX")
+extractDate(files, pos1 = 8, pos2 = 15)
+extractDate(files, pos1 = 8, pos2 = 15, asDate = TRUE, format = "\%Y\%m\%d")
  
 }
 \author{

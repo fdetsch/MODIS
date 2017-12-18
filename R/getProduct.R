@@ -51,8 +51,7 @@ getProduct <- function(x=NULL,quiet=FALSE)
     if (substring(inbase,nchar(inbase)-2, nchar(inbase)) %in% c("hdf","xml","tif",".gz","tar","zip")) 
     {
         isFile <- TRUE
-        intSepTest <- c("\\.","_")[which(c(length(strsplit(inbase, "\\.")[[1]]),length(strsplit(inbase, "_")[[1]]))==max(c(length(strsplit(inbase, "\\.")[[1]]),length(strsplit(inbase, "_")[[1]]))))]
-        product  <- strsplit(inbase,intSepTest)[[1]]
+        product  <- strsplit(inbase, "\\.")[[1]]
     } else 
     {
         isFile <- FALSE
@@ -63,10 +62,12 @@ getProduct <- function(x=NULL,quiet=FALSE)
     pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
     info    <- listPather(MODIS_Products,grep(pattern=pattern,x=MODIS_Products$PRODUCT,ignore.case=TRUE))
 
-    if(length(info$PRODUCT)==0)
-    {
-        cat("No product found with the name ",inbase," try 'getProduct()' to list available products.\n",sep = "")
-        return(NULL)
+    if (length(info$PRODUCT) == 0) {
+      if (!quiet)
+        cat("No product found with the name ", inbase
+            , ". Try 'getProduct()' to list available products.\n", sep = "")
+      
+      return(NULL)
     }
     if (info$SENSOR[1]=="MODIS") 
     {

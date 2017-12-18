@@ -25,9 +25,7 @@ if ( !isGeneric("orgTime") ) {
 #' \code{nDays}.
 #' @param pillow \code{integer}. Number of days added to the beginning and end 
 #' of a time series.
-#' @param pos1 \code{integer}, start of date string in \code{files}.
-#' @param pos2 \code{integer}, end of date string.
-#' @param format \code{character}, see \code{\link{extractDate}}.
+#' @param pos1,pos2,format Arguments passed to \code{\link{extractDate}}.
 #' 
 #' @return 
 #' A \code{list} with the following slots (to be completed):
@@ -78,10 +76,16 @@ NULL
 #' @rdname orgTime
 setMethod("orgTime",
           signature(files = "character"),
-          function(files,nDays="asIn",begin=NULL,end=NULL,pillow=75,pos1=10,pos2=16,format="%Y%j")
-{
-
-    files <- basename(files)
+          function(files, nDays = "asIn", begin = NULL, end = NULL, pillow = 75
+                   , pos1, pos2, format = "%Y%j") {
+            
+  files <- basename(files)
+    
+  ## if any position indication is missing, try to retrieve it from look-up table
+  if (any(missing(pos1), missing(pos2))) {
+    ids = positionIndication(files)
+    pos1 = ids[[1]]; pos2 = ids[[2]]
+  }
     
     allDates <- sort(extractDate(files,asDate=TRUE,pos1=pos1,pos2=pos2,format=format)$inputLayerDates)
     
@@ -183,8 +187,8 @@ setMethod("orgTime",
                    begin = NULL, 
                    end = NULL, 
                    pillow = 75, 
-                   pos1 = 10, 
-                   pos2 = 16, 
+                   pos1, 
+                   pos2, 
                    format = "%Y%j") {
             
             ## extract layer names

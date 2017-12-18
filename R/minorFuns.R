@@ -891,3 +891,19 @@ correctPath <- function(x,isFile=FALSE)
   }
 return(x)
 }
+
+positionIndication = function(x) {
+
+  product = suppressWarnings(getProduct(x, quiet = TRUE))
+  
+  if (!is.null(product)) {
+    ids = as.integer(sapply(c("POS1", "POS2"), function(i) product[[i]]))
+    pos = list("POS1" = ids[1], "POS2" = ids[2])
+    
+    return(pos)
+    
+  } else {
+    stop("Either provide position indications or input files conforming to "
+         , "MODIS standard naming convention.\n")
+  }
+}

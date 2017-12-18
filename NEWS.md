@@ -2,11 +2,13 @@
 
 New features:
 
-  * Product MCD64A1 (https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mcd64a1_v006) is now available.
+  * Added remaining products from the LP DAAC MODIS Products Table (https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table).
+  * Explicit specification of 'pos1','pos2' arguments passed to extractDate() and orgTime() is no longer required when dealing with standard MODIS file names.
 
 Bugfixes:
 
-  * 'unable to find an inherited method for function ‘extent’ for signature ‘"MODISextent"’' from getHdf() when 'extent' was a Spatial* object.
+  * 'unable to find an inherited method for function 'extent' for signature '"MODISextent"'' from getHdf() when 'extent' was a Spatial* object.
+  * 'Error in rgdal::rawTransform(projfrom, projto, nrow(xy), xy[, 1], xy[, : no arguments in initialization list' due to insufficient strsplit() on Windows
 
 ## MODIS 1.1.0
 

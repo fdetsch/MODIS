@@ -9,7 +9,9 @@ temporalComposite(x, y, timeInfo = extractDate(x, asDate =
   fun = max, na.rm = TRUE, cores = 1L, filename = "", ...)
 }
 \arguments{
-\item{x}{\code{Raster*} or \code{character}. MODIS vegetation index.}
+\item{x}{\code{Raster*} or \code{character}. MODIS composite dataset with an 
+associated "composite_day_of_the_year" SDS, e.g. all vegetation indices 
+products (MOD13).}
 
 \item{y}{\code{Raster*} or \code{character}. MODIS
 "composite_day_of_the_year" SDS associated with 'x'.}

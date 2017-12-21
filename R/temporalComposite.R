@@ -5,7 +5,9 @@
 #' composites (MVC), aggregate native 16-day MODIS datasets to custom temporal
 #' composites.
 #'
-#' @param x \code{Raster*} or \code{character}. MODIS vegetation index.
+#' @param x \code{Raster*} or \code{character}. MODIS composite dataset with an 
+#' associated "composite_day_of_the_year" SDS, e.g. all vegetation indices 
+#' products (MOD13).
 #' @param y \code{Raster*} or \code{character}. MODIS
 #' "composite_day_of_the_year" SDS associated with 'x'.
 #' @param timeInfo \code{Date} vector corresponding to all input layers. If not 

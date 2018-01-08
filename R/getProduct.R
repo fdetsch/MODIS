@@ -4,14 +4,14 @@
 #' On user side, it is a funtion to find the desidered product. On package site, 
 #' it generates central internal information to hande files.  
 #' 
-#' @param x \code{character}. MODIS filename, product name or regular expression 
-#' (for the latter, see argument \code{pattern} in \code{\link{grep}} for 
-#' details). If not specified, all available products are returned.
+#' @param x \code{character}. MODIS filename, product name, regular expression 
+#' passed to \code{pattern} in \code{\link{grep}}, or missing.
 #' @param quiet \code{logical}, defaults to \code{FALSE}.
 #' 
 #' @return 
-#' An invisible \code{list} with usable information for other functions, see 
-#' examples.
+#' An invisible \code{list} with information usable by other functions or, if 
+#' 'x' is missing, a \code{data.frame} with information about all products 
+#' available.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
@@ -48,17 +48,17 @@ getProduct <- function(x=NULL,quiet=FALSE)
     
     ## moody but seams to work!!
     inbase  <- basename(x) # if x is a filename(+path) remove the path
-    if (substring(inbase,nchar(inbase)-2, nchar(inbase)) %in% c("hdf","xml","tif",".gz","tar","zip")) 
-    {
+    
+    isProduct = any(grepl(inbase, getProduct()[, 2]))
+    
+    if (!isProduct) {
         isFile <- TRUE
-        product  <- strsplit(inbase, "\\.")[[1]]
-    } else 
-    {
+        product  <- sapply(strsplit(inbase, "\\."), "[[", 1)
+    } else {
         isFile <- FALSE
         product <- inbase
     }
     
-    product <- product[1]
     pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
     info    <- listPather(MODIS_Products,grep(pattern=pattern,x=MODIS_Products$PRODUCT,ignore.case=TRUE))
 
@@ -76,57 +76,10 @@ getProduct <- function(x=NULL,quiet=FALSE)
     
     if (isFile)
     { # in this case it must be a filename
-      fname <- unlist(strsplit(inbase,info$INTERNALSEPARATOR[1]))
-      fname <- unlist(strsplit(fname,"\\."))
-      
-      if (info$TYPE == "Tile") 
-      { # file check.
-        
-        Tpat    <- "h[0-3][0-9]v[0-1][0-9]"
-        isok <- all((grep(fname[2],pattern=Tpat)) + (substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
-        
-      } else if (info$TYPE == "CMG") 
-      {
-        
-        isok <- all((substr(fname[2],1,1) == "A") + (fname[5]=="hdf") + (length(fname)==5))
-        
-      } else if (info$TYPE == "Swath")
-      {
-        isok <- all((substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
-        
-      } else 
-      {
-        isok <- FALSE
-      }
-      
-      if (!isok)
-      {   
-        
-        stop("Check filename:", inbase,"\nIt seams to be not supported...if it should please send some feedback! matteo.mattiuzzi@boku.ac.at") 
-        
-      }
-      
-      PD <- substr(info$PRODUCT[1], 4, nchar(as.character(info$PRODUCT[1])))
-      
-      if (info$TYPE=="Tile") 
-      {
-        names(fname) <- c("PRODUCT","DATE","TILE","CCC","PROCESSINGDATE","FORMAT")
-        
-      } else if (info$TYPE=="CMG") 
-      {
-        names(fname) <- c("PRODUCT","DATE","CCC","PROCESSINGDATE","FORMAT")
-        
-      } else if (info$TYPE=="Swath") 
-      { 
-        names(fname) <- c("PRODUCT","DATE","TIME","CCC","PROCESSINGDATE","FORMAT")
-        
-      } else 
-      {
-        stop("Not a 'Tile', 'CMG' or 'Swath'! Product not supported. See: 'getProduct()'!")
-      }
-      request <- x
-      names(request) <- "request"
-      result <- c(request,fname,info)
+
+      names(x) = "request"
+      fname = getInfo(x, product = info$PRODUCT, type = info$TYPE)
+      result <- c(x, fname, info)
       result <- result[!duplicated(names(result))]
       result <- as.list(sapply(result,function(x)as.character(x)))
       

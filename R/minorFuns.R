@@ -907,3 +907,52 @@ positionIndication = function(x) {
          , "MODIS standard naming convention.\n")
   }
 }
+
+# For further information, see https://lpdaac.usgs.gov/dataset_discovery/modis.
+getInfo = function(x, product = NULL, type = c("Tile", "CMG", "Swath")) {
+  
+  type = type[1]
+  
+  ## product short name (optional)
+  if (is.null(product)) {
+    product  <- sapply(strsplit(basename(x), "\\."), "[[", 1)
+  }
+  
+  ## julian date of acquisition
+  # stringr::str_extract(x, "A[:digit:]{7}")
+  doa = regmatches(x, regexpr("A[[:digit:]]{7}", x))
+  
+  ## time of acquisition
+  if (type == "Swath") {
+    toa = regmatches(x, regexpr("\\.[[:digit:]]{4}\\.", x))
+    toa = gsub("\\.", "", toa)
+  }
+  
+  ## tile identifier
+  if (type == "Tile") {
+    # stringr::str_extract(x, "h[0-3][0-9]v[0-1][0-9]")
+    tid = regmatches(x, regexpr("h[0-3][0-9]v[0-1][0-9]", x))
+  }
+  
+  ## collection version
+  # stringr::str_extract(x, "\\.[:digit:]{3}\\.")
+  ccc = regmatches(x, regexpr("\\.[[:digit:]]{3}\\.", x))
+  ccc = gsub("\\.", "", ccc)
+  
+  ## julian date of production
+  # stringr::str_extract(x, "\\.[:digit:]{13}\\.")
+  dop = regmatches(x, regexpr("\\.[[:digit:]]{13}\\.", x))
+  dop = gsub("\\.", "", dop)
+  
+  ## data format
+  # stringr::str_extract(x, "\\.[:alpha:]{2,3}$")
+  fmt = regmatches(x, regexpr("\\.[[:alpha:]]{2,3}$", x))
+  fmt = gsub("\\.", "", fmt)
+  
+  ## set list names and return
+  out = list(product, doa, tid, ccc, dop, fmt)
+  names(out) = c("PRODUCT", "DATE", if (type == "Swath") "TIME"
+                 , if (type =="Tile") "TILE", "CCC", "PROCESSINGDATE", "FORMAT")
+  
+  return(out)
+}

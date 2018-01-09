@@ -172,7 +172,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
   
   # maps::map (from mapdata/maps) to SpatialPolygons
   if (inherits(x, "map")) {
-    x  <- m2SP(x, x$names, prj)
+    x = maptools::map2SpatialPolygons(x, x$names, prj, checkHoles = TRUE)
   }
   
   # this needs to be done in order to use rgdal:::over to intersect geometies 
@@ -214,6 +214,18 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
   if (inherits(x, "sf"))
     x <- methods::as(x, "Spatial")
 
+  ## capture errors related to orphaned holes and self-intersection
+  isValid = try(rgeos::gIsValid(x, reason = TRUE), silent = TRUE)
+  if (inherits(isValid, "try-error")) {
+    x = fixOrphanedHoles(x)
+  } else if (inherits(isValid, "character")) {
+    if (grepl("Self-intersection", isValid)) {
+      x = suppressWarnings(
+        rgeos::gBuffer(x, byid = TRUE, width = 0)
+      )
+    }
+  }
+  
   selected <- raster::crop(sr, x)
   tileH  <- unique(as.numeric(selected@data$h))
   tileV  <- unique(as.numeric(selected@data$v))
@@ -234,96 +246,3 @@ mapSelect <- function() {
   return(sel)
 }
 
-# in order to avoid dependency the following functions are copied (nearly identical) from 'maptools' (v 0.8-26) package
-# function 'map2SpatialPolygons' from package 'maptools' 
-m2SP <- function (map, IDs, proj4string = CRS(as.character(NA))) 
-{
-  #require(maps)
-  if (missing(IDs)) 
-    stop("IDs required")
-  xyList <- st1(cbind(map$x, map$y))
-  if (length(xyList) != length(IDs)) 
-    stop("map and IDs differ in length")
-  tab <- table(factor(IDs))
-  n <- length(tab)
-  IDss <- names(tab)
-  reg <- match(IDs, IDss)
-  belongs <- lapply(1:n, function(x) which(x == reg))
-  Srl <- vector(mode = "list", length = n)
-  for (i in 1:n) {
-    nParts <- length(belongs[[i]])
-    srl <- vector(mode = "list", length = nParts)
-    for (j in 1:nParts) {
-      crds <- xyList[[belongs[[i]][j]]]
-      if (nrow(crds) == 3) 
-        crds <- rbind(crds, crds[1, ])
-      srl[[j]] <- Polygon(coords = crds)
-    }
-    Srl[[i]] <- Polygons(srl, ID = IDss[i])
-  }
-  res <- as.SpatialPolygons.PolygonsList(Srl, proj4string = proj4string)
-  res
-}
-# function 'map2SpatialLines' from package 'maptools' 
-m2SL <- function (map, IDs = NULL, proj4string = CRS(as.character(NA))) 
-{
-  #    require(maps)
-  xyList <- st1(cbind(map$x, map$y))
-  if (is.null(IDs)) 
-    IDs <- as.character(1:length(xyList))
-  if (length(xyList) != length(IDs)) 
-    stop("map and IDs differ in length")
-  tab <- table(factor(IDs))
-  n <- length(tab)
-  IDss <- names(tab)
-  reg <- match(IDs, IDss)
-  belongs <- lapply(1:n, function(x) which(x == reg))
-  Srl <- vector(mode = "list", length = n)
-  for (i in 1:n) {
-    nParts <- length(belongs[[i]])
-    srl <- vector(mode = "list", length = nParts)
-    for (j in 1:nParts) {
-      crds <- xyList[[belongs[[i]][j]]]
-      if (nrow(crds) > 1) 
-        srl[[j]] <- Line(coords = crds)
-      else srl[[j]] <- Line(coords = rbind(crds, crds))
-    }
-    Srl[[i]] <- Lines(srl, ID = IDss[i])
-  }
-  res <- SpatialLines(Srl, proj4string = proj4string)
-  res
-}
-
-
-# function '.NAmat2xyList' from package 'maptools' 
-st1 <- function (xy) 
-{
-  NAs <- unclass(attr(na.omit(xy), "na.action"))
-  if ((length(NAs) == 1L) && (NAs == nrow(xy))) {
-    xy <- xy[-nrow(xy)]
-    NAs <- NULL
-  }
-  diffNAs <- diff(NAs)
-  if (any(diffNAs == 1)) {
-    xy <- xy[-(NAs[which(diffNAs == 1)] + 1), ]
-    NAs <- unclass(attr(na.omit(xy), "na.action"))
-  }
-  nParts <- length(NAs) + 1L
-  if (!is.null(NAs) && nrow(xy) == NAs[length(NAs)]) 
-    nParts <- nParts - 1
-  res <- vector(mode = "list", length = nParts)
-  from <- integer(nParts)
-  to <- integer(nParts)
-  from[1] <- 1
-  to[nParts] <- nrow(xy)
-  if (!is.null(NAs) && nrow(xy) == NAs[length(NAs)]) 
-    to[nParts] <- to[nParts] - 1
-  if (nParts > 1) {
-    for (i in 2:nParts) {
-      to[(i - 1)] <- NAs[(i - 1)] - 1
-      from[i] <- NAs[(i - 1)] + 1
-    }
-  }
-  for (i in 1:nParts) res[[i]] <- xy[from[i]:to[i], , drop = FALSE]
-  res
-}

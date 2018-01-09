@@ -9,6 +9,7 @@ Bugfixes:
 
   * 'unable to find an inherited method for function 'extent' for signature '"MODISextent"'' from getHdf() when 'extent' was a Spatial* object.
   * 'Error in rgdal::rawTransform(projfrom, projto, nrow(xy), xy[, 1], xy[, : no arguments in initialization list' due to insufficient strsplit() on Windows
+  * Orphaned hole and self-intersection errors from getTile() due to some non-valid geometries in map("worldHires", ...) (eg. "Philippines", "Spain").
 
 ## MODIS 1.1.0
 

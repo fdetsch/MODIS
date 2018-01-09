@@ -956,3 +956,11 @@ getInfo = function(x, product = NULL, type = c("Tile", "CMG", "Swath")) {
   
   return(out)
 }
+
+## taken from https://cran.r-project.org/web/packages/maptools/vignettes/combine_maptools.pdf
+fixOrphanedHoles = function(x) {
+  polys <- slot(x, "polygons")
+  fixed <- lapply(polys, maptools::checkPolygonsHoles)
+  
+  sp::SpatialPolygons(fixed, proj4string = sp::CRS(sp::proj4string(x)))
+}

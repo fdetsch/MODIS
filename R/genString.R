@@ -65,7 +65,8 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
           }
         }
       }
-    localPath <- setPath(path.expand(paste0(opts$localArcPath,paste0(unlist(string),collapse="/"))))
+    localPath <- setPath(path.expand(paste0(opts$localArcPath,paste0(unlist(string),collapse="/")))
+                         , mkdir = FALSE)
     }
         
     if (remote) 

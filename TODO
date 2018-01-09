@@ -81,7 +81,6 @@ whittaker.raster()
 - set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
 
-MODIS:::genString("MOD16A2") creates 'DATE' folder in file.path(localArcPath, "MODIS\MOD16A2.006")
 Take care of MOD16 Collection 105 on NTSG
 Lns. 103f in getCollection.R: adjust unlist() when more than one product is specified
 When no file could be found for particular date (eg. on 2001-06-26 for MOD14A1.006), then output of   runGdal() has an entry like this one:

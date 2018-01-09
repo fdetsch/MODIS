@@ -812,7 +812,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
 }
 
 # setPath for localArcPath and outDirPath
-setPath <- function(path, ask=FALSE, showWarnings=FALSE)
+setPath <- function(path, ask=FALSE, showWarnings=FALSE, mkdir = TRUE)
 {
   path <- normalizePath(path, "/", mustWork = FALSE)
   
@@ -820,7 +820,7 @@ setPath <- function(path, ask=FALSE, showWarnings=FALSE)
   ##    FALSE for detecting folders with a trailing slash:
   path <- gsub("/$", "", path)
   
-  if(!file.exists(path)) 
+  if(!file.exists(path) & mkdir) 
   {
     doit <- 'Y'
     if (ask)

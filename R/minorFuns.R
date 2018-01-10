@@ -566,7 +566,7 @@ filesUrl <- function(url)
     ## default method (e.g. LPDAAC, LAADS)
     if (length(grep("ntsg", url)) == 0) {
       
-      co <- try(RCurl::getURLContent(url, ftp.use.epsv = FALSE), silent = TRUE)
+      co <- try(RCurl::getURL(url, ftp.use.epsv = FALSE), silent = TRUE)
       
       if (inherits(co, "try-error")) return(FALSE)
       

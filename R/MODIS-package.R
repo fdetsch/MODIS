@@ -22,7 +22,7 @@
 #' @importFrom maps map.axes
 #' @importFrom maptools map2SpatialPolygons map2SpatialLines checkPolygonsHoles
 #' @importFrom methods as slot
-#' @importFrom RCurl getURLContent
+#' @importFrom RCurl getURL
 #' @importFrom rgeos gBuffer gIsValid
 #' @importFrom sf st_as_sf
 #' @importFrom stats na.omit smooth.spline

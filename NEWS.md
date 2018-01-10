@@ -12,6 +12,10 @@ Bugfixes:
   * Orphaned hole and self-intersection errors from getTile() due to some non-valid geometries in map("worldHires", ...) (eg. "Philippines", "Spain").
   * 'DATE' subfolder was created in getOption("MODIS_localArcPath") when running MODIS:::genString() with no particular date specified.
   
+Changes:
+
+  * Disabled use of EPSV (see https://curl.haxx.se/libcurl/c/CURLOPT_FTP_USE_EPSV.html) when downloading structure from LP DAAC, LAADS. The latter didn't work anymore with EPSV enabled.
+  
 
 ## MODIS 1.1.0
 

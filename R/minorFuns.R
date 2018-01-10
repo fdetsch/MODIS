@@ -566,15 +566,15 @@ filesUrl <- function(url)
     ## default method (e.g. LPDAAC, LAADS)
     if (length(grep("ntsg", url)) == 0) {
       
-      co <- try(RCurl::getURLContent(url),silent=TRUE)
+      co <- try(RCurl::getURLContent(url, ftp.use.epsv = FALSE), silent = TRUE)
       
       if (inherits(co, "try-error")) return(FALSE)
       
       if (substring(url,1,4)=="http")
       {
-        co     <- htmlTreeParse(co)
+        co     <- XML::htmlTreeParse(co)
         co     <- co$children[[1]][[2]][[2]]
-        co     <- sapply(co$children, function(el) xmlGetAttr(el, "href"))
+        co     <- sapply(co$children, function(el) XML::xmlGetAttr(el, "href"))
         co     <- as.character(unlist(co))
         co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
         fnames <- co[-1] 

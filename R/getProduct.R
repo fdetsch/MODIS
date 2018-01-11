@@ -34,10 +34,13 @@ getProduct <- function(x=NULL,quiet=FALSE)
 
 #load(system.file("external", "MODIS_Products.RData", package="MODIS"))
 
-    if (is.null(x))
-    { # if x isn't provided, return table of supported files.
-        products <- as.data.frame(MODIS_Products[c("SENSOR", "PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")])
-        return(products[order(products$PRODUCT),])
+    if (is.null(x)) { # if x isn't provided, return table of supported files.
+      cls = c("SENSOR", "PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")
+      products = as.data.frame(MODIS_Products[cls])
+      products = data.frame(products[order(products$PRODUCT), ]
+                            , row.names = 1:nrow(products))
+      
+      return(products)
     }
 
     if (is.list(x) && names(x) %in% c("request", "PRODUCT", "TOPIC", "DATE", "TILE", "TILEV", "TILEH", "CCC", "PROCESSINGDATE", "FORMAT", "SENSOR", "PLATFORM", "PF1", "PF2", "PF3", "TOPIC", "TYPE", "RES", "TEMP_RES", "INTERNALSEPARATOR")) 
@@ -60,7 +63,9 @@ getProduct <- function(x=NULL,quiet=FALSE)
     }
     
     pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
-    info    <- listPather(MODIS_Products,grep(pattern=pattern,x=MODIS_Products$PRODUCT,ignore.case=TRUE))
+    info <- listPather(MODIS_Products, 
+                       grep(paste(pattern, collapse = "|")
+                            , MODIS_Products$PRODUCT,ignore.case=TRUE))
 
     if (length(info$PRODUCT) == 0) {
       if (!quiet)

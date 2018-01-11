@@ -14,8 +14,9 @@ collections, see \code{\link{getProduct}}.}
 \item{collection}{\code{character} or \code{integer}. If provided, the 
 function only checks if the specified collection exists and returns the 
 collection number formatted based on the \code{as} parameter or \code{FALSE} 
-if it doesn't exists. The check is performed on the primary data source, 
-'LP DAAC' \url{https://lpdaac.usgs.gov/}.}
+if it doesn't exists. The check is performed on 
+\href{https://lpdaac.usgs.gov/}{LP DAAC} as the exclusive source for several 
+(but by far not all) products.}
 
 \item{newest}{\code{logical}. If \code{TRUE} (default), return only the 
 newest collection, else return all available collections.}
@@ -63,5 +64,5 @@ getCollection(product="M.D11C3",forceCheck=TRUE)
 \code{\link{getProduct}}.
 }
 \author{
-Matteo Mattiuzzi
+Matteo Mattiuzzi, Florian Detsch
 }

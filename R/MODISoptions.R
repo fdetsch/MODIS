@@ -51,7 +51,8 @@
 #' tools (i.e., GDAL and MRT) are installed and reachable through R.
 #' 
 #' @return 
-#' The most relevant \strong{MODIS} options are printed to the console. Use 
+#' An invisible \code{list} of \strong{MODIS} options. In addition, the most 
+#' relevant of these options are printed to the console. Use 
 #' \code{\link{capture.output}} to prevent this behavior.
 #' 
 #' @details 
@@ -478,7 +479,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   }
   # this is fixed
   options(MODIS_arcStructure='/SENSOR/PRODUCT.CCC/DATE')
-  return(invisible())
+  return(invisible(opt))
 }
 
 

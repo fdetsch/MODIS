@@ -388,7 +388,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     }
     write(paste0('dlmethod         <- \'',opt$dlmethod,'\'' ), filename)
     write(paste0('stubbornness     <- \'',opt$stubbornness,'\''), filename)
-    write(paste0('wait             <- \'',opt$wait,'\''), filename)
+    write(paste0('wait             <- ',opt$wait), filename)
     write(paste0('quiet            <- ',opt$quiet), filename)
     write('  ', filename)
     

@@ -218,6 +218,7 @@ combineOptions <- function(checkTools = TRUE, ...)
     {
       warning("MODIS_Opts file not found, run '?MODISoptions' to see and set permanent package defaults!\n")
     }
+    requireNamespace("MODIS", quietly = TRUE)
     MODISoptions(save=FALSE, checkTools = checkTools)    
     opts <- options() # collects all options
     opts <- opts[grep(names(opts),pattern="^MODIS_*.")] # isolate MODIS_opts

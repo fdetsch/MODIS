@@ -108,13 +108,11 @@ setMethod("getHdf",
   #######
   # check product
   product <- getProduct(x=product,quiet=TRUE)
-  # check if missing collection, else bilieve it
-  if(is.null(collection)) 
-  {
-    product$CCC <- getCollection(product=product,quiet=TRUE, forceCheck = TRUE)[[1]]
-  } else
-  {
-    product$CCC <- sprintf("%03d",as.numeric(unlist(collection)[1]))
+  # check if missing collection, else believe it
+  product$CCC <- if (is.null(collection)) {
+    unlist(getCollection(product = product, quiet = TRUE, forceCheck = TRUE))
+  } else {
+    sprintf("%03d",as.numeric(unlist(collection)[1]))
   }
   #########
   
@@ -145,7 +143,7 @@ setMethod("getHdf",
       cat("'Swath'-products not yet supported, jumping to the next.\n")
     } else 
     {
-      todo <- paste0(product$PRODUCT[z],".",product$CCC)
+      todo <- paste0(product$PRODUCT[z],".",product$CCC[z])
       for (u in seq_along(todo))
       {
         # tileID
@@ -168,20 +166,24 @@ setMethod("getHdf",
         
         ## ensure compatibility with servers other than those specified in 
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
-        server <- unique(unlist(product$SOURCE))
+        server <- product$SOURCE[[z]]
         
         if (length(server) > 1) {
           # alternative server, i.e. when priority is not reachable
           server_alt <- server[which(server != opts$MODISserverOrder[1])]
           # priority server from which structure will be tried to retrieve first
           server <- server[which(server == opts$MODISserverOrder[1])]
+        } else {
+          opts$MODISserverOrder <- server
         }
         
         ## this time, suppress console output from `getStruc`
         jnk <- capture.output(
-          onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
-                                 collection = product$CCC, begin = tLimits$begin, 
-                                 end = tLimits$end, wait = wait)
+          onlineInfo <- suppressWarnings(
+            getStruc(product = product$PRODUCT[z], server = server, 
+                     collection = product$CCC[z], begin = tLimits$begin, 
+                     end = tLimits$end, wait = wait)
+          )
         )
         
         if(!is.na(onlineInfo$online))
@@ -191,7 +193,7 @@ setMethod("getHdf",
           {
             cat(server," seems not online, trying on '",server_alt,"':\n",sep="")
             jnk = capture.output(
-              onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC,
+              onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC[z],
                                      begin = tLimits$begin, end = tLimits$end, 
                                      wait = wait, server = server_alt)
             )
@@ -232,7 +234,7 @@ setMethod("getHdf",
             path <- genString(x = strsplit(todo[u], "\\.")[[1]][1]
                               , collection = strsplit(todo[u], "\\.")[[1]][2]
                               , date = dates[[l]][i, 1])
-            
+
             for(j in 1:ntiles)
             {  
               dates[[l]][i,j+1] <- paste0(strsplit(todo[u],"\\.")[[1]][1],".",paste0("A",year,doy),".",if (tileID[j]!="GLOBAL") {paste0(tileID[j],".")},strsplit(todo[u],"\\.")[[1]][2],".*.hdf$") # create pattern            
@@ -290,7 +292,7 @@ setMethod("getHdf",
                 })) # found empty dir!
                 
                 if (onlineInfo$source == "NTSG") {
-                  ftpfiles = gsub(paste0("\\.", product$CCC, "\\.")
+                  ftpfiles = gsub(paste0("\\.", product$CCC[z], "\\.")
                                   , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
                                   , ftpfiles)
                 }
@@ -301,7 +303,7 @@ setMethod("getHdf",
                   { # if tile is missing get it
                     dts = dates[[l]][i, j+1]
                     if (onlineInfo$source == "NTSG") {
-                      dts = gsub(paste0("\\.", product$CCC, "\\.")
+                      dts = gsub(paste0("\\.", product$CCC[z], "\\.")
                                  , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
                                  , dts)
                       dts = paste(c(strsplit(dts, "\\.")[[1]][1:4], "*.hdf"), collapse = ".")

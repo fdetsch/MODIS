@@ -2,7 +2,7 @@
 
 New features:
 
-  * Added remaining products from the LP DAAC MODIS Products Table (https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table).
+  * Added remaining products from the LP DAAC MODIS Products Table (<https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table>).
   * Explicit specification of 'pos1','pos2' arguments passed to extractDate() and orgTime() is no longer required when dealing with standard MODIS file names.
 
 Bugfixes:
@@ -14,14 +14,17 @@ Bugfixes:
   
 Changes:
 
-  * Disabled use of EPSV (see https://curl.haxx.se/libcurl/c/CURLOPT_FTP_USE_EPSV.html) when downloading structure from LP DAAC, LAADS. The latter didn't work anymore with EPSV enabled.
+  * Disabled use of EPSV (see <https://curl.haxx.se/libcurl/c/CURLOPT_FTP_USE_EPSV.html>) when downloading structure from LP DAAC, LAADS. The latter didn't work anymore with EPSV enabled.
+  * getProduct() and getCollection() are now compatible with more than one input 'product' provided using eg. c().
+  * At the same time, pattern matching for a distinct set of products (see <https://github.com/MatMatt/MODIS/issues/22>) is switched off as long as a proper regular expression is omitted.
+  * The MODIS package is now licensed under the MIT license (<https://www.r-project.org/Licenses/MIT>).
   
 
 ## MODIS 1.1.0
 
 New features:
 
-  * getTile() now supports interactive tile selection from the MODIS Sinusoidal grid powered by mapedit (https://github.com/r-spatial/mapedit).
+  * getTile() now supports interactive tile selection from the MODIS Sinusoidal grid powered by mapedit (<https://github.com/r-spatial/mapedit>).
   * Creation of yearly composite layers has been made available through temporalComposite() and aggInterval().
   * Meaning of 'quiet' argument in MODISoptions() has changed and now determines whether getHdf() (or runGdal()) print download information to the console. 
 

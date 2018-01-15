@@ -64,11 +64,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         stop("Please provide a valid product")
     }
     productN <- getProduct(x = if (is.character(product)) {
-      if (product %in% c("MOD14", "MYD14")) {
-        paste0("^", product, "$")
-      } else {
-        product
-      }
+      sapply(product, function(i) skipDuplicateProducts(i, quiet = quiet))
     } else product, quiet = TRUE)
     if (is.null(productN)) 
     {
@@ -131,7 +127,8 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         {
           
           ## choose relevant folders and remove empty ones
-          dirs = grep(productN$PRODUCT[i], dirs, value = TRUE)
+          dirs = grep(paste0(productN$PRODUCT[i], "\\.[[:digit:]]{3}"), dirs
+                      , value = TRUE)
           
           ids = sapply(file.path(ftp, dirs, "/"), function(ftpdir) {
             cnt = RCurl::getURL(ftpdir, dirlistonly = TRUE)
@@ -233,7 +230,9 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 
     } else if (newest) 
     {
-	    if(!quiet) {cat("No Collection specified getting the newest for",productN$PRODUCT,"\n",sep=" ")}
+	    if (!quiet) {
+	      cat("No collection specified, getting the newest for", productN$PRODUCT, "\n")
+	    }
 
 	    res <- lapply(res,function(x)
 	    { #select the newest

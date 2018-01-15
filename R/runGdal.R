@@ -122,7 +122,7 @@ runGdal <- function(product, collection=NULL,
     product <- getProduct(product, quiet=TRUE)
     
     # optional and if missing it is added here:
-    product$CCC <- getCollection(product,collection=collection)
+    product$CCC <- getCollection(product,collection=collection, quiet = opts$quiet)
     tLimits     <- transDate(begin=begin,end=end)
     
     dataFormat <- toupper(opts$dataFormat) 

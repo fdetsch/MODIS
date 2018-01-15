@@ -52,15 +52,17 @@ getProduct <- function(x=NULL,quiet=FALSE)
     ## moody but seams to work!!
     inbase  <- basename(x) # if x is a filename(+path) remove the path
     
-    isProduct = any(grepl(inbase, getProduct()[, 2]))
+    isProduct = any(sapply(inbase, function(i) grepl(i, getProduct()[, 2])))
     
-    if (!isProduct) {
+    tmp = if (!isProduct) {
         isFile <- TRUE
-        product  <- sapply(strsplit(inbase, "\\."), "[[", 1)
+        sapply(strsplit(inbase, "\\."), "[[", 1)
     } else {
         isFile <- FALSE
-        product <- inbase
+        inbase
     }
+
+    product = sapply(tmp, function(i) skipDuplicateProducts(i, quiet = quiet))
     
     pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
     info <- listPather(MODIS_Products, 

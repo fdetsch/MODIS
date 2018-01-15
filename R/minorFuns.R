@@ -389,7 +389,7 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
       opt$auxPath    <- setPath(paste0(opt$outDirPath,".auxiliaries"),ask=FALSE)
     }
     
-    if(file.exists(opt$auxPath))
+    if (dir.exists(opt$auxPath)) 
     {
       save(gdalOutDriver, file=outfile)
     }
@@ -963,4 +963,30 @@ fixOrphanedHoles = function(x) {
   fixed <- lapply(polys, maptools::checkPolygonsHoles)
   
   sp::SpatialPolygons(fixed, proj4string = sp::CRS(sp::proj4string(x)))
+}
+
+## skip unwanted products, see https://github.com/MatMatt/MODIS/issues/22
+skipDuplicateProducts = function(x, quiet = FALSE) {
+  
+  products = getProduct()[, 2]
+  
+  dpl = lapply(seq_along(products), function(i) {
+    dpl = grep(products[i], products[-i], value = TRUE)
+    if (length(dpl) > 0) {
+      data.frame(product = products[i], duplicate = dpl)
+    } else NULL
+  })
+  
+  dpl = do.call(rbind, dpl)
+  
+  if (x %in% dpl$product) {
+    if (!quiet) {
+      warning("Processing ", x, " only. Use regular expressions (eg. '"
+              , x, "*') to select more than one product.")
+    }
+    
+    x = paste0("^", x, "$")
+  }
+  
+  return(x)
 }

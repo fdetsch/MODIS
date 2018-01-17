@@ -19,11 +19,12 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
     product <- lapply(product,function(x){x[1]}) # take only the first argument
   }
 
-  if (length(product$CCC) == 0) {
-    product$CCC <- getCollection(product = product$PRODUCT, collection = collection, 
-                    checkTools = FALSE, quiet = TRUE)[[1]]
+  product$CCC = if (is.null(collection)) {
+    unlist(getCollection(product = product$PRODUCT, checkTools = FALSE))
+  } else {
+    sprintf("%03d",as.numeric(unlist(collection)[1]))
   }
-     
+
   if (!is.null(date)) 
   {
     product$DATE <- list(paste0("A",transDate(date)$beginDOY)) # generates MODIS file date format "AYYYYDDD"

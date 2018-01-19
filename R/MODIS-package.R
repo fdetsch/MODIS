@@ -21,7 +21,7 @@
 #' @importFrom mapedit selectFeatures
 #' @importFrom maps map.axes
 #' @importFrom maptools map2SpatialPolygons map2SpatialLines checkPolygonsHoles
-#' @importFrom methods as slot
+#' @importFrom methods as new slot
 #' @importFrom RCurl getURL
 #' @importFrom rgeos gBuffer gIsValid
 #' @importFrom sf st_as_sf

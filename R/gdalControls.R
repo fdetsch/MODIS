@@ -20,8 +20,8 @@ OutProj <- function(product, extent, opts = NULL, ...) {
     opts <- combineOptions(...)
   
   cat("########################\n")
-  if(!is.null(extent$target$outProj)) {
-    outProj <- checkOutProj(extent$target$outProj, tool = "GDAL")
+  if(!is.null(extent@target$outProj)) {
+    outProj <- checkOutProj(extent@target$outProj, tool = "GDAL")
     cat("outProj          = ", outProj, " (derived from Raster*/Spatial* object)\n")
     
   } else {
@@ -50,8 +50,8 @@ PixelSize <- function(extent, opts = NULL, ...) {
   if (is.null(opts))
     opts <- combineOptions(...)
   
-  if(!is.null(extent$target$pixelSize)) {
-    pixelSize <- extent$target$pixelSize
+  if(!is.null(extent@target$pixelSize)) {
+    pixelSize <- extent@target$pixelSize
     cat("pixelSize        = ", pixelSize, " (derived from Raster* object)\n")
     
   } else {
@@ -89,19 +89,19 @@ TargetExtent <- function(extent, outProj) {
   
   te <- NULL # if extent comes from tileV/H
   
-  if (!is.null(extent$target$extent)) { # all extents but not tileV/H
-    if (is.null(extent$target$outProj)) { # map or list extents (always LatLon)
-      rx <- raster(extent$target$extent, crs = "+init=epsg:4326") 
+  if (!is.null(extent@target$extent)) { # all extents but not tileV/H
+    if (is.null(extent@target$outProj)) { # map or list extents (always LatLon)
+      rx <- raster(extent@target$extent, crs = "+init=epsg:4326") 
       rx <- projectExtent(rx, outProj)
       rx <- extent(rx) 
     } else {
-      rx <- extent$target$extent
+      rx <- extent@target$extent
     }
   } 
   
-  if (is.null(extent$target)) {
-    if(!is.null(extent$extent)) {
-      rx <- raster(extent$extent, crs = "+init=epsg:4326") 
+  if (is.null(extent@target)) {
+    if(!is.null(extent@extent)) {
+      rx <- raster(extent@extent, crs = "+init=epsg:4326") 
       rx <- projectExtent(rx, outProj)
       rx <- extent(rx) 
     }

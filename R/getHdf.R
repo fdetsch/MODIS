@@ -153,14 +153,11 @@ setMethod("getHdf",
           ntiles=1 
         } else 
         {
-          if (!is.null(tileH) & !is.null(tileV)) 
-          {
-            ext <- getTile(tileH=tileH,tileV=tileV)
-          } else
-          {
-            ext <- getTile(x = extent)
+          if (!inherits(extent, "MODISextent")) {
+            extent = getTile(x = extent, tileH = tileH, tileV = tileV)
           }
-          tileID <- ext$tile
+          
+          tileID <- extent@tile
           ntiles <- length(tileID)
         }
         

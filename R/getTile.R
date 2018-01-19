@@ -102,14 +102,17 @@
 #' @export getTile
 #' @name getTile
 getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
-
+  
+  # if 'x' is a Raster*/Spatial* and has a different CRS, the information is added here
+  target <- NULL  
+  
   if (all(!is.null(tileH), !is.null(tileV))) {
     if (!is.numeric(tileH)) tileH <- as.numeric(tileH)
     if (!is.numeric(tileV)) tileV <- as.numeric(tileV)
     
     tt <- tiletable[(tiletable$ih %in% tileH) & 
                       (tiletable$iv %in% tileV) & (tiletable$xmin >- 999), ]
-    ext <- raster::extent(c(min(tt$xmin), max(tt$xmax), min(tt$ymin), max(tt$ymax)))
+    x <- raster::extent(c(min(tt$xmin), max(tt$xmax), min(tt$ymin), max(tt$ymax)))
     
     tt$iv <- sprintf("%02d", tt$iv)
     tt$ih <- sprintf("%02d", tt$ih)
@@ -130,119 +133,125 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
       tileH <- unique(tt$ih)
       tileV <- unique(tt$iv)
     }
-    result <- list( tile = tiles, tileH = as.numeric(tileH), tileV = as.numeric(tileV), extent = ext, system = 'MODIS', target=NULL)
-    class(result) <- "MODISextent"
-    return(result)
-  }
-
-  target  <- NULL  # if extent is a raster*/Spatial* and has a different proj it is changed, the information is added here
-  fromMap <- FALSE
-  prj <- sp::CRS("+init=epsg:4326")
-  
-  # if 'x' is null, do mapSelect. Output class extent. 
-  if (is.null(x)) {
-    x <- mapSelect()
-  }  
-  
-  # filename string to Raster/vector conversion
-  if(inherits(x,"character") & length(x)==1) # lengh>1 it should be only a mapname for maps:::map
-  {
-    if (raster::extension(x)=='.shp')
+  } else {
+    
+    fromMap <- FALSE
+    prj <- sp::CRS("+init=epsg:4326")
+    
+    # if 'x' is null, do mapSelect. Output class extent. 
+    if (is.null(x)) {
+      x <- mapSelect()
+    }  
+    
+    # filename string to Raster/vector conversion
+    if(inherits(x,"character") & length(x)==1) # lengh>1 it should be only a mapname for maps:::map
     {
-      x <- shapefile(x)
-    } else 
-    {
-      if (file.exists(x))
+      if (raster::extension(x)=='.shp')
       {
-        x <- raster(x)
+        x <- shapefile(x)
+      } else 
+      {
+        if (file.exists(x))
+        {
+          x <- raster(x)
+        }
       }
-    }
-  }  
-  
-  # character (country name of MAP) to maps::map conversion     
-  if (inherits(x, "character"))
-  {
-    try(testm <- maps::map("worldHires", x, plot = FALSE),silent = TRUE)
-    if (!exists("testm"))
+    }  
+    
+    # character (country name of MAP) to maps::map conversion     
+    if (inherits(x, "character"))
     {
-      stop(paste0("Country name not valid. Check availability/spelling, i.e. try if it works with: map('worldHires,'",x, "'), or use '?search4map' function"))
-    }
-    x <- maps::map("worldHires", x, plot = FALSE, fill=TRUE)
-  }
-  
-  # maps::map (from mapdata/maps) to SpatialPolygons
-  if (inherits(x, "map")) {
-    x = maptools::map2SpatialPolygons(x, x$names, prj, checkHoles = TRUE)
-  }
-  
-  # this needs to be done in order to use rgdal:::over to intersect geometies 
-  if (inherits(x, c("Raster", "Spatial"))) {
-    target <- list(outProj = raster::projection(x)
-                   , extent = raster::extent(x)
-                   , pixelSize = NULL) 
-    
-    if (inherits(x, "Raster"))
-      target$pixelSize <- raster::res(x)
-      
-    # if required, spTransform() extent object
-    if (!raster::compareCRS(x, prj) & !is.na(target$outProj)) {
-      x <- if (inherits(x, "Raster")) {
-        raster::extent(raster::projectExtent(x, prj))
-      } else {
-        sp::spTransform(x, prj)
+      try(testm <- maps::map("worldHires", x, plot = FALSE),silent = TRUE)
+      if (!exists("testm"))
+      {
+        stop(paste0("Country name not valid. Check availability/spelling, i.e. try if it works with: map('worldHires,'",x, "'), or use '?search4map' function"))
       }
-    } else if (is.na(target$outProj)) {
-      raster::projection(x) <- prj
+      x <- maps::map("worldHires", x, plot = FALSE, fill=TRUE)
     }
     
-  # sf method  
-  } else if (inherits(x, "sf")) {
-    target <- list(outProj = sf::st_crs(x)$proj4string
-                   , extent = raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
-                   , pixelSize = NULL)
+    # maps::map (from mapdata/maps) to SpatialPolygons
+    if (inherits(x, "map")) {
+      x = maptools::map2SpatialPolygons(x, x$names, prj, checkHoles = TRUE)
+    }
     
-    if (!raster::compareCRS(target$outProj, prj)) {
-      x <- sf::st_transform(x, prj@projargs)
+    # this needs to be done in order to use rgdal:::over to intersect geometies 
+    if (inherits(x, c("Raster", "Spatial"))) {
+      target <- list(outProj = raster::projection(x)
+                     , extent = raster::extent(x)
+                     , pixelSize = NULL) 
+      
+      if (inherits(x, "Raster"))
+        target$pixelSize <- raster::res(x)
+      
+      # if required, spTransform() extent object
+      if (!raster::compareCRS(x, prj) & !is.na(target$outProj)) {
+        x <- if (inherits(x, "Raster")) {
+          raster::extent(raster::projectExtent(x, prj))
+        } else {
+          sp::spTransform(x, prj)
+        }
+      } else if (is.na(target$outProj)) {
+        raster::projection(x) <- prj
+      }
+      
+      # sf method  
+    } else if (inherits(x, "sf")) {
+      target <- list(outProj = sf::st_crs(x)$proj4string
+                     , extent = raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
+                     , pixelSize = NULL)
+      
+      if (!raster::compareCRS(target$outProj, prj)) {
+        x <- sf::st_transform(x, prj@projargs)
+      }
     }
-  }
-  
-  if (inherits(x, 'Extent')) {
-    x <- as(x, 'SpatialPolygons')
-    sp::proj4string(x) <- prj
-  }
-  
-  if (inherits(x, "sf"))
-    x <- methods::as(x, "Spatial")
-
-  ## capture errors related to orphaned holes and self-intersection
-  isValid = try(rgeos::gIsValid(x, reason = TRUE), silent = TRUE)
-  if (inherits(isValid, "try-error")) {
-    x = fixOrphanedHoles(x)
-  } else if (inherits(isValid, "character")) {
-    if (grepl("Self-intersection", isValid)) {
-      x = suppressWarnings(
-        rgeos::gBuffer(x, byid = TRUE, width = 0)
-      )
+    
+    # if (inherits(x, 'Extent')) {
+    #   x <- as(x, 'SpatialPolygons')
+    #   sp::proj4string(x) <- prj
+    # }
+    
+    if (inherits(x, "sf"))
+      x <- methods::as(x, "Spatial")
+    
+    ## capture errors related to orphaned holes and self-intersection
+    if (inherits(x, 'Spatial')) {
+      isValid = try(rgeos::gIsValid(x, reason = TRUE), silent = TRUE)
+      if (inherits(isValid, "try-error")) {
+        x = fixOrphanedHoles(x)
+      } else if (inherits(isValid, "character")) {
+        if (grepl("Self-intersection", isValid)) {
+          x = suppressWarnings(
+            rgeos::gBuffer(x, byid = TRUE, width = 0)
+          )
+        }
+      }
     }
+    
+    selected <- raster::crop(sr, x)
+    tileH  <- unique(selected@data$h)
+    tileV  <- unique(selected@data$v)
+    
+    tiles <- as.character(apply(selected@data,1,function(x) {paste("h",sprintf("%02d",x[2]),"v",sprintf("%02d",x[3]),sep="")}))
   }
   
-  selected <- raster::crop(sr, x)
-  tileH  <- unique(as.numeric(selected@data$h))
-  tileV  <- unique(as.numeric(selected@data$v))
+  result = methods::new("MODISextent"
+                        , tile = tiles
+                        , tileH = as.integer(tileH)
+                        , tileV = as.integer(tileV)
+                        , extent = x
+                        , system = "MODIS"
+                        , target = target)
   
-  result <- as.character(apply(selected@data,1,function(x) {paste("h",sprintf("%02d",x[2]),"v",sprintf("%02d",x[3]),sep="")}))
-  result <- list(tile = result, tileH = tileH, tileV = tileV, extent = x, system = 'MODIS', target = target)
-  class(result) <- "MODISextent"
   return(result)
 }
- 
+
 
 
 mapSelect <- function() {
   
   grd <- sf::st_as_sf(sr, quiet = TRUE)
   sel <- mapedit::selectFeatures(grd)
-
+  
   return(sel)
 }
 

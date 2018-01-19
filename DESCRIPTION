@@ -2,7 +2,7 @@ Package: MODIS
 Type: Package
 Title: Acquisition and Processing of MODIS Products
 Version: 1.1.1
-Date: 2018-01-15
+Date: 2018-01-19
 URL: https://github.com/MatMatt/MODIS
 BugReports: https://github.com/MatMatt/MODIS/issues
 Authors@R: c(

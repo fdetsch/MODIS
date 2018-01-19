@@ -1,6 +1,5 @@
 # Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
 # Date : February 2012
-# Licence GPL v3
 
 # 'date' is the date of an existing file! result from getStruc() and passed as single date! For format see ?transDate
 

@@ -1,6 +1,5 @@
 # Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
 # Date : February 2012
-# Licence GPL v3
 
 ################################
 # getPart() takes as argument ONLY a defineName() or a getProduct() result, or basicaly a vector with named "nodes"

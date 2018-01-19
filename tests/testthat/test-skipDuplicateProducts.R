@@ -1,5 +1,9 @@
 context("behavior of product pattern matching")
 
+opt <- options("warn")[[1]]
+options("warn" = 0)
+on.exit(options("warn" = opt))
+
 test_that("product selection wo/pattern matching skips derivatives", {
   out1 = expect_warning(skipDuplicateProducts("MOD17A2"))
   expect_match(out1, "\\^MOD17A2\\$")

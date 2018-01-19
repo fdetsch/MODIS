@@ -20,18 +20,12 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
   if (is.null(product)) {
     stop("Product '", inp, "' not recognized. See getProduct() for a list of "
          , "available products.")
-  }
+  } else rm(inp)
     
   # Check collection
-  if (!is.null(collection))
-  {
-    product$CCC <- getCollection(product=product,collection=collection) 
-  }
-  if (length(product$CCC)==0)
-  {
-    product$CCC <- getCollection(product=product) # if collection isn't provided, this gets the newest for the selected products.
-  }
-  
+  product$CCC = getCollection(product = product, collection = collection
+                              , forceCheck = forceCheck) 
+
   dates <- transDate(begin=begin,end=end)
   todoy <- format(as.Date(format(Sys.time(),"%Y-%m-%d")),"%Y%j")
   ########################

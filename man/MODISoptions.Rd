@@ -9,11 +9,13 @@ MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
   systemwide = FALSE, save = TRUE, checkTools = TRUE)
 }
 \arguments{
-\item{localArcPath}{\code{character}, defaults to \code{"~/MODIS_ARC"}. 
-Target folder for downloaded MODIS HDF files.}
+\item{localArcPath}{\code{character}, defaults to 
+\code{file.path(tempdir(), "MODIS_ARC")}. Target folder for downloaded MODIS 
+HDF files.}
 
-\item{outDirPath}{\code{character}, defaults to \code{"~/MODIS_ARC/PROCESSED"}. 
-Target folder for results of \code{\link{runGdal}} and \code{\link{runMrt}}.}
+\item{outDirPath}{\code{character}, defaults to 
+\code{file.path(tempdir(), "MODIS_ARC/PROCESSED")}. Target folder for results 
+of \code{\link{runGdal}} and \code{\link{runMrt}}.}
 
 \item{pixelSize}{Output pixel size (in target reference system units) passed 
 to \code{\link{runGdal}} and \code{\link{runMrt}}, defaults to \code{"asIn"}.}
@@ -59,10 +61,9 @@ frequently occur after many requests.}
 \item{quiet}{\code{logical} passed eg to \code{\link{download.file}} which is 
 called from inside \code{\link{getHdf}}.}
 
-\item{systemwide}{\code{logical}. If \code{FALSE} (default), 'user'-wide 
-settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
-write settings to 'systemwide', presumed you have write access to 
-\code{paste(R.home(component="etc"), '/', '.MODIS_Opts.R', sep='')}.}
+\item{systemwide}{A \code{logical} determining whether changes made to 
+\code{\link{MODISoptions}} are to be applied system or user-wide (default), 
+see 'Details'.}
 
 \item{save}{\code{logical}. If \code{TRUE} (default), settings are permanent.}
 
@@ -79,7 +80,21 @@ Set or retrieve persistant \strong{MODIS} package options (per user or
 systemwide). Changes here will persist through sessions and updates.
 }
 \details{
-These settings are permanent, easy to change and take effect immediately!
+These settings are easy to change and take effect immediately! However, 
+please mind that the \href{https://cran.r-project.org/web/packages/policies.html}{CRAN Repository Policy}
+does not permit automated write access to the user's file system exempt for 
+\code{\link{tempdir}}. Therefore, changes made to \code{\link{MODISoptions}} 
+remain temporally limited to the current \strong{\code{R}} session unless write 
+access is explicitly granted by the user in interactive mode, in which case a 
+permanent settings file is created in \code{file.path("~/.MODIS_Opts.R")} 
+(user-wide) or \code{file.path(R.home(component = "etc"), '.MODIS_Opts.R')}
+(system-wide, write access provided).
+
+Due to similar reasons, 'localArcPath' and 'outDirPath' default to 
+\strong{\code{R}}'s \code{\link{tempdir}} and should be changed immediately 
+after loading the package in order to make downloaded files permanently 
+available. You may also specify a shared network drive if you have a central 
+MODIS data server. 
 
 If you change default values, consider that your settings have to be valid 
 for any MODIS product, layer and area!
@@ -91,10 +106,6 @@ default for 'outProj',}
 \item{or a fixed 'pixelSize' for different products,}
 \item{or a 'resamplingType' that is not \code{"NN"}.}
 }
-
-'localArcPath' and 'outDirPath' should be changed, expecially on a Windows 
-OS, as '~/MODIS_ARC/...' is normally on the 'C:/...' drive. You may also 
-specify a shared network drive if you have a central MODIS data server. 
 
 On Windows, you have to set 'gdalPath' to the location of GDAL executables 
 (i.e., the '.../GDAL../bin' directory). On Unix-alikes, this should not be 
@@ -118,7 +129,10 @@ workable .netrc file is provided through \code{\link{lpdaacLogin}}.
 MODISoptions()
 
 ## set options
-MODISoptions(localArcPath="/another/path/than/default")
+lap = "/another/path/to/MODIS_ARC" # 'localArcPath'
+odp = file.path(lap, "PROCESSED")  # 'outDirPath'
+
+MODISoptions(localArcPath = lap, outDirPath = odp)
 }
 
 }

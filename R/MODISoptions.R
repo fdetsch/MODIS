@@ -4,10 +4,12 @@
 #' Set or retrieve persistant \strong{MODIS} package options (per user or 
 #' systemwide). Changes here will persist through sessions and updates.
 #' 
-#' @param localArcPath \code{character}, defaults to \code{"~/MODIS_ARC"}. 
-#' Target folder for downloaded MODIS HDF files. 
-#' @param outDirPath \code{character}, defaults to \code{"~/MODIS_ARC/PROCESSED"}. 
-#' Target folder for results of \code{\link{runGdal}} and \code{\link{runMrt}}. 
+#' @param localArcPath \code{character}, defaults to 
+#' \code{file.path(tempdir(), "MODIS_ARC")}. Target folder for downloaded MODIS 
+#' HDF files. 
+#' @param outDirPath \code{character}, defaults to 
+#' \code{file.path(tempdir(), "MODIS_ARC/PROCESSED")}. Target folder for results 
+#' of \code{\link{runGdal}} and \code{\link{runMrt}}. 
 #' @param pixelSize Output pixel size (in target reference system units) passed 
 #' to \code{\link{runGdal}} and \code{\link{runMrt}}, defaults to \code{"asIn"}.
 #' @param outProj Target reference system passed to \code{\link{runGdal}} and 
@@ -40,10 +42,9 @@
 #' internal online download call via \code{\link{download.file}} or 
 #' \code{\link{getURL}}. Reduces the chance of FTP connection errors that 
 #' frequently occur after many requests.
-#' @param systemwide \code{logical}. If \code{FALSE} (default), 'user'-wide 
-#' settings are saved to \code{path.expand("~/.MODIS_Opts.R")}. If \code{TRUE}, 
-#' write settings to 'systemwide', presumed you have write access to 
-#' \code{paste(R.home(component="etc"), '/', '.MODIS_Opts.R', sep='')}.
+#' @param systemwide A \code{logical} determining whether changes made to 
+#' \code{\link{MODISoptions}} are to be applied system or user-wide (default), 
+#' see 'Details'.
 #' @param quiet \code{logical} passed eg to \code{\link{download.file}} which is 
 #' called from inside \code{\link{getHdf}}. 
 #' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
@@ -56,7 +57,21 @@
 #' \code{\link{capture.output}} to prevent this behavior.
 #' 
 #' @details 
-#' These settings are permanent, easy to change and take effect immediately!
+#' These settings are easy to change and take effect immediately! However, 
+#' please mind that the \href{https://cran.r-project.org/web/packages/policies.html}{CRAN Repository Policy}
+#' does not permit automated write access to the user's file system exempt for 
+#' \code{\link{tempdir}}. Therefore, changes made to \code{\link{MODISoptions}} 
+#' remain temporally limited to the current \strong{\code{R}} session unless write 
+#' access is explicitly granted by the user in interactive mode, in which case a 
+#' permanent settings file is created in \code{file.path("~/.MODIS_Opts.R")} 
+#' (user-wide) or \code{file.path(R.home(component = "etc"), '.MODIS_Opts.R')}
+#' (system-wide, write access provided).
+#' 
+#' Due to similar reasons, 'localArcPath' and 'outDirPath' default to 
+#' \strong{\code{R}}'s \code{\link{tempdir}} and should be changed immediately 
+#' after loading the package in order to make downloaded files permanently 
+#' available. You may also specify a shared network drive if you have a central 
+#' MODIS data server. 
 #' 
 #' If you change default values, consider that your settings have to be valid 
 #' for any MODIS product, layer and area!
@@ -68,10 +83,6 @@
 #' \item{or a fixed 'pixelSize' for different products,}
 #' \item{or a 'resamplingType' that is not \code{"NN"}.}
 #' }
-#' 
-#' 'localArcPath' and 'outDirPath' should be changed, expecially on a Windows 
-#' OS, as '~/MODIS_ARC/...' is normally on the 'C:/...' drive. You may also 
-#' specify a shared network drive if you have a central MODIS data server. 
 #' 
 #' On Windows, you have to set 'gdalPath' to the location of GDAL executables 
 #' (i.e., the '.../GDAL../bin' directory). On Unix-alikes, this should not be 
@@ -98,7 +109,10 @@
 #' MODISoptions()
 #' 
 #' ## set options
-#' MODISoptions(localArcPath="/another/path/than/default")
+#' lap = "/another/path/to/MODIS_ARC" # 'localArcPath'
+#' odp = file.path(lap, "PROCESSED")  # 'outDirPath'
+#' 
+#' MODISoptions(localArcPath = lap, outDirPath = odp)
 #' }
 #' 
 #' @export MODISoptions
@@ -156,22 +170,24 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     
   # user-wide  
   } else {
-    if (file.exists(optfile)) {   
-      eval(parse(optfile), envir = opts)
+    tmpopt = file.path(tempdir(), ".MODIS_Opts.R")
+    
+    if (any(file.exists(optfile), file.exists(tmpopt))) {
+      eval(parse(ifelse(file.exists(optfile), optfile, tmpopt)), envir = opts)
       uo <- TRUE
     }
     
     whose <- 'user'
-  } 
-  
-  if(!uo) {
-    if(!so & save) {
-      warning("No MODIS 'user' nor 'systemwide' settings file found. File is created for '",whose,"'-settings in: ",normalizePath(optfile,'/',mustWork=FALSE),sep="")
-    } else if (!save) {
-      warning("No MODIS 'user' nor 'systemwide' settings file found, using factory defaults. Use '?MODISoptions' to configure the 'MODIS' package and make settings permanent!")
-    }
   }
   
+  # if(!uo) {
+  #   if(!so & save) {
+  #     warning("No MODIS 'user' nor 'systemwide' settings file found. File is created for '",whose,"'-settings in: ",normalizePath(optfile,'/',mustWork=FALSE),sep="")
+  #   } else if (!save) {
+  #     warning("No MODIS 'user' nor 'systemwide' settings file found, using factory defaults. Use '?MODISoptions' to configure the 'MODIS' package and make settings permanent!")
+  #   }
+  # }
+
   #################################
   opt <- as.list(opts)	
   
@@ -182,7 +198,10 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     localArcPath <- correctPath(localArcPath) 
   
     if (opt$localArcPath != localArcPath) {
-      message("Setting 'localArcPath' to '", normalizePath(localArcPath,"/",FALSE),"'\nIf you already have downloaded some HDF-files to '",normalizePath(opt$localArcPath,"/",FALSE) ,"' you can use '?orgStruc()' to re-arrange your HDF-data!")
+      message("Setting 'localArcPath' to '"
+              , normalizePath(localArcPath, "/", FALSE)
+              , "'\nIf you already have downloaded some HDF files, "
+              , "you can use '?orgStruc' to rearrange them.")
     }
     
     options(MODIS_localArcPathWarned=TRUE)
@@ -192,7 +211,9 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     {
       if(!isTRUE(options()$MODIS_localArcPathWarned))
       {
-        message("'localArcPath' does not exist, and will be created in '",normalizePath(opt$localArcPath,"/",FALSE),"'. Consult '?MODISoptions' if you want to change it!")               
+        message("'localArcPath' does not exist and will be created in '"
+                , normalizePath(opt$localArcPath, "/", FALSE)
+                , "'. Consult '?MODISoptions' if you want to change it!")     
         options(MODIS_localArcPathWarned=TRUE)
       } 
     }
@@ -207,10 +228,13 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     
     if (length(list.dirs(opt$outDirPath,recursive=FALSE))==0)
     {
-      message("'outDirPath' does not exist and will be created in '",normalizePath(outDirPath,"/",FALSE),"'")               
+      message("'outDirPath' does not exist and will be created in '"
+              , normalizePath(outDirPath, "/", FALSE), "'.")
     } else if (opt$outDirPath != outDirPath)
     {
-      message("'outDirPath' has been changed from '",normalizePath(opt$outDirPath,"/",FALSE),"' to '",normalizePath(outDirPath,"/",FALSE),"'")
+      message("'outDirPath' has been changed from '"
+              , normalizePath(opt$outDirPath, "/", FALSE)
+              , "' to '", normalizePath(outDirPath, "/", FALSE), "'.")
     }
     options(MODIS_outDirPathWarned=TRUE) 
     opt$outDirPath <- outDirPath
@@ -220,7 +244,9 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     {
       if(!isTRUE(options()$MODIS_outDirPathWarned))
       {
-        message("'outDirPath' does not exist, it will be created in '",normalizePath(opt$outDirPath,"/",FALSE),"'. Consult '?MODISoptions' if you want to change it!")               
+          message("'outDirPath' does not exist and will be created in '"
+                  , normalizePath(opt$outDirPath, "/", FALSE)
+                  , "'. Consult '?MODISoptions' if you want to change it!")               
         options(MODIS_outDirPathWarned=TRUE)
       }
     }    
@@ -349,13 +375,19 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     opt$gdalOutDriver <- gdalWriteDriver(renew = FALSE, quiet = FALSE, gdalPath=opt$gdalPath,outDirPath=opt$outDirPath)
   }
   
-  if (save)
-  {    
-    #  create the '.MODIS_Opts.R' file
-    filename <- file(optfile, open="wt")
+  if (save) {
     
-    write(paste('# This file contains ', whose,' default values for the R package \'MODIS\'.',sep=""), filename)
-    write('# version 0.9-14', filename)
+    #  let user decide whether to make settings permanent
+    answer = if (!file.exists(optfile)) {
+      readline(paste0("File '", optfile, "' does not exist. Create it now to "
+                      , "make settings permanent? [y/n]: "))
+    } else "y"
+      
+    filename = file(ifelse(tolower(answer) %in% c("y", "yes"), optfile, tmpopt)
+                    , open = "wt")
+
+    write(paste0('# This file contains ', whose,' default values for the R package \'MODIS\'.'), filename)
+    write('# version 1.1.1', filename)
     write('# consult \'?MODISoptions\' for details and explanations', filename)
     write('  ', filename)
     write('#########################', filename)

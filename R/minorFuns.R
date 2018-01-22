@@ -385,7 +385,7 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
     
     if(!file.exists(opt$outDirPath))
     {
-	    opt$outDirPath <- setPath(opt$outDirPath,ask = TRUE)
+	    opt$outDirPath <- setPath(opt$outDirPath,ask = FALSE)
       opt$auxPath    <- setPath(paste0(opt$outDirPath,".auxiliaries"),ask=FALSE)
     }
     

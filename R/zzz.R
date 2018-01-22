@@ -15,8 +15,15 @@
 
 .onAttach <- function(lib, pkg) {
   packageStartupMessage({
-    x <- capture.output(MODISoptions(save=FALSE, checkTools=FALSE))
-    rm(x)
+    suppressWarnings(
+      suppressMessages(
+        jnk <- capture.output(
+          MODISoptions(save = FALSE, checkTools = FALSE, quiet = TRUE)
+        )
+      )
+    )
+    
+    return(invisible())
   })
 }
 

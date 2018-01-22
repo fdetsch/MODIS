@@ -34,9 +34,9 @@ copied) and deleted is printed to the console.
 Re-organise the storage structure of your MODIS archive according to the 
 settings in \code{options("MODIS_arcStructure")}. Depending on the specified 
 \code{'source'} , you can also use this function to gather all MODIS grid 
-files on you computer and organise them according to '~/.MODIS_Opts.R'. The 
-main purpose is to organise the archive, but it is also possible to copy a 
-subset of files to a desidered location!
+files on you computer and reorganise them. The main purpose is to organise 
+the archive, but it is also possible to copy a subset of files to a 
+desidered location!
 }
 \examples{
 \dontrun{
@@ -44,11 +44,11 @@ subset of files to a desidered location!
 # options("MODIS_localArcPath", "MODIS_arcStructure")
 orgStruc(move = TRUE)
 
-# COPY all MOD13Q1 from 2001 to folder "~/MyFiles/MOD13Q1.collection/"
-orgStruc(pattern="MOD13Q1.A2001*.",to="~/MyFiles",structure="PRODUCT.CCC")
+# COPY all MOD13Q1 from 2001 to folder "MyFiles/MOD13Q1.collection/"
+orgStruc(pattern="MOD13Q1.A2001*.",to="MyFiles",structure="PRODUCT.CCC")
 
-# COPY all MOD13Q1 to folder "~/MyFiles/"
-orgStruc(pattern="MOD13Q1.*.",to="~/MyFiles",structure="") 
+# COPY all MOD13Q1 to folder "MyFiles/"
+orgStruc(pattern="MOD13Q1.*.",to="MyFiles",structure="") 
 }
 
 }

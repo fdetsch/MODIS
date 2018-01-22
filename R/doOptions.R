@@ -214,10 +214,10 @@ combineOptions <- function(checkTools = TRUE, ...)
   
   if(length(opts)==0) # if nothing available look for initial options
   {
-    if(!file.exists("~/.MODIS_Opts.R"))
-    {
-      warning("MODIS_Opts file not found, run '?MODISoptions' to see and set permanent package defaults!\n")
-    }
+    # if(!file.exists("~/.MODIS_Opts.R")) {
+    #   warning("File '~/.MODIS_Opts.R' not found. "
+    #           , "Run MODISoptions() to make settings permanent!")
+    # }
     requireNamespace("MODIS", quietly = TRUE)
     MODISoptions(save=FALSE, checkTools = checkTools)    
     opts <- options() # collects all options

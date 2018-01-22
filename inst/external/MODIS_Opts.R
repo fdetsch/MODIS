@@ -10,10 +10,10 @@
 # consult '?MODISoptions' for more details
   
 # All HDF-data will be (properly) stored in this directory. 
-localArcPath <- '~/MODIS_ARC'
+localArcPath <- file.path(gsub("\\\\", "/", tempdir()), 'MODIS_ARC')
 
 # Default output location for MODIS package processing results.
-outDirPath   <- '~/MODIS_ARC/PROCESSED'
+outDirPath   <- file.path(localArcPath, 'PROCESSED')
 
 #########################
 # 2.) Download:

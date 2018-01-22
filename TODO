@@ -48,3 +48,4 @@ $`2001-06-26`
 character(0)
 runGdal() transforms extracted layers to 'outProj' other than specified in MODISoptions() if 'extent' is a shapefile <-> maybe optional?
 Download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
+Is 'quiet = ...' etc. specified in runGdal() or getHdf() passed on to MODISoptions? If no, this could be implemented as a temporary change of options (ie. 'save = FALSE')

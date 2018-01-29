@@ -1,5 +1,7 @@
 ## MODIS 
 
+[![](http://www.r-pkg.org/badges/version/MODIS)](http://www.r-pkg.org/pkg/MODIS)
+
 Acquisition and Processing of MODIS Products
 
 
@@ -7,7 +9,7 @@ Acquisition and Processing of MODIS Products
 
 ### News
 
-**MODIS_1.1.0** is now available for [download](https://cran.r-project.org/package=MODIS). Please refer to [NEWS](https://github.com/MatMatt/MODIS/blob/master/NEWS.md) for a detailed change log.
+**MODIS_1.1.2** is now available for [download](https://cran.r-project.org/package=MODIS). Please refer to [NEWS](https://github.com/MatMatt/MODIS/blob/master/NEWS.md) for a detailed change log.
 
 
 ====
@@ -22,7 +24,7 @@ install.packages("MODIS")
 ```
 
 
-To install the development version of the package, first install **[devtools](https://cran.r-project.org/package=devtools)** and subsequently run
+To install the latest development version, first install **[devtools](https://cran.r-project.org/package=devtools)** and subsequently run
 
 ```S
 devtools::install_github("MatMatt/MODIS", ref = "develop")

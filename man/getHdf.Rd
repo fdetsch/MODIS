@@ -36,8 +36,8 @@ see \code{tileH}.}
 
 \item{extent}{See Details in \code{\link{getTile}}.}
 
-\item{collection}{\code{character} or \code{integer}. Desired MODIS product 
-collection, see MODIS pages or \code{\link{getCollection}} for more information.}
+\item{collection}{Desired MODIS product collection as \code{character}, 
+\code{integer}, or \code{list} as returned by \code{\link{getCollection}}.}
 
 \item{checkIntegrity}{\code{logical}. If \code{TRUE} (default), the size of 
 each downloaded file is checked. In case of inconsistencies, the function 

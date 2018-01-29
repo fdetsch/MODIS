@@ -14,13 +14,16 @@
 #' \cr
 #' \emph{Maintainer:} Matteo Mattiuzzi \email{matteo@@mattiuzzi.com}
 #'
-#' @import bitops mapdata parallel ptw raster RCurl rgdal sp XML
+#' @import bitops mapdata parallel ptw raster rgdal sp XML
 #' @importFrom devtools install_github
 #' @importFrom grDevices dev.new dev.off png
 #' @importFrom graphics abline box grid locator title
 #' @importFrom mapedit selectFeatures
 #' @importFrom maps map.axes
-#' @importFrom methods as
+#' @importFrom maptools map2SpatialPolygons map2SpatialLines checkPolygonsHoles
+#' @importFrom methods as new slot
+#' @importFrom RCurl getURL
+#' @importFrom rgeos gBuffer gIsValid
 #' @importFrom sf st_as_sf
 #' @importFrom stats na.omit smooth.spline
 #' @importFrom utils capture.output download.file installed.packages read.table vi write.csv write.table

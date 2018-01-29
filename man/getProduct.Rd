@@ -7,15 +7,15 @@
 getProduct(x = NULL, quiet = FALSE)
 }
 \arguments{
-\item{x}{\code{character}. MODIS filename, product name or regular expression 
-(for the latter, see argument \code{pattern} in \code{\link{grep}} for 
-details). If not specified, all available products are returned.}
+\item{x}{\code{character}. MODIS filename, product name, regular expression 
+passed to \code{pattern} in \code{\link{grep}}, or missing.}
 
 \item{quiet}{\code{logical}, defaults to \code{FALSE}.}
 }
 \value{
-An invisible \code{list} with usable information for other functions, see 
-examples.
+An invisible \code{list} with information usable by other functions or, if 
+'x' is missing, a \code{data.frame} with information about all products 
+available.
 }
 \description{
 On user side, it is a funtion to find the desidered product. On package site, 

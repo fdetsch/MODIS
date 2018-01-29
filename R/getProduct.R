@@ -4,14 +4,14 @@
 #' On user side, it is a funtion to find the desidered product. On package site, 
 #' it generates central internal information to hande files.  
 #' 
-#' @param x \code{character}. MODIS filename, product name or regular expression 
-#' (for the latter, see argument \code{pattern} in \code{\link{grep}} for 
-#' details). If not specified, all available products are returned.
+#' @param x \code{character}. MODIS filename, product name, regular expression 
+#' passed to \code{pattern} in \code{\link{grep}}, or missing.
 #' @param quiet \code{logical}, defaults to \code{FALSE}.
 #' 
 #' @return 
-#' An invisible \code{list} with usable information for other functions, see 
-#' examples.
+#' An invisible \code{list} with information usable by other functions or, if 
+#' 'x' is missing, a \code{data.frame} with information about all products 
+#' available.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
@@ -34,13 +34,16 @@ getProduct <- function(x=NULL,quiet=FALSE)
 
 #load(system.file("external", "MODIS_Products.RData", package="MODIS"))
 
-    if (is.null(x))
-    { # if x isn't provided, return table of supported files.
-        products <- as.data.frame(MODIS_Products[c("SENSOR", "PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")])
-        return(products[order(products$PRODUCT),])
+    if (is.null(x)) { # if x isn't provided, return table of supported files.
+      cls = c("SENSOR", "PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")
+      products = as.data.frame(MODIS_Products[cls])
+      products = data.frame(products[order(products$PRODUCT), ]
+                            , row.names = 1:nrow(products))
+      
+      return(products)
     }
 
-    if (is.list(x) && names(x) %in% c("request", "PRODUCT", "TOPIC", "DATE", "TILE", "TILEV", "TILEH", "CCC", "PROCESSINGDATE", "FORMAT", "SENSOR", "PLATFORM", "PF1", "PF2", "TOPIC", "TYPE", "RES", "TEMP_RES", "INTERNALSEPARATOR")) 
+    if (is.list(x) && names(x) %in% c("request", "PRODUCT", "TOPIC", "DATE", "TILE", "TILEV", "TILEH", "CCC", "PROCESSINGDATE", "FORMAT", "SENSOR", "PLATFORM", "PF1", "PF2", "PF3", "TOPIC", "TYPE", "RES", "TEMP_RES", "INTERNALSEPARATOR")) 
     {
         # if TRUE than it is a result from a getProduct() call. A good idea would be to have a CLASS for it!
         return(x)
@@ -48,25 +51,30 @@ getProduct <- function(x=NULL,quiet=FALSE)
     
     ## moody but seams to work!!
     inbase  <- basename(x) # if x is a filename(+path) remove the path
-    if (substring(inbase,nchar(inbase)-2, nchar(inbase)) %in% c("hdf","xml","tif",".gz","tar","zip")) 
-    {
-        isFile <- TRUE
-        intSepTest <- c("\\.","_")[which(c(length(strsplit(inbase, "\\.")[[1]]),length(strsplit(inbase, "_")[[1]]))==max(c(length(strsplit(inbase, "\\.")[[1]]),length(strsplit(inbase, "_")[[1]]))))]
-        product  <- strsplit(inbase,intSepTest)[[1]]
-    } else 
-    {
-        isFile <- FALSE
-        product <- inbase
-    }
     
-    product <- product[1]
-    pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
-    info    <- listPather(MODIS_Products,grep(pattern=pattern,x=MODIS_Products$PRODUCT,ignore.case=TRUE))
+    isProduct = any(sapply(inbase, function(i) grepl(i, getProduct()[, 2])))
+    
+    tmp = if (!isProduct) {
+        isFile <- TRUE
+        sapply(strsplit(inbase, "\\."), "[[", 1)
+    } else {
+        isFile <- FALSE
+        inbase
+    }
 
-    if(length(info$PRODUCT)==0)
-    {
-        cat("No product found with the name ",inbase," try 'getProduct()' to list available products.\n",sep = "")
-        return(NULL)
+    product = sapply(tmp, function(i) skipDuplicateProducts(i, quiet = quiet))
+    
+    pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
+    info <- listPather(MODIS_Products, 
+                       grep(paste(pattern, collapse = "|")
+                            , MODIS_Products$PRODUCT,ignore.case=TRUE))
+
+    if (length(info$PRODUCT) == 0) {
+      if (!quiet)
+        cat("No product found with the name ", inbase
+            , ". Try 'getProduct()' to list available products.\n", sep = "")
+      
+      return(NULL)
     }
     if (info$SENSOR[1]=="MODIS") 
     {
@@ -75,57 +83,10 @@ getProduct <- function(x=NULL,quiet=FALSE)
     
     if (isFile)
     { # in this case it must be a filename
-      fname <- unlist(strsplit(inbase,info$INTERNALSEPARATOR[1]))
-      fname <- unlist(strsplit(fname,"\\."))
-      
-      if (info$TYPE == "Tile") 
-      { # file check.
-        
-        Tpat    <- "h[0-3][0-9]v[0-1][0-9]"
-        isok <- all((grep(fname[2],pattern=Tpat)) + (substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
-        
-      } else if (info$TYPE == "CMG") 
-      {
-        
-        isok <- all((substr(fname[2],1,1) == "A") + (fname[5]=="hdf") + (length(fname)==5))
-        
-      } else if (info$TYPE == "Swath")
-      {
-        isok <- all((substr(fname[2],1,1) == "A") + (fname[6]=="hdf") + (length(fname)==6))
-        
-      } else 
-      {
-        isok <- FALSE
-      }
-      
-      if (!isok)
-      {   
-        
-        stop("Check filename:", inbase,"\nIt seams to be not supported...if it should please send some feedback! matteo.mattiuzzi@boku.ac.at") 
-        
-      }
-      
-      PD <- substr(info$PRODUCT[1], 4, nchar(as.character(info$PRODUCT[1])))
-      
-      if (info$TYPE=="Tile") 
-      {
-        names(fname) <- c("PRODUCT","DATE","TILE","CCC","PROCESSINGDATE","FORMAT")
-        
-      } else if (info$TYPE=="CMG") 
-      {
-        names(fname) <- c("PRODUCT","DATE","CCC","PROCESSINGDATE","FORMAT")
-        
-      } else if (info$TYPE=="Swath") 
-      { 
-        names(fname) <- c("PRODUCT","DATE","TIME","CCC","PROCESSINGDATE","FORMAT")
-        
-      } else 
-      {
-        stop("Not a 'Tile', 'CMG' or 'Swath'! Product not supported. See: 'getProduct()'!")
-      }
-      request <- x
-      names(request) <- "request"
-      result <- c(request,fname,info)
+
+      names(x) = "request"
+      fname = getInfo(x, product = info$PRODUCT, type = info$TYPE)
+      result <- c(x, fname, info)
       result <- result[!duplicated(names(result))]
       result <- as.list(sapply(result,function(x)as.character(x)))
       
@@ -148,7 +109,8 @@ getProduct <- function(x=NULL,quiet=FALSE)
             return(
                 invisible(
                     list(request = inbase, PF1 = as.character(info$PF1),
-                    PF2 = as.character(info$PF2), PD = PD, PLATFORM = as.character(info$PLATFORM),
+                    PF2 = as.character(info$PF2), PF3 = as.character(info$PF3)
+                    , PD = PD, PLATFORM = as.character(info$PLATFORM),
                     TYPE = as.character(info$TYPE), PRODUCT = as.character(info$PRODUCT),
                     SENSOR = as.character(info$SENSOR), SOURCE=info$SOURCE)
                 )

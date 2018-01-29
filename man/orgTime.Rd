@@ -9,13 +9,13 @@
 \title{Handle Input and Output Dates Used for Filtering}
 \usage{
 \S4method{orgTime}{character}(files, nDays = "asIn", begin = NULL,
-  end = NULL, pillow = 75, pos1 = 10, pos2 = 16, format = "\%Y\%j")
+  end = NULL, pillow = 75, pos1, pos2, format = "\%Y\%j")
 
 \S4method{orgTime}{Date}(files, nDays = "asIn", begin = NULL, end = NULL,
   pillow = 75)
 
 \S4method{orgTime}{Raster}(files, nDays = "asIn", begin = NULL,
-  end = NULL, pillow = 75, pos1 = 10, pos2 = 16, format = "\%Y\%j")
+  end = NULL, pillow = 75, pos1, pos2, format = "\%Y\%j")
 }
 \arguments{
 \item{files}{A \code{character}, \code{Date}, or \code{Raster*} object. 
@@ -40,11 +40,7 @@ dataset. Note that the exact \code{end} date depends on \code{begin} and
 \item{pillow}{\code{integer}. Number of days added to the beginning and end 
 of a time series.}
 
-\item{pos1}{\code{integer}, start of date string in \code{files}.}
-
-\item{pos2}{\code{integer}, end of date string.}
-
-\item{format}{\code{character}, see \code{\link{extractDate}}.}
+\item{pos1, pos2, format}{Arguments passed to \code{\link{extractDate}}.}
 }
 \value{
 A \code{list} with the following slots (to be completed):

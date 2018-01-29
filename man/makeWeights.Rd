@@ -106,9 +106,9 @@ res
 
 #####
 # water mask
-runGdal(product="MOD13A2",begin="2009001",end="2009001", extent=extent(c(-9,-3 ,54,58)),
-        SDSstring="001",outDirPath="~/",job="delme") # 6.4 MB
-x <- raster("~/delme/MOD13A2.A2009001.1_km_16_days_VI_Quality.tif")
+tif = runGdal(product="MOD13A2",begin="2009001",end="2009001", extent=extent(c(-9,-3 ,54,58)),
+              SDSstring="001",job="delme") # 6.4 MB
+x <- raster(unlist(tif))
 
 res1 <- maskWater(x)
 plot(res1)
@@ -122,8 +122,6 @@ plot(res2)
 x11()
 res3 <- maskWater(x,keep=c(1,2,3)) 
 plot(res3)
-
-# unlink("~/delme",recursive=TRUE)
 
 ###############
 

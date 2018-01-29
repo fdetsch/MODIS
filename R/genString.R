@@ -1,35 +1,35 @@
 # Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
 # Date : February 2012
-# Licence GPL v3
 
 # 'date' is the date of an existing file! result from getStruc() and passed as single date! For format see ?transDate
 
 genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, remote=TRUE, 
                       opts = NULL, ...)
 {
+  
+  if (is.null(opts))
+    opts <- combineOptions(checkTools = FALSE, ...)
+  
   product <- getProduct(x=x,quiet=TRUE)
 
   if(length(product$PRODUCT)>1)
   {
-    warning("genString() does not support multiple products! Generating 'path' for the first product:", product$PRODUCT[1], "\n")
+    warning("genString() does not support multiple products! Generating 'path' for the first product: ", product$PRODUCT[1], "\n")
     product <- lapply(product,function(x){x[1]}) # take only the first argument
   }
 
-  if(length(product$CCC)==0)
-  {
-    product$CCC <- getCollection(product=product$PRODUCT,collection=collection, 
-                                 checkTools = FALSE)[[1]]
+  product$CCC = if (is.null(collection)) {
+    unlist(getCollection(product = product$PRODUCT, checkTools = FALSE))
+  } else {
+    sprintf("%03d",as.numeric(unlist(collection)[1]))
   }
-     
+
   if (!is.null(date)) 
   {
     product$DATE <- list(paste0("A",transDate(date)$beginDOY)) # generates MODIS file date format "AYYYYDDD"
   }
 
   ## if options have not been passed down, create them from '...'
-  if (is.null(opts))
-    opts <- combineOptions(checkTools = FALSE, ...)
-  
   opts$auxPath <- setPath(opts$auxPath)
   remotePath <- localPath <- NULL    
     
@@ -65,7 +65,8 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
           }
         }
       }
-    localPath <- setPath(path.expand(paste0(opts$localArcPath,paste0(unlist(string),collapse="/"))))
+    localPath <- setPath(path.expand(paste0(opts$localArcPath,paste0(unlist(string),collapse="/")))
+                         , mkdir = FALSE)
     }
         
     if (remote) 
@@ -113,8 +114,9 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                 string[[l]] <- paste0(unlist(tmp),collapse=".")
                 
                 ## append '_MERRAGMAO' if product is hosted at NTSG
-                if ("NTSG" %in% unlist(product$SOURCE) & i == 2)
-                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
+                if ("NTSG" == stringX$name & i == 2)
+                  string[[l]] <- gsub("(\\.){1}(\\d){3}$", ".105_MERRAGMAO"
+                                      , string[[l]])
               }
             }
           remotePath[[n]] <- path.expand(paste(stringX$basepath,paste0(unlist(string),collapse="/"),sep="/"))
@@ -158,7 +160,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
       }
                
       namesFTP <- names(MODIS_FTPinfo)
-      Hmany <- grep(namesFTP,pattern="^ftpstring*.") # get ftpstrings in ./MODIS_opts.R
+      Hmany <- grep(namesFTP,pattern="^ftpstring*.") # get ftpstrings in ./MODIS_Opts.R
   
       remotePath <- list()
       n = 0
@@ -188,10 +190,11 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
               string[[l]] <- paste0(unlist(tmp),collapse=".")
               
               ## if working on NTSG server
-              if ("NTSG" %in% unlist(product$SOURCE)) {
+              if ("NTSG" == stringX$name) {
                 # add '_MERRAGMAO' suffix
                 if (i == 2)
-                  string[[l]] <- paste0(string[[l]], "_MERRAGMAO")
+                  string[[l]] <- gsub("(\\.){1}(\\d){3}$", ".105_MERRAGMAO"
+                                      , string[[l]])
                 
                 # add leading 'Y' to year
                 if (i == 3) 

@@ -1,33 +1,31 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
-# Date: August 2011
-# Licence GPL v3
-
-# product="MOD13Q1"; collection=NULL; server="LPDAAC"; begin=NULL; end=NULL; forceCheck=FALSE
-
-getStruc <- function(product, collection=NULL, server=getOption("MODIS_MODISserverOrder")[1], begin=NULL, end=NULL, forceCheck=FALSE, ...)
+# Author: Matteo Mattiuzzi, Florian Detsch
+# Date: January 2018
+getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
+                     , end = NULL, forceCheck = FALSE, ...)
 {
-  server <- toupper(server)[1]
-  if(!server %in% c("LPDAAC", "LAADS", "NTSG"))
-  {
-    stop("getStruc() Error! Server must be one of 'LPDAAC', 'LAADS' or 'NTSG'.")
-  }
+
   opts     <- combineOptions(...)
   sturheit <- stubborn(level = opts$stubbornness)
+
+  if (is.null(server)) {
+    server = opts$MODISserverOrder[1]
+  }
   
   setPath(opts$auxPath, ask=FALSE)
   #########################
   # Check Platform and product
+  inp = product
   product <- getProduct(x=product,quiet=TRUE)
-  # Check collection
-  if (!is.null(collection))
-  {
-    product$CCC <- getCollection(product=product,collection=collection) 
-  }
-  if (length(product$CCC)==0)
-  {
-    product$CCC <- getCollection(product=product) # if collection isn't provided, this gets the newest for the selected products.
-  }
   
+  if (is.null(product)) {
+    stop("Product '", inp, "' not recognized. See getProduct() for a list of "
+         , "available products.")
+  } else rm(inp)
+    
+  # Check collection
+  product$CCC = getCollection(product = product, collection = collection
+                              , forceCheck = forceCheck) 
+
   dates <- transDate(begin=begin,end=end)
   todoy <- format(as.Date(format(Sys.time(),"%Y-%m-%d")),"%Y%j")
   ########################

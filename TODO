@@ -11,57 +11,20 @@ longer term changes:
 - allow only one product at the time. At that moment is is possible to do runGdal(product="M.D13",... this would process all M.D 13 products in one go by walking down the list produced by getProduct("M.D13"). 
   MOD and MYD should still be run by one call, but not eg: MxD13A1 and MxD13A2. This change would simplify a lot the package development.
 - I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
-
-any functions:
-- 'quiet' argument -> should be part of options list automatically (?)
-  
-getHdf()
-- 'HdfName' with regular expression 
-comment Matteo: could be bit tricky:  
-  1. the implementation as the unknown Julian date of production is always unknown.
-  https://lpdaac.usgs.gov/dataset_discovery/modis 
-  2. the use as a little mistake/imprecision would lead to huge differences in the output, and potentially costing a lot of exec time. 
+- Accelerate 'Downloading structure on ...'
+- Any file in 'inst/external' no longer required? 
 
 detectBitInfo()
 - recent products supported? (see whittaker.raster)
 
 MODISoptions() 
-- MODIS::MODISoptions() fails when package is not attached
-  (Error in match.fun(FUN) : node stack overflow
-   Error during wrapup: node stack overflow) <-> when not attached, 
-   MODIS:::combineOptions() cannot finish
 - Check for presence of .netrc file (<-> LP DAAC support)   
 
 runGdal()
-- following issue #15 (https://github.com/MatMatt/MODIS/issues/15), the runGdal 
-  command included therein fails with a fresh installation of the MODIS package. 
-  The corresponding error message is (possibly related to non-existing 
-  'outDirPath'):
-Error in readChar(con, 5L, useBytes = TRUE) : cannot open the connection
-In addition: Warning messages:
-1: In dir.create(dir_aux) :
-  cannot create dir 'C:\Users\fdetsch\Documents\MODIS_ARC\PROCESSED\.auxiliaries', reason 'No such file or directory'
-2: In file.create(to[okay]) :
-  cannot create file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', reason 'No such file or directory'
-3: In readChar(con, 5L, useBytes = TRUE) :
-  cannot open compressed file 'C:/Users/fdetsch/Documents/MODIS_ARC/PROCESSED/.auxiliaries//collections.RData', probable reason 'No such file or directory'
 - an 'HdfName' argument (just like in getHdf()) could be of advantage in the 
   sense that if one (or numerous) local .hdf file is specified, an online 
   retrieval (of collection, available dates, etc.) is entirely turned off
 - include scale factor during SDS extraction?  
-- runGdal("M*D14A1", ...) resulted in the following error after finishing Terra-MODIS:
-  Error in names(lst_ofile) <- avDates : 
-  'names' attribute [61] must be the same length as the vector [60]
-- last note confirmed, error occurs if some, but not the requested tile are 
-  available in an online date folder (LP DAAC and LAADS):
-  Error in names(lst_ofile) <- avDates : 
-  'names' attribute [790] must be the same length as the vector [789]
-In addition: Warning messages:
-1: In runGdal("M*D14A1", extent = readRDS("inst/extdata/uniformExtent.rds"),  :
-  No file found for date: 2001-06-26
-2: In runGdal("M*D14A1", extent = readRDS("inst/extdata/uniformExtent.rds"),  :
-  No file found for date: 2017-04-23
-- hand over more than one product (no regular expression!) to getProduct(), eg `getProduct(c("MOD11A2", "MOD13A2"))`. 
 - speed up when downloaded hdf / processed tif files are already present
   
 getTile()
@@ -75,16 +38,14 @@ detectBitInfo()
 qualityControl
 - method based on maximum value from preceding / current / succeeding image (i.e., from user-defined window) as proposed by Yang et al. (2013, http://dx.doi.org/10.1109/LGRS.2012.2219576)
 
-Build and Reload
-- fails when no 'MODIS' installation is available in .libPaths():
-  Error in read.table(system.file("external", "tiletable.txt", package = "MODIS"),  : 
-    no lines available in input
-  Calls: suppressPackageStartupMessages ... load_code -> lapply -> FUN -> eval -> eval -> read.table
-  In addition: Warning message:
-  In file(file, "rt") :
-    file("") only supports open = "w+" and open = "w+b": using the former
-  Execution halted
-  
 whittaker.raster()  
 - set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
+
+Take care of MOD16 Collection 105 on NTSG
+When no file could be found for particular date (eg. on 2001-06-26 for MOD14A1.006), then output of   runGdal() has an entry like this one:
+$`2001-06-26`
+character(0)
+runGdal() transforms extracted layers to 'outProj' other than specified in MODISoptions() if 'extent' is a shapefile <-> maybe optional?
+Download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
+Is 'quiet = ...' etc. specified in runGdal() or getHdf() passed on to MODISoptions? If no, this could be implemented as a temporary change of options (ie. 'save = FALSE')

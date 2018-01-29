@@ -8,8 +8,9 @@
 #' @param collection \code{character} or \code{integer}. If provided, the 
 #' function only checks if the specified collection exists and returns the 
 #' collection number formatted based on the \code{as} parameter or \code{FALSE} 
-#' if it doesn't exists. The check is performed on the primary data source, 
-#' 'LP DAAC' \url{https://lpdaac.usgs.gov/}.
+#' if it doesn't exists. The check is performed on 
+#' \href{https://lpdaac.usgs.gov/}{LP DAAC} as the exclusive source for several 
+#' (but by far not all) products.
 #' @param newest \code{logical}. If \code{TRUE} (default), return only the 
 #' newest collection, else return all available collections.
 #' @param forceCheck \code{logical}, defaults to \code{FALSE}. If \code{TRUE}, 
@@ -32,7 +33,7 @@
 #' it could not be found) is returned.
 #' 
 #' @author 
-#' Matteo Mattiuzzi
+#' Matteo Mattiuzzi, Florian Detsch
 #' 
 #' @seealso 
 #' \code{\link{getProduct}}.
@@ -63,11 +64,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         stop("Please provide a valid product")
     }
     productN <- getProduct(x = if (is.character(product)) {
-      if (product %in% c("MOD14", "MYD14")) {
-        paste0("^", product, "$")
-      } else {
-        product
-      }
+      sapply(product, function(i) skipDuplicateProducts(i, quiet = quiet))
     } else product, quiet = TRUE)
     if (is.null(productN)) 
     {
@@ -79,7 +76,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     dir_aux <- opts$auxPath
     if (!dir.exists(dir_aux)) dir.create(dir_aux)
     
-    fls_col <- paste0(dir_aux, "/collections.RData")
+    fls_col <- file.path(dir_aux, "collections.RData")
     
     if (!file.exists(fls_col))
       invisible(
@@ -89,25 +86,23 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 
     load(fls_col)
     
-    MODIScollection <- MODIScollection[, grep(colnames(MODIScollection), 
-                                              pattern = "M.D")]
-
     if (forceCheck | sum(!productN$PRODUCT %in% colnames(MODIScollection))>0) 
     {
       sturheit <- stubborn(level=opts$stubbornness)
       
       load(system.file("external", "MODIS_FTPinfo.RData", package = "MODIS"))
       
-      for (i in seq_along(unique(productN$PF1))) 
+      for (i in seq_along(productN$PRODUCT)) 
       {	
         ## retrieve ftp server address based on product source information
-        server <- unlist(productN$SOURCE)
+        server <- unlist(productN$SOURCE[[i]])
         
         ftp_id <- sapply(MODIS_FTPinfo, function(i) i$name %in% server)
         ftp_id <- which(ftp_id)[1]
         
-        ftp <- paste0(MODIS_FTPinfo[[ftp_id]]$basepath,"/",unique(productN$PF1)[i],"/")
-        cat("Updating collections from", server[1], "for platform:",unique(productN$PLATFORM)[i],"\n")
+        ftp <- file.path(MODIS_FTPinfo[[ftp_id]]$basepath, productN$PF1[i], "/")
+        cat("Updating collection from", server[1], "for product:"
+            , productN$PRODUCT[i], "\n")
         
         if(exists("dirs")) 
         {
@@ -130,7 +125,20 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
           cat("FTP is not available, using stored information from previous calls (this should be mostly fine)\n")
         } else 
         {
-
+          
+          ## choose relevant folders and remove empty ones
+          dirs = grep(paste0(productN$PRODUCT[i], "\\.[[:digit:]]{3}"), dirs
+                      , value = TRUE)
+          
+          ids = sapply(file.path(ftp, dirs, "/"), function(ftpdir) {
+            cnt = RCurl::getURL(ftpdir, dirlistonly = TRUE)
+            dts = regmatches(cnt, regexpr("[[:digit:]]{4}\\.[[:digit:]]{2}\\.[[:digit:]]{2}", cnt))
+            
+            return(length(dts) > 0)
+          })
+          
+          dirs = dirs[ids]
+          
           ## information about products and collections    			  
           ls_prod_col <- sapply(dirs, function(x) {strsplit(x, "\\.")})
           prod <- sapply(ls_prod_col, "[[", 1)
@@ -149,6 +157,12 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
             basemtr[1:length(mtr[[u]]),u] <- mtr[[u]]
           }
           
+          tmp = as.integer(basemtr)
+          tmp[tmp >= 10 & !is.na(tmp)] = tmp[tmp >= 10 & !is.na(tmp)] / 10
+          basemtr = matrix(as.integer(basemtr[order(tmp), ])
+                           , ncol = nrow(mtr), nrow = maxrow)
+          colnames(basemtr) = names(mtr)
+          
           ## if new collections are available, 
           ## add additional rows to 'MODIScollection'
           if (nrow(MODIScollection) < maxrow & nrow(MODIScollection) > 0) 
@@ -166,8 +180,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
             MODIScollection <- data.frame(basemtr) # create new
           } else 
           { # or update the available one
-            indX    <- colnames(MODIScollection) %in% colnames(basemtr) 
-            MODIScollection <- cbind(MODIScollection[,!indX],basemtr)
+            MODIScollection[, colnames(basemtr)] = basemtr
           }
         }
       }
@@ -217,7 +230,9 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 
     } else if (newest) 
     {
-	    if(!quiet) {cat("No Collection specified getting the newest for",productN$PRODUCT,"\n",sep=" ")}
+	    if (!quiet) {
+	      cat("No collection specified, getting the newest for", productN$PRODUCT, "\n")
+	    }
 
 	    res <- lapply(res,function(x)
 	    { #select the newest

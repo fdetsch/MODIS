@@ -1,11 +1,14 @@
 # Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
 # Date : February 2012
-# Licence GPL v3
 
 ################################
 # getPart() takes as argument ONLY a defineName() or a getProduct() result, or basicaly a vector with named "nodes"
 ################################
-getPart <- function(x, what = c('YYYY', 'DDD', 'DATE', 'SENSOR', 'PF1', 'PF2', 'PLATFORM', 'TILE', 'TILEV', 'TILEH', 'C', 'CCC', 'PRODUCT', 'FORMAT', 'COMPRESSION', 'DATE1DATE2', 'PROCESSINGDATE', 'REGION', 'TIME'))
+getPart <- function(x, what = c('YYYY', 'DDD', 'DATE', 'SENSOR', 'PF1', 'PF2'
+                                , 'PF3', 'PLATFORM', 'TILE', 'TILEV', 'TILEH'
+                                , 'C', 'CCC', 'PRODUCT', 'FORMAT', 'COMPRESSION'
+                                , 'DATE1DATE2', 'PROCESSINGDATE', 'REGION'
+                                , 'TIME'))
 {    
     if (missing(x)){
         return(cat("Available 'placeholders' are:",what,"\n",sep=" "))
@@ -17,11 +20,9 @@ getPart <- function(x, what = c('YYYY', 'DDD', 'DATE', 'SENSOR', 'PF1', 'PF2', '
         DDD  = substring(x$DATE,6,8), # works with AYYYYDDD input
         DATE = gsub(transDate(begin=substring(x$DATE,2,8))$begin,pattern="-",replacement="."), # works with AYYYYDDD input
         SENSOR = x$SENSOR,
-        #PF1 = getProduct(x=x[1],quiet=TRUE)$PF1,
-        #PF2 = getProduct(x=x[1],quiet=TRUE)$PF2,
-        #PLATFORM = getProduct(x=x[1])$PLATFORM,
         PF1 = x$PF1,
         PF2 = x$PF2,
+        PF3 = x$PF3,
         PLATFORM = x$PLATFORM,
         TILE = x$TILE,
         C = as.numeric(x$CCC),

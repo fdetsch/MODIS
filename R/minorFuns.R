@@ -145,7 +145,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
         
         if (!quiet)
         {
-            cat("Checking availabillity of MRT:\n")
+            cat("Checking availability of MRT:\n")
         }
     
         if(mrtH=="") 
@@ -202,7 +202,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
         {    
             if (!quiet)
             {
-                cat("Checking availabillity of GDAL:\n")
+                cat("Checking availability of GDAL:\n")
             }
             
             cmd      <- paste0(opts$gdalPath,'gdalinfo --version')            
@@ -385,11 +385,11 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
     
     if(!file.exists(opt$outDirPath))
     {
-	    opt$outDirPath <- setPath(opt$outDirPath,ask = TRUE)
+	    opt$outDirPath <- setPath(opt$outDirPath,ask = FALSE)
       opt$auxPath    <- setPath(paste0(opt$outDirPath,".auxiliaries"),ask=FALSE)
     }
     
-    if(file.exists(opt$auxPath))
+    if (dir.exists(opt$auxPath)) 
     {
       save(gdalOutDriver, file=outfile)
     }
@@ -566,15 +566,15 @@ filesUrl <- function(url)
     ## default method (e.g. LPDAAC, LAADS)
     if (length(grep("ntsg", url)) == 0) {
       
-      co <- try(RCurl::getURLContent(url),silent=TRUE)
+      co <- try(RCurl::getURL(url, ftp.use.epsv = FALSE), silent = TRUE)
       
       if (inherits(co, "try-error")) return(FALSE)
       
       if (substring(url,1,4)=="http")
       {
-        co     <- htmlTreeParse(co)
+        co     <- XML::htmlTreeParse(co)
         co     <- co$children[[1]][[2]][[2]]
-        co     <- sapply(co$children, function(el) xmlGetAttr(el, "href"))
+        co     <- sapply(co$children, function(el) XML::xmlGetAttr(el, "href"))
         co     <- as.character(unlist(co))
         co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
         fnames <- co[-1] 
@@ -711,13 +711,17 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
               }
               
               # wget extras
+              ofl = path.expand("~/.cookies.txt")
+              if (!file.exists(ofl))
+                jnk = file.create(ofl)
+              
               extra <- if (method == "wget") {
-                paste("--load-cookies ~/.cookies.txt", 
-                      "--save-cookies ~/.cookies.txt --keep-session-cookie", 
-                      "--no-check-certificate")
-              # curl extras  
+                paste("--load-cookies", ofl
+                      , "--save-cookies", ofl
+                      , "--keep-session-cookie --no-check-certificate")
+                # curl extras  
               } else {
-                '-n -L -c ~/.cookies.txt -b ~/.cookies.txt'
+                paste('-n -L -c', ofl, '-b', ofl)
               }
               
             ## else if server == "NTSG", choose 'wget' as download method  
@@ -808,7 +812,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
 }
 
 # setPath for localArcPath and outDirPath
-setPath <- function(path, ask=FALSE, showWarnings=FALSE)
+setPath <- function(path, ask=FALSE, showWarnings=FALSE, mkdir = TRUE)
 {
   path <- normalizePath(path, "/", mustWork = FALSE)
   
@@ -816,7 +820,7 @@ setPath <- function(path, ask=FALSE, showWarnings=FALSE)
   ##    FALSE for detecting folders with a trailing slash:
   path <- gsub("/$", "", path)
   
-  if(!file.exists(path)) 
+  if(!file.exists(path) & mkdir) 
   {
     doit <- 'Y'
     if (ask)
@@ -886,4 +890,103 @@ correctPath <- function(x,isFile=FALSE)
     x <- gsub(x,pattern="//",replacement="/")
   }
 return(x)
+}
+
+positionIndication = function(x) {
+
+  product = suppressWarnings(getProduct(x, quiet = TRUE))
+  
+  if (!is.null(product)) {
+    ids = as.integer(sapply(c("POS1", "POS2"), function(i) product[[i]]))
+    pos = list("POS1" = ids[1], "POS2" = ids[2])
+    
+    return(pos)
+    
+  } else {
+    stop("Either provide position indications or input files conforming to "
+         , "MODIS standard naming convention.\n")
+  }
+}
+
+# For further information, see https://lpdaac.usgs.gov/dataset_discovery/modis.
+getInfo = function(x, product = NULL, type = c("Tile", "CMG", "Swath")) {
+  
+  type = type[1]
+  
+  ## product short name (optional)
+  if (is.null(product)) {
+    product  <- sapply(strsplit(basename(x), "\\."), "[[", 1)
+  }
+  
+  ## julian date of acquisition
+  # stringr::str_extract(x, "A[:digit:]{7}")
+  doa = regmatches(x, regexpr("A[[:digit:]]{7}", x))
+  
+  ## time of acquisition
+  if (type == "Swath") {
+    toa = regmatches(x, regexpr("\\.[[:digit:]]{4}\\.", x))
+    toa = gsub("\\.", "", toa)
+  }
+  
+  ## tile identifier
+  if (type == "Tile") {
+    # stringr::str_extract(x, "h[0-3][0-9]v[0-1][0-9]")
+    tid = regmatches(x, regexpr("h[0-3][0-9]v[0-1][0-9]", x))
+  }
+  
+  ## collection version
+  # stringr::str_extract(x, "\\.[:digit:]{3}\\.")
+  ccc = regmatches(x, regexpr("\\.[[:digit:]]{3}\\.", x))
+  ccc = gsub("\\.", "", ccc)
+  
+  ## julian date of production
+  # stringr::str_extract(x, "\\.[:digit:]{13}\\.")
+  dop = regmatches(x, regexpr("\\.[[:digit:]]{13}\\.", x))
+  dop = gsub("\\.", "", dop)
+  
+  ## data format
+  # stringr::str_extract(x, "\\.[:alpha:]{2,3}$")
+  fmt = regmatches(x, regexpr("\\.[[:alpha:]]{2,3}$", x))
+  fmt = gsub("\\.", "", fmt)
+  
+  ## set list names and return
+  out = list(product, doa, tid, ccc, dop, fmt)
+  names(out) = c("PRODUCT", "DATE", if (type == "Swath") "TIME"
+                 , if (type =="Tile") "TILE", "CCC", "PROCESSINGDATE", "FORMAT")
+  
+  return(out)
+}
+
+## taken from https://cran.r-project.org/web/packages/maptools/vignettes/combine_maptools.pdf
+fixOrphanedHoles = function(x) {
+  polys <- slot(x, "polygons")
+  fixed <- lapply(polys, maptools::checkPolygonsHoles)
+  
+  sp::SpatialPolygons(fixed, proj4string = sp::CRS(sp::proj4string(x)))
+}
+
+## skip unwanted products, see https://github.com/MatMatt/MODIS/issues/22
+skipDuplicateProducts = function(x, quiet = FALSE) {
+  
+  products = getProduct()[, 2]
+  
+  dpl = lapply(seq_along(products), function(i) {
+    dpl = grep(products[i], products[-i], value = TRUE)
+    if (length(dpl) > 0) {
+      data.frame(product = products[i], duplicate = dpl)
+    } else NULL
+  })
+  
+  dpl = do.call(rbind, dpl)
+  
+  if (x %in% dpl$product) {
+    if (!quiet) {
+      warning("Processing ", x, " only. Use regular expressions (eg. '"
+              , x, "*') to select more than one product.")
+    }
+    
+    x = paste0("^", x, "$")
+  }
+  
+  return(x)
 }

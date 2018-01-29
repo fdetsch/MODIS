@@ -1,8 +1,10 @@
 Package: MODIS
 Type: Package
 Title: Acquisition and Processing of MODIS Products
-Version: 1.1.0
-Date: 2017-07-03
+Version: 1.1.2
+Date: 2018-01-22
+URL: https://github.com/MatMatt/MODIS
+BugReports: https://github.com/MatMatt/MODIS/issues
 Authors@R: c(
 	person("Matteo", "Mattiuzzi", role = c("aut")),
 	person("Jan", "Verbesselt", role = "ctb"),
@@ -16,9 +18,10 @@ Authors@R: c(
 	person("Florian", "Detsch", role = c("cre", "aut"), email = "fdetsch@web.de"))
 Description: Download and processing functionalities for the Moderate Resolution
     Imaging Spectroradiometer (MODIS). The package provides automated access to the
-    global online data archives (LPDAAC and LAADS) and processing capabilities such
+    global online data archives LP DAAC (<https://lpdaac.usgs.gov/>) and LAADS 
+    (<https://ladsweb.modaps.eosdis.nasa.gov/>) and processing capabilities such
     as file conversion, mosaicking, subsetting and time series filtering.
-License: GPL (>= 3) | file LICENSE
+License: MIT + file LICENSE
 LazyData: TRUE
 Depends:
     mapdata,
@@ -31,16 +34,18 @@ Imports:
     graphics,
     mapedit,
     maps,
+    maptools,
     methods,
     parallel,
     ptw,
     RCurl,
     rgdal,
+    rgeos,
     sf,
     sp,
     stats,
     utils,
     XML
-URL: https://github.com/MatMatt/MODIS
 ByteCompile: TRUE
 RoxygenNote: 6.0.1
+Suggests: testthat

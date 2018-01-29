@@ -24,19 +24,16 @@
 #' 
 #' @examples 
 #' \dontrun{
-#' runGdal("MOD13Q1", collection = getCollection("MOD13Q1", forceCheck = TRUE),
-#'         begin = "2000353", end = "2000366", extent = "Luxembourg", 
-#'         job = "reformatDOY", SDSstring = "000000000010")
+#' tfs = runGdal("MOD13Q1", collection = "006",
+#'               begin = "2000353", end = "2000366", extent = "Luxembourg", 
+#'               job = "reformatDOY", SDSstring = "000000000010")
 #'         
-#' fls <- list.files(paste0(getOption("MODIS_outDirPath"), "/reformatDOY"), 
-#'                   pattern = "day_of_the_year.tif$", full.names = TRUE)
-#'                   
 #' ## raw doy
-#' raw <- raster(fls)
+#' raw <- raster(unlist(tfs))
 #' unique(raw[])
 #' 
 #' ## reformatted dates
-#' rfm <- reformatDOY(cmp)
+#' rfm <- reformatDOY(raw)
 #' unique(rfm[])
 #' }
 #' 

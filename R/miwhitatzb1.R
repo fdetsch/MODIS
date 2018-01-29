@@ -1,6 +1,5 @@
 # Author: A.Lobo 2012 Agustin.Lobo@ictja.csic.es
 # Date : August 2012
-# Licence GPL v3
 
 # slightly modified by Matteo Mattiuzzi
 

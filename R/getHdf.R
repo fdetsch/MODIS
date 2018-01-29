@@ -23,8 +23,8 @@ if ( !isGeneric("getHdf") ) {
 #' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
 #' see \code{tileH}.
 #' @param extent See Details in \code{\link{getTile}}.
-#' @param collection \code{character} or \code{integer}. Desired MODIS product 
-#' collection, see MODIS pages or \code{\link{getCollection}} for more information.
+#' @param collection Desired MODIS product collection as \code{character}, 
+#' \code{integer}, or \code{list} as returned by \code{\link{getCollection}}.
 #' @param HdfName \code{character} vector or \code{list}. Full HDF file name(s) 
 #' to download a small set of files. If specified, other file-related parameters 
 #' (i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored. 
@@ -108,13 +108,11 @@ setMethod("getHdf",
   #######
   # check product
   product <- getProduct(x=product,quiet=TRUE)
-  # check if missing collection, else bilieve it
-  if(is.null(collection)) 
-  {
-    product$CCC <- getCollection(product=product,quiet=TRUE, forceCheck = TRUE)[[1]]
-  } else
-  {
-    product$CCC <- sprintf("%03d",as.numeric(unlist(collection)[1]))
+  # check if missing collection, else believe it
+  product$CCC <- if (is.null(collection)) {
+    unlist(getCollection(product = product, quiet = TRUE, forceCheck = TRUE))
+  } else {
+    sprintf("%03d",as.numeric(unlist(collection)[1]))
   }
   #########
   
@@ -145,7 +143,7 @@ setMethod("getHdf",
       cat("'Swath'-products not yet supported, jumping to the next.\n")
     } else 
     {
-      todo <- paste0(product$PRODUCT[z],".",product$CCC)
+      todo <- paste0(product$PRODUCT[z],".",product$CCC[z])
       for (u in seq_along(todo))
       {
         # tileID
@@ -155,33 +153,34 @@ setMethod("getHdf",
           ntiles=1 
         } else 
         {
-          if (!is.null(tileH) & !is.null(tileV)) 
-          {
-            extent <- getTile(tileH=tileH,tileV=tileV)
-          } else
-          {
-            extent <- getTile(x = extent)
+          if (!inherits(extent, "MODISextent")) {
+            extent = getTile(x = extent, tileH = tileH, tileV = tileV)
           }
-          tileID <- extent$tile
+          
+          tileID <- extent@tile
           ntiles <- length(tileID)
         }
         
         ## ensure compatibility with servers other than those specified in 
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
-        server <- unique(unlist(product$SOURCE))
+        server <- product$SOURCE[[z]]
         
         if (length(server) > 1) {
           # alternative server, i.e. when priority is not reachable
           server_alt <- server[which(server != opts$MODISserverOrder[1])]
           # priority server from which structure will be tried to retrieve first
           server <- server[which(server == opts$MODISserverOrder[1])]
+        } else {
+          opts$MODISserverOrder <- server
         }
         
         ## this time, suppress console output from `getStruc`
         jnk <- capture.output(
-          onlineInfo <- getStruc(product = product$PRODUCT[z], server = server, 
-                                 collection = product$CCC, begin = tLimits$begin, 
-                                 end = tLimits$end, wait = wait)
+          onlineInfo <- suppressWarnings(
+            getStruc(product = product$PRODUCT[z], server = server, 
+                     collection = product$CCC[z], begin = tLimits$begin, 
+                     end = tLimits$end, wait = wait)
+          )
         )
         
         if(!is.na(onlineInfo$online))
@@ -190,9 +189,11 @@ setMethod("getHdf",
               server %in% c("LPDAAC", "LAADS"))
           {
             cat(server," seems not online, trying on '",server_alt,"':\n",sep="")
-            onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC,
-                                   begin = tLimits$begin, end = tLimits$end, 
-                                   wait = 0, server = server_alt)
+            jnk = capture.output(
+              onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC[z],
+                                     begin = tLimits$begin, end = tLimits$end, 
+                                     wait = wait, server = server_alt)
+            )
           }
           if(is.null(onlineInfo$dates))
           {
@@ -222,16 +223,15 @@ setMethod("getHdf",
           colnames(dates[[l]]) <- c("date",tileID)
           
           for (i in 1:nrow(dates[[l]]))
-          { # i=1
-            #cat(dates[[l]][i,1],"\n")
-            #flush.console()
-            
+          { 
             year <- format(as.Date(dates[[l]][i,1]), "%Y")
             doy  <- as.integer(format(as.Date(dates[[l]][i,1]), "%j"))
             doy  <- sprintf("%03d",doy)
             mtr  <- rep(1,ntiles) # for file availability flaging
-            path <- genString(x=strsplit(todo[u],"\\.")[[1]][1],collection=strsplit(todo[u],"\\.")[[1]][2],date=dates[[l]][i,1])
-            
+            path <- genString(x = strsplit(todo[u], "\\.")[[1]][1]
+                              , collection = strsplit(todo[u], "\\.")[[1]][2]
+                              , date = dates[[l]][i, 1])
+
             for(j in 1:ntiles)
             {  
               dates[[l]][i,j+1] <- paste0(strsplit(todo[u],"\\.")[[1]][1],".",paste0("A",year,doy),".",if (tileID[j]!="GLOBAL") {paste0(tileID[j],".")},strsplit(todo[u],"\\.")[[1]][2],".*.hdf$") # create pattern            
@@ -284,13 +284,28 @@ setMethod("getHdf",
               
               if (ftpfiles[1] != "total 0") 
               {
-                ftpfiles <- unlist(lapply(strsplit(ftpfiles," "),function(x){x[length(x)]})) # found empty dir!
+                ftpfiles <- unlist(lapply(strsplit(ftpfiles," "), function(x) {
+                  x[length(x)]
+                })) # found empty dir!
+                
+                if (onlineInfo$source == "NTSG") {
+                  ftpfiles = gsub(paste0("\\.", product$CCC[z], "\\.")
+                                  , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
+                                  , ftpfiles)
+                }
                 
                 for(j in 1:ntiles)
                 { # j=1
                   if(mtr[j]==1)
                   { # if tile is missing get it
-                    onFtp <- grep(ftpfiles,pattern=dates[[l]][i,j+1],value=TRUE)
+                    dts = dates[[l]][i, j+1]
+                    if (onlineInfo$source == "NTSG") {
+                      dts = gsub(paste0("\\.", product$CCC[z], "\\.")
+                                 , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
+                                 , dts)
+                      dts = paste(c(strsplit(dts, "\\.")[[1]][1:4], "*.hdf"), collapse = ".")
+                    }
+                    onFtp = grep(ftpfiles,pattern = dts,value = TRUE)
                     HDF   <- grep(onFtp,pattern=".hdf$",value=TRUE)
                     
                     if(length(HDF)>0)

@@ -122,7 +122,7 @@ runGdal <- function(product, collection=NULL,
     product <- getProduct(product, quiet=TRUE)
     
     # optional and if missing it is added here:
-    product$CCC <- getCollection(product,collection=collection)
+    product$CCC <- getCollection(product,collection=collection, quiet = opts$quiet)
     tLimits     <- transDate(begin=begin,end=end)
     
     dataFormat <- toupper(opts$dataFormat) 
@@ -158,12 +158,14 @@ runGdal <- function(product, collection=NULL,
     #### settings with messages
     # output pixel size in output proj units (default is "asIn", but there are 2 chances of changing this argument: pixelSize, and if extent comes from a Raster* object.
      
-    if (product$TYPE[1]=="Tile" | (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & product$TYPE[1]=="CMG"))
-    {
-        extent <- getTile(x=extent, tileH=tileH, tileV=tileV)
-    } else
-    {
-        extent <- NULL
+    if (!inherits(extent, "MODISextent")) {
+      extent = if (product$TYPE[1] == "Tile" | 
+                   (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & 
+                    product$TYPE[1]=="CMG")) {
+        getTile(x = extent, tileH = tileH, tileV = tileV)
+      } else {
+        NULL
+      }
     }
 
     
@@ -175,7 +177,7 @@ runGdal <- function(product, collection=NULL,
     rt <- ResamplingType(opts)              # resamplingType
     s_srs <- InProj(product)                # inProj
     te <- TargetExtent(extent,              # targetExtent
-                       outProj = strsplit(t_srs, "'")[[1]][2]) 
+                       outProj = strsplit(t_srs, "'|\"")[[1]][2]) 
     
     ## non-obligatory arguments (GTiff blocksize and compression, see 
     ## http://www.gdal.org/frmt_gtiff.html)
@@ -239,10 +241,12 @@ runGdal <- function(product, collection=NULL,
           for (l in seq_along(avDates)) { 
             # l=1
             files <- unlist(
-              getHdf(product=prodname, collection=coll, begin=avDates[l], end=avDates[l],
-               tileH=extent$tileH, tileV=extent$tileV, checkIntegrity=checkIntegrity, 
-               stubbornness=opts$stubbornness, MODISserverOrder=opts$MODISserverOrder, 
-               forceDownload = forceDownload, wait = opts$wait)
+              getHdf(product = prodname, collection = coll
+                     , begin = avDates[l], end = avDates[l]
+                     , extent = extent, checkIntegrity = checkIntegrity
+                     , stubbornness = opts$stubbornness
+                     , MODISserverOrder = opts$MODISserverOrder
+                     , forceDownload = forceDownload, wait = opts$wait)
             )
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()

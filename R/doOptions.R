@@ -36,7 +36,7 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
       # for efficiency gdv should be stored as variable
       gdv <- checkTools('GDAL',quiet=TRUE)$GDAL$vercheck
       
-      if (gdv[2] < 10 & resamplingType %in% c("average","mode"))
+      if (gdv[1] == 1 & gdv[2] < 10 & resamplingType %in% c("average","mode"))
       {
         stop("resamplingType= 'average' and 'mode' requires GDAL >= 1.10.0")
       }

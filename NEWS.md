@@ -1,3 +1,10 @@
+## MODIS 1.1.3
+
+Bugfixes: 
+
+  * "Error: object 'tid' not found" from climate modeling grids (CMG) not being identified as such, but treated as tiled products.
+  
+
 ## MODIS 1.1.2
 
 New features:

@@ -929,10 +929,10 @@ getInfo = function(x, product = NULL, type = c("Tile", "CMG", "Swath")) {
   }
   
   ## tile identifier
-  if (type == "Tile") {
+  tid = if (type == "Tile") {
     # stringr::str_extract(x, "h[0-3][0-9]v[0-1][0-9]")
-    tid = regmatches(x, regexpr("h[0-3][0-9]v[0-1][0-9]", x))
-  }
+    regmatches(x, regexpr("h[0-3][0-9]v[0-1][0-9]", x))
+  } else "global"
   
   ## collection version
   # stringr::str_extract(x, "\\.[:digit:]{3}\\.")
@@ -952,7 +952,8 @@ getInfo = function(x, product = NULL, type = c("Tile", "CMG", "Swath")) {
   ## set list names and return
   out = list(product, doa, tid, ccc, dop, fmt)
   names(out) = c("PRODUCT", "DATE", if (type == "Swath") "TIME"
-                 , if (type =="Tile") "TILE", "CCC", "PROCESSINGDATE", "FORMAT")
+                 , if (type %in% c("Tile", "CMG")) "TILE", "CCC"
+                 , "PROCESSINGDATE", "FORMAT")
   
   return(out)
 }

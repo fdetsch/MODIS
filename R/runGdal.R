@@ -121,6 +121,9 @@ runGdal <- function(product, collection=NULL,
     # absolutely needed
     product <- getProduct(product, quiet=TRUE)
     
+    # force it to use the first product returned
+    product <- lapply(product0, function(x) x[1])
+                      
     # optional and if missing it is added here:
     product$CCC <- getCollection(product,collection=collection, quiet = opts$quiet)
     tLimits     <- transDate(begin=begin,end=end)

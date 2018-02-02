@@ -2,6 +2,7 @@
 
 Bugfixes: 
 
+  * Curl-based download from LP DAAC.
   * "Error: object 'tid' not found" from climate modeling grids (CMG) not being identified as such, but treated as tiled products.
   
 

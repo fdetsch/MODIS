@@ -711,6 +711,11 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
               }
               
               # wget extras
+              nrc = path.expand("~/.netrc")
+              if (!file.exists(nrc))
+                stop("~/.netrc file required. Either run lpdaacLogin() or set" 
+                      , " MODISoptions(MODISserverOrder = 'LAADS').")
+              
               ofl = path.expand("~/.cookies.txt")
               if (!file.exists(ofl))
                 jnk = file.create(ofl)
@@ -721,7 +726,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                       , "--keep-session-cookie --no-check-certificate")
                 # curl extras  
               } else {
-                paste('-n -L -c', ofl, '-b', ofl)
+                paste('--netrc-file', nrc, '-k -L -c', ofl, '-b', ofl)
               }
               
             ## else if server == "NTSG", choose 'wget' as download method  
@@ -738,7 +743,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
             out[a] <- try(
               download.file(url = infile, destfile = destfile, mode = 'wb', 
                             method = method, quiet = opts$quiet, 
-                            cacheOK = FALSE, extra = extra),
+                            cacheOK = TRUE, extra = extra),
                           silent = TRUE)
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!

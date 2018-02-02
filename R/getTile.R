@@ -137,7 +137,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
     
     fromMap <- FALSE
     prj <- sp::CRS("+init=epsg:4326")
-    
+
     # if 'x' is null, do mapSelect. Output class extent. 
     if (is.null(x)) {
       x <- mapSelect()
@@ -172,10 +172,9 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
     # maps::map (from mapdata/maps) to SpatialPolygons
     if (inherits(x, "map")) {
       x = maptools::map2SpatialPolygons(x, x$names, prj, checkHoles = TRUE)
-    }
-    
+
     # this needs to be done in order to use rgdal:::over to intersect geometies 
-    if (inherits(x, c("Raster", "Spatial"))) {
+    } else if (inherits(x, c("Raster", "Spatial"))) {
       target <- list(outProj = raster::projection(x)
                      , extent = raster::extent(x)
                      , pixelSize = NULL) 

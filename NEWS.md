@@ -5,6 +5,10 @@ Bugfixes:
   * Curl-based download from LP DAAC.
   * "Error: object 'tid' not found" from climate modeling grids (CMG) not being identified as such, but treated as tiled products.
   
+Changes:
+
+  * When 'extent' is a country name, the target projection of layers extracted through runGdal() is now taken from MODISoptions() rather than hard-coded EPSG:4326.
+  
 
 ## MODIS 1.1.2
 

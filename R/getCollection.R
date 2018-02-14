@@ -74,7 +74,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     ## if 'collections' dataset does not exist in opts$auxPath, copy it from 
     ## 'inst/external', then import data
     dir_aux <- opts$auxPath
-    if (!dir.exists(dir_aux)) dir.create(dir_aux)
+    if (!dir.exists(dir_aux)) dir.create(dir_aux, recursive = TRUE)
     
     fls_col <- file.path(dir_aux, "collections.RData")
     

@@ -22,7 +22,11 @@
 #' @param checkIntegrity \code{logical}, see \code{\link{getHdf}}. 
 #' @param forceDownload \code{logical}, see \code{\link{getHdf}}.
 #' @param overwrite \code{logical}, defaults to \code{FALSE}. Determines 
-#' whether or not to overwrite existing SDS output files.
+#' whether or not to overwrite existing SDS output files. 
+#' @param maskValue \code{numeric}. Value to be excluded when resampling (via gdalwarp -srcnodata argument).  
+#' This allows non-data values, for example water, to be ignored and thus not effect the final data.
+#' NOTE: this argument will be ignored if the original SDS has a No Data value defined.
+#' 
 #' @param ... Additional arguments passed to \code{MODIS:::combineOptions()} (eg
 #' 'wait'), see also \code{\link{MODISoptions}}.
 #' 
@@ -110,7 +114,7 @@ runGdal <- function(product, collection=NULL,
                     begin=NULL, end=NULL, 
                     extent=NULL, tileH=NULL, tileV=NULL, 
                     SDSstring=NULL, job=NULL, checkIntegrity=TRUE, 
-                    forceDownload=TRUE, overwrite = FALSE, ...)
+                    forceDownload=TRUE, overwrite = FALSE, maskValue=NULL, ...)
 {
     opts <- combineOptions(...)
 
@@ -287,7 +291,25 @@ runGdal <- function(product, collection=NULL,
                   srcnodata <- NULL
                   dstnodata <- NULL 
                 }
- 
+                
+                # 2018-02-19 Matt Forrest (matthew.forrest@senckenberg.de) 
+                # Mask out values using the maskValue argument using the 'srcnodata' argument to gdalwarp so that non-data values are not included in the resampling
+                if(!missing(maskValue) & !is.null(maskValue)) {
+                  
+                  # check numeric
+                  if(!is.numeric(maskValue) | length(maskValue) != 1) stop("maskValue needs to be a single numeric.")
+                  
+                  # Only use if NA has not been defined before, otherwise ignore with a warning 
+                  if(is.null(srcnodata))  
+                  {
+                    srcnodata <- paste0(" -srcnodata ", maskValue)
+                  } else 
+                  {
+                    warning("Argument maskValue ignored because starting SDS already has a No Data value defined.")
+                  }
+             
+                }
+                
                 if(length(grep(todo,pattern="M.D13C2\\.005"))>0)
                 {
                   if(i==1)

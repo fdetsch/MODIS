@@ -27,9 +27,10 @@
 #' 'wait'), see also \code{\link{MODISoptions}}.
 #' 
 #' @return 
-#' A \code{list} of the same length as 'product'. Each product slot holds a 
-#' sub-\code{list} of processed dates which, for each time step, include the 
-#' corresponding output files as \code{character} objects. 
+#' A \code{list} of the same length as 'product'. Each product slot either holds 
+#' a sub-\code{list} of processed dates which, for each time step, include the 
+#' corresponding output files as \code{character} objects or, if no files could 
+#' be found for the specified time period, a single \code{NA}.
 #' 
 #' @details 
 #' \describe{
@@ -212,10 +213,10 @@ runGdal <- function(product, collection=NULL,
         # u=1
         ftpdirs      <- list()
         
-        if (length(unlist(product$SOURCE)) > 1) {
-          server <- unlist(product$SOURCE)[which(unlist(product$SOURCE) == opts$MODISserverOrder[1])]
+        server = if (length(unlist(product$SOURCE)) > 1) {
+          unlist(product$SOURCE)[which(unlist(product$SOURCE) == opts$MODISserverOrder[1])]
         } else {
-          server <- unlist(product$SOURCE)
+          unlist(product$SOURCE)
         }
           
         ftpdirs[[1]] <- as.Date(getStruc(product = strsplit(todo[u], "\\.")[[1]][1],
@@ -400,7 +401,9 @@ runGdal <- function(product, collection=NULL,
           lst_todo[[u]] <- lst_ofile
           
         } else {
-          lst_todo[[u]] <- NULL
+          warning(paste("No", product$PRODUCT, "files found for the period from"
+                        , tLimits$begin, "to", paste0(tLimits$end, ".")))
+          lst_todo[[u]] <- NA
         }
       }
       

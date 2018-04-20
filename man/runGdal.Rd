@@ -45,9 +45,10 @@ whether or not to overwrite existing SDS output files.}
 'wait'), see also \code{\link{MODISoptions}}.}
 }
 \value{
-A \code{list} of the same length as 'product'. Each product slot holds a 
-sub-\code{list} of processed dates which, for each time step, include the 
-corresponding output files as \code{character} objects.
+A \code{list} of the same length as 'product'. Each product slot either holds 
+a sub-\code{list} of processed dates which, for each time step, include the 
+corresponding output files as \code{character} objects or, if no files could 
+be found for the specified time period, a single \code{NA}.
 }
 \description{
 Downloads MODIS grid data from archive (FTP or local) and processes the 

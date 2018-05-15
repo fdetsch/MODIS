@@ -18,6 +18,6 @@ Matteo Mattiuzzi, Jan Verbesselt, Tomislav Hengl, Anja Klisch,
 Forrest Stevens, Steven Mosher, Bradley Evans, Agustin Lobo, Florian Detsch 
 \cr
 \cr
-\emph{Maintainer:} Matteo Mattiuzzi \email{matteo@mattiuzzi.com}
+\emph{Maintainer:} Florian Detsch \email{fdetsch@web.de}
 }
 \keyword{package}

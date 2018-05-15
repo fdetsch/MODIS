@@ -12,7 +12,7 @@
 #' Forrest Stevens, Steven Mosher, Bradley Evans, Agustin Lobo, Florian Detsch 
 #' \cr
 #' \cr
-#' \emph{Maintainer:} Matteo Mattiuzzi \email{matteo@@mattiuzzi.com}
+#' \emph{Maintainer:} Florian Detsch \email{fdetsch@@web.de}
 #'
 #' @import bitops mapdata parallel ptw raster rgdal sp XML
 #' @importFrom devtools install_github

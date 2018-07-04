@@ -52,14 +52,16 @@ getProduct <- function(x=NULL,quiet=FALSE)
     ## moody but seams to work!!
     inbase  <- basename(x) # if x is a filename(+path) remove the path
     
-    isProduct = any(sapply(inbase, function(i) grepl(i, getProduct()[, 2])))
+    isProduct = any(sapply(inbase, function(i) {
+      grepl(gsub(" ", "", i), getProduct()[, 2])
+    }))
     
     tmp = if (!isProduct) {
         isFile <- TRUE
         sapply(strsplit(inbase, "\\."), "[[", 1)
     } else {
         isFile <- FALSE
-        inbase
+        gsub(" ", "", inbase) ## if 'isProduct', remove whitespaces
     }
 
     product = sapply(tmp, function(i) skipDuplicateProducts(i, quiet = quiet))

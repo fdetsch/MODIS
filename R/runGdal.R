@@ -150,7 +150,7 @@ runGdal <- function(product, collection=NULL,
         options("MODIS_gdalOutDriver"=opts$gdalOutDriver) # save for current session
     }
     
-    if(dataFormat %in% toupper(opts$gdalOutDriver$name))
+    if (any(grepl(dataFormat, opts$gdalOutDriver$name, ignore.case = TRUE)))
     {
         dataFormat <- grep(opts$gdalOutDriver$name, pattern=paste("^",dataFormat,"$",sep=""),ignore.case = TRUE,value=TRUE)
         of <- paste0(" -of ",dataFormat)
@@ -197,13 +197,11 @@ runGdal <- function(product, collection=NULL,
       
       if(z==1)
       {
-        if (is.null(job))
-        {
+        if (is.null(job)) {
           job <- paste0(todo[1],"_",format(Sys.time(), "%Y%m%d%H%M%S"))    
-          cat("Output directory = ",paste0(normalizePath(opts$outDirPath,"/",mustWork=FALSE),"/",job)," (no 'job' name specified, generated (date/time based))\n")
-        } else
-        {
-          cat("Output Directory = ",paste0(normalizePath(opts$outDirPath,"/",mustWork=FALSE),"/",job),"\n")
+          cat("Output directory = ",gsub("//", "/", paste0(normalizePath(opts$outDirPath,"/",mustWork=FALSE),"/",job))," (no 'job' name specified, generated (date/time based))\n")
+        } else {
+          cat("Output Directory = ",gsub("//", "/", paste0(normalizePath(opts$outDirPath,"/",mustWork=FALSE),"/",job)),"\n")
         }
         cat("########################\n")
         
@@ -236,7 +234,9 @@ runGdal <- function(product, collection=NULL,
         avDates <- avDates[!is.na(avDates)]        
         
         sel     <- as.Date(avDates)
-        us      <- sel >= tLimits$begin & sel <= tLimits$end
+        
+        st = correctStartDate(tLimits$begin, sel, prodname)
+        us = sel >= st & sel <= tLimits$end
         
         if (sum(us,na.rm=TRUE)>0)
         {

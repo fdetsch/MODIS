@@ -40,7 +40,7 @@
 #' the file, but also lead to hanging functions if the server is down.
 #' @param wait \code{numeric} waiting time (in seconds) inserted after each 
 #' internal online download call via \code{\link{download.file}} or 
-#' \code{\link{getURL}}. Reduces the chance of FTP connection errors that 
+#' \code{\link[curl]{curl}}. Reduces the chance of FTP connection errors that 
 #' frequently occur after many requests.
 #' @param systemwide A \code{logical} determining whether changes made to 
 #' \code{\link{MODISoptions}} are to be applied system or user-wide (default), 

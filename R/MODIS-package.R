@@ -15,6 +15,7 @@
 #' \emph{Maintainer:} Florian Detsch \email{fdetsch@@web.de}
 #'
 #' @import bitops mapdata parallel ptw raster rgdal sp XML
+#' @importFrom curl curl
 #' @importFrom devtools install_github
 #' @importFrom grDevices dev.new dev.off png
 #' @importFrom graphics abline box grid locator title
@@ -22,7 +23,6 @@
 #' @importFrom maps map.axes
 #' @importFrom maptools map2SpatialPolygons map2SpatialLines checkPolygonsHoles
 #' @importFrom methods as new slot
-#' @importFrom RCurl getURL
 #' @importFrom rgeos gBuffer gIsValid
 #' @importFrom sf st_as_sf
 #' @importFrom stats na.omit smooth.spline

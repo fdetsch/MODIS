@@ -49,7 +49,13 @@ character(0)
 runGdal() transforms extracted layers to 'outProj' other than specified in MODISoptions() if 'extent' is a shapefile <-> maybe optional?
 Download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
 Is 'quiet = ...' etc. specified in runGdal() or getHdf() passed on to MODISoptions? If no, this could be implemented as a temporary change of options (ie. 'save = FALSE')
+Despite included in MODISoptions(), 'quiet' also often appears as a separate argument <-> necessary?
 
 Automated reset of user-specified dates to 16-day composite periods, see https://github.com/MatMatt/MODIS/issues/43
 
 MODIS:::genString("MOD13A2.006") creates empty 'localPath' folder, eg. C:/Users/florianD/Data/MODIS_~1/MODIS/MOD13A2.006/
+
+Wherever possible, replace length(grep(...)) == | != | > | < with grepl
+
+filesUrl(): 
+- substitute XML:: calls with regular expression matching? (example code currently commented)

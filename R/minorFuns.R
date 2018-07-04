@@ -564,10 +564,18 @@ filesUrl <- function(url)
     on.exit(options(warn=iw))
 
     ## default method (e.g. LPDAAC, LAADS)
-    if (length(grep("ntsg", url)) == 0) {
+    if (!grepl("ntsg", url)) {
       
-      co <- try(RCurl::getURL(url, ftp.use.epsv = FALSE), silent = TRUE)
+      # read online content
+      con = curl::curl(url)
+      co = readLines(con)
+      close(con)
       
+      # ## extract product folders
+      # sapply(getProduct()[, 2], function(i) {
+      #   regmatches(co, regexpr(paste0(i, "\\.[[:digit:]]{3}"), co))
+      # })
+
       if (inherits(co, "try-error")) return(FALSE)
       
       if (substring(url,1,4)=="http")

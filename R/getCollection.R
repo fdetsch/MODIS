@@ -131,7 +131,10 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
                       , value = TRUE)
           
           ids = sapply(file.path(ftp, dirs, "/"), function(ftpdir) {
-            cnt = RCurl::getURL(ftpdir, dirlistonly = TRUE)
+            con = curl::curl(ftpdir)
+            cnt = readLines(con)
+            close(con)
+            
             dts = regmatches(cnt, regexpr("[[:digit:]]{4}\\.[[:digit:]]{2}\\.[[:digit:]]{2}", cnt))
             
             return(length(dts) > 0)

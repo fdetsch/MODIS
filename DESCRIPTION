@@ -29,6 +29,7 @@ Depends:
     raster
 Imports:
     bitops,
+    curl,
     devtools,
     grDevices,
     graphics,
@@ -38,7 +39,6 @@ Imports:
     methods,
     parallel,
     ptw,
-    RCurl,
     rgdal,
     rgeos,
     sf,

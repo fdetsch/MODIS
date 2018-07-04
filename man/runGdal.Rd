@@ -7,7 +7,7 @@
 runGdal(product, collection = NULL, begin = NULL, end = NULL,
   extent = NULL, tileH = NULL, tileV = NULL, SDSstring = NULL,
   job = NULL, checkIntegrity = TRUE, forceDownload = TRUE,
-  overwrite = FALSE, ...)
+  overwrite = FALSE, maskValue = NULL, ...)
 }
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}.}
@@ -40,6 +40,10 @@ output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
 
 \item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines 
 whether or not to overwrite existing SDS output files.}
+
+\item{maskValue}{\code{numeric}. Value to be excluded when resampling (via gdalwarp -srcnodata argument).
+This allows non-data values, for example water, to be ignored and thus not effect the final data.
+NOTE: this argument will be ignored if the original SDS has a No Data value defined.}
 
 \item{...}{Additional arguments passed to \code{MODIS:::combineOptions()} (eg
 'wait'), see also \code{\link{MODISoptions}}.}

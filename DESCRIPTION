@@ -44,8 +44,7 @@ Imports:
     sf,
     sp,
     stats,
-    utils,
-    XML
+    utils
 ByteCompile: TRUE
 RoxygenNote: 6.0.1
 Suggests: testthat

@@ -59,37 +59,38 @@ stubborn <- function(level = "high") {
 }
 
 
-checksizefun <- function(file,sizeInfo=NULL,flexB=0)
-{
-    # determine reference size
-    if (is.null(sizeInfo))
-    {
-        xmlfile  <- paste0(file,".xml")
-        xmlfile  <- xmlParse(xmlfile)
-        MetaSize <- getNodeSet(xmlfile, "/GranuleMetaDataFile/GranuleURMetaData/DataFiles/DataFileContainer/FileSize" )
-        MetaSize <- as.numeric(xmlValue(MetaSize[[1]])) # expected filesize
-    } else 
-    {
-        MetaSize <- as.numeric(sizeInfo[which(sizeInfo[,1]==basename(file)),2])
-    }
-    
-    if(length(MetaSize)==0)
-    {
-        res  <- list(MetaSize=NULL,FileSize=NULL,isOK=NULL)
-        return(res)
-    }
-    
-    FileSize <- as.numeric(fileSize(file))
-    if (flexB!=0)
-    {
-        isOK <- (MetaSize >= FileSize-flexB & MetaSize <= FileSize+flexB)
-    } else 
-    {
-        isOK <- (MetaSize == FileSize)
-    }
-    res  <- list(MetaSize=MetaSize,FileSize=FileSize,isOK=as.logical(isOK))
-return(res)
-}
+# ## seems to be deprecated or remnant from an early MODIS version
+# checksizefun <- function(file,sizeInfo=NULL,flexB=0)
+# {
+#     # determine reference size
+#     if (is.null(sizeInfo))
+#     {
+#         xmlfile  <- paste0(file,".xml")
+#         xmlfile  <- xmlParse(xmlfile)
+#         MetaSize <- getNodeSet(xmlfile, "/GranuleMetaDataFile/GranuleURMetaData/DataFiles/DataFileContainer/FileSize" )
+#         MetaSize <- as.numeric(xmlValue(MetaSize[[1]])) # expected filesize
+#     } else 
+#     {
+#         MetaSize <- as.numeric(sizeInfo[which(sizeInfo[,1]==basename(file)),2])
+#     }
+#     
+#     if(length(MetaSize)==0)
+#     {
+#         res  <- list(MetaSize=NULL,FileSize=NULL,isOK=NULL)
+#         return(res)
+#     }
+#     
+#     FileSize <- as.numeric(fileSize(file))
+#     if (flexB!=0)
+#     {
+#         isOK <- (MetaSize >= FileSize-flexB & MetaSize <= FileSize+flexB)
+#     } else 
+#     {
+#         isOK <- (MetaSize == FileSize)
+#     }
+#     res  <- list(MetaSize=MetaSize,FileSize=FileSize,isOK=as.logical(isOK))
+# return(res)
+# }
 
 
 #' @describeIn minorFuns Simplifies search for \strong{mapdata}-based extents
@@ -571,21 +572,14 @@ filesUrl <- function(url)
       co = readLines(con)
       close(con)
       
-      # ## extract product folders
-      # sapply(getProduct()[, 2], function(i) {
-      #   regmatches(co, regexpr(paste0(i, "\\.[[:digit:]]{3}"), co))
-      # })
-
       if (inherits(co, "try-error")) return(FALSE)
       
       if (substring(url,1,4)=="http")
       {
-        co     <- XML::htmlTreeParse(co)
-        co     <- co$children[[1]][[2]][[2]]
-        co     <- sapply(co$children, function(el) XML::xmlGetAttr(el, "href"))
-        co     <- as.character(unlist(co))
-        co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
-        fnames <- co[-1] 
+        ## extract product folders
+        fnames = unlist(sapply(getProduct()[, 2], function(i) {
+          regmatches(co, regexpr(paste0(i, "\\.[[:digit:]]{3}"), co))
+        }))
         
       } else 
       {

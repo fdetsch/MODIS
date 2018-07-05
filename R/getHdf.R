@@ -211,8 +211,10 @@ setMethod("getHdf",
         datedirs <- as.Date(onlineInfo$dates)
         datedirs <- datedirs[!is.na(datedirs)]            
         sel <- datedirs
-        us  <- sel >= tLimits$begin & sel <= tLimits$end
         
+        st = correctStartDate(tLimits$begin, sel, product$PRODUCT[z])
+        us = sel >= st & sel <= tLimits$end
+
         if (sum(us,na.rm=TRUE)>0)
         { 
           suboutput <- list()
@@ -346,7 +348,8 @@ setMethod("getHdf",
           names(output)[l] <- todo[u]
         } else 
         {
-          cat(paste0("No files on ftp in date range for: ",todo[u],"\n\n"))
+          warning(paste("No", product$PRODUCT, "files found for the period from"
+                        , tLimits$begin, "to", paste0(tLimits$end, ".")))
         }
       } 
     }

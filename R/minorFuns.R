@@ -59,6 +59,7 @@ stubborn <- function(level = "high") {
 }
 
 
+## seems to be deprecated, possibly remnant from an early MODIS version
 checksizefun <- function(file,sizeInfo=NULL,flexB=0)
 {
     # determine reference size
@@ -68,22 +69,22 @@ checksizefun <- function(file,sizeInfo=NULL,flexB=0)
         xmlfile  <- xmlParse(xmlfile)
         MetaSize <- getNodeSet(xmlfile, "/GranuleMetaDataFile/GranuleURMetaData/DataFiles/DataFileContainer/FileSize" )
         MetaSize <- as.numeric(xmlValue(MetaSize[[1]])) # expected filesize
-    } else 
+    } else
     {
         MetaSize <- as.numeric(sizeInfo[which(sizeInfo[,1]==basename(file)),2])
     }
-    
+
     if(length(MetaSize)==0)
     {
         res  <- list(MetaSize=NULL,FileSize=NULL,isOK=NULL)
         return(res)
     }
-    
+
     FileSize <- as.numeric(fileSize(file))
     if (flexB!=0)
     {
         isOK <- (MetaSize >= FileSize-flexB & MetaSize <= FileSize+flexB)
-    } else 
+    } else
     {
         isOK <- (MetaSize == FileSize)
     }
@@ -578,8 +579,9 @@ filesUrl <- function(url)
 
       if (inherits(co, "try-error")) return(FALSE)
       
-      if (substring(url,1,4)=="http")
-      {
+      ## LP DAAC
+      if (grepl("usgs.gov", url)) {
+        
         co     <- XML::htmlTreeParse(co)
         co     <- co$children[[1]][[2]][[2]]
         co     <- sapply(co$children, function(el) XML::xmlGetAttr(el, "href"))
@@ -587,17 +589,22 @@ filesUrl <- function(url)
         co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
         fnames <- co[-1] 
         
-      } else 
-      {
-        co <- strsplit(co, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
+      ## LAADS  
+      } else {
         
-        co   <- strsplit(co," ")
-        elim <- grep(co,pattern="total")
-        if(length(elim)==1)
-        {
-          co <- co[-elim]
-        }
-        fnames <- basename(sapply(co,function(x){x[length(x)]}))
+        url = gsub("/$", "", url)
+        tmp = utils::read.csv(paste0(url, ".csv"), colClasses = "character")
+        fnames = tmp$name[grep("[^NOTICE]", tmp$name)]
+
+        # co <- strsplit(co, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
+        # 
+        # co   <- strsplit(co," ")
+        # elim <- grep(co,pattern="total")
+        # if(length(elim)==1)
+        # {
+        #   co <- co[-elim]
+        # }
+        # fnames <- basename(sapply(co,function(x){x[length(x)]}))
       }
       
     ## NTSG method; if not used, connection breakdowns are likely to occur  

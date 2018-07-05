@@ -59,3 +59,9 @@ Wherever possible, replace length(grep(...)) == | != | > | < with grepl
 
 filesUrl(): 
 - substitute XML:: calls with regular expression matching? (example code currently commented)
+  <-> needs to be tested for LP DAAC and implemented for LAADS
+
+getHdf():
+- 'server_alt' is 'LAADS' even if opts$MODISserverOrder is "LPDAAC" only
+
+Automated wget, curl check if MODISserverOrder = "LPDAAC"

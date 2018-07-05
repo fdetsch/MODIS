@@ -733,23 +733,33 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                 method <- opts$dlmethod
               }
               
-              # wget extras
+              # login credentials
               nrc = path.expand("~/.netrc")
               if (!file.exists(nrc))
                 stop("~/.netrc file required. Either run lpdaacLogin() or set" 
-                      , " MODISoptions(MODISserverOrder = 'LAADS').")
+                     , " MODISoptions(MODISserverOrder = 'LAADS').")
               
-              ofl = path.expand("~/.cookies.txt")
+              lns = readLines(nrc)
+              crd = sapply(strsplit(lns, " "), "[[", 2)
+              usr = crd[2]; pwd = crd[3]
+              
+              # cookies
+              ofl = file.path(tempdir(), ".cookies.txt")
               if (!file.exists(ofl))
                 jnk = file.create(ofl)
+              on.exit(file.remove(ofl))
               
+              # wget extras
               extra <- if (method == "wget") {
-                paste("--load-cookies", ofl
+                paste("--user", usr, "--password", pwd
+                      , "--load-cookies", ofl
                       , "--save-cookies", ofl
                       , "--keep-session-cookie --no-check-certificate")
-                # curl extras  
+                
+              # curl extras  
               } else {
-                paste('--netrc-file', nrc, '-k -L -c', ofl, '-b', ofl)
+                paste('--user', paste(usr, pwd, sep = ":")
+                      , '-k -L -c', ofl, '-b', ofl)
               }
               
             ## else if server == "NTSG", choose 'wget' as download method  

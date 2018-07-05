@@ -709,11 +709,19 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
             ## adapt 'dlmethod' and 'extra' if server == "LPDAAC"
             if (server == "LPDAAC") {
               if (!opts$dlmethod %in% c("wget", "curl")) {
-                warning("Data download from '", server, 
-                        "' is currently only available through wget and curl.\n", 
-                        "Setting MODISoptions(dlmethod = 'wget') ",  
-                        "(or run MODISoptions(dlmethod = 'curl') to use curl instead) ...\n")
-                method <- "wget"
+
+                cmd = try(system("wget -h", intern = TRUE), silent = TRUE)
+                method = "wget"
+                
+                if (inherits(cmd, "try-error")) {
+                  cmd = try(system("curl -h", intern = TRUE), silent = TRUE)
+                  method = "curl"
+                }
+                
+                if (inherits(cmd, "try-error")) {
+                  stop("Make sure either 'wget' or 'curl' is available in "
+                       , "order to download data from LP DAAC.")
+                }
               } else {
                 method <- opts$dlmethod
               }

@@ -574,24 +574,32 @@ filesUrl <- function(url)
       
       if (inherits(co, "try-error")) return(FALSE)
       
-      if (substring(url,1,4)=="http")
-      {
-        ## extract product folders
-        fnames = unlist(sapply(getProduct()[, 2], function(i) {
-          regmatches(co, regexpr(paste0(i, "\\.[[:digit:]]{3}"), co))
-        }))
+      ## LP DAAC
+      if (grepl("usgs.gov", url)) {
         
-      } else 
-      {
-        co <- strsplit(co, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
+        co     <- XML::htmlTreeParse(co)
+        co     <- co$children[[1]][[2]][[2]]
+        co     <- sapply(co$children, function(el) XML::xmlGetAttr(el, "href"))
+        co     <- as.character(unlist(co))
+        co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
+        fnames <- co[-1] 
+
+      ## LAADS  
+      } else {
         
-        co   <- strsplit(co," ")
-        elim <- grep(co,pattern="total")
-        if(length(elim)==1)
-        {
-          co <- co[-elim]
-        }
-        fnames <- basename(sapply(co,function(x){x[length(x)]}))
+        url = gsub("/$", "", url)
+        tmp = utils::read.csv(paste0(url, ".csv"), colClasses = "character")
+        fnames = tmp$name[grep("[^NOTICE]", tmp$name)]
+
+        # co <- strsplit(co, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
+        # 
+        # co   <- strsplit(co," ")
+        # elim <- grep(co,pattern="total")
+        # if(length(elim)==1)
+        # {
+        #   co <- co[-elim]
+        # }
+        # fnames <- basename(sapply(co,function(x){x[length(x)]}))
       }
       
     ## NTSG method; if not used, connection breakdowns are likely to occur  
@@ -720,23 +728,33 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                 method <- opts$dlmethod
               }
               
-              # wget extras
+              # login credentials
               nrc = path.expand("~/.netrc")
               if (!file.exists(nrc))
                 stop("~/.netrc file required. Either run lpdaacLogin() or set" 
-                      , " MODISoptions(MODISserverOrder = 'LAADS').")
+                     , " MODISoptions(MODISserverOrder = 'LAADS').")
               
-              ofl = path.expand("~/.cookies.txt")
+              lns = readLines(nrc)
+              crd = sapply(strsplit(lns, " "), "[[", 2)
+              usr = crd[2]; pwd = crd[3]
+              
+              # cookies
+              ofl = file.path(tempdir(), ".cookies.txt")
               if (!file.exists(ofl))
                 jnk = file.create(ofl)
+              on.exit(file.remove(ofl))
               
+              # wget extras
               extra <- if (method == "wget") {
-                paste("--load-cookies", ofl
+                paste("--user", usr, "--password", pwd
+                      , "--load-cookies", ofl
                       , "--save-cookies", ofl
                       , "--keep-session-cookie --no-check-certificate")
-                # curl extras  
+                
+              # curl extras  
               } else {
-                paste('--netrc-file', nrc, '-k -L -c', ofl, '-b', ofl)
+                paste('--user', paste(usr, pwd, sep = ":")
+                      , '-k -L -c', ofl, '-b', ofl)
               }
               
             ## else if server == "NTSG", choose 'wget' as download method  

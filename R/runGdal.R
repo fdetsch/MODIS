@@ -63,7 +63,7 @@
 #' \code{dataFormat}, default "GeoTiff" (\code{\link{MODISoptions}}).\cr
 #' 
 #' @author 
-#' Matteo Mattiuzzi, Florian Detsch
+#' Matteo Mattiuzzi, Florian Detsch, Matt Forrest
 #' 
 #' @seealso 
 #' \code{\link{getHdf}}, \code{\link{runMrt}}.

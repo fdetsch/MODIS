@@ -14,7 +14,7 @@
 #' \cr
 #' \emph{Maintainer:} Florian Detsch \email{fdetsch@@web.de}
 #'
-#' @import bitops mapdata parallel ptw raster rgdal sp
+#' @import bitops mapdata parallel ptw raster rgdal sp XML
 #' @importFrom curl curl
 #' @importFrom devtools install_github
 #' @importFrom grDevices dev.new dev.off png

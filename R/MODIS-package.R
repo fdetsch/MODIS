@@ -24,7 +24,7 @@
 #' @importFrom maptools map2SpatialPolygons map2SpatialLines checkPolygonsHoles
 #' @importFrom methods as new slot
 #' @importFrom rgeos gBuffer gIsValid
-#' @importFrom sf st_as_sf
+#' @importFrom sf st_as_sf st_bbox
 #' @importFrom stats na.omit smooth.spline
 #' @importFrom utils capture.output download.file installed.packages read.csv read.table vi write.csv write.table
 #' @rawNamespace if (.Platform$OS.type=="windows") importFrom(utils,shortPathName)

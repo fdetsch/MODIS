@@ -9,7 +9,10 @@
 #' vertical tile number(s) of the 
 #' \href{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}{MODIS Sinusoidal grid}
 #' (e.g., \code{tileH = 1:5}). If specified, no cropping is performed and the 
-#' full tile(s) (if more than one then also mosaicked) is (are) processed!  
+#' full tile(s) (if more than one then also mosaicked) is (are) processed! 
+#' @param ... Additional arguments passed to \code{\link{MODISoptions}}. Here, 
+#' only 'outProj' and 'pixelSize' are relevant, and this only if 'x' is an 
+#' \code{Extent} or \code{bbox}.
 #' 
 #' @return 
 #' A \code{MODISextent} object.
@@ -18,7 +21,8 @@
 #' Matteo Mattiuzzi, Florian Detsch
 #' 
 #' @seealso 
-#' \code{\link{extent}}, \code{\link{map}}, \code{\link{search4map}}.
+#' \code{\link{extent}}, \code{\link[sf]{st_bbox}}, \code{\link{map}}, 
+#' \code{\link{search4map}}.
 #' 
 #' @note 
 #' \strong{MODIS} does no longer support the tile identification and automated 
@@ -45,10 +49,10 @@
 #'   \code{Raster*} comes with no valid CRS, 
 #'   \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
 #'   \cr
-#'   \code{Extent}:\cr
-#'   \tab Boundary coordinates from \code{Extent} objects are assumed to be in 
-#'   \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as well as 
-#'   such objects have no projection information attached.\cr
+#'   \code{Extent}, \code{bbox}:\cr
+#'   \tab Boundary coordinates from \code{Extent} and \code{bbox} objects are 
+#'   assumed to be in \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} 
+#'   as such objects have no projection information attached.\cr
 #'   \cr
 #'   Other:\cr
 #'   \tab \code{Spatial}, \code{sf}, or \code{map} object.
@@ -80,11 +84,12 @@
 #' rst3 <- projectExtent(rst1, crs = "+init=epsg:32633")
 #' getTile(rst3)
 #' 
-#' # ex 6: Raster* without CRS or, alternatively, Extent -> treated as EPSG:4326 ############
+#' # ex 6: Raster* without CRS or, alternatively, Extent or bbox --> treated as EPSG:4326 ############
 #' mat2 <- matrix(seq(180 * 360), byrow = TRUE, ncol = 360)
-#' rst2 <- raster(mat2)
+#' rst2 <- raster(mat2, xmn = -180, xmx = 180, ymn = -90, ymx = 90)
 #' getTile(rst2)
 #' getTile(extent(rst1))
+#' getTile(sf::st_bbox(franconia))
 #' 
 #' # ex 7: map names as returned by search4map() ############
 #' getTile("Austria")
@@ -101,7 +106,7 @@
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
+getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
   
   # if 'x' is a Raster*/Spatial* and has a different CRS, the information is added here
   target <- NULL  
@@ -192,6 +197,8 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
 
     # this needs to be done in order to use rgdal:::over to intersect geometies 
     } else if (inherits(x, c("Raster", "Spatial"))) {
+      
+      # if coord. ref. is missing, set to EPSG:4326
       target <- list(outProj = raster::projection(x)
                      , extent = raster::extent(x)
                      , pixelSize = NULL) 
@@ -202,12 +209,12 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
       # if required, spTransform() extent object
       if (!raster::compareCRS(x, prj) & !is.na(target$outProj)) {
         x <- if (inherits(x, "Raster")) {
-          raster::extent(raster::projectExtent(x, prj))
+          raster::projectExtent(x, prj)
         } else {
           sp::spTransform(x, prj)
         }
       } else if (is.na(target$outProj)) {
-        raster::projection(x) <- prj
+        target$outProj <- prj@projargs
       }
       
     # 'sf' method  
@@ -219,12 +226,23 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
       if (!raster::compareCRS(target$outProj, prj)) {
         x <- sf::st_transform(x, prj@projargs)
       }
+
+    # 'Extent' | 'bbox' method  
+    } else if (inherits(x, c("Extent", "bbox"))) {
+      
+      if (inherits(x, "bbox")) {
+        tmp = as.numeric(x)[c(1, 3, 2, 4)]
+        x = raster::extent(tmp)
+      }
+      
+      opts = combineOptions(...)
+      spy = as(x, "SpatialPolygons"); sp::proj4string(spy) = prj@projargs
+      spy = sp::spTransform(spy, sp::CRS(opts$outProj))
+      
+      target <- list(outProj = opts$outProj
+                     , extent = raster::extent(spy)
+                     , pixelSize = opts$pixelSize)
     }
-    
-    # if (inherits(x, 'Extent')) {
-    #   x <- as(x, 'SpatialPolygons')
-    #   sp::proj4string(x) <- prj
-    # }
     
     if (inherits(x, "sf"))
       x <- methods::as(x, "Spatial")

@@ -4,10 +4,12 @@ Bugfixes:
 
   * Curl-based download from LP DAAC.
   * "Error: object 'tid' not found" from climate modeling grids (CMG) not being identified as such, but treated as tiled products.
+  * Wrong dimension and resolution of images created by runGdal() when working with whole tiles instead of spatial subsets (i.e. 'tileH,tileV' specified; see <https://github.com/MatMatt/MODIS/issues/46>).
   
 Changes:
 
-  * When 'extent' is a country name, the target projection of layers extracted through runGdal() is now taken from MODISoptions() rather than hard-coded EPSG:4326.
+  * Adjustments related to LAADS transition from FTP to HTTPS.
+  * When 'extent' is a country name, 'outProj' is now taken from MODISoptions() rather than hard-coded EPSG:4326.
   * If 'begin' falls in between two composite release dates, it is set back to start date of preceding release (see <https://github.com/MatMatt/MODIS/issues/43>).
   
 

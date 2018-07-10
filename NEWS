@@ -8,6 +8,7 @@ Bugfixes:
 Changes:
 
   * When 'extent' is a country name, the target projection of layers extracted through runGdal() is now taken from MODISoptions() rather than hard-coded EPSG:4326.
+  * If 'begin' falls in between two composite release dates, it is set back to start date of preceding release (see <https://github.com/MatMatt/MODIS/issues/43>).
   
 
 MODIS 1.1.2

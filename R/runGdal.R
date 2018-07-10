@@ -235,7 +235,7 @@ runGdal <- function(product, collection=NULL,
         
         sel     <- as.Date(avDates)
         
-        st = correctStartDate(tLimits$begin, sel, prodname)
+        st = correctStartDate(tLimits$begin, sel, prodname, quiet = opts$quiet)
         us = sel >= st & sel <= tLimits$end
         
         if (sum(us,na.rm=TRUE)>0)

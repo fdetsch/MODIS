@@ -1027,7 +1027,7 @@ skipDuplicateProducts = function(x, quiet = FALSE) {
 
 ## if required, reset 'begin' of composite product to corresponding release 
 ## date, see https://github.com/MatMatt/MODIS/issues/43
-correctStartDate = function(begin, avDates, product) {
+correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   
   ## check if any older files exist  
   before = avDates < begin
@@ -1045,8 +1045,10 @@ correctStartDate = function(begin, avDates, product) {
     # if time difference to preceding date is shorter than release cycle, 
     # reset 'begin' to this date
     if (difftime(begin, cdt, units = "days") < rls) {
-      warning("Resetting 'begin' to start of corresponding ", product, " "
-              , rls, "-day composite period (", cdt, ").")
+      if (!quiet) {
+        warning("Resetting 'begin' to start of corresponding ", product, " "
+                , rls, "-day composite period (", cdt, ").")
+      }
       
       begin = cdt
     }

@@ -212,7 +212,8 @@ setMethod("getHdf",
         datedirs <- datedirs[!is.na(datedirs)]            
         sel <- datedirs
         
-        st = correctStartDate(tLimits$begin, sel, product$PRODUCT[z])
+        st = correctStartDate(tLimits$begin, sel, product$PRODUCT[z]
+                              , quiet = opts$quiet)
         us = sel >= st & sel <= tLimits$end
 
         if (sum(us,na.rm=TRUE)>0)

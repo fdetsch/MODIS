@@ -374,9 +374,14 @@ setMethod("getHdf",
             if (inherits(HdfName, "list"))
               HdfName <- unlist(HdfName)
             
-            HdfName <- basename(HdfName)  
+            HdfName <- basename(HdfName)
             
             dates <- sapply(HdfName, function(i) {
+
+              # if missing, add .hdf file extension
+              if (!grepl(".hdf$", i, ignore.case = TRUE)) {
+                i = paste0(i, ".hdf")
+              }              
               
               path <- genString(i, opts = opts)
               path$localPath <- setPath(path$localPath)
@@ -387,7 +392,7 @@ setMethod("getHdf",
               if(checkIntegrity)
                 jnk <- doCheckIntegrity(i, opts = opts)
               
-              paste0(path$local, "/", i)
+              gsub("//", "/", paste0(path$local, "/", i))
             })
             
             ## return output

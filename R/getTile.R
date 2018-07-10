@@ -106,12 +106,34 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
   # if 'x' is a Raster*/Spatial* and has a different CRS, the information is added here
   target <- NULL  
   
+  ## if inputs are missing, select tile(s) interactively
+  if (all(sapply(c(x, tileH, tileV), is.null))) {
+    x = mapSelect()
+    tileH = x$h; tileV = x$v
+  }
+  
+  # ## recycle tile lengths to enable creation of tile pairs
+  # if ((len_h <- length(tileH)) != (len_v <- length(tileV))) {
+  #   if (len_h < len_v) {
+  #     if (len_v %% len_h > 0) {
+  #       stop("'tileV' is not a multiple of 'tileH'.")
+  #     }
+  #     tileH = rep(tileH, len_v / len_h)
+  #   } else {
+  #     if (len_h %% len_v > 0) {
+  #       stop("'tileH' is not a multiple of 'tileV'.")
+  #     }
+  #     tileV = rep(tileV, len_h / len_v)
+  #   }
+  # }
+  
   if (all(!is.null(tileH), !is.null(tileV))) {
     if (!is.numeric(tileH)) tileH <- as.numeric(tileH)
     if (!is.numeric(tileV)) tileV <- as.numeric(tileV)
     
-    tt <- tiletable[(tiletable$ih %in% tileH) & 
+    tt <- tiletable[(tiletable$ih %in% tileH) &
                       (tiletable$iv %in% tileV) & (tiletable$xmin >- 999), ]
+
     x <- raster::extent(c(min(tt$xmin), max(tt$xmax), min(tt$ymin), max(tt$ymax)))
     
     tt$iv <- sprintf("%02d", tt$iv)
@@ -138,13 +160,8 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
     fromMap <- FALSE
     prj <- sp::CRS("+init=epsg:4326")
 
-    # if 'x' is null, do mapSelect. Output class extent. 
-    if (is.null(x)) {
-      x <- mapSelect()
-    }  
-    
     # filename string to Raster/vector conversion
-    if(inherits(x,"character") & length(x)==1) # lengh>1 it should be only a mapname for maps:::map
+    if(inherits(x,"character") & length(x)==1) # length>1 it should be only a mapname for maps::map
     {
       if (raster::extension(x)=='.shp')
       {
@@ -193,7 +210,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL) {
         raster::projection(x) <- prj
       }
       
-      # sf method  
+    # 'sf' method  
     } else if (inherits(x, "sf")) {
       target <- list(outProj = sf::st_crs(x)$proj4string
                      , extent = raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])

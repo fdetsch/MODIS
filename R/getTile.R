@@ -164,6 +164,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
     
     fromMap <- FALSE
     prj <- sp::CRS("+init=epsg:4326")
+    oprj = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
 
     # filename string to Raster/vector conversion
     if(inherits(x,"character") & length(x)==1) # length>1 it should be only a mapname for maps::map
@@ -237,7 +238,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       
       opts = combineOptions(...)
       spy = as(x, "SpatialPolygons"); sp::proj4string(spy) = prj@projargs
-      spy = sp::spTransform(spy, sp::CRS(opts$outProj))
+      spy = sp::spTransform(spy, if (opts$outProj == "asIn") oprj else sp::CRS(opts$outProj))
       
       target <- list(outProj = opts$outProj
                      , extent = raster::extent(spy)

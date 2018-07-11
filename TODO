@@ -69,3 +69,7 @@ Automated wget, curl check if MODISserverOrder = "LPDAAC"
 General solution for "//"
 
 All files in 'external' required (eg. EPSG:4326 world grid, also included in MODIS_TilesPolys.RData)
+
+Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs
+
+MODIS:::combineOptions() doesn't work if MODIS isn't loaded

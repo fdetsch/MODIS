@@ -167,7 +167,8 @@ runGdal <- function(product, collection=NULL,
       extent = if (product$TYPE[1] == "Tile" | 
                    (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & 
                     product$TYPE[1]=="CMG")) {
-        getTile(x = extent, tileH = tileH, tileV = tileV)
+        getTile(x = extent, tileH = tileH, tileV = tileV
+                , outProj = opts$outProj, pixelSize = opts$pixelSize)
       } else {
         NULL
       }
@@ -340,20 +341,71 @@ runGdal <- function(product, collection=NULL,
 
                 } 
                 
+                ## system independent arguments passed to gdalwarp
+                cmd <- paste0(opts$gdalPath,"gdalwarp")
+                ofile <- paste0(outDir, '/', outname)
+                
                 # unix
                 if (.Platform$OS=="unix") {
                   
                   ifile <- paste0(gdalSDS,collapse="' '")
-                  ofile <- paste0(outDir, '/', outname)
                   
                   if (!file.exists(ofile) | overwrite) {
-                    cmd <- paste0(opts$gdalPath,
-                                  "gdalwarp",
+                    
+                    ## if required, adjust pixel size and/or target extent
+                    if (is.null(tr) | (!is.null(extent@target) &
+                                       gsub("-t_srs", "-s_srs", t_srs) == s_srs)) {
+                      
+                      # extract whole tile
+                      cmd2 = paste0(cmd,
+                                    s_srs,
+                                    s_srs,
+                                    of,
+                                    cp,
+                                    bs,
+                                    rt,
+                                    q,
+                                    srcnodata,
+                                    dstnodata,
+                                    ' -overwrite',
+                                    ' -multi',
+                                    " \'", ifile,"\'",
+                                    " ",
+                                    ofile)
+                        
+                      cmd2 <- gsub(x=cmd2,pattern="\"",replacement="'")
+                      system(cmd2)
+
+                      # if '-ts' is missing, convert 'asIn' to actual pixel size
+                      tmp = raster::raster(ofile)  
+                      
+                      if (is.null(tr)) {
+                        if (gsub("-t_srs", "-s_srs", t_srs) != s_srs) {
+                          tmp = raster::projectExtent(tmp, strsplit(t_srs, "'|\"")[[1]][2])
+                        } 
+                        
+                        rsl = raster::res(tmp)
+                        tr = paste(" -tr", rsl[1], rsl[2])
+                      }
+                      
+                      # if 'outProj == "asIn"', make sure input and output grid 
+                      # alignment is identical
+                      if (!is.null(extent@target) &
+                          gsub("-t_srs", "-s_srs", t_srs) == s_srs) {
+                        tmp = raster::crop(tmp, extent@target$extent, snap = "out")
+                        te = paste(" -te", paste(raster::extent(tmp)[c(1, 3, 2, 4)], collapse = " "))
+                      }
+                      
+                      rm(tmp)
+                    }
+                    
+                    ## extract layers
+                    cmd <- paste0(cmd,
                                   s_srs,
                                   t_srs,
                                   of,
                                   if (!is.null(extent@target)) te else NULL,
-                                  tr,
+                                  tr, " -tap",
                                   cp,
                                   bs,
                                   rt,
@@ -373,30 +425,70 @@ runGdal <- function(product, collection=NULL,
                 # windows  
                 } else {
                   
-                  cmd <- paste0(opts$gdalPath,"gdalwarp")
-               
-                  ofile <- paste0(outDir, '/', outname)      
                   ifile <- paste0(gdalSDS,collapse='" "')
                   
-                  # GDAL < 1.8.0 doesn't support ' -overwrite' 
                   if (!file.exists(ofile) | overwrite) {
                     
-                    if(file.exists(ofile))
-                      invisible(file.remove(ofile))
+                    ## if required, adjust pixel size and/or target extent
+                    if (is.null(tr) | (!is.null(extent@target) &
+                                       gsub("-t_srs", "-s_srs", t_srs) == s_srs)) {
+                      
+                      # extract whole tile
+                      shell(
+                        paste0(cmd,
+                               s_srs,
+                               s_srs,
+                               of,
+                               cp,
+                               bs,
+                               rt,
+                               q,
+                               srcnodata,
+                               dstnodata,
+                               ' -overwrite',
+                               ' -multi',
+                               ' \"', ifile,'\"',
+                               ' \"', ofile,'\"')
+                      )
+                      
+                      # if '-ts' is missing, convert 'asIn' to actual pixel size
+                      tmp = raster::raster(ofile)  
+                      
+                      if (is.null(tr)) {
+                        if (gsub("-t_srs", "-s_srs", t_srs) != s_srs) {
+                          tmp = raster::projectExtent(tmp, strsplit(t_srs, "'|\"")[[1]][2])
+                        } 
+                        
+                        rsl = raster::res(tmp)
+                        tr = paste(" -tr", rsl[1], rsl[2])
+                      }
+                      
+                      # if 'outProj == "asIn"', make sure input and output grid 
+                      # alignment is identical
+                      if (!is.null(extent@target) &
+                          gsub("-t_srs", "-s_srs", t_srs) == s_srs) {
+                        tmp = raster::crop(tmp, extent@target$extent, snap = "out")
+                        te = paste(" -te", paste(raster::extent(tmp)[c(1, 3, 2, 4)], collapse = " "))
+                      }
+                      
+                      rm(tmp)
+                    }
                     
+                    ## extract layers
                     shell(
                       paste0(cmd,
                              s_srs,
                              t_srs,
                              of,
                              if (!is.null(extent@target)) te else NULL,
-                             tr,
+                             tr, " -tap",
                              cp,
                              bs,
                              rt,
                              q,
                              srcnodata,
                              dstnodata,
+                             ' -overwrite',
                              ' -multi',
                              ' \"', ifile,'\"',
                              ' \"', ofile,'\"')

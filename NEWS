@@ -9,8 +9,9 @@ Bugfixes:
 Changes:
 
   * Adjustments related to LAADS transition from FTP to HTTPS.
-  * When 'extent' is a country name, 'outProj' is now taken from MODISoptions() rather than hard-coded EPSG:4326.
+  * When 'extent' is a country name, 'outProj' is taken from MODISoptions() rather than hard-coded EPSG:4326.
   * If 'begin' falls in between two composite release dates, it is set back to start date of preceding release (see <https://github.com/MatMatt/MODIS/issues/43>).
+  * When working with Extent (raster) or bbox objects (sf) and 'outProj' and 'pixelSize' are "asIn", the output grid and resolution is aligned with the original MODIS Sinusoidal grid. 
   
 
 MODIS 1.1.2

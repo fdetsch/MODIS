@@ -405,7 +405,7 @@ runGdal <- function(product, collection=NULL,
                                   t_srs,
                                   of,
                                   if (!is.null(extent@target)) te else NULL,
-                                  tr, " -tap",
+                                  tr, 
                                   cp,
                                   bs,
                                   rt,
@@ -463,7 +463,7 @@ runGdal <- function(product, collection=NULL,
                         tr = paste(" -tr", rsl[1], rsl[2])
                       }
                       
-                      # if 'outProj == "asIn"', make sure input and output grid 
+                      # if 'outProj == "asIn"', make sure input and output grid
                       # alignment is identical
                       if (!is.null(extent@target) &
                           gsub("-t_srs", "-s_srs", t_srs) == s_srs) {
@@ -481,7 +481,7 @@ runGdal <- function(product, collection=NULL,
                              t_srs,
                              of,
                              if (!is.null(extent@target)) te else NULL,
-                             tr, " -tap",
+                             tr, 
                              cp,
                              bs,
                              rt,

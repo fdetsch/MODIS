@@ -24,16 +24,16 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
   } else rm(inp)
 
   # Check server
-  server = if (is.null(server)) {
-    unlist(product$SOURCE)[1]
+  if (is.null(server)) {
+    server = unlist(product$SOURCE)[1]
     
-  } else  if (!server %in% (srv <- unlist(product$SOURCE))) {
+  } else if (!server %in% (srv <- unlist(product$SOURCE))) {
     if (!opts$quiet) {
       warning(paste0(product$PRODUCT, ".", product$CCC), " is not available from "
               , server, ", retrieving structure from ", srv[1], " instead.")
     }
     
-    srv[1]
+    server = srv[1]
   }
   
   dates <- transDate(begin=begin,end=end)

@@ -7,25 +7,35 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
   opts     <- combineOptions(...)
   sturheit <- stubborn(level = opts$stubbornness)
 
-  if (is.null(server)) {
-    server = opts$MODISserverOrder[1]
-  }
-  
   setPath(opts$auxPath, ask=FALSE)
+  
   #########################
-  # Check Platform and product
+  # Check product 
   inp = product
   product <- getProduct(x=product,quiet=TRUE)
+  
+  # Check collection
+  product$CCC = getCollection(product = product, collection = collection
+                              , forceCheck = forceCheck) 
   
   if (is.null(product)) {
     stop("Product '", inp, "' not recognized. See getProduct() for a list of "
          , "available products.")
   } else rm(inp)
-    
-  # Check collection
-  product$CCC = getCollection(product = product, collection = collection
-                              , forceCheck = forceCheck) 
 
+  # Check server
+  server = if (is.null(server)) {
+    unlist(product$SOURCE)[1]
+    
+  } else  if (!server %in% (srv <- unlist(product$SOURCE))) {
+    if (!opts$quiet) {
+      warning(paste0(product$PRODUCT, ".", product$CCC), " is not available from "
+              , server, ", retrieving structure from ", srv[1], " instead.")
+    }
+    
+    srv[1]
+  }
+  
   dates <- transDate(begin=begin,end=end)
   todoy <- format(as.Date(format(Sys.time(),"%Y-%m-%d")),"%Y%j")
   ########################

@@ -1016,7 +1016,7 @@ skipDuplicateProducts = function(x, quiet = FALSE) {
   if (x %in% dpl$product) {
     if (!quiet) {
       warning("Processing ", x, " only. Use regular expressions (eg. '"
-              , x, "*') to select more than one product.")
+              , x, ".*') to select more than one product.")
     }
     
     x = paste0("^", x, "$")

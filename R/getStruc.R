@@ -14,15 +14,15 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
   inp = product
   product <- getProduct(x=product,quiet=TRUE)
   
-  # Check collection
-  product$CCC = getCollection(product = product, collection = collection
-                              , forceCheck = forceCheck) 
-  
   if (is.null(product)) {
     stop("Product '", inp, "' not recognized. See getProduct() for a list of "
          , "available products.")
   } else rm(inp)
 
+  # Check collection
+  product$CCC = getCollection(product = product, collection = collection
+                              , forceCheck = forceCheck) 
+  
   # Check server
   if (is.null(server)) {
     server = unlist(product$SOURCE)[1]

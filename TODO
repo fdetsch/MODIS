@@ -28,7 +28,7 @@ runGdal()
 - speed up when downloaded hdf / processed tif files are already present
   
 getTile()
-- add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV arelady works like that) 
+- add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV already works like that) 
 - interactive polygon drawing via mapedit
   
 detectBitInfo()
@@ -48,10 +48,8 @@ $`2001-06-26`
 character(0)
 runGdal() transforms extracted layers to 'outProj' other than specified in MODISoptions() if 'extent' is a shapefile <-> maybe optional?
 Download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
-Is 'quiet = ...' etc. specified in runGdal() or getHdf() passed on to MODISoptions? If no, this could be implemented as a temporary change of options (ie. 'save = FALSE')
-Despite included in MODISoptions(), 'quiet' also often appears as a separate argument <-> necessary?
 
-Automated reset of user-specified dates to 16-day composite periods, see https://github.com/MatMatt/MODIS/issues/43
+Despite included in MODISoptions(), 'quiet' also often appears as a separate argument <-> necessary?
 
 MODIS:::genString("MOD13A2.006") creates empty 'localPath' folder, eg. C:/Users/florianD/Data/MODIS_~1/MODIS/MOD13A2.006/
 
@@ -63,6 +61,7 @@ filesUrl():
 
 getHdf():
 - 'server_alt' is 'LAADS' even if opts$MODISserverOrder is "LPDAAC" only
+- always tries to get newest collection, see e.g. #50
 
 Automated wget, curl check if MODISserverOrder = "LPDAAC"
 
@@ -73,3 +72,7 @@ All files in 'external' required (eg. EPSG:4326 world grid, also included in MOD
 Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs
 
 MODIS:::combineOptions() doesn't work if MODIS isn't loaded
+
+outProj          =  asIn  (derived from Raster*/Spatial* object)
+pixelSize        =  asIn  (derived from Raster* object)
+<-> even if Extent, bbox is specified; maybe add additional slot on 'origin' to getTile() object

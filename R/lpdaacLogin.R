@@ -28,34 +28,21 @@
 #' lpdaacLogin()
 #' }
 #' 
-#' @export lpdaacLogin
-#' @name lpdaacLogin
+#' @name lpdaacLogin-deprecated
+#' @usage lpdaacLogin(server = "LPDAAC")     
+#' @seealso \code{\link{MODIS-deprecated}}  
+#' @keywords internal
+NULL
+
+#' @rdname MODIS-deprecated
+#' @section \code{lpdaacLogin}:
+#' For \code{lpdaacLogin}, use \code{\link{EarthdataLogin}} instead.
+#' 
+#' @export 
 lpdaacLogin <- function(server = "LPDAAC") {
   
-  ## create file
-  cat("Creating hidden file '~/.netrc' with login credentials...\n")
-  netfile <- file("~/.netrc", open = "wt")
+  .Deprecated("EarthdataLogin")
   
-  ## server (in the long run, we should maybe create a look-up table for that)
-  machine <- if (server == "LPDAAC") {
-    "urs.earthdata.nasa.gov"
-  } else {
-    stop("Server '", server, "' currently not supported.\n")
-  }
-  
-  write(paste("machine", machine), netfile)
-  
-  ## username
-  x <- readline("Insert your Earthdata USERNAME: ")  
-  write(paste("login", x), netfile)
-  
-  ## password
-  x <- readline("Insert your Earthdata PASSWORD: ")  
-  write(paste("password", x), netfile)
-  
-  ## change permissions
-  close(netfile) 
-  Sys.chmod('~/.netrc', mode = "600", use_umask = TRUE)
-  
-  return(invisible())
+  server = ifelse(server %in% c("LPDAAC", "LAADS"), "Earthdata", server)
+  return(EarthdataLogin(service = server))
 }

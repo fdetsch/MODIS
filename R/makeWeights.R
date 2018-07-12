@@ -208,12 +208,12 @@ makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', 
             v  <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
             ve <- dim(v)
 
-            v[v==0] <- NA    
+            #v[v==0] <- NA    
             
             # decode bits
             v <- bitAnd(bitShiftR(v, bitShift ), bitMask)
             
-            v[is.na(v)] <- bitMask
+            #v[is.na(v)] <- bitMask
                     
             if (!is.null(threshold))
             {
@@ -241,12 +241,12 @@ makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', 
     {
         ve <- dim(x)
         
-        x[x==0] <- NA
+        #x[x==0] <- NA
 
         # decode bits
         x <- bitAnd(bitShiftR(x, bitShift ), bitMask)
 
-        x[is.na(x)] <- bitMask        
+        #x[is.na(x)] <- bitMask        
 
         if (!is.null(threshold))
         {

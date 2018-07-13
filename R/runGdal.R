@@ -278,10 +278,12 @@ runGdal <- function(product, collection=NULL,
                 outname <- paste0(paste0(strsplit(basename(files[1]),"\\.")[[1]][1:2],collapse="."),
                    ".", gsub(SDS[[1]]$SDSnames[i],pattern=" ",replacement="_"), extension)
                   
-                ## system independent arguments required for gdal operations
+                ## system independent arguments and files required for gdal operations
                 cmd <- paste0(opts$gdalPath, "gdalwarp")
                 ofile <- paste0(outDir, '/', outname)
+                
                 rpl = system.file("gdal", "val_repl.py", package = "MODIS")
+                Sys.chmod(rpl, mode = "0700", use_umask = TRUE)
                 
                 gdalSDS <- sapply(SDS,function(x){x$SDS4gdal[i]}) # get names of layer 'o' of all files (SDS)
                 
@@ -385,6 +387,9 @@ runGdal <- function(product, collection=NULL,
                     
                     
                     ### 'maskValue' ----
+
+                    ## dummy file
+                    dmy = tempfile("val_repl", tmpdir = raster::tmpDir(), fileext = extension)
                     
                     if(!is.null(maskValue)) {
                       
@@ -401,8 +406,6 @@ runGdal <- function(product, collection=NULL,
                       }
                       
                       # if No Data Value is not already defined 
-                      dmy = tempfile("val_repl", tmpdir = raster::tmpDir(), fileext = extension)
-                      
                       if (is.null(srcnodata)) {
                         nodataValue = maskValue[1]
                         
@@ -441,6 +444,8 @@ runGdal <- function(product, collection=NULL,
                       }
                       
                       masked = file.exists(dmy)
+                    } else {
+                      masked = FALSE
                     }
                     
                     ## extract layers
@@ -529,6 +534,9 @@ runGdal <- function(product, collection=NULL,
                     
                     ### 'maskValue' ----
                     
+                    ## dummy file
+                    dmy = tempfile("val_repl", tmpdir = raster::tmpDir(), fileext = extension)
+                    
                     if (!is.null(maskValue)) {
                       
                       # check numeric
@@ -545,8 +553,6 @@ runGdal <- function(product, collection=NULL,
                       
                       
                       # if No Data Value is not already defined 
-                      dmy = tempfile("val_repl", tmpdir = raster::tmpDir(), fileext = extension)
-                      
                       if (is.null(srcnodata)) {
                         nodataValue = maskValue[1]
                         
@@ -583,6 +589,8 @@ runGdal <- function(product, collection=NULL,
                       }
                       
                       masked = file.exists(dmy)
+                    } else {
+                      masked = FALSE
                     }
                     
                     ## extract layers

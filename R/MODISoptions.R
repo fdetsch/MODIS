@@ -226,7 +226,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   {
     outDirPath <- correctPath(outDirPath)
     
-    if (file.exists(opt$outDirPath))
+    if (!dir.exists(outDirPath))
     {
       message("'outDirPath' does not exist and will be created in '"
               , normalizePath(outDirPath, "/", FALSE), "'.")
@@ -240,7 +240,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     opt$outDirPath <- outDirPath
   } else
   {
-    if (length(list.dirs(opt$outDirPath,recursive=FALSE))==0)
+    if (!dir.exists(opt$outDirPath))
     {
       if(!isTRUE(options()$MODIS_outDirPathWarned))
       {

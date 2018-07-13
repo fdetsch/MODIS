@@ -5,9 +5,9 @@
 #' the information from an internal database and not all products are available.   
 #' 
 #' @param product \code{character}, see \code{\link{getProduct}}.
-#' @param what \code{character}. Parameter name, i.e. 
-#' \url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}, 
-#' (TABLE 2: MOD13Q1 VI Quality; Long Name).
+#' @param what \code{character}. Parameter name, e.g. 'VI Quality' for all MOD13
+#' products (see \href{MODIS Vegetation Index User's Guide}{https://lpdaac.usgs.gov/sites/default/files/public/product_documentation/mod13_user_guide.pdf}, 
+#' Table 5, Parameter Name).
 #' @param warn \code{logical}, whether or not to throw warning messages.
 #' 
 #' @return 

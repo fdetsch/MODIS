@@ -314,7 +314,7 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
   options(warn=-1)
   on.exit(options(warn=iw))
 
-  opt <- combineOptions(...)
+  opt <- combineOptions(checkTools = FALSE, ...)
      
   outfile <- paste0(opt$outDirPath,".auxiliaries/gdalOutDriver.RData")
   

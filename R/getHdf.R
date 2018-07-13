@@ -164,16 +164,26 @@ setMethod("getHdf",
         ## ensure compatibility with servers other than those specified in 
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
         server <- product$SOURCE[[z]]
-        
-        if (length(server) > 1) {
-          # alternative server, i.e. when priority is not reachable
-          server_alt <- server[which(server != opts$MODISserverOrder[1])]
-          # priority server from which structure will be tried to retrieve first
-          server <- server[which(server == opts$MODISserverOrder[1])]
-        } else {
-          opts$MODISserverOrder <- server
+
+        ## if product is not available from desired server, throw error        
+        if (!any(opts$MODISserverOrder %in% server)) {
+          stop(paste(product$PRODUCT, product$CCC, sep = ".")
+               , " is available from "
+               , paste(server, collapse = " and ")
+               , " only, please adjust 'MODISoptions(MODISserverOrder = ...)' accordingly.")
         }
         
+        ## align with servers specified in 'MODISserverOrder' -> idenfify 
+        ## priority and, if applicable, alternative download server
+        server = unlist(sapply(opts$MODISserverOrder, function(i) {
+          grep(i, server, value = TRUE)
+        }))
+        
+        server_alt = ifelse(length(server) > 1, server[2], NA)
+        server = server[1]
+        
+        opts$MODISserverOrder = as.character(na.omit(c(server, server_alt)))
+
         ## this time, suppress console output from `getStruc`
         jnk <- capture.output(
           onlineInfo <- suppressWarnings(
@@ -185,7 +195,7 @@ setMethod("getHdf",
         
         if(!is.na(onlineInfo$online))
         {
-          if (!onlineInfo$online & length(opts$MODISserverOrder)==2 & 
+          if (!onlineInfo$online & !is.na(server_alt) & 
               server %in% c("LPDAAC", "LAADS"))
           {
             cat(server," seems not online, trying on '",server_alt,"':\n",sep="")

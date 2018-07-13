@@ -72,6 +72,7 @@ All files in 'external' required (eg. EPSG:4326 world grid, also included in MOD
 Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs
 
 MODIS:::combineOptions() doesn't work if MODIS isn't loaded
+Same for write drivers detection when working in a new 'localArcPath,outDirPath' environment
 
 outProj          =  asIn  (derived from Raster*/Spatial* object)
 pixelSize        =  asIn  (derived from Raster* object)

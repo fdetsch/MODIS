@@ -6,7 +6,7 @@ Date: 2018-07-12
 URL: https://github.com/MatMatt/MODIS
 BugReports: https://github.com/MatMatt/MODIS/issues
 Authors@R: c(
-	person("Matteo", "Mattiuzzi", role = c("aut")),
+	person("Matteo", "Mattiuzzi", role = "aut", email = "matteo@mattiuzzi.com"),
 	person("Jan", "Verbesselt", role = "ctb"),
 	person("Tomislav", "Hengl", role = "ctb"),
 	person("Anja", "Klisch", role = "ctb"),
@@ -15,7 +15,7 @@ Authors@R: c(
 	person("Bradley", "Evans", role = "ctb"),
 	person("Agustin", "Lobo", role = "ctb"), 
 	person("Koen", "Hufkens", role = "ctb"),
-	person("Matt", "Forrest", role = "ctb"),
+	person("Matthew", "Forrest", role = "ctb", email = "matthew.forrest@senckenberg.de"),
 	person("Florian", "Detsch", role = c("cre", "aut"), email = "fdetsch@web.de"))
 Description: Download and processing functionalities for the Moderate Resolution
     Imaging Spectroradiometer (MODIS). The package provides automated access to the

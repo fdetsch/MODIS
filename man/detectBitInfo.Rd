@@ -9,9 +9,9 @@ detectBitInfo(product, what = "all", warn = TRUE)
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}.}
 
-\item{what}{\code{character}. Parameter name, i.e. 
-\url{https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table/mod13q1}, 
-(TABLE 2: MOD13Q1 VI Quality; Long Name).}
+\item{what}{\code{character}. Parameter name, e.g. 'VI Quality' for all MOD13
+products (see \href{MODIS Vegetation Index User's Guide}{https://lpdaac.usgs.gov/sites/default/files/public/product_documentation/mod13_user_guide.pdf}, 
+Table 5, Parameter Name).}
 
 \item{warn}{\code{logical}, whether or not to throw warning messages.}
 }

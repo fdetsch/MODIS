@@ -314,7 +314,7 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
   options(warn=-1)
   on.exit(options(warn=iw))
 
-  opt <- combineOptions(...)
+  opt <- combineOptions(checkTools = FALSE, ...)
      
   outfile <- paste0(opt$outDirPath,".auxiliaries/gdalOutDriver.RData")
   
@@ -1032,7 +1032,7 @@ correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   ## check if any older files exist  
   before = avDates < begin
   
-  if (any(before)) {
+  if (any(before) & !begin %in% avDates) {
     
     # if so, get date directly preceding 'begin'
     ids = which(before)

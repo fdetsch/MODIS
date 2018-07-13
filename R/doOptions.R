@@ -112,7 +112,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE)
   dimnames=list(NULL,c("short","long")))
 
   if (tool=="GDAL") # EPRS:xxxx or xxxx or "+proj=sin...." 
-  { # EPSGinfo is lazy loaded (see: minorFuns.R)
+  { 
 
     inW <- getOption("warn")
     on.exit(options(warn=inW))
@@ -219,7 +219,7 @@ combineOptions <- function(checkTools = TRUE, ...)
     #           , "Run MODISoptions() to make settings permanent!")
     # }
     requireNamespace("MODIS", quietly = TRUE)
-    MODISoptions(save=FALSE, checkTools = checkTools)    
+    MODISoptions(save=FALSE, checkTools = checkTools)
     opts <- options() # collects all options
     opts <- opts[grep(names(opts),pattern="^MODIS_*.")] # isolate MODIS_opts
   }

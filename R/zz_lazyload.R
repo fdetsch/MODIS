@@ -23,18 +23,6 @@ load(file.path(ofl, "MODIS_Products.RData"))
 
 load(file.path(ofl, "collections.RData"))
 
-## pitty that this does not work like that!
-## lazy load gdal EPSG
-#if (require(rgdal))
-#{
-#    EPSGinfo <- make_EPSG() # if rgdal, make it new!
-#} else
-#{
-# save(EPSGinfo,file="~/EPSGinfo.RData") # periodically safed manually by Admin (last up: October2014)
-load(file.path(ofl, "EPSGinfo.RData"))
-#}
-###
-
 # FTP information
 # save(MODIS_FTPinfo,file="~/MODIS_FTPinfo.RData") # in case of changes
 load(file.path(ofl, "MODIS_FTPinfo.RData")) 

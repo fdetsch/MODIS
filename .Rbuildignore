@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^.*\TODO$
 ^.*\NEWS.md$
+^R/addCollection\.R$
+^R/addProduct\.R$
+^R/addServer\.R$

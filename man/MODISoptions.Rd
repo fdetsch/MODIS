@@ -55,7 +55,7 @@ the file, but also lead to hanging functions if the server is down.}
 
 \item{wait}{\code{numeric} waiting time (in seconds) inserted after each 
 internal online download call via \code{\link{download.file}} or 
-\code{\link[curl]{curl}}. Reduces the chance of FTP connection errors that 
+\code{\link[curl]{curl}}. Reduces the chance of connection errors that 
 frequently occur after many requests.}
 
 \item{quiet}{\code{logical} passed eg to \code{\link{download.file}} which is 

@@ -2,7 +2,7 @@
 #' 
 #' @description 
 #' \code{addServer} is a non-exported helper function to add a new entry to the 
-#' list of online (FTP) servers featured by \strong{MODIS} (see 
+#' list of online (HTTP) servers featured by \strong{MODIS} (see 
 #' \code{MODIS:::MODIS_FTPinfo}).
 #' 
 #' @param name Character. Name of the remote server that should be added to the 

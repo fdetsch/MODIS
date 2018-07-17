@@ -33,7 +33,7 @@ A 'list' holding the updated contents of 'MODIS_FTPinfo.RData'.
 }
 \description{
 \code{addServer} is a non-exported helper function to add a new entry to the 
-list of online (FTP) servers featured by \strong{MODIS} (see 
+list of online (HTTP) servers featured by \strong{MODIS} (see 
 \code{MODIS:::MODIS_FTPinfo}).
 }
 \examples{

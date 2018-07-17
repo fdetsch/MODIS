@@ -22,17 +22,11 @@
 to download a small set of files. If specified, other file-related parameters 
 (i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored.}
 
-\item{begin}{\code{character}. Begin date of MODIS time series, see 
-\code{\link{transDate}} for formatting.}
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
+time series, see \code{\link{transDate}}.}
 
-\item{end}{\code{character}. End date, compatible with future dates for 
-continuous updates via scheduled jobs.}
-
-\item{tileH}{\code{numeric} or \code{character}. Horizontal tile number(s), 
-see \code{\link{getTile}}.}
-
-\item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), 
-see \code{tileH}.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
+vertical tile number, see \code{\link{getTile}}.}
 
 \item{extent}{See Details in \code{\link{getTile}}.}
 
@@ -90,10 +84,12 @@ d
 
 }
 \references{
-MODIS data is obtained through the online Data Pool at the NASA Land 
-Processes Distributed Active Archive Center (LP DAAC), USGS/Earth Resources 
-Observation and Science (EROS) Center, Sioux Falls, South Dakota 
-\url{https://lpdaac.usgs.gov/get_data}.
+MODIS data is currently available from the online data pools at 
+\itemize{
+\item{NASA Land Processes Distributed Active Archive Center (\href{https://lpdaac.usgs.gov/}{LP DAAC})},
+\item{Level-1 and Atmosphere Archive & Distribution System (\href{https://ladsweb.modaps.eosdis.nasa.gov/}{LAADS})}, and
+\item{National Snow & Ice Data Center (\href{https://nsidc.org/}{NSIDC})}.
+}
 }
 \author{
 Matteo Mattiuzzi

@@ -7,7 +7,7 @@
 transDate(begin = NULL, end = NULL)
 }
 \arguments{
-\item{begin, end}{\code{character} or \code{Date}. Begin (end) date of MODIS 
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
 time series, see Note. If not provided, this defaults to \code{"1972-01-01"} 
 (\code{Sys.Date()}).}
 }

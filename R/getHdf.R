@@ -14,14 +14,10 @@ if ( !isGeneric("getHdf") ) {
 #' @param product \code{character}. MODIS grid product to be downloaded, see 
 #' \code{\link{getProduct}}. Use dot notation to address Terra and Aqua products 
 #' (e.g. \code{M.D13Q1}). 
-#' @param begin \code{character}. Begin date of MODIS time series, see 
-#' \code{\link{transDate}} for formatting. 
-#' @param end \code{character}. End date, compatible with future dates for 
-#' continuous updates via scheduled jobs. 
-#' @param tileH \code{numeric} or \code{character}. Horizontal tile number(s), 
-#' see \code{\link{getTile}}.
-#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
-#' see \code{tileH}.
+#' @param begin,end \code{Date} or \code{character}. Begin and end date of MODIS 
+#' time series, see \code{\link{transDate}}. 
+#' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
+#' vertical tile number, see \code{\link{getTile}}.
 #' @param extent See Details in \code{\link{getTile}}.
 #' @param collection Desired MODIS product collection as \code{character}, 
 #' \code{integer}, or \code{list} as returned by \code{\link{getCollection}}.
@@ -40,10 +36,12 @@ if ( !isGeneric("getHdf") ) {
 #' An invisible vector of downloaded data and paths.
 #' 
 #' @references 
-#' MODIS data is obtained through the online Data Pool at the NASA Land 
-#' Processes Distributed Active Archive Center (LP DAAC), USGS/Earth Resources 
-#' Observation and Science (EROS) Center, Sioux Falls, South Dakota 
-#' \url{https://lpdaac.usgs.gov/get_data}.
+#' MODIS data is currently available from the online data pools at 
+#' \itemize{
+#' \item{NASA Land Processes Distributed Active Archive Center (\href{https://lpdaac.usgs.gov/}{LP DAAC})},
+#' \item{Level-1 and Atmosphere Archive & Distribution System (\href{https://ladsweb.modaps.eosdis.nasa.gov/}{LAADS})}, and
+#' \item{National Snow & Ice Data Center (\href{https://nsidc.org/}{NSIDC})}.
+#' }
 #' 
 #' @author 
 #' Matteo Mattiuzzi

@@ -40,7 +40,7 @@
 #' the file, but also lead to hanging functions if the server is down.
 #' @param wait \code{numeric} waiting time (in seconds) inserted after each 
 #' internal online download call via \code{\link{download.file}} or 
-#' \code{\link[curl]{curl}}. Reduces the chance of FTP connection errors that 
+#' \code{\link[curl]{curl}}. Reduces the chance of connection errors that 
 #' frequently occur after many requests.
 #' @param systemwide A \code{logical} determining whether changes made to 
 #' \code{\link{MODISoptions}} are to be applied system or user-wide (default), 
@@ -288,7 +288,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   if (!missing(gdalPath))
   {
     opt$gdalPath <- correctPath(gdalPath)
-    if(length(grep(dir(opt$gdalPath),pattern="gdalinfo"))==0)
+    if(!grepl("gdalinfo", dir(opt$gdalPath)))
     {
       stop(paste0("The 'gdalPath' you have provided '",normalizePath(opt$gdalPath,"/",FALSE) ,"' does not contain any gdal utilities, make sure to address the folder with GDAL executables (ie: gdalinfo)!"))
     }

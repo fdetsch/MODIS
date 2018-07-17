@@ -4,7 +4,7 @@
 #' This function converts a sequence of input dates to 'YYYY-MM-DD' and 
 #' 'YYYYDDD'.
 #' 
-#' @param begin,end \code{character} or \code{Date}. Begin (end) date of MODIS 
+#' @param begin,end \code{Date} or \code{character}. Begin and end date of MODIS 
 #' time series, see Note. If not provided, this defaults to \code{"1972-01-01"} 
 #' (\code{Sys.Date()}).
 #' 

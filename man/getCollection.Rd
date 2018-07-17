@@ -22,7 +22,7 @@ if it doesn't exists. The check is performed on
 newest collection, else return all available collections.}
 
 \item{forceCheck}{\code{logical}, defaults to \code{FALSE}. If \code{TRUE}, 
-connect to the 'LP DAAC' FTP server and get available collections, of which 
+connect to the 'LP DAAC' server and get available collections, of which 
 an updated version is permanently stored in 
 \code{MODIS:::combineOptions()$auxPath}.}
 

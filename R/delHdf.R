@@ -8,13 +8,10 @@
 #' \code{\link{getCollection}}.
 #' @param extent Extent information, defaults to \code{'global'}. See
 #' \code{\link{getTile}}.
-#' @param tileH \code{numeric} or \code{character}. Horizontal tile number, 
-#' see \code{\link{getTile}}.
-#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
-#' see \code{tileH}.
-#' @param begin \code{character}. Begin date of MODIS time series, see 
-#' \code{\link{transDate}} for formatting.
-#' @param end Same for end date.
+#' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
+#' vertical tile number, see \code{\link{getTile}}.
+#' @param begin,end \code{Date} or \code{character}. Begin and end date of MODIS 
+#' time series, see \code{\link{transDate}}.
 #' @param ask \code{logical}. If \code{TRUE} (default), the user is being asked 
 #' for deletion after checking.
 #' @param ... Arguments passed to \code{\link{MODISoptions}}, particularly 
@@ -25,9 +22,6 @@
 #' 
 #' @examples 
 #' \dontrun{
-#' 
-#' # YOU ARE ASKED TO CONFIM THE DELETION! BUT IF THE EXAMPLE THIS FOR YOU SENSITIVE DATA CHANGE IT!
-#' 
 #' # REMOVE "MYD11A2" from specific date range and area subset:
 #' # delHdf(product="MYD11A2",begin="2010001",end="2010.02.01",extent="austria")
 #' # or

@@ -14,7 +14,7 @@
 #' @param newest \code{logical}. If \code{TRUE} (default), return only the 
 #' newest collection, else return all available collections.
 #' @param forceCheck \code{logical}, defaults to \code{FALSE}. If \code{TRUE}, 
-#' connect to the 'LP DAAC' FTP server and get available collections, of which 
+#' connect to the 'LP DAAC' server and get available collections, of which 
 #' an updated version is permanently stored in 
 #' \code{MODIS:::combineOptions()$auxPath}.
 #' @param as \code{character}, defaults to \code{'character'} which returns the 
@@ -122,7 +122,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         
         if (!exists("dirs")) 
         {
-          cat("FTP is not available, using stored information from previous calls (this should be mostly fine)\n")
+          cat("Server is not available, using stored information from previous calls (this should be mostly fine)\n")
         } else 
         {
           

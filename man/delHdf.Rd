@@ -16,16 +16,11 @@ delHdf(product, collection = NULL, extent = "global", tileV = NULL,
 \item{extent}{Extent information, defaults to \code{'global'}. See
 \code{\link{getTile}}.}
 
-\item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), 
-see \code{tileH}.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
+vertical tile number, see \code{\link{getTile}}.}
 
-\item{tileH}{\code{numeric} or \code{character}. Horizontal tile number, 
-see \code{\link{getTile}}.}
-
-\item{begin}{\code{character}. Begin date of MODIS time series, see 
-\code{\link{transDate}} for formatting.}
-
-\item{end}{Same for end date.}
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
+time series, see \code{\link{transDate}}.}
 
 \item{ask}{\code{logical}. If \code{TRUE} (default), the user is being asked 
 for deletion after checking.}
@@ -38,9 +33,6 @@ Delete MODIS grid files to reduce the local storage.
 }
 \examples{
 \dontrun{
-
-# YOU ARE ASKED TO CONFIM THE DELETION! BUT IF THE EXAMPLE THIS FOR YOU SENSITIVE DATA CHANGE IT!
-
 # REMOVE "MYD11A2" from specific date range and area subset:
 # delHdf(product="MYD11A2",begin="2010001",end="2010.02.01",extent="austria")
 # or

@@ -1,14 +1,11 @@
 getProduct():
-# improvement of automatic sensor detection 
 # make a class modisproduct
 
 longer term changes:
-- instead of having a ~/.MODISopts file create a directory where to store MODISopts, ftpsettings, product specfic info (instead of using the auxiliary folder)
 - what about removing runMrt support?
 - reduce the capability of functions eg:
     completely separate getHdf from runGdal (also getProduct, getCollection etc should be removed from those functions.
     This should allow runGdal to run in a more general manner like a input file list that is crunched. This should result in some more lines to code when using runGdal but is also allows more freedom and performance. AND last but not least at all also much easier handling of the package development.
-- allow only one product at the time. At that moment is is possible to do runGdal(product="M.D13",... this would process all M.D 13 products in one go by walking down the list produced by getProduct("M.D13"). 
   MOD and MYD should still be run by one call, but not eg: MxD13A1 and MxD13A2. This change would simplify a lot the package development.
 - I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
 - Accelerate 'Downloading structure on ...'
@@ -16,9 +13,11 @@ longer term changes:
 
 detectBitInfo()
 - recent products supported? (see whittaker.raster)
+- update QA information in look-up table
+- implement quality control routines for various products?
 
 MODISoptions() 
-- Check for presence of .netrc file (<-> LP DAAC, LAADS support)   
+- Check for presence of .netrc file (<-> LP DAAC, LAADS, NSIDC support)   
 
 runGdal()
 - an 'HdfName' argument (just like in getHdf()) could be of advantage in the 
@@ -28,13 +27,8 @@ runGdal()
 - speed up when downloaded hdf / processed tif files are already present
   
 getTile()
-- add keepGrid (or something along this line), which maintains the MODIS grid location also when using 'extent' (tileH,tileV already works like that) 
 - interactive polygon drawing via mapedit
   
-detectBitInfo()
-- update QA information in look-up table
-- implement quality control routines for various products?
-
 qualityControl
 - method based on maximum value from preceding / current / succeeding image (i.e., from user-defined window) as proposed by Yang et al. (2013, http://dx.doi.org/10.1109/LGRS.2012.2219576)
 
@@ -42,34 +36,12 @@ whittaker.raster()
 - set (optional) thresholds to get rid of too high or low (i.e., outside [-1;1]) values resulting from smoothing spline
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
 
-Take care of MOD16 Collection 105 on NTSG
-When no file could be found for particular date (eg. on 2001-06-26 for MOD14A1.006), then output of   runGdal() has an entry like this one:
-$`2001-06-26`
-character(0)
-runGdal() transforms extracted layers to 'outProj' other than specified in MODISoptions() if 'extent' is a shapefile <-> maybe optional?
-Download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
-
-Despite included in MODISoptions(), 'quiet' also often appears as a separate argument <-> necessary?
-
-MODIS:::genString("MOD13A2.006") creates empty 'localPath' folder, eg. C:/Users/florianD/Data/MODIS_~1/MODIS/MOD13A2.006/
-
-Wherever possible, replace length(grep(...)) == | != | > | < with grepl
-
-filesUrl(): 
-- substitute XML:: calls with regular expression matching? (example code currently commented)
-  <-> needs to be tested for LP DAAC and implemented for LAADS
-
 getHdf():
 - always tries to get newest collection, see e.g. #50
+- download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
 
 Automated wget, curl check if MODISserverOrder = "LPDAAC"
 
 General solution for "//"
 
-All files in 'external' required (eg. EPSG:4326 world grid, also included in MODIS_TilesPolys.RData)
-
 Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs
-
-outProj          =  asIn  (derived from Raster*/Spatial* object)
-pixelSize        =  asIn  (derived from Raster* object)
-<-> even if Extent, bbox is specified; maybe add additional slot on 'origin' to getTile() object

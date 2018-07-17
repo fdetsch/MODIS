@@ -1,21 +1,18 @@
 #' Process MODIS HDF with GDAL
 #' 
 #' @description 
-#' Downloads MODIS grid data from archive (FTP or local) and processes the 
+#' Downloads MODIS grid data from archive (HTTP or local) and processes the 
 #' files.
 #' 
 #' @param product \code{character}, see \code{\link{getProduct}}.
 #' @param collection \code{character} or \code{integer}, see 
 #' \code{\link{getCollection}}.
-#' @param begin \code{character}. Begin date of MODIS time series, see 
-#' \code{\link{transDate}} for formatting.
-#' @param end Same for end date.
+#' @param begin,end \code{Date} or \code{character}. Begin and end date of MODIS 
+#' time series, see \code{\link{transDate}}.
 #' @param extent Extent information, defaults to \code{'global'}. See
 #' \code{\link{getTile}}.
-#' @param tileH \code{numeric} or \code{character}. Horizontal tile number, 
-#' see \code{\link{getTile}}.
-#' @param tileV \code{numeric} or \code{character}. Vertical tile number(s), 
-#' see \code{tileH}.
+#' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
+#' vertical tile number, see \code{\link{getTile}}.
 #' @param SDSstring \code{character}, see \code{\link{getSds}}.
 #' @param job \code{character}. Name of the current job for the creation of the 
 #' output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
@@ -243,7 +240,7 @@ runGdal <- function(product, collection=NULL,
         {
           avDates <- avDates[us]
           
-          lst_ofile <- vector("list", length(avDates))
+          lst_ofile <- as.list(rep(NA, length(avDates)))
           for (l in seq_along(avDates)) { 
             # l=1
             files <- unlist(
@@ -631,7 +628,7 @@ runGdal <- function(product, collection=NULL,
               lst_ofile[[l]] <- ofiles
             } else {
               warning(paste0("No file found for date: ",avDates[l]))
-              lst_ofile[[l]] <- NULL
+              lst_ofile[[l]] <- NA
             }
           }
           

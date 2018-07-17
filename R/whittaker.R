@@ -185,7 +185,7 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
   if (is.null(opts$datatype)) 
     opts$datatype <- raster::dataType(vi[[1]])
 
-  if (length(grep("FLT", opts$datatype)) > 0) {
+  if (grepl("FLT", opts$datatype)) {
     doround <- FALSE
   } else {
     doround <- TRUE

@@ -22,7 +22,7 @@ OutProj <- function(product, extent, opts = NULL, ...) {
   cat("########################\n")
   if(!is.null(extent@target$outProj)) {
     outProj <- checkOutProj(extent@target$outProj, tool = "GDAL")
-    cat("outProj          = ", outProj, " (derived from Raster*/Spatial* object)\n")
+    cat("outProj          = ", outProj, " (if applicable, derived from Raster*/Spatial*/sf* object)\n")
     
   } else {
     outProj <- checkOutProj(opts$outProj, tool = "GDAL")
@@ -52,7 +52,7 @@ PixelSize <- function(extent, opts = NULL, ...) {
   
   if(!is.null(extent@target$pixelSize)) {
     pixelSize <- extent@target$pixelSize
-    cat("pixelSize        = ", pixelSize, " (derived from Raster* object)\n")
+    cat("pixelSize        = ", pixelSize, " (if applicable, derived from Raster* object)\n")
     
   } else {
     pixelSize <- opts$pixelSize

@@ -15,19 +15,14 @@ runGdal(product, collection = NULL, begin = NULL, end = NULL,
 \item{collection}{\code{character} or \code{integer}, see 
 \code{\link{getCollection}}.}
 
-\item{begin}{\code{character}. Begin date of MODIS time series, see 
-\code{\link{transDate}} for formatting.}
-
-\item{end}{Same for end date.}
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
+time series, see \code{\link{transDate}}.}
 
 \item{extent}{Extent information, defaults to \code{'global'}. See
 \code{\link{getTile}}.}
 
-\item{tileH}{\code{numeric} or \code{character}. Horizontal tile number, 
-see \code{\link{getTile}}.}
-
-\item{tileV}{\code{numeric} or \code{character}. Vertical tile number(s), 
-see \code{tileH}.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
+vertical tile number, see \code{\link{getTile}}.}
 
 \item{SDSstring}{\code{character}, see \code{\link{getSds}}.}
 
@@ -55,7 +50,7 @@ corresponding output files as \code{character} objects or, if no files could
 be found for the specified time period, a single \code{NA}.
 }
 \description{
-Downloads MODIS grid data from archive (FTP or local) and processes the 
+Downloads MODIS grid data from archive (HTTP or local) and processes the 
 files.
 }
 \details{

@@ -2,7 +2,7 @@
 #' 
 #' @description 
 #' Specifying input parameters, this function gets MODIS grid data from the 
-#' archive (HTTP/FTP or local) and processes them with the 'MRT-grid' tool. See 
+#' archive (HTTP or local) and processes them with the 'MRT-grid' tool. See 
 #' also the 'MRT' manual, available online via 
 #' \url{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}, 
 #' for further information.

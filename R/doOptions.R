@@ -198,13 +198,7 @@ checkGdalDriver <- function(path=NULL)
     return(FALSE)
   }
     
-  if(!grepl(driver,pattern="HDF4"))
-  {
-    return(FALSE)
-  } else
-  {
-    return(TRUE)
-  }
+  return(any(grepl(driver,pattern="HDF4")))
 }
 
 combineOptions <- function(checkTools = TRUE, ...) 

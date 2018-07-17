@@ -238,7 +238,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
             
             gdaltext <- shell(cmd,intern=TRUE)
             
-            if (length(grep(x=gdaltext,pattern="GDAL",ignore.case = TRUE))==0)
+            if (!grepl("GDAL", gdaltext, ignore.case = TRUE))
             {
                 cat("'FWTools/OSGeo4W' installation not found or path not set.\nIf you don't have installed one of them you can get it from 'http://fwtools.maptools.org/' or 'http://trac.osgeo.org/osgeo4w/' (recommanded)\nTrying to autodetect path to 'FWTools/OSGeo4W' (this may takes some time, you can interupt this process and set it manually, see 'gdalPath' argument in '?MODISoptions':\n\n")
                 
@@ -308,7 +308,7 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
 
 
 # get gdal write formats (driver 'name', 'long name' and 'extension')
-gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
+gdalWriteDriver <- function(renew = FALSE, ...)
 {
   iw   <- options()$warn 
   options(warn=-1)
@@ -339,7 +339,7 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
 
   if (renew)
   {
-    if(!quiet)
+    if(!opt$quiet)
     {
       message("Detecting available write drivers!")
     }
@@ -363,7 +363,7 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
     
     description <- as.character(sapply(gdalOutDriver,function(x){strsplit(x,"\\): ")[[1]][2]}))
     
-    if(!quiet)
+    if(!opt$quiet)
     {
       message("Found: ",length(name)," candidate drivers, detecting file extensions...")
     }
@@ -378,7 +378,7 @@ gdalWriteDriver <- function(renew = FALSE, quiet = TRUE,...)
         extension[i] <- getExtension(name[ind],gdalPath = opt$gdalPath)
       }
     }
-    if(!quiet)
+    if(!opt$quiet)
     {
       message(sum(!is.na(extension))," usable drivers detected!")
     }
@@ -564,46 +564,42 @@ filesUrl <- function(url)
     options(warn=-1)
     on.exit(options(warn=iw))
 
-    ## default method (e.g. LPDAAC, LAADS)
-    if (!grepl("ntsg", url)) {
+    ## LP DAAC, NSIDC
+    if (grepl("usgs.gov|nsidc", url)) {
+      
+      h <- curl::new_handle()
+      if (grepl("nsidc", url)) {
+        curl::handle_setopt(
+          handle = h,
+          httpauth = 1,
+          userpwd = paste(credentials(), collapse = ":")
+        )
+      }
       
       # read online content
-      con = curl::curl(url)
+      con = curl::curl(url, handle = h); on.exit(closeAllConnections())
       co = readLines(con)
       close(con)
       
-      if (inherits(co, "try-error")) return(FALSE)
+      # extract '<a href=...> nodes
+      pttrn = '<a href=\"[[:graph:]]{1,}\">[[:graph:]]{1,}</a>'
+      tmp = sapply(co, function(i) {
+        regmatches(i, regexpr(pttrn, i))
+      })
       
-      ## LP DAAC
-      if (grepl("usgs.gov", url)) {
-        
-        co     <- XML::htmlTreeParse(co)
-        co     <- co$children[[1]][[2]][[2]]
-        co     <- sapply(co$children, function(el) XML::xmlGetAttr(el, "href"))
-        co     <- as.character(unlist(co))
-        co     <- co[!co %in% c("?C=N;O=D", "?C=M;O=A", "?C=S;O=A", "?C=D;O=A")]
-        fnames <- co[-1] 
-
-      ## LAADS  
-      } else {
-        
-        url = gsub("/$", "", url)
-        tmp = utils::read.csv(paste0(url, ".csv"), colClasses = "character")
-        fnames = tmp$name[grep("[^NOTICE]", tmp$name)]
-
-        # co <- strsplit(co, if(.Platform$OS.type=="unix"){"\n"} else{"\r\n"})[[1]]
-        # 
-        # co   <- strsplit(co," ")
-        # elim <- grep(co,pattern="total")
-        # if(length(elim)==1)
-        # {
-        #   co <- co[-elim]
-        # }
-        # fnames <- basename(sapply(co,function(x){x[length(x)]}))
-      }
+      spl1 = sapply(strsplit(unlist(tmp), ">"), "[[", 2)
+      fnames = as.character(sapply(strsplit(spl1, "<"), "[[", 1))
+      fnames = subset(fnames, fnames != "Name")
+      
+    ## LAADS  
+    } else if (grepl("nasa", url)) {
+      
+      url = gsub("/$", "", url)
+      tmp = utils::read.csv(paste0(url, ".csv"), colClasses = "character")
+      fnames = tmp$name[grep("[^NOTICE]", tmp$name)]
       
     ## NTSG method; if not used, connection breakdowns are likely to occur  
-    } else {
+    } else if (grepl("ntsg", url)) {
       
       # 'MODIS' options
       opts <- combineOptions()
@@ -632,6 +628,7 @@ filesUrl <- function(url)
 
       # remove temporary file and return output
       invisible(file.remove(file_out))
+      
     }
 
     ## format and return    
@@ -709,7 +706,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                             collapse = "")
             
             ## adapt 'dlmethod' and 'extra' if server == "LPDAAC"
-            if (server == "LPDAAC") {
+            if (server %in% c("LPDAAC", "NSIDC")) {
               if (!opts$dlmethod %in% c("wget", "curl")) {
 
                 cmd = try(system("wget -h", intern = TRUE), silent = TRUE)
@@ -728,16 +725,10 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                 method <- opts$dlmethod
               }
               
-              # login credentials
-              nrc = path.expand("~/.netrc")
-              if (!file.exists(nrc))
-                stop("~/.netrc file required. Either run lpdaacLogin() or set" 
-                     , " MODISoptions(MODISserverOrder = 'LAADS').")
-              
-              lns = readLines(nrc)
-              crd = sapply(strsplit(lns, " "), "[[", 2)
-              usr = crd[2]; pwd = crd[3]
-              
+              # earthdata login credentials
+              crd = credentials()
+              usr = crd[1]; pwd = crd[2]
+
               # cookies
               ofl = file.path(tempdir(), ".cookies.txt")
               if (!file.exists(ofl))
@@ -1055,4 +1046,21 @@ correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   }
   
   return(begin)
+}
+
+## Earthdata login credentials from .netrc file
+credentials = function() {
+  
+  # try to locate .netrc file
+  nrc = path.expand("~/.netrc")
+  if (!file.exists(nrc))
+    stop("~/.netrc file required. Either run lpdaacLogin() or set" 
+         , " MODISoptions(MODISserverOrder = 'LAADS').")
+  
+  # if file exists, import contents
+  lns = readLines(nrc)
+  crd = sapply(strsplit(lns, " "), "[[", 2)
+  usr = crd[2]; pwd = crd[3]
+  
+  return(c("User" = usr, "Password" = pwd))
 }

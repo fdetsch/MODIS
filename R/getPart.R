@@ -5,7 +5,7 @@
 # getPart() takes as argument ONLY a defineName() or a getProduct() result, or basicaly a vector with named "nodes"
 ################################
 getPart <- function(x, what = c('YYYY', 'DDD', 'DATE', 'SENSOR', 'PF1', 'PF2'
-                                , 'PF3', 'PLATFORM', 'TILE', 'TILEV', 'TILEH'
+                                , 'PF3', 'PF4', 'PLATFORM', 'TILE', 'TILEV', 'TILEH'
                                 , 'C', 'CCC', 'PRODUCT', 'FORMAT', 'COMPRESSION'
                                 , 'DATE1DATE2', 'PROCESSINGDATE', 'REGION'
                                 , 'TIME'))
@@ -23,6 +23,7 @@ getPart <- function(x, what = c('YYYY', 'DDD', 'DATE', 'SENSOR', 'PF1', 'PF2'
         PF1 = x$PF1,
         PF2 = x$PF2,
         PF3 = x$PF3,
+        PF4 = x$PF4,
         PLATFORM = x$PLATFORM,
         TILE = x$TILE,
         C = as.numeric(x$CCC),

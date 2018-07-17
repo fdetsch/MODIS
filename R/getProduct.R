@@ -112,6 +112,7 @@ getProduct <- function(x=NULL,quiet=FALSE)
                 invisible(
                     list(request = inbase, PF1 = as.character(info$PF1),
                     PF2 = as.character(info$PF2), PF3 = as.character(info$PF3)
+                    , PF4 = as.character(info$PF4)
                     , PD = PD, PLATFORM = as.character(info$PLATFORM),
                     TYPE = as.character(info$TYPE), PRODUCT = as.character(info$PRODUCT),
                     SENSOR = as.character(info$SENSOR), SOURCE=info$SOURCE)

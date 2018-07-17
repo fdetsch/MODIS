@@ -165,19 +165,23 @@ setMethod("getHdf",
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
         server <- product$SOURCE[[z]]
 
-        ## if product is not available from desired server, throw error        
-        if (!any(opts$MODISserverOrder %in% server)) {
-          stop(paste(product$PRODUCT, product$CCC, sep = ".")
-               , " is available from "
-               , paste(server, collapse = " and ")
-               , " only, please adjust 'MODISoptions(MODISserverOrder = ...)' accordingly.")
+        if (!any(server %in% c("NTSG", "NSIDC"))) {
+          
+          ## if product is not available from desired server, throw error        
+          if (!any(opts$MODISserverOrder %in% server)) {
+            stop(paste(product$PRODUCT, product$CCC, sep = ".")
+                 , " is available from "
+                 , paste(server, collapse = " and ")
+                 , " only, please adjust 'MODISoptions(MODISserverOrder = ...)' accordingly.")
+          }
+          
+          ## align with servers specified in 'MODISserverOrder' -> idenfify 
+          ## priority and, if applicable, alternative download server
+          server = unlist(sapply(opts$MODISserverOrder, function(i) {
+            grep(i, server, value = TRUE)
+          }))
+          
         }
-        
-        ## align with servers specified in 'MODISserverOrder' -> idenfify 
-        ## priority and, if applicable, alternative download server
-        server = unlist(sapply(opts$MODISserverOrder, function(i) {
-          grep(i, server, value = TRUE)
-        }))
         
         server_alt = ifelse(length(server) > 1, server[2], NA)
         server = server[1]
@@ -352,10 +356,11 @@ setMethod("getHdf",
             { # after each 'i' do the sizeCheck
               isIn <- doCheckIntegrity(paste0(path$localPath,dates[[l]][i,-1]), opts = opts)
             }
-            suboutput[[i]] <- paste0(path$localPath,dates[[l]][i,-1])                    
+            suboutput[[i]] <- ifelse(is.na(dates[[l]][i,-1]), NA, paste0(path$localPath,dates[[l]][i,-1]))
           } # end i
           
-          output[[l]] <-  as.character(unlist(suboutput))
+          output[[l]] <-  as.character(na.omit(unlist(suboutput)))
+          # if (length(output[[l]]) == 0) output[[l]] = NA
           names(output)[l] <- todo[u]
         } else 
         {

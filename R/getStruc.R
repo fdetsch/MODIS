@@ -111,9 +111,9 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
       rm(FtpDayDirs)
     }
     
-    if (server=="LPDAAC")
+    if (server %in% c("LPDAAC", "NSIDC"))
     {
-      startPath <- strsplit(path$remotePath$LPDAAC,"DATE")[[1]][1] # cut away everything behind DATE
+      startPath <- strsplit(path$remotePath[[server]],"DATE")[[1]][1] # cut away everything behind DATE
       for (g in 1:sturheit)
       {
         cat("Try:",g," \r")
@@ -215,7 +215,7 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
       } else {
         FtpDayDirs <- as.Date(paste(years_new, "12", "31", sep = "-"))
       }
-    }
+    } 
   }
   
   if(!exists("FtpDayDirs"))

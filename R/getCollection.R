@@ -20,7 +20,6 @@
 #' @param as \code{character}, defaults to \code{'character'} which returns the 
 #' typical 3-digit collection number (i.e., \code{"005"}). \code{as = 'numeric'} 
 #' returns the result as \code{numeric} (i.e., \code{5}).
-#' @param quiet \code{logical}, defaults to \code{TRUE}.
 #' @param ... Additional arguments passed to \code{MODIS:::combineOptions}.
 #' 
 #' @return 
@@ -53,7 +52,7 @@
 #' 
 #' @export getCollection
 #' @name getCollection
-getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,as="character",quiet=TRUE, ...)
+getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,as="character", ...)
 {
     opts <- combineOptions(...)
 
@@ -64,7 +63,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         stop("Please provide a valid product")
     }
     productN <- getProduct(x = if (is.character(product)) {
-      sapply(product, function(i) skipDuplicateProducts(i, quiet = quiet))
+      sapply(product, function(i) skipDuplicateProducts(i, quiet = opts$quiet))
     } else product, quiet = TRUE)
     if (is.null(productN)) 
     {
@@ -100,7 +99,8 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         ftp_id <- sapply(MODIS_FTPinfo, function(i) i$name %in% server)
         ftp_id <- which(ftp_id)[1]
         
-        ftp <- file.path(MODIS_FTPinfo[[ftp_id]]$basepath, productN$PF1[i], "/")
+        nms = paste0("PF", ftp_id)
+        ftp <- file.path(MODIS_FTPinfo[[ftp_id]]$basepath, productN[[nms]][i], "/")
         cat("Updating collection from", server[1], "for product:"
             , productN$PRODUCT[i], "\n")
         
@@ -131,7 +131,19 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
                       , value = TRUE)
           
           ids = sapply(file.path(ftp, dirs, "/"), function(ftpdir) {
-            con = curl::curl(ftpdir)
+            
+            # define curl handle
+            h <- curl::new_handle()
+            if (grepl("nsidc", ftpdir)) {
+              curl::handle_setopt(
+                handle = h,
+                httpauth = 1,
+                userpwd = paste(credentials(), collapse = ":")
+              )
+            }
+              
+            # list available folders 
+            con = curl::curl(ftpdir, handle = h); on.exit(closeAllConnections())
             cnt = readLines(con)
             close(con)
             
@@ -233,7 +245,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 
     } else if (newest) 
     {
-	    if (!quiet) {
+	    if (!opts$quiet) {
 	      cat("No collection specified, getting the newest for", productN$PRODUCT, "\n")
 	    }
 

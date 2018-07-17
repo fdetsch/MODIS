@@ -1,5 +1,9 @@
 ## MODIS 1.1.3
 
+New features: 
+
+  * Support for MOD/MYD10 and MOD/MYD29 product series distributed by National Snow & Ice Data Center (NSIDC; <https://nsidc.org/>).
+  
 Bugfixes: 
 
   * Curl-based download from LP DAAC.
@@ -12,6 +16,7 @@ Changes:
   * When 'extent' is a country name, 'outProj' is taken from MODISoptions() rather than hard-coded EPSG:4326.
   * If 'begin' falls in between two composite release dates, it is set back to start date of preceding release (see <https://github.com/MatMatt/MODIS/issues/43>).
   * When working with Extent (raster) or bbox objects (sf) and 'outProj' and 'pixelSize' are "asIn", the output grid and resolution is aligned with the original MODIS Sinusoidal grid. 
+  * Replaced 'XML' package dependency through regular expression matching.
   
 
 ## MODIS 1.1.2

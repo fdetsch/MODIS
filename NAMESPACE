@@ -33,7 +33,6 @@ export(whittaker.raster)
 exportClasses(MODISextent)
 if (.Platform$OS.type=="windows") importFrom(utils,shortPathName)
 
-import(XML)
 import(bitops)
 import(mapdata)
 import(parallel)

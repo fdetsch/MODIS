@@ -719,7 +719,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                 
                 if (inherits(cmd, "try-error")) {
                   stop("Make sure either 'wget' or 'curl' is available in "
-                       , "order to download data from LP DAAC.")
+                       , "order to download data from LP DAAC or NSIDC.")
                 }
               } else {
                 method <- opts$dlmethod

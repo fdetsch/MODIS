@@ -33,8 +33,8 @@
 #' @param dlmethod \code{character}, defaults to \code{auto}. See 'method' in 
 #' \code{\link{download.file}}. On Unix (also Mac?), it is suggested to use 
 #' \code{"wget"} or, if installed, \code{"aria2"}. In order to download MODIS 
-#' files from LPDAAC, please note that either wget (default) or curl must be 
-#' installed and made available through the PATH environmental variable.
+#' files from LPDAAC and NSIDC, please note that either wget (default) or curl 
+#' must be installed and made available through the PATH environmental variable.
 #' @param stubbornness \code{numeric}. The number of retries after the target 
 #' server has refused a connection. Higher values increase the chance of getting 
 #' the file, but also lead to hanging functions if the server is down.

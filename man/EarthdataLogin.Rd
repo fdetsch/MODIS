@@ -21,7 +21,7 @@ An \code{invisible()} absolute file path of the created \code{.netrc} file as
 Create a hidden \code{.netrc} file with Earthdata login credentials in your 
 home directory. The information included therein is used to login to 
 \url{urs.earthdata.nasa.gov} which is a mandatory requirement in order to 
-download MODIS data from LPDAAC and LAADS (see also 
+download MODIS data from LPDAAC, LAADS and NSIDC (see also 
 \code{\link{MODISoptions}}).
 }
 \examples{

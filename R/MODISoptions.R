@@ -50,6 +50,8 @@
 #' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
 #' @param checkTools \code{logical}, defaults to \code{TRUE}. Check if external 
 #' tools (i.e., GDAL and MRT) are installed and reachable through R.
+#' @param ask \code{logical}. If \code{TRUE} (default) and permanent settings 
+#' file does not exist (see Details), the user is asked whether to create it.
 #' 
 #' @return 
 #' An invisible \code{list} of \strong{MODIS} options. In addition, the most 
@@ -120,7 +122,8 @@
 MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, 
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
                          dlmethod, stubbornness, wait, quiet, 
-                         systemwide = FALSE, save = TRUE, checkTools = TRUE)
+                         systemwide = FALSE, save = TRUE, checkTools = TRUE
+                         , ask = TRUE)
 {
   # This function collects the package options from up to 3 files and creates 
   # the .MODIS_Opts.R file (location depending on systemwide=T/F, see below):
@@ -378,10 +381,12 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   if (save) {
     
     #  let user decide whether to make settings permanent
-    answer = if (!file.exists(optfile)) {
-      readline(paste0("File '", optfile, "' does not exist. Create it now to "
-                      , "make settings permanent? [y/n]: "))
-    } else "y"
+    answer = if (ask) {
+      if (!file.exists(optfile)) {
+        readline(paste0("File '", optfile, "' does not exist. Create it now to "
+                        , "make settings permanent? [y/n]: "))
+      } else "y"
+    } else "n"
       
     filename = file(ifelse(tolower(answer) %in% c("y", "yes"), optfile, tmpopt)
                     , open = "wt")

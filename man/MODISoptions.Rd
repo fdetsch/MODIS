@@ -6,7 +6,7 @@
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
   dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait, quiet,
-  systemwide = FALSE, save = TRUE, checkTools = TRUE)
+  systemwide = FALSE, save = TRUE, checkTools = TRUE, ask = TRUE)
 }
 \arguments{
 \item{localArcPath}{\code{character}, defaults to 
@@ -69,6 +69,9 @@ see 'Details'.}
 
 \item{checkTools}{\code{logical}, defaults to \code{TRUE}. Check if external 
 tools (i.e., GDAL and MRT) are installed and reachable through R.}
+
+\item{ask}{\code{logical}. If \code{TRUE} (default) and permanent settings 
+file does not exist (see Details), the user is asked whether to create it.}
 }
 \value{
 An invisible \code{list} of \strong{MODIS} options. In addition, the most 

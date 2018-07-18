@@ -6,7 +6,8 @@
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
   dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait, quiet,
-  systemwide = FALSE, save = TRUE, checkTools = TRUE, ask = TRUE)
+  systemwide = FALSE, save = TRUE, checkTools = TRUE,
+  checkWriteDrivers = TRUE, ask = TRUE)
 }
 \arguments{
 \item{localArcPath}{\code{character}, defaults to 
@@ -69,6 +70,9 @@ see 'Details'.}
 
 \item{checkTools}{\code{logical}, defaults to \code{TRUE}. Check if external 
 tools (i.e., GDAL and MRT) are installed and reachable through R.}
+
+\item{checkWriteDrivers}{\code{logical}. If \code{TRUE} (default), find write 
+drivers supported by local GDAL installation.}
 
 \item{ask}{\code{logical}. If \code{TRUE} (default) and permanent settings 
 file does not exist (see Details), the user is asked whether to create it.}

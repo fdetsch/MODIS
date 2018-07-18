@@ -18,7 +18,8 @@
     suppressWarnings(
       suppressMessages(
         jnk <- capture.output(
-          MODISoptions(save = TRUE, checkTools = FALSE, quiet = TRUE, ask = FALSE)
+          MODISoptions(save = TRUE, checkTools = TRUE, quiet = TRUE
+                       , checkWriteDrivers = FALSE, ask = FALSE)
         )
       )
     )

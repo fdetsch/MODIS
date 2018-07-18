@@ -50,6 +50,8 @@
 #' @param save \code{logical}. If \code{TRUE} (default), settings are permanent.
 #' @param checkTools \code{logical}, defaults to \code{TRUE}. Check if external 
 #' tools (i.e., GDAL and MRT) are installed and reachable through R.
+#' @param checkWriteDrivers \code{logical}. If \code{TRUE} (default), find write 
+#' drivers supported by local GDAL installation.
 #' @param ask \code{logical}. If \code{TRUE} (default) and permanent settings 
 #' file does not exist (see Details), the user is asked whether to create it.
 #' 
@@ -123,7 +125,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
                          dlmethod, stubbornness, wait, quiet, 
                          systemwide = FALSE, save = TRUE, checkTools = TRUE
-                         , ask = TRUE)
+                         , checkWriteDrivers = TRUE, ask = TRUE)
 {
   # This function collects the package options from up to 3 files and creates 
   # the .MODIS_Opts.R file (location depending on systemwide=T/F, see below):
@@ -373,7 +375,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     opt$dataFormat <- 'GTiff'
   }
   
-  if(checkTools & opt$gdalOk)
+  if(checkTools & opt$gdalOk & checkWriteDrivers)
   {
     opt$gdalOutDriver <- gdalWriteDriver(renew = FALSE, quiet = FALSE, gdalPath=opt$gdalPath,outDirPath=opt$outDirPath)
   }

@@ -127,7 +127,8 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
   }
 }
 
-checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
+checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
+                       , opts = NULL)
 {
     tool <- toupper(tool)
     
@@ -135,9 +136,8 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
     options(warn=-1)
     on.exit(options(warn=iw))
     
-    MRT  <- NULL
-    GDAL <- NULL
-    
+    MRT  <- GDAL <- WGET <- CURL <- NULL
+
     if ("MRT" %in% tool)
     {
         MRT   <- FALSE
@@ -303,7 +303,44 @@ checkTools <- function(tool=c("MRT","GDAL"), quiet=FALSE, opts = NULL)
             GDAL <- list(GDAL = GDAL, version = gdaltext,vercheck=gdv)
         }
     }
-    return(invisible(list(GDAL=GDAL,MRT=MRT)))        
+
+        
+    ### wget ----
+    
+    if (any(grepl("wget", tool, ignore.case = TRUE))) {
+      
+      WGET = FALSE
+      wgetOK = try(system("wget --version", intern = TRUE), silent = TRUE)
+      
+      wgettext = if (!inherits(wgetOK, "try-error")) {
+        WGET = TRUE
+        regmatches(wgetOK[1], regexpr("GNU Wget [[:digit:]\\.]+", wgetOK[1]))
+      } else ""
+      
+      WGET = list(WGET = WGET, version = wgettext)
+    }
+    
+    
+    ### curl ----
+    
+    if (any(grepl("curl", tool, ignore.case = TRUE))) {
+      
+      CURL = FALSE
+      curlOK = try(system("curl --version", intern = TRUE), silent = TRUE)
+      
+      curltext = if (!inherits(curlOK, "try-error")) {
+        CURL = TRUE
+        regmatches(curlOK[1], regexpr("curl [[:digit:]\\.]+", curlOK[1]))
+      } else ""
+      
+      CURL = list(CURL = CURL, version = curltext)
+    }
+    
+    
+    return(invisible(list(GDAL = GDAL
+                          , MRT = MRT
+                          , WGET = WGET
+                          , CURL = CURL)))        
 }
 
 
@@ -577,7 +614,8 @@ filesUrl <- function(url)
       }
       
       # read online content
-      con = curl::curl(url, handle = h); on.exit(closeAllConnections())
+      con = curl::curl(url, handle = h)
+      on.exit(try(close(con), silent = TRUE))
       co = readLines(con)
       close(con)
       
@@ -589,8 +627,7 @@ filesUrl <- function(url)
       
       spl1 = sapply(strsplit(unlist(tmp), ">"), "[[", 2)
       fnames = as.character(sapply(strsplit(spl1, "<"), "[[", 1))
-      fnames = subset(fnames, fnames != "Name")
-      
+
     ## LAADS  
     } else if (grepl("nasa", url)) {
       

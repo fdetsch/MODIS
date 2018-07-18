@@ -143,7 +143,8 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
             }
               
             # list available folders 
-            con = curl::curl(ftpdir, handle = h); on.exit(closeAllConnections())
+            con = curl::curl(ftpdir, handle = h)
+            on.exit(try(close(con), silent = TRUE))
             cnt = readLines(con)
             close(con)
             

@@ -817,6 +817,7 @@ return(!as.logical(out))
 doCheckIntegrity <- function(x, opts = NULL, ...) {
   
   x <- basename(x)
+  clc = sapply(strsplit(x, "\\."), "[[", 4)
   
   ## if options have not been passed down, create them from '...'
   if (is.null(opts))
@@ -833,7 +834,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
       out[a] <- NA
     } else
     { 
-      path <- genString(x[a], opts = opts)
+      path <- genString(x[a], collection = clc[a], opts = opts)
       path$localPath <- setPath(path$localPath) 
       
       hv <- 1:length(path$remotePath)

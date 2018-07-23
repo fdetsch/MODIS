@@ -60,7 +60,7 @@
 #' \code{dataFormat}, default "GeoTiff" (\code{\link{MODISoptions}}).\cr
 #' 
 #' @author 
-#' Matteo Mattiuzzi, Matthew Forrest, Florian Detsch
+#' Matteo Mattiuzzi, Florian Detsch
 #' 
 #' @seealso 
 #' \code{\link{getHdf}}, \code{\link{runMrt}}.
@@ -247,7 +247,7 @@ runGdal <- function(product, collection=NULL,
               getHdf(product = prodname, collection = coll
                      , begin = avDates[l], end = avDates[l]
                      , extent = extent, checkIntegrity = checkIntegrity
-                     , stubbornness = opts$stubbornness
+                     , stubbornness = opts$stubbornness, quiet = opts$quiet
                      , MODISserverOrder = opts$MODISserverOrder
                      , forceDownload = forceDownload, wait = opts$wait)
             )

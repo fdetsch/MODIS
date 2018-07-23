@@ -402,7 +402,8 @@ gdalWriteDriver <- function(renew = FALSE, ...)
     
     if(!opt$quiet)
     {
-      message("Found: ",length(name)," candidate drivers, detecting file extensions...")
+      message("Found ",length(name)
+              , " candidate drivers, detecting file extensions (this might take some time...)")
     }
     
     extension <- rep(NA,length(name))
@@ -1092,7 +1093,7 @@ credentials = function() {
   # try to locate .netrc file
   nrc = path.expand("~/.netrc")
   if (!file.exists(nrc))
-    stop("~/.netrc file required. Either run lpdaacLogin() or set" 
+    stop("~/.netrc file required. Either run EarthdataLogin() or set" 
          , " MODISoptions(MODISserverOrder = 'LAADS').")
   
   # if file exists, import contents

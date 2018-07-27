@@ -797,11 +797,30 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
               extra <- getOption("download.file.extra")
             }
             
-            out[a] <- try(
+            # curl download from LPDAAC or NSIDC
+            out[a] = if (method == "curl" & server %in% c("LPDAAC", "NSIDC")) {
+              h = curl::new_handle()
+              curl::handle_setopt(
+                handle = h,
+                httpauth = 1,
+                userpwd = paste(credentials(), collapse = ":")
+              )
+              
+              tmp = try(curl::curl_download(infile, destfile, quiet = opts$quiet
+                                            , handle = h), silent = TRUE)
+              
+              # imitate download.file() (ie. 0 = success, non-zero = failure)
+              ifelse(inherits(tmp, "character"), 0, 1)
+              
+            # LAADS or non-curl download  
+            } else {
+              
+              try(
               download.file(url = infile, destfile = destfile, mode = 'wb', 
                             method = method, quiet = opts$quiet, 
                             cacheOK = TRUE, extra = extra),
                           silent = TRUE)
+            }
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!
           if (out[a]!=0 & !opts$quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 

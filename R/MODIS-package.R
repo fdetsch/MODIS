@@ -15,7 +15,7 @@
 #' \emph{Maintainer:} Florian Detsch \email{fdetsch@@web.de}
 #'
 #' @import bitops mapdata parallel ptw raster rgdal sp
-#' @importFrom curl curl
+#' @importFrom curl curl curl_download handle_setopt new_handle
 #' @importFrom devtools install_github
 #' @importFrom grDevices dev.new dev.off png
 #' @importFrom graphics abline box grid locator title

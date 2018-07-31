@@ -236,9 +236,9 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
             
             cmd <- paste0(opts$gdalPath,'gdalinfo --version')            
             
-            gdaltext <- shell(cmd,intern=TRUE)
+            gdalcode <- system(cmd, intern = TRUE)
             
-            if (!grepl("GDAL", gdaltext, ignore.case = TRUE))
+            if (gdalcode > 0)
             {
                 cat("'FWTools/OSGeo4W' installation not found or path not set.\nIf you don't have installed one of them you can get it from 'http://fwtools.maptools.org/' or 'http://trac.osgeo.org/osgeo4w/' (recommanded)\nTrying to autodetect path to 'FWTools/OSGeo4W' (this may takes some time, you can interupt this process and set it manually, see 'gdalPath' argument in '?MODISoptions':\n\n")
                 
@@ -290,6 +290,8 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
 
             } else 
             {
+              gdaltext = system(cmd, intern = TRUE)
+              
                 if (!quiet)
                 {
                     cat("   OK,",gdaltext,"found!\n")

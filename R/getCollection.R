@@ -138,7 +138,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
               curl::handle_setopt(
                 handle = h,
                 httpauth = 1,
-                userpwd = paste(credentials(), collapse = ":")
+                userpwd = paste0(credentials()$login, ":", credentials()$password)
               )
             }
               

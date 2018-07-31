@@ -43,6 +43,7 @@ lpdaacLogin <- function(server = "LPDAAC") {
   
   .Deprecated("EarthdataLogin")
   
-  server = ifelse(server %in% c("LPDAAC", "LAADS"), "Earthdata", server)
-  return(EarthdataLogin(service = server))
+  #server = ifelse(server %in% c("LPDAAC", "LAADS"), "Earthdata", server)
+  #return(EarthdataLogin(service = server))
+  return(EarthdataLogin())
 }

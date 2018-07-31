@@ -5,10 +5,9 @@
 #' home directory. The information included therein is used to login to 
 #' \url{urs.earthdata.nasa.gov} which is a mandatory requirement in order to 
 #' download MODIS data from LPDAAC, LAADS and NSIDC (see also 
-#' \code{\link{MODISoptions}}).
+#' \code{\link{MODISoptions}}). If \code{.netrc} does exists the function can
+#' be used to re-enter credentials.  
 #' 
-#' @param service \code{character}. Search service for MODIS data, defaults to 
-#' \code{"Earthdata"} which is currently the only option available.
 #' @param usr,pwd Login credentials as \code{character}. If \code{NULL}, 
 #' username and password are read from the terminal.
 #' 
@@ -34,37 +33,155 @@
 #' 
 #' @export EarthdataLogin
 #' @name EarthdataLogin
-EarthdataLogin <- function(service = "Earthdata", usr = NULL, pwd = NULL) {
+EarthdataLogin <- function(usr = NULL, pwd = NULL) {
   
-  ## create file
-  cat("Creating hidden file '~/.netrc' with login credentials...\n")
-  netfile <- file("~/.netrc", open = "wt")
+  server = 'urs.earthdata.nasa.gov'
+  nrc <- path.expand("~/.netrc")
   
-  ## service (in the long run, if services other than Earthdata are affected, we 
-  ## should probably create a look-up table for that)
-  machine <- if (service == "Earthdata") {
-    "urs.earthdata.nasa.gov"
-  } else {
-    stop("Server '", service, "' currently not supported.\n")
+  # read .netrc entire file
+  lns <- MODIS:::readCredentials()
+  
+  # get servers found on .netrc
+  machine <- unlist(MODIS:::listPather(lns,'machine'))
+  
+  # create file
+  if(!file.exists(nrc))
+  {
+    cat("Creating clear text file '",nrc,"' containing earthdata login credentials for 'LPDAAC', 'LAADS' and 'NSIDC'...\n",sep="")
+    insert <- 'y'
+  } else
+  {
+    if(sum(machine %in% server)>0)
+    {
+      insert <- tolower(readline(paste0("Earthdata credentials seem to be present, do you want to change them? (y/n) \n",sep="")))
+    } else
+    {
+      cat("'",nrc,"' without earthdata credentials found! Please add them now...\n",sep="")
+      insert <- 'y'
+    }
+  }
+    
+  if(insert=='y')
+  {
+    ## username
+    if (is.null(usr)) 
+    {
+      usr <- readline("Insert your Earthdata USERNAME: ")  
+    }
+    ## password
+    if (is.null(pwd)) 
+    {
+      pwd <- readline("Insert your Earthdata PASSWORD: ")  
+    }
+  }
+  # Y: add (new) credentials. N: reformat .netrc file
+  
+  # if earthdata server is not in the netrc file
+  if(!server %in% machine)
+  {
+    # if server not present, add it in a new line
+    ind <- length(lns)+1
+  } else
+  {
+    ind <- which(machine == server)
   }
   
-  write(paste("machine", machine), netfile)
-  
-  ## username
-  if (is.null(usr)) {
-    usr <- readline("Insert your Earthdata USERNAME: ")  
+  # if credentials are present, do not change, unless specified by arguments or confirmed
+  if(is.null(usr))
+  {
+    lin <- try(lns[[ind]]$login, silent = TRUE) 
+    # if not in netrc file take it from the original server
+    if(inherits(lin,'try-error'))
+    {
+      lin <- credentials()$login
+    }
+  } else 
+  {
+    lin <- usr
   }
-  write(paste("login", usr), netfile)
-  
-  ## password
-  if (is.null(pwd)) {
-    pwd <- readline("Insert your Earthdata PASSWORD: ")  
+  if(is.null(pwd))
+  {
+    pw <- try(lns[[ind]]$password, silent = TRUE) 
+    if(inherits(pw,'try-error'))
+    {
+      pw <- credentials()$password  
+    }
+  } else 
+  {
+    pw <- pwd
   }
-  write(paste("password", pwd), netfile)
   
-  ## change permissions
-  close(netfile) 
-  Sys.chmod('~/.netrc', mode = "600", use_umask = TRUE)
+  lns[[ind]] <- list(machine = server, login=lin, password=pw)          
+
+  netrc <- file(nrc,open = 'w')
+  for (i in seq_along(lns))
+  {
+    write(paste(names(lns[[i]][1]), lns[[i]][1]), netrc)
+    write(paste(names(lns[[i]][2]), lns[[i]][2]), netrc)
+    write(paste(names(lns[[i]][3]), lns[[i]][3]), netrc)
+  }
+  close(netrc) 
+
+  Sys.chmod(nrc, mode = "600", use_umask = TRUE)
   
-  return(invisible(normalizePath('~/.netrc')))
+  return(nrc)
 }
+
+## Earthdata login credentials from .netrc file
+readCredentials = function() {
+  
+  # e .netrc file
+  nrc = path.expand("~/.netrc")
+  
+  # if (!file.exists(nrc))
+  #   stop("~/.netrc file required. Either run lpdaacLogin() or set"
+  #        , " MODISoptions(MODISserverOrder = 'LAADS').")
+  
+  if(file.exists(nrc))
+  {  
+    lns = readLines(nrc)
+    # remove empty lines
+    lns = lns[lns!=""]
+    #lns <- gsub(lns,pattern = ' urs.earthdata.nasa.gov$', replacement = ' e4ftl01.cr.usgs.gov')
+    
+    # get first position of earthdata inforation (.netrc file can contain several logins)
+    machines = grep(lns, pattern = '^machine ')
+    result <- list()
+    
+    j <- 0
+    for(i in machines)
+    {
+      j <- j+1
+      # prevent multiple consecutive spaces
+      lns[i] <- gsub(lns[i],pattern = " +",replacement = " ")
+      
+      # if credentials have the three line formatting
+      if(length(strsplit(lns[i]," ")[[1]])==2)
+      {
+        machine = strsplit(lns[i], " ")[[1]][2]
+        login = strsplit(lns[i+1], " ")[[1]][2]
+        password = strsplit(lns[i+2], " ")[[1]][2]
+      } else
+      {
+        # if credentials are within a single line
+        machine = strsplit(lns[i], " ")[[1]][2]
+        login = strsplit(lns[i], " ")[[1]][4]
+        password = strsplit(lns[i], " ")[[1]][6]   
+      }
+      result[[j]] <- list(machine=machine,login=login,password=password)
+    }
+  }
+  return(result)
+}
+
+# internal function to retrieve a specific earthdata server (hard coded for its now sufficient)
+credentials <- function()
+{
+  #server   <- c('urs.earthdata.nasa.gov', 'e4ftl01.cr.usgs.gov','ladsweb.modaps.eosdis.nasa.gov', 'n5eil01u.ecs.nsidc.org')
+  server   <- 'urs.earthdata.nasa.gov'
+  lns      <- readCredentials()
+  machines <- unlist(listPather(lns,'machine'))
+  select   <- which(machines %in% server)
+  return(lns[[select]])
+}
+

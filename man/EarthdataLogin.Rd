@@ -4,12 +4,9 @@
 \alias{EarthdataLogin}
 \title{Create File with Earthdata Login Credentials}
 \usage{
-EarthdataLogin(service = "Earthdata", usr = NULL, pwd = NULL)
+EarthdataLogin(usr = NULL, pwd = NULL)
 }
 \arguments{
-\item{service}{\code{character}. Search service for MODIS data, defaults to 
-\code{"Earthdata"} which is currently the only option available.}
-
 \item{usr, pwd}{Login credentials as \code{character}. If \code{NULL}, 
 username and password are read from the terminal.}
 }
@@ -22,7 +19,8 @@ Create a hidden \code{.netrc} file with Earthdata login credentials in your
 home directory. The information included therein is used to login to 
 \url{urs.earthdata.nasa.gov} which is a mandatory requirement in order to 
 download MODIS data from LPDAAC, LAADS and NSIDC (see also 
-\code{\link{MODISoptions}}).
+\code{\link{MODISoptions}}). If \code{.netrc} does exists the function can
+be used to re-enter credentials.
 }
 \examples{
 \dontrun{

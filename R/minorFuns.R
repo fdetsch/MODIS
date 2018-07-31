@@ -603,14 +603,14 @@ filesUrl <- function(url)
     on.exit(options(warn=iw))
 
     ## LP DAAC, NSIDC
-    if (grepl("usgs.gov|nsidc", url)) {
-      
+    if (grepl("usgs.gov|nsidc", url)) 
+    {
       h <- curl::new_handle()
       if (grepl("nsidc", url)) {
         curl::handle_setopt(
           handle = h,
           httpauth = 1,
-          userpwd = paste(credentials(), collapse = ":")
+          userpwd = paste0(credentials()$login, ":",credentials()$password)
         )
       }
       
@@ -692,6 +692,10 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
 {
     x <- basename(x)
 
+    # earthdata login credentials (here for simplicity)
+    usr = credentials()$login
+    pwd = credentials()$password
+    
     ## if options have not been passed down, create them from '...'
     if (is.null(opts))
       opts <- combineOptions(...)
@@ -763,10 +767,6 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                 method <- opts$dlmethod
               }
               
-              # earthdata login credentials
-              crd = credentials()
-              usr = crd[1]; pwd = crd[2]
-
               # cookies
               ofl = file.path(tempdir(), ".cookies.txt")
               if (!file.exists(ofl))
@@ -797,13 +797,14 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
               extra <- getOption("download.file.extra")
             }
             
+            
             # curl download from LPDAAC or NSIDC
             out[a] = if (method == "curl" & server %in% c("LPDAAC", "NSIDC")) {
               h = curl::new_handle()
               curl::handle_setopt(
                 handle = h,
                 httpauth = 1,
-                userpwd = paste(credentials(), collapse = ":")
+                userpwd = paste0(usr, ":",pwd)
               )
               
               tmp = try(curl::curl_download(infile, destfile, quiet = opts$quiet
@@ -1106,19 +1107,19 @@ correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   return(begin)
 }
 
-## Earthdata login credentials from .netrc file
-credentials = function() {
-  
-  # try to locate .netrc file
-  nrc = path.expand("~/.netrc")
-  if (!file.exists(nrc))
-    stop("~/.netrc file required. Either run EarthdataLogin() or set" 
-         , " MODISoptions(MODISserverOrder = 'LAADS').")
-  
-  # if file exists, import contents
-  lns = readLines(nrc)
-  crd = sapply(strsplit(lns, " "), "[[", 2)
-  usr = crd[2]; pwd = crd[3]
-  
-  return(c("User" = usr, "Password" = pwd))
-}
+# ## Earthdata login credentials from .netrc file
+# credentials = function() {
+#   
+#   # try to locate .netrc file
+#   nrc = path.expand("~/.netrc")
+#   if (!file.exists(nrc))
+#     stop("~/.netrc file required. Either run EarthdataLogin() or set" 
+#          , " MODISoptions(MODISserverOrder = 'LAADS').")
+#   
+#   # if file exists, import contents
+#   lns = readLines(nrc)
+#   crd = sapply(strsplit(lns, " "), "[[", 2)
+#   usr = crd[2]; pwd = crd[3]
+#   
+#   return(c("User" = usr, "Password" = pwd))
+# }

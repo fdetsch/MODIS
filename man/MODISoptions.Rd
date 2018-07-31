@@ -5,8 +5,8 @@
 \title{Set or Retrieve Permanent MODIS Package Options}
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
-  dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait, quiet,
-  systemwide = FALSE, save = TRUE, checkTools = TRUE,
+  dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait,
+  quiet, systemwide = FALSE, save = TRUE, checkTools = TRUE,
   checkWriteDrivers = TRUE, ask = TRUE)
 }
 \arguments{

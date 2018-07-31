@@ -7,9 +7,10 @@
 \alias{getHdf,missing-method}
 \title{Create or Update Local Subset of Online MODIS Data Pool}
 \usage{
-\S4method{getHdf}{character}(product, HdfName, begin = NULL, end = NULL,
-  tileH = NULL, tileV = NULL, extent = NULL, collection = NULL,
-  checkIntegrity = TRUE, forceDownload = TRUE, ...)
+\S4method{getHdf}{character}(product, HdfName, begin = NULL,
+  end = NULL, tileH = NULL, tileV = NULL, extent = NULL,
+  collection = NULL, checkIntegrity = TRUE, forceDownload = TRUE,
+  ...)
 
 \S4method{getHdf}{missing}(HdfName, checkIntegrity = TRUE, ...)
 }

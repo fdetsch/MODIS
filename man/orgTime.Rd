@@ -11,8 +11,8 @@
 \S4method{orgTime}{character}(files, nDays = "asIn", begin = NULL,
   end = NULL, pillow = 75, pos1, pos2, format = "\%Y\%j")
 
-\S4method{orgTime}{Date}(files, nDays = "asIn", begin = NULL, end = NULL,
-  pillow = 75)
+\S4method{orgTime}{Date}(files, nDays = "asIn", begin = NULL,
+  end = NULL, pillow = 75)
 
 \S4method{orgTime}{Raster}(files, nDays = "asIn", begin = NULL,
   end = NULL, pillow = 75, pos1, pos2, format = "\%Y\%j")

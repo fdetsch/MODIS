@@ -13,6 +13,7 @@ Bugfixes:
 Changes:
 
   * Code adjustments related to LAADS transition from FTP to HTTPS. In this context, lpdaacLogin() is now deprecated and has been replaced with EarthdataLogin() since both LP DAAC and LAADS require the specification of Earthdata login credentials.
+  * EarthdataLogin() now allows multiple entries in a .netrc file in case users have other servers not related to Earthdata.
   * When 'extent' is a country name, 'outProj' is taken from MODISoptions() rather than hard-coded EPSG:4326.
   * If 'begin' falls in between two composite release dates, it is set back to start date of preceding release (see <https://github.com/MatMatt/MODIS/issues/43>).
   * When working with Extent (raster) or bbox objects (sf) and 'outProj' and 'pixelSize' are "asIn", the output grid and resolution is aligned with the original MODIS Sinusoidal grid. 

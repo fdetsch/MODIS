@@ -39,10 +39,10 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
   nrc <- path.expand("~/.netrc")
   
   # read .netrc entire file
-  lns <- MODIS:::readCredentials()
+  lns <-readCredentials()
   
   # get servers found on .netrc
-  machine <- unlist(MODIS:::listPather(lns,'machine'))
+  machine <- unlist(listPather(lns,'machine'))
   
   # create file
   if(!file.exists(nrc))

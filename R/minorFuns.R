@@ -236,7 +236,8 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
             
             cmd <- paste0(opts$gdalPath,'gdalinfo --version')            
             
-            gdalcode <- system(cmd, intern = TRUE)
+            gdalcode <- system(cmd, intern = FALSE
+                               , show.output.on.console = FALSE)
             
             if (gdalcode > 0)
             {

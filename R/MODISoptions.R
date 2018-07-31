@@ -293,7 +293,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   if (!missing(gdalPath))
   {
     opt$gdalPath <- correctPath(gdalPath)
-    if(!grepl("gdalinfo", dir(opt$gdalPath)))
+    if(all(!grepl("gdalinfo", dir(opt$gdalPath))))
     {
       stop(paste0("The 'gdalPath' you have provided '",normalizePath(opt$gdalPath,"/",FALSE) ,"' does not contain any gdal utilities, make sure to address the folder with GDAL executables (ie: gdalinfo)!"))
     }

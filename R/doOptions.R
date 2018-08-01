@@ -198,7 +198,12 @@ checkGdalDriver <- function(path=NULL)
     return(FALSE)
   }
     
-  return(any(grepl(driver,pattern="HDF4")))
+  if (any(grepl(driver, pattern = "HDF4"))) {
+    return(TRUE)
+  } else {
+    warning("HDF4 driver seems to be lacking. Please install GDAL with HDF4 support.")
+    return(FALSE)
+  }
 }
 
 combineOptions <- function(checkTools = TRUE, ...) 

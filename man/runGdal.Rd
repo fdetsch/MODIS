@@ -40,8 +40,8 @@ whether or not to overwrite existing SDS output files.}
 This allows non-data values, for example water, to be ignored and thus not effect the final data.
 NOTE: this argument will be ignored if the original SDS has a No Data value defined.}
 
-\item{...}{Additional arguments passed to \code{MODIS:::combineOptions()} (eg
-'wait'), see also \code{\link{MODISoptions}}.}
+\item{...}{Additional arguments passed to \code{\link{MODISoptions}}, e.g. 
+'wait'. Permanent settings for these arguments are temporarily overridden.}
 }
 \value{
 A \code{list} of the same length as 'product'. Each product slot either holds 

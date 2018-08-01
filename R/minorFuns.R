@@ -21,11 +21,11 @@
 #' \code{\link{getTile}}, \code{\link{map}}, \code{\link{grep}}.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' search4map()
 #' 
 #' search4map(pattern="USA",plot=TRUE)
-#' search4map(database="state",plot=TRUE)?map
+#' search4map(database="state",plot=TRUE)
 #' 
 #' search4map(database="italy",pattern="Bolz",plot=TRUE)
 #' 

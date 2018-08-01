@@ -43,9 +43,10 @@
 #' @examples 
 #' \dontrun{
 #' 
-#' # example MOD13Q1 see https://lpdaac.usgs.gov/products/modis_products_table/mod13q1 
+#' # example MOD13Q1 see MODIS Vegetation Index User's Guide (MOD13 Series; 
+#' # available online: https://lpdaac.usgs.gov/sites/default/files/public/product_documentation/mod13_user_guide.pdf)
 #' # enter in Layers
-#' # See in TABLE 2: MOD13Q1 VI Quality
+#' # See in TABLE 5: Descriptions of the VI Quality Assessment Science Data Sets (QA SDS).
 #' # column 1 (bit) row 2 VI usefulness 
 #' bitShift = 2
 #' bitMask = 15 # ('15' is the decimal of the binary '1111')  

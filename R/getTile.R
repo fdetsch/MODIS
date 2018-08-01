@@ -63,6 +63,7 @@
 #' # ex 1 ############
 #' # interactive tile selection
 #' getTile()
+#' }
 #' 
 #' # ex 2: Spatial (taken from ?rgdal::readOGR) ############
 #' dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
@@ -70,8 +71,9 @@
 #' getTile(Up)
 #' 
 #' # ex 3: sf ############
-#' library(mapview)
-#' getTile(franconia)
+#' ifl <- system.file("shape/nc.shp", package = "sf")
+#' nc <- sf::st_read(ifl, quiet = TRUE)
+#' getTile(nc)
 #' 
 #' # ex 4: tileH,tileV ############
 #' getTile(tileH = 18:19, tileV = 4)
@@ -89,7 +91,7 @@
 #' rst2 <- raster(mat2, xmn = -180, xmx = 180, ymn = -90, ymx = 90)
 #' getTile(rst2)
 #' getTile(extent(rst1))
-#' getTile(sf::st_bbox(franconia))
+#' getTile(sf::st_bbox(nc))
 #' 
 #' # ex 7: map names as returned by search4map() ############
 #' getTile("Austria")
@@ -102,7 +104,6 @@
 #' # or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 #' m2 <- map("state", region = "new jersey", fill = TRUE)
 #' getTile(m2)
-#' }
 #' 
 #' @export getTile
 #' @name getTile

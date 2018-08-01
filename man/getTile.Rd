@@ -65,6 +65,7 @@ easy data access is granted through \code{\link{getData}}.
 # ex 1 ############
 # interactive tile selection
 getTile()
+}
 
 # ex 2: Spatial (taken from ?rgdal::readOGR) ############
 dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
@@ -72,8 +73,9 @@ Up <- rgdal::readOGR(dsn, "Up")
 getTile(Up)
 
 # ex 3: sf ############
-library(mapview)
-getTile(franconia)
+ifl <- system.file("shape/nc.shp", package = "sf")
+nc <- sf::st_read(ifl, quiet = TRUE)
+getTile(nc)
 
 # ex 4: tileH,tileV ############
 getTile(tileH = 18:19, tileV = 4)
@@ -91,7 +93,7 @@ mat2 <- matrix(seq(180 * 360), byrow = TRUE, ncol = 360)
 rst2 <- raster(mat2, xmn = -180, xmx = 180, ymn = -90, ymx = 90)
 getTile(rst2)
 getTile(extent(rst1))
-getTile(sf::st_bbox(franconia))
+getTile(sf::st_bbox(nc))
 
 # ex 7: map names as returned by search4map() ############
 getTile("Austria")
@@ -104,7 +106,6 @@ getTile(m1)
 # or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 m2 <- map("state", region = "new jersey", fill = TRUE)
 getTile(m2)
-}
 
 }
 \seealso{

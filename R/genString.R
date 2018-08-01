@@ -11,6 +11,9 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
     opts <- combineOptions(checkTools = FALSE, quiet = TRUE, ...)
   
   product <- getProduct(x=x,quiet=TRUE)
+  if (is.null(product)) {
+    stop("'x' must be a valid product listed in getProduct().")
+  }
 
   if(length(product$PRODUCT)>1)
   {

@@ -69,7 +69,7 @@ the data into weighting information.
 \dontrun{
 
 # example MOD13Q1 see MODIS Vegetation Index User's Guide (MOD13 Series; 
-# available online: https://lpdaac.usgs.gov/sites/default/files/public/product_documentation/mod13_user_guide.pdf)
+# https://lpdaac.usgs.gov/sites/default/files/public/product_documentation/mod13_user_guide.pdf)
 # enter in Layers
 # See in TABLE 5: Descriptions of the VI Quality Assessment Science Data Sets (QA SDS).
 # column 1 (bit) row 2 VI usefulness 

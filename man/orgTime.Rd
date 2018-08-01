@@ -69,13 +69,14 @@ orgTime(files)
 orgTime(files,nDays=2,begin="2010350",end="2011015")
 
 # Using other files, e.g. from AVHRR GIMMS NDVI (Jul 1981 to Dec 1982)
-if (require(gimms)) {
+\dontrun{
+library(gimms)
 
-  files.v1 <- system.file("extdata/inventory_ecv1.rds", package = "gimms")
-  files.v1 <- readRDS(files.v1)[1:3]
-  dates.v1 <- gimms::monthlyIndices(files.v1, timestamp = TRUE)
+files.v1 <- system.file("extdata/inventory_ecv1.rds", package = "gimms")
+files.v1 <- readRDS(files.v1)[1:3]
+dates.v1 <- monthlyIndices(files.v1, timestamp = TRUE)
 
-  orgTime(dates.v1)
+orgTime(dates.v1)
 }
 
 }

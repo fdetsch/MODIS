@@ -842,8 +842,13 @@ return(!as.logical(out))
 doCheckIntegrity <- function(x, opts = NULL, ...) {
   
   x <- basename(x)
-  clc = sapply(strsplit(x, "\\."), "[[", 4)
   
+  ## extract collection information
+  clc = sapply(x, function(i) {
+    prd = getProduct(i, quiet = TRUE)
+    prd$CCC
+  })
+
   ## if options have not been passed down, create them from '...'
   if (is.null(opts))
     opts <- combineOptions(...)

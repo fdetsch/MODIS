@@ -715,7 +715,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
     
     for (a in seq_along(x))
     {  # a=1
-        path <- genString(x[a], opts = opts)
+        path <- genString(x[a], collection = getCollection(x[a], quiet = TRUE), opts = opts)
         path$localPath <- setPath(path$localPath)
         
         hv <- seq_along(opts$MODISserverOrder)

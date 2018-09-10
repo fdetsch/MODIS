@@ -27,7 +27,8 @@ checkIntegrity <- function(x, opts = NULL, ...) {
       {
         if (dirname(x[i])==".")
         {
-          x[i] <- paste0(genString(x=x[i],remote=FALSE,...)$localPath, basename(x[i]))        
+          x[i] <- paste0(genString(x = x[i], remote = FALSE
+                                   , collection = getCollection(x[i], quiet = TRUE))$localPath, basename(x[i]))        
         }
         
         if (!file.exists(x[i]))

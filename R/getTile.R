@@ -12,7 +12,7 @@
 #' full tile(s) (if more than one then also mosaicked) is (are) processed! 
 #' @param ... Additional arguments passed to \code{\link{MODISoptions}}. Here, 
 #' only 'outProj' and 'pixelSize' are relevant, and this only if 'x' is an 
-#' \code{Extent} or \code{bbox}.
+#' object of class \code{character}, \code{map}, \code{Extent} or \code{bbox}.
 #' 
 #' @return 
 #' A \code{MODISextent} object.
@@ -108,6 +108,8 @@
 #' @export getTile
 #' @name getTile
 getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
+ 
+  opts = combineOptions(...)
   
   # if 'x' is a Raster*/Spatial* and has a different CRS, the information is added here
   target <- NULL  
@@ -193,12 +195,8 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       x <- maps::map("worldHires", x, plot = FALSE, fill=TRUE)
     }
     
-    # maps::map (from mapdata/maps) to SpatialPolygons
-    if (inherits(x, "map")) {
-      x = maptools::map2SpatialPolygons(x, x$names, prj, checkHoles = TRUE)
-
     # this needs to be done in order to use rgdal:::over to intersect geometies 
-    } else if (inherits(x, c("Raster", "Spatial"))) {
+    if (inherits(x, c("Raster", "Spatial"))) {
       
       # if coord. ref. is missing, set to EPSG:4326
       target <- list(outProj = raster::projection(x)
@@ -229,17 +227,29 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
         x <- sf::st_transform(x, prj@projargs)
       }
 
-    # 'Extent' | 'bbox' method  
-    } else if (inherits(x, c("Extent", "bbox"))) {
+    # 'map' | 'Extent' | 'bbox' method  
+    } else if (inherits(x, c("map", "Extent", "bbox"))) {
       
-      if (inherits(x, "bbox")) {
-        tmp = as.numeric(x)[c(1, 3, 2, 4)]
-        x = raster::extent(tmp)
+      # convert to polygons
+      if (inherits(x, "map")) {
+        spy = x = maptools::map2SpatialPolygons(x, x$names, prj, checkHoles = TRUE)
+      } else {
+        if (inherits(x, "bbox")) {
+          tmp = as.numeric(x)[c(1, 3, 2, 4)]
+          x = raster::extent(tmp)
+        }
+        
+        spy = as(x, "SpatialPolygons"); sp::proj4string(spy) = prj@projargs
       }
       
-      opts = combineOptions(...)
-      spy = as(x, "SpatialPolygons"); sp::proj4string(spy) = prj@projargs
-      spy = sp::spTransform(spy, if (opts$outProj == "asIn") oprj else sp::CRS(opts$outProj))
+      spy = sp::spTransform(spy, if (opts$outProj == "asIn") {
+        oprj 
+      } else {
+        if (!is.na(as.integer(opts$outProj))) {
+          opts$outProj = paste0("+init=epsg:", as.integer(opts$outProj))
+        }
+        sp::CRS(opts$outProj)
+      })
       
       target <- list(outProj = opts$outProj
                      , extent = raster::extent(spy)

@@ -18,7 +18,7 @@ full tile(s) (if more than one then also mosaicked) is (are) processed!}
 
 \item{...}{Additional arguments passed to \code{\link{MODISoptions}}. Here, 
 only 'outProj' and 'pixelSize' are relevant, and this only if 'x' is an 
-\code{Extent} or \code{bbox}.}
+object of class \code{character}, \code{map}, \code{Extent} or \code{bbox}.}
 }
 \value{
 A \code{MODISextent} object.

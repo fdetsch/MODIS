@@ -140,9 +140,10 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
     if (!is.numeric(tileV)) tileV <- as.numeric(tileV)
     
     tt <- tiletable[(tiletable$ih %in% tileH) &
-                      (tiletable$iv %in% tileV) & (tiletable$xmin >- 999), ]
+                      (tiletable$iv %in% tileV) & (tiletable$lon_min > -999), ]
 
-    x <- raster::extent(c(min(tt$xmin), max(tt$xmax), min(tt$ymin), max(tt$ymax)))
+    x <- raster::extent(c(min(tt$lon_min), max(tt$lon_max)
+                          , min(tt$lat_min), max(tt$lat_max)))
     
     tt$iv <- sprintf("%02d", tt$iv)
     tt$ih <- sprintf("%02d", tt$ih)

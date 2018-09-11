@@ -128,7 +128,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE)
           proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
       } else
       {
-        stop("Could not convert 'outProj' argunemt",proj, "to a sp::CRS compatible string!")
+        stop("Could not convert 'outProj' argument",proj, "to a sp::CRS compatible string!")
       }
     } else if(!is.na(as.numeric(proj)))
     {

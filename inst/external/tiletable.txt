@@ -1,5 +1,5 @@
-# from http://landdb1.nascom.nasa.gov/developers/sn_tiles/sn_bound_10deg.txt
- iv  ih    xmin    xmax   ymin   ymax
+# from https://modis-land.gsfc.nasa.gov/pdf/sn_bound_10deg.txt
+ iv  ih    lon_min    lon_max   lat_min   lat_max
   0   0  -999.0000  -999.0000  -99.0000  -99.0000
   0   1  -999.0000  -999.0000  -99.0000  -99.0000
   0   2  -999.0000  -999.0000  -99.0000  -99.0000

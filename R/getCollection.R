@@ -248,7 +248,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 
     } else if (newest) 
     {
-	    if (!opts$quiet) {
+	    if (!opts$quiet & !forceCheck) {
 	      cat("No collection specified, getting the newest for", productN$PRODUCT, "\n")
 	    }
 

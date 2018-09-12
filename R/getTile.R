@@ -167,7 +167,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
   } else {
     
     fromMap <- FALSE
-    prj <- sp::CRS("+init=epsg:4326")
+    prj <- sp::CRS(sp::proj4string(sr))
     oprj = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
 
     # filename string to Raster/vector conversion
@@ -201,8 +201,11 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       
       # if coord. ref. is missing, set to EPSG:4326
       target <- list(outProj = raster::projection(x)
-                     , extent = raster::extent(x)
-                     , pixelSize = NULL) 
+                     , extent = if (inherits(x, "SpatialPoints")) {
+                       NULL
+                     } else {
+                       raster::extent(x)
+                     }, pixelSize = NULL) 
       
       if (inherits(x, "Raster"))
         target$pixelSize <- raster::res(x)
@@ -221,8 +224,11 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
     # 'sf' method  
     } else if (inherits(x, "sf")) {
       target <- list(outProj = sf::st_crs(x)$proj4string
-                     , extent = raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
-                     , pixelSize = NULL)
+                     , extent = if (grepl("POINT", sf::st_geometry_type(x))) {
+                       NULL 
+                     } else {
+                       raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
+                     }, pixelSize = NULL)
       
       if (!raster::compareCRS(target$outProj, prj)) {
         x <- sf::st_transform(x, prj@projargs)
@@ -274,7 +280,11 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       }
     }
     
-    selected <- raster::crop(sr, x)
+    selected <- if (inherits(x, "Spatial")) {
+      sr[x, ]
+    } else {
+      raster::crop(sr, x)
+    }
     tileH  <- unique(selected@data$h)
     tileV  <- unique(selected@data$v)
     

@@ -53,8 +53,8 @@
 #' If \code{extent} is a \code{Raster*} object, the output has exactly the same 
 #' extent, pixel size, and projection.\cr
 #' If \code{extent} is a \strong{sp} or \strong{sf} object, the 
-#' output has exactly the same extent and projection except for point geometries 
-#' where only the projection is inherited.\cr
+#' output has exactly the same extent and projection except for single-point 
+#' geometries where only the projection is inherited.\cr
 #' If \code{tileH} and \code{tileV} are used (instead of \code{extent}) to 
 #' define the area of interest, and \code{outProj} and \code{pixelSize} are 
 #' \code{'asIn'}, the result is only converted from multilayer-HDF to 

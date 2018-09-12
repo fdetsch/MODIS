@@ -201,7 +201,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       
       # if coord. ref. is missing, set to EPSG:4326
       target <- list(outProj = raster::projection(x)
-                     , extent = if (inherits(x, "SpatialPoints")) {
+                     , extent = if (inherits(x, "SpatialPoints") & length(x) == 1L) {
                        NULL
                      } else {
                        raster::extent(x)
@@ -224,7 +224,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
     # 'sf' method  
     } else if (inherits(x, "sf")) {
       target <- list(outProj = sf::st_crs(x)$proj4string
-                     , extent = if (grepl("POINT", sf::st_geometry_type(x))) {
+                     , extent = if (grepl("POINT", sf::st_geometry_type(x))[1] & nrow(x) == 1L) {
                        NULL 
                      } else {
                        raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])

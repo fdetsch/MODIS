@@ -777,6 +777,14 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
                 jnk = file.create(ofl)
               on.exit(file.remove(ofl))
               
+              # ~/.netrc is mandatory for LP DAAC and NSIDC, hence if missing, 
+              # create it to avoid repeat authentication failures
+              if (any(is.null(c(usr, pwd)))) {
+                jnk = EarthdataLogin()
+                usr = credentials()$login
+                pwd = credentials()$password
+              }
+              
               # wget extras
               extra <- if (method == "wget") {
                 paste("--user", usr, "--password", pwd
@@ -802,7 +810,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
             }
             
             
-            # curl download from LPDAAC or NSIDC
+            # curl download from LP DAAC or NSIDC
             out[a] = if (method == "curl" & server %in% c("LPDAAC", "NSIDC")) {
               h = curl::new_handle()
               curl::handle_setopt(

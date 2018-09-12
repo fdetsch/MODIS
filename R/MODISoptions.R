@@ -33,7 +33,7 @@
 #' @param dlmethod \code{character}, defaults to \code{auto}. See 'method' in 
 #' \code{\link{download.file}}. On Unix (also Mac?), it is suggested to use 
 #' \code{"wget"} or, if installed, \code{"aria2"}. In order to download MODIS 
-#' files from LPDAAC and NSIDC, please note that either wget (default) or curl 
+#' files from LP DAAC and NSIDC, please note that either wget (default) or curl 
 #' must be installed and made available through the PATH environmental variable.
 #' @param stubbornness \code{numeric}. The number of retries after the target 
 #' server has refused a connection. Higher values increase the chance of getting 
@@ -97,12 +97,12 @@
 #' to HTTP (May 2013), \code{dlmethod = 'auto'} seems not to work properly. On 
 #' Windows, on the other hand, \code{dlmethod = 'auto'} seems to work fine. 
 #' 
-#' Please note that in order to download MODIS files from LPDAAC, you are 
-#' required to register for an Earthdata Login Profile 
+#' Please note that in order to download MODIS files from LP DAAC and NSIDC, you 
+#' are required to register for an Earthdata Login Profile 
 #' (\url{https://urs.earthdata.nasa.gov/users/new}) and create a read-only 
 #' .netrc file in your home directory containing the Earthdata server address as 
 #' well as your login credentials. An automated solution for the creation of a 
-#' workable .netrc file is provided through \code{\link{lpdaacLogin}}. 
+#' workable .netrc file is provided through \code{\link[MODIS]{EarthdataLogin}}. 
 #' 
 #' @author 
 #' Matteo Mattiuzzi, Steven Mosher and Florian Detsch

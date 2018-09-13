@@ -351,7 +351,7 @@ setMethod("getHdf",
               } # on ftp is possible to find empty folders!
             }
             
-            if(checkIntegrity & !is.na(dates[[l]][i, -1]))
+            if(checkIntegrity)
             { # after each 'i' do the sizeCheck
               isIn <- doCheckIntegrity(paste0(path$localPath,dates[[l]][i,-1]), opts = opts)
             }

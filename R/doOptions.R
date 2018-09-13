@@ -126,6 +126,9 @@ checkOutProj <- function(proj, tool, quiet=FALSE)
       } else if (toupper(proj) %in% c("SIN","SINUSOIDAL"))
       {
           proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
+      } else if (toupper(proj) %in% c("UTM", "Universal Transverse Mercator")) 
+      {
+          stop("UTM zone conversion needs to be implemented, yet.")
       } else
       {
         stop("Could not convert 'outProj' argument",proj, "to a sp::CRS compatible string!")

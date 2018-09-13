@@ -252,7 +252,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       spy = sp::spTransform(spy, if (opts$outProj == "asIn") {
         oprj 
       } else {
-        if (!is.na(as.integer(opts$outProj))) {
+        if (!is.na(suppressWarnings(as.integer(opts$outProj)))) {
           opts$outProj = paste0("+init=epsg:", as.integer(opts$outProj))
         }
         sp::CRS(opts$outProj)
@@ -295,7 +295,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
                         , tile = tiles
                         , tileH = as.integer(tileH)
                         , tileV = as.integer(tileV)
-                        , extent = x
+                        , extent = raster::extent(x)
                         , system = "MODIS"
                         , target = target)
   

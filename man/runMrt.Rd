@@ -22,10 +22,9 @@ defaults to \code{"NODATUM"}. Supported datums are \code{"NAD27"},
 \code{"NAD83"}, \code{"WGS66"}, \code{"WGS72"} and \code{"WGS84"}, see 
 \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 7-8.}
 
-\item{zone}{Optional output zone number as \code{integer}, relevant only for 
+\item{zone}{Output zone number as \code{integer}, relevant only for 
 UTM projections (i.e., \code{outProj = "UTM"}. Valid values are \code{–60} to 
-\code{+60}. If not specified, MRT will automatically set the UTM Zone, see 
-\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 51.}
+\code{+60}.}
 
 \item{projPara}{Output projection parameters as \code{character} string, see 
 'Details'. Ignored if \code{outProj \%in\% c("SIN", "GEO")}. If not specified 
@@ -116,7 +115,7 @@ geo = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002"
 sin = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
              job="ExampleSINdelme", outProj="SIN")
 utm = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
-             job="ExampleUTMdelme", outProj="UTM")
+             job="ExampleUTMdelme", outProj="UTM", zone = 33)
 }
 
 }

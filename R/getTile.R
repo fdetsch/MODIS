@@ -201,7 +201,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       
       # if coord. ref. is missing, set to EPSG:4326
       target <- list(outProj = raster::projection(x)
-                     , extent = if (inherits(x, "SpatialPoints") & length(x) == 1L) {
+                     , extent = if (pts_1 <- (inherits(x, "SpatialPoints") & length(x) == 1L)) {
                        NULL
                      } else {
                        raster::extent(x)
@@ -224,7 +224,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
     # 'sf' method  
     } else if (inherits(x, "sf")) {
       target <- list(outProj = sf::st_crs(x)$proj4string
-                     , extent = if (grepl("POINT", sf::st_geometry_type(x))[1] & nrow(x) == 1L) {
+                     , extent = if (pts_1 <- grepl("POINT", sf::st_geometry_type(x))[1] & nrow(x) == 1L) {
                        NULL 
                      } else {
                        raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
@@ -233,6 +233,8 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       if (!raster::compareCRS(target$outProj, prj)) {
         x <- sf::st_transform(x, prj@projargs)
       }
+      
+      x <- methods::as(x, "Spatial")
 
     # 'map' | 'Extent' | 'bbox' method  
     } else if (inherits(x, c("map", "Extent", "bbox"))) {
@@ -263,9 +265,6 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
                      , pixelSize = opts$pixelSize)
     }
     
-    if (inherits(x, "sf"))
-      x <- methods::as(x, "Spatial")
-    
     ## capture errors related to orphaned holes and self-intersection
     if (inherits(x, 'Spatial')) {
       isValid = try(rgeos::gIsValid(x, reason = TRUE), silent = TRUE)
@@ -289,6 +288,16 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
     tileV  <- unique(selected@data$v)
     
     tiles <- as.character(apply(selected@data,1,function(x) {paste("h",sprintf("%02d",x[2]),"v",sprintf("%02d",x[3]),sep="")}))
+    
+    if (exists("pts_1")) {
+      if (pts_1) {
+        tt <- tiletable[(tiletable$ih %in% tileH) &
+                          (tiletable$iv %in% tileV) & (tiletable$lon_min > -999), ]
+        
+        x <- raster::extent(c(min(tt$lon_min), max(tt$lon_max)
+                              , min(tt$lat_min), max(tt$lat_max)))
+      }
+    }
   }
   
   result = methods::new("MODISextent"

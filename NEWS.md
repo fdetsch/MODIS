@@ -3,6 +3,7 @@
 New features: 
 
   * After temporary inoperability, runMRT() is fully functional again.
+  * Interactive feature drawing is now implemented in getTile(), check out the documentation.
   * getTile() supports 'sp' or 'sf' point geometries with length = 1 (i.e. a single point), in which case the target extent is the MODIS tile covering the specified location.
 
 Changes:

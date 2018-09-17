@@ -19,7 +19,7 @@
 #' @importFrom devtools install_github
 #' @importFrom grDevices dev.new dev.off png
 #' @importFrom graphics abline box grid locator title
-#' @importFrom mapedit selectFeatures
+#' @importFrom mapedit drawFeatures selectFeatures
 #' @importFrom maps map.axes
 #' @importFrom maptools map2SpatialPolygons map2SpatialLines checkPolygonsHoles
 #' @importFrom methods as new slot

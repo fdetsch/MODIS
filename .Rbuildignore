@@ -6,3 +6,5 @@
 ^R/addProduct\.R$
 ^R/addServer\.R$
 ^resample\.log$
+^R/getUTMZone\.R$
+^inst/external/UTM_Zone_Boundaries\.rds$

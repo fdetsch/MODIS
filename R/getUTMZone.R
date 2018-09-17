@@ -1,75 +1,73 @@
-getUTMZone <- function(x = NULL, tileH = NULL, tileV = NULL) {
+#' Get UTM Zone
+#' 
+#' @description 
+#' Get the UTM zone for a geographic area. Zones are identified based on the 
+#' centroid coordinate pair of the specified input.
+#' 
+#' @param x Extent information, see \code{\link[MODIS]{getTile}} and 'Details' 
+#' therein.
+#' 
+#' @return 
+#' A \code{sf data.frame} in \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326}
+#' with relevant output UTM zone information.
+#' 
+#' @author 
+#' Florian Detsch
+#' 
+#' @references 
+#' NGA Geomatics (2018) Coordinate Systems. Available online 
+#' \href{http://earth-info.nga.mil/GandG/update/index.php?dir=coordsys&action=coordsys#tab_utm}{here} 
+#' (2018-09-17).
+#' 
+#' @seealso 
+#' \code{\link[MODIS]{getTile}}, \code{\link[rgeos]{gCentroid}}.
+#' 
+#' @examples 
+#' getUTMZone("tanzania")
+#' 
+#' data(meuse)
+#' pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
+#' getUTMZone(pts)
+#' 
+#' @export getUTMZone
+#' @name getUTMZone
+getUTMZone <- function(x = NULL) {
   
-  opts = combineOptions(outProj = "UTM")
-  
-  ## if inputs are missing, select tile(s) interactively
-  if (all(sapply(c(x, tileH, tileV), is.null))) {
-    x = mapSelect()
-    tileH = x$h; tileV = x$v
-  }
-  
-  if (all(!is.null(tileH), !is.null(tileV))) {
-    if (!is.numeric(tileH)) tileH <- as.numeric(tileH)
-    if (!is.numeric(tileV)) tileV <- as.numeric(tileV)
-    
-    tt <- tiletable[(tiletable$ih %in% tileH) &
-                      (tiletable$iv %in% tileV) & (tiletable$lon_min > -999), ]
-    
-    x <- raster::extent(c(min(tt$lon_min), max(tt$lon_max)
-                          , min(tt$lat_min), max(tt$lat_max)))
-    
-    tt$iv <- sprintf("%02d", tt$iv)
-    tt$ih <- sprintf("%02d", tt$ih)
-    
-    tileH <- sprintf("%02d",tileH)
-    tileV <- sprintf("%02d",tileV)
-    
-    tilesSUB <- as.character(apply(tt,1, function(x) {
-      paste0("h", x[2], "v",  x[1])
-    }))
-    tiles <- as.character(sapply(tileH, function(x){paste0("h", x, "v", tileV)}))
-    
-    if (!all(tiles %in% tilesSUB))  # all possible tiles vs all available
-    {
-      rem <- paste0(tiles[!tiles %in% tilesSUB],collapse=", ")
-      cat(paste0("The following 'tiles' do not exist:\n",rem,"\n"))
-      tiles <- tilesSUB
-      tileH <- unique(tt$ih)
-      tileV <- unique(tt$iv)
-    }
+  ## if 'x' is missing, select UTM tile(s) interactively
+  if (is.null(x)) {
+    out = selectUTMZone()
+
+  ## else identify zone from geographic input  
   } else {
     
-    fromMap <- FALSE
-    prj <- sp::CRS(sp::proj4string(sr))
-    oprj = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
+    prj = sp::CRS("+init=epsg:4326")
     
-    # filename string to Raster/vector conversion
-    if(inherits(x,"character") & length(x)==1) # length>1 it should be only a mapname for maps::map
-    {
-      if (raster::extension(x)=='.shp')
-      {
-        x <- shapefile(x)
-      } else 
-      {
-        if (file.exists(x))
-        {
-          x <- raster(x)
+    # 'character' (file) method: read 'Spatial' or 'Raster' file
+    if (inherits(x, "character") & length(x) == 1) {
+      if (raster::extension(x) == '.shp') {
+        x <- raster::shapefile(x)
+      } else {
+        if (file.exists(x)) {
+          x <- raster::raster(x)
         }
       }
     }  
     
-    # character (country name of MAP) to maps::map conversion     
-    if (inherits(x, "character"))
-    {
-      try(testm <- maps::map("worldHires", x, plot = FALSE),silent = TRUE)
-      if (!exists("testm"))
-      {
+    # 'character' (map) method: get 'Spatial' boundaries
+    if (inherits(x, "character")) {
+      try(testm <- maps::map("worldHires", x, plot = FALSE), silent = TRUE)
+      if (!exists("testm")) {
         stop(paste0("Country name not valid. Check availability/spelling, i.e. try if it works with: map('worldHires,'",x, "'), or use '?search4map' function"))
       }
-      x <- maps::map("worldHires", x, plot = FALSE, fill=TRUE)
+      x <- maps::map("worldHires", x, plot = FALSE, fill = TRUE)
     }
     
-    # this needs to be done in order to use rgdal:::over to intersect geometies 
+    # 'sf' method: convert to 'Spatial'
+    if (inherits(x, "sf")) {
+      x = methods::as(x, "Spatial")
+    }
+    
+    # 'Raster,Spatial' method
     if (inherits(x, c("Raster", "Spatial"))) {
       
       # if required, spTransform() extent object
@@ -81,14 +79,11 @@ getUTMZone <- function(x = NULL, tileH = NULL, tileV = NULL) {
         }
       }
       
-      # 'sf' method  
-    } else if (inherits(x, "sf")) {
-      
-      if (!raster::compareCRS(sp::CRS(sf::st_crs(x)$proj4string), prj)) {
-        x <- sf::st_transform(x, prj@projargs)
+      if (inherits(x, "Raster")) {
+        x = ext2spy(raster::extent(x), as_sf = FALSE)
       }
       
-      # 'map' | 'Extent' | 'bbox' method  
+    # 'map' | 'Extent' | 'bbox' method  
     } else if (inherits(x, c("map", "Extent", "bbox"))) {
       
       # convert to polygons
@@ -104,9 +99,6 @@ getUTMZone <- function(x = NULL, tileH = NULL, tileV = NULL) {
       }
     }
     
-    if (inherits(x, "sf"))
-      x <- methods::as(x, "Spatial")
-    
     ## capture errors related to orphaned holes and self-intersection
     if (inherits(x, 'Spatial')) {
       isValid = try(rgeos::gIsValid(x, reason = TRUE), silent = TRUE)
@@ -120,10 +112,15 @@ getUTMZone <- function(x = NULL, tileH = NULL, tileV = NULL) {
         }
       }
     }
+    
+    # calculate center coordinate
+    ctr = rgeos::gCentroid(x)
+    
+    grd ="inst/external/UTM_Zone_Boundaries.rds"
+    out = sf::st_join(sf::st_as_sf(ctr), readRDS(grd))
   }
   
-  x = GEO2UTM(x)
-  return(x)
+  return(out)
 }
 
 
@@ -163,4 +160,16 @@ GEO2UTM = function(x, y) {
   }
   
   return(zone)
+}
+
+
+### select target UTM zone interactively ----
+
+selectUTMZone = function() {
+  
+  grd <- readRDS("inst/extdata/UTM_Zone_Boundaries.rds")
+  # grd <- readRDS(system.file("extdata", "UTM_Zone_Boundaries.rds", package = "MODIS"))
+  sel <- mapedit::selectFeatures(grd)
+  
+  return(sel)
 }

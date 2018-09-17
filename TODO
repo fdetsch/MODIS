@@ -25,9 +25,6 @@ runGdal()
 - include scale factor during SDS extraction?  
 - speed up when downloaded hdf / processed tif files are already present
   
-getTile()
-- interactive polygon drawing via mapedit
-  
 qualityControl
 - method based on maximum value from preceding / current / succeeding image (i.e., from user-defined window) as proposed by Yang et al. (2013, http://dx.doi.org/10.1109/LGRS.2012.2219576)
 

@@ -45,7 +45,3 @@ General solution for "//"
 Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs
 
 handle = new_handle(CONNECTTIMEOUT = 60) (taken from https://github.com/jeroen/curl/issues/72)
-
-runMrt()
-- enable 'overwrite = FALSE' <-> currently overwrites existing images in target folders
-- automatic UTM zone detection for `outProj = 'UTM'` <-> use getUTMZone() and validate its results

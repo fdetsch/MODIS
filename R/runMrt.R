@@ -30,8 +30,12 @@
 #' see also 'Details' for some MRT specific settings.
 #' 
 #' @details 
-#' Below you find a list of arguments that require particular attention when 
-#' operating MRT:
+#' Please note that in contrast to \code{\link[MODIS]{runGdal}}, MRT's 
+#' \code{resample} function does not offer an 'overwrite' option, and hence, 
+#' existing files will be overwritten (see also 
+#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 59).\cr\cr 
+#' Further arguments that require particular attention when operating MRT are 
+#' summarized in the following list:
 #'  
 #' @section \code{dataFormat}:
 #' Output file formats include:
@@ -127,7 +131,7 @@ runMrt <- function(product, collection = NULL
                    , mosaic = TRUE, anonym = TRUE
                    , ...)
 {
-  
+
     dots = list(...)
     opts = do.call(combineOptions, dots)
 
@@ -149,21 +153,17 @@ runMrt <- function(product, collection = NULL
     } 
     ext <- getExtension(opts$dataFormat)
     
-    if (opts$outProj == "UTM" & is.null(zone)) {
-      stop("An UTM zone needs to be specified when `outProj = 'UTM'.")
-    }
-    
     if (!inherits(extent, "MODISextent")) {
-      extent = if (product$TYPE[1] == "Tile" | 
-                   (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & 
+      extent = if (product$TYPE[1] == "Tile" |
+                   (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) &
                     product$TYPE[1]=="CMG")) {
         getTile(x = extent, tileH = tileH, tileV = tileV
-                , outProj = checkOutProj(opts$outProj, tool = "gdal", quiet = TRUE, zone)
-                , pixelSize = opts$pixelSize)
+                , outProj = "asIn"
+                , pixelSize = "asIn")
       } else {
         NULL
       }
-    }   
+    }
     
     opts$resamplingType <- checkResamplingType(opts$resamplingType,tool="mrt",quiet=TRUE)
     opts$outProj        <- checkOutProj(opts$outProj,tool="mrt",quiet=TRUE)
@@ -175,6 +175,8 @@ runMrt <- function(product, collection = NULL
     cat("Output projection:", opts$outProj$long,"\n")    
     if (opts$outProj$short=="UTM")
     {
+      zone = checkUTMZone(zone)
+      
         if (is.null(zone)) 
         {
             cat("No UTM zone specified using MRT autodetection.\n")            
@@ -212,6 +214,16 @@ runMrt <- function(product, collection = NULL
     lst_product <- vector("list", length(product$PRODUCT))
     for (z in 1:length(product$PRODUCT))
     {
+      
+      # if (product$TYPE[z]=="CMG") 
+      # {
+      #   tileID="GLOBAL"
+      #   ntiles=1 
+      # } else 
+      # {
+      #   extent <- getTile(x=extent,tileH=tileH,tileV=tileV)
+      #   ntiles    <- length(extent@tile)
+      # }
 
         todo <- paste(product$PRODUCT[z],".",product$CCC[[product$PRODUCT[z]]],sep="")    
     
@@ -406,10 +418,10 @@ runMrt <- function(product, collection = NULL
                             }
                         }
                       
-                      lst_ofile[[l]] = sapply(SDSstringIntern$SDSnames, function(pttrn) {
-                        list.files(outDir
-                                   , pattern = paste(basenam, pttrn, ext, sep = ".*")
-                                   , full.names = TRUE)
+                      xtr = gsub(" ", "_", SDSstringIntern$SDSnames)
+                      lst_ofile[[l]] = sapply(xtr, function(pttrn) {
+                        list.files(outDir, full.names = TRUE, ignore.case = TRUE
+                                   , pattern = paste(basenam, pttrn, ext, sep = ".*"))
                       })
                       lst_ofile[[l]] = as.character(lst_ofile[[l]])
                       

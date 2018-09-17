@@ -89,7 +89,9 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
 }
 
 # checks validity of outProj and returns for tool="MRT" the short name (see mrt manual) and in case of "GDAL" the prj4 string!
-checkOutProj <- function(proj, tool, quiet=FALSE, zone = NULL)
+checkOutProj <- function(proj, tool, quiet=FALSE
+                         # , zone = NULL
+                         )
 {
   tool <- toupper(tool)
   if (!tool %in% c("GDAL", "MRT"))
@@ -126,18 +128,18 @@ checkOutProj <- function(proj, tool, quiet=FALSE, zone = NULL)
       } else if (toupper(proj) %in% c("SIN","SINUSOIDAL"))
       {
           proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
-      } else if (toupper(proj) %in% c("UTM", "Universal Transverse Mercator")) 
-      {
-        if (is.null(zone)) {
-          stop("An UTM zone needs to be specified when `outProj = 'UTM'`.")
-        }
-        
-        hemisphere = if (zone < 0) " +south " else " "
-        proj = paste0("+proj=utm "
-                     , "+zone=", zone
-                     , hemisphere
-                     # , if (datum != "NODATUM") paste0("+datum=", datum)
-                     , "+ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+      # } else if (toupper(proj) %in% c("UTM", "Universal Transverse Mercator")) 
+      # {
+      #   if (is.null(zone)) {
+      #     stop("An UTM zone needs to be specified when `outProj = 'UTM'`.")
+      #   }
+      #   
+      #   hemisphere = if (zone < 0) " +south " else " "
+      #   proj = paste0("+proj=utm "
+      #                , "+zone=", zone
+      #                , hemisphere
+      #                # , if (datum != "NODATUM") paste0("+datum=", datum)
+      #                , "+ellps=WGS84 +datum=WGS84 +units=m +no_defs")
       } else
       {
         stop("Could not convert 'outProj' argument",proj, "to a sp::CRS compatible string!")
@@ -247,3 +249,16 @@ combineOptions <- function(checkTools = TRUE, ...)
 }
 
 
+### check output utm zone number passed to runMrt() ----
+
+checkUTMZone = function(zone = NULL) {
+  if (!is.null(zone)) {
+    zone = suppressWarnings(as.integer(zone))
+    if (is.na(zone) | zone < -60 | zone > 60 | zone == 0) {
+      warning("Output UTM zone needs to be a non-zero integer between -60 and 60, autodetecting ...")
+      zone = NULL
+    }
+  }
+  
+  return(zone)
+}

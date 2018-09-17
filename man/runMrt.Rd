@@ -50,8 +50,12 @@ archive (HTTP or local) and processes it with the MODIS Reprojection Tool
 for further information.
 }
 \details{
-Below you find a list of arguments that require particular attention when 
-operating MRT:
+Please note that in contrast to \code{\link[MODIS]{runGdal}}, MRT's 
+\code{resample} function does not offer an 'overwrite' option, and hence, 
+existing files will be overwritten (see also 
+\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 59).\cr\cr 
+Further arguments that require particular attention when operating MRT are 
+summarized in the following list:
 }
 \section{\code{dataFormat}}{
 

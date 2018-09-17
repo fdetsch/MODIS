@@ -2,7 +2,8 @@
 
 New features: 
 
-  * getTile() supports single-point geometries from 'sp' and 'sf'.
+  * After temporary inoperability, runMRT() is fully functional again.
+  * getTile() supports 'sp' or 'sf' point geometries with length = 1 (i.e. a single point), in which case the target extent is the MODIS tile covering the specified location.
 
 Changes:
 

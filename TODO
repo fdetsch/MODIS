@@ -1,6 +1,3 @@
-getProduct():
-# make a class modisproduct
-
 longer term changes:
 - reduce the capability of functions eg:
     completely separate getHdf from runGdal (also getProduct, getCollection etc should be removed from those functions.

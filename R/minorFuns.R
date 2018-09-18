@@ -512,25 +512,19 @@ isSupported <- function(x)
     {
       secName <- defineName(product$request)
       
-      if (product$SENSOR[1] == "MODIS") 
+      if (product$TYPE[1] == "Tile") 
       {
-        if (product$TYPE[1] == "Tile") 
-        {
-          Tpat    <- "h[0-3][0-9]v[0-1][0-9]" # to enhance
-          return(all((grep(secName["TILE"],pattern=Tpat)) + (substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
-          
-        } else if (product$TYPE[1] == "CMG") 
-        {
-          return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==5)))
-          
-        } else if (product$TYPE[1] == "Swath")  # actually no support for Swath data!
-        {
-#             return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
-#                } else {
-          return(FALSE)
-        }
-      } else 
+        Tpat    <- "h[0-3][0-9]v[0-1][0-9]" # to enhance
+        return(all((grep(secName["TILE"],pattern=Tpat)) + (substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
+        
+      } else if (product$TYPE[1] == "CMG") 
       {
+        return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==5)))
+        
+      } else if (product$TYPE[1] == "Swath")  # actually no support for Swath data!
+      {
+        #             return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
+        #                } else {
         return(FALSE)
       }
     }

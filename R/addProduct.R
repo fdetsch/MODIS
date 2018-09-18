@@ -7,8 +7,7 @@
 #' 
 #' @param product Character. Name of the product that should be added to the 
 #' inventory, see \code{\link{getProduct}}.
-#' @param sensor Character. Sensor type, defaults to 'MODIS'.
-#' @param platform Character. Satellite platform on which the specified 'sensor' 
+#' @param platform Character. Satellite platform on which MODIS 
 #' is mounted, defaults to "Terra".
 #' @param pf1,pf2 Character. Online server paths.
 #' @param topic Character. The official name of 'product'.
@@ -38,14 +37,14 @@
 #' @examples 
 #' \dontrun{
 #' ## E.g., add MODIS evapotranspiration product
-#' MODIS:::addProduct(product = "MOD16A2", sensor = "MODIS", platform = "Combined", 
+#' MODIS:::addProduct(product = "MOD16A2", platform = "Combined", 
 #'                    pf1 = "MOLT", pf2 = "MOD", res = "1000m", temp_res = "8 Day", 
 #'                    topic = "Global Terrestrial Evapotranspiration", server = "NTSG")
 #' }
 #'      
 # #' @export addProduct                   
 #' @name addProduct
-addProduct <- function(product, sensor = "MODIS", platform = c("Terra", "Aqua"), 
+addProduct <- function(product, platform = c("Terra", "Aqua"), 
                        pf1, pf2, topic, type = c("Tile", "Swath", "CMG"), res, 
                        temp_res, internalseparator = "\\.", 
                        server = c("LPDAAC", "LAADS"), 
@@ -69,7 +68,6 @@ addProduct <- function(product, sensor = "MODIS", platform = c("Terra", "Aqua"),
   int_id_new <- int_id_last + 1
   
   ## add new product
-  MODIS_Products$SENSOR[int_id_new] <- sensor
   MODIS_Products$PRODUCT[int_id_new] <- product
   MODIS_Products$PLATFORM[int_id_new] <- platform[1]
   MODIS_Products$PF1[int_id_new] <- pf1

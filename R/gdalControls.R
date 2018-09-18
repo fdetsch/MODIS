@@ -2,13 +2,11 @@
 
 InProj <- function(product) {
   
-  if (product$SENSOR[1] == "MODIS") {
-    if (product$TYPE[1] == "Tile") {
-      paste0(' -s_srs ', shQuote("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"))
-    } else {
-      paste0(' -s_srs ', shQuote("+proj=longlat +ellps=clrk66 +no_defs"))
-    }
-  } else NULL
+  if (product$TYPE[1] == "Tile") {
+    paste0(' -s_srs ', shQuote("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"))
+  } else {
+    paste0(' -s_srs ', shQuote("+proj=longlat +ellps=clrk66 +no_defs"))
+  }
 }
 
 
@@ -30,13 +28,11 @@ OutProj <- function(product, extent, opts = NULL, ...) {
   }
   
   if (outProj == "asIn") {
-    if (product$SENSOR[1] == "MODIS") {
-      if (product$TYPE[1] == "Tile") {
-        outProj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-      } else {
-        outProj <- "+proj=longlat +ellps=clrk66 +no_defs" # CMG proj
-      }
-    }  
+    if (product$TYPE[1] == "Tile") {
+      outProj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+    } else {
+      outProj <- "+proj=longlat +ellps=clrk66 +no_defs" # CMG proj
+    }
   }
   
   paste0(' -t_srs ', shQuote(outProj))

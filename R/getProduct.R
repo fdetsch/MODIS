@@ -35,7 +35,7 @@ getProduct <- function(x=NULL,quiet=FALSE)
 #load(system.file("external", "MODIS_Products.RData", package="MODIS"))
 
     if (is.null(x)) { # if x isn't provided, return table of supported files.
-      cls = c("SENSOR", "PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")
+      cls = c("PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")
       products = as.data.frame(MODIS_Products[cls])
       products = data.frame(products[order(products$PRODUCT), ]
                             , row.names = 1:nrow(products))
@@ -43,9 +43,9 @@ getProduct <- function(x=NULL,quiet=FALSE)
       return(products)
     }
 
-    if (is.list(x) && names(x) %in% c("request", "PRODUCT", "TOPIC", "DATE", "TILE", "TILEV", "TILEH", "CCC", "PROCESSINGDATE", "FORMAT", "SENSOR", "PLATFORM", "PF1", "PF2", "PF3", "TOPIC", "TYPE", "RES", "TEMP_RES", "INTERNALSEPARATOR")) 
+    if (inherits(x, "MODISproduct")) 
     {
-        # if TRUE than it is a result from a getProduct() call. A good idea would be to have a CLASS for it!
+        # if TRUE then it is a result from a getProduct() call. 
         return(x)
     }
     
@@ -78,11 +78,9 @@ getProduct <- function(x=NULL,quiet=FALSE)
       
       return(NULL)
     }
-    if (info$SENSOR[1]=="MODIS") 
-    {
-        info$PRODUCT <- toupper(info$PRODUCT)
-    }
-    
+
+    info$PRODUCT <- toupper(info$PRODUCT)
+
     if (isFile)
     { # in this case it must be a filename
 
@@ -100,26 +98,27 @@ getProduct <- function(x=NULL,quiet=FALSE)
         {
            for (i in seq_along(info$PRODUCT)) 
            {
-               cat(paste(info$PRODUCT[i],'the',info$TEMP_RES[i],info$TYPE[i], info$TOPIC[i],'product from',info$SENSOR[i], info$PLATFORM[i],'with a ground resolution of', info$RES[i],'\n', sep = " "))
+               cat(paste(info$PRODUCT[i],'the',info$TEMP_RES[i],info$TYPE[i], info$TOPIC[i],'product from MODIS', info$PLATFORM[i],'with a ground resolution of', info$RES[i],'\n', sep = " "))
            }
         }
 
-        if (info$SENSOR[1] == "MODIS") 
-        {    
-            PD <- substr(info$PRODUCT, 4, nchar(as.character(info$PRODUCT)))
-            
-            return(
-                invisible(
-                    list(request = inbase, PF1 = as.character(info$PF1),
-                    PF2 = as.character(info$PF2), PF3 = as.character(info$PF3)
-                    , PF4 = as.character(info$PF4)
-                    , PD = PD, PLATFORM = as.character(info$PLATFORM),
-                    TYPE = as.character(info$TYPE), PRODUCT = as.character(info$PRODUCT),
-                    SENSOR = as.character(info$SENSOR), SOURCE=info$SOURCE)
-                )
-            )
-    
-        } ## else if ... (add additional sensors)        
+      PD <- substr(info$PRODUCT, 4, nchar(as.character(info$PRODUCT)))
+      
+      return(
+        invisible(
+          methods::new("MODISproduct"
+                       , request = inbase
+                       , PF1 = as.character(info$PF1)
+                       , PF2 = as.character(info$PF2)
+                       , PF3 = as.character(info$PF3)
+                       , PF4 = as.character(info$PF4)
+                       , PD = PD
+                       , PLATFORM = as.character(info$PLATFORM)
+                       , TYPE = as.character(info$TYPE)
+                       , PRODUCT = as.character(info$PRODUCT)
+                       , SOURCE=info$SOURCE)
+        )
+      )
     }
 }
 

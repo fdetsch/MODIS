@@ -19,7 +19,6 @@ getPart <- function(x, what = c('YYYY', 'DDD', 'DATE', 'SENSOR', 'PF1', 'PF2'
         YYYY = substring(x$DATE,2,5), # works with AYYYYDDD input # TODO a scanning function to detect teh first numeric value in x$DATE
         DDD  = substring(x$DATE,6,8), # works with AYYYYDDD input
         DATE = gsub(transDate(begin=substring(x$DATE,2,8))$begin,pattern="-",replacement="."), # works with AYYYYDDD input
-        SENSOR = x$SENSOR,
         PF1 = x$PF1,
         PF2 = x$PF2,
         PF3 = x$PF3,

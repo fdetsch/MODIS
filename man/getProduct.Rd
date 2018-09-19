@@ -4,18 +4,22 @@
 \alias{getProduct}
 \title{Check and Create Product-Related Information}
 \usage{
-getProduct(x = NULL, quiet = FALSE)
+getProduct(x = NULL, quiet = FALSE, ...)
 }
 \arguments{
 \item{x}{\code{character}. MODIS filename, product name, regular expression 
 passed to \code{pattern} in \code{\link{grep}}, or missing.}
 
 \item{quiet}{\code{logical}, defaults to \code{FALSE}.}
+
+\item{...}{Additional arguments passed to \code{\link[MODIS]{getCollection}}.}
 }
 \value{
-An invisible \code{list} with information usable by other functions or, if 
-'x' is missing, a \code{data.frame} with information about all products 
-available.
+If 'x' is missing, a \code{data.frame} with information about all MODIS 
+products available. In case of \code{character} input, an invisible 
+\code{\link{MODISproduct-class}} or \code{\link{MODISfile-class}} object 
+depending on the type of input (product/regular expression or filename); the 
+object holds information usable by other functions.
 }
 \description{
 On user side, it is a funtion to find the desidered product. On package site, 
@@ -32,7 +36,11 @@ getProduct("M*D11C")
 internal_info <- getProduct("MOD11C3", quiet = TRUE) 
 internal_info
 
+# or use a valid filename
+fileinfo <- getProduct("MYD11A1.A2009001.h18v04.006.2015363221538.hdf")
+fileinfo
+
 }
 \author{
-Matteo Mattiuzzi
+Matteo Mattiuzzi and Florian Detsch
 }

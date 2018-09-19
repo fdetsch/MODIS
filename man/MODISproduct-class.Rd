@@ -4,8 +4,9 @@
 \alias{MODISproduct-class}
 \title{Class MODISproduct}
 \description{
-An object of class \code{MODISproduct}, typically created as the 
-\code{\link{invisible}} output of \code{\link[MODIS]{getProduct}}.
+An object of class \code{MODISproduct}, typically created through
+\code{\link[MODIS]{getProduct}} when the 'x' input is a MODIS product or 
+regular expression.
 }
 \section{Slots}{
 
@@ -15,7 +16,8 @@ An object of class \code{MODISproduct}, typically created as the
 \item{\code{PF1,PF2,PF3,PF4}}{Platform specific path feature for LP DAAC, LAADS, NTSG 
 and NSIDC as \code{character}.}
 
-\item{\code{PD}}{Product specific code number as 2-digit \code{character}.}
+\item{\code{PD}}{Product specific code number following the platform specifier, e.g. 
+\code{"13A1"} for MOD13A1.}
 
 \item{\code{PLATFORM}}{Satellite platform on which MODIS sensor is mounted; one of 
 \code{c("Terra", "Aqua")}.}
@@ -24,8 +26,9 @@ and NSIDC as \code{character}.}
 
 \item{\code{PRODUCT}}{MODIS product identified from 'request' as \code{character}.}
 
-\item{\code{SOURCE}}{Product specific MODIS download server(s) as \code{list}.}
+\item{\code{SOURCE}}{Product specific MODIS download server(s) as named \code{list}.}
 
-\item{\code{CCC}}{Product specific MODIS data collection as 3-digit \code{character}.}
+\item{\code{CCC}}{Product specific MODIS data collection(s) stored as 3-digit 
+\code{character} objects in a named \code{list}.}
 }}
 

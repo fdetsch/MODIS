@@ -105,47 +105,34 @@ setMethod("getHdf",
   
   #######
   # check product
-  product <- getProduct(x=product,quiet=TRUE)
-  # check if missing collection, else believe it
-  product$CCC <- if (is.null(collection)) {
-    unlist(getCollection(product = product, quiet = TRUE, forceCheck = TRUE))
-  } else {
-    sprintf("%03d",as.numeric(unlist(collection)[1]))
-  }
+  product <- getProduct(x = product, quiet = TRUE
+                        , collection = collection, forceCheck = TRUE)
   #########
   
-  if (product$SENSOR[1]=="MODIS")
+  if (is.null(begin)) 
   {
-    if (is.null(begin)) 
-    {
-      cat("No begin(-date) set, getting data from the beginning\n")
-    } 
-    if (is.null(end))
-    {
-      cat("No end(-date) set, getting data up to the most actual\n")
-    } 
-    
-    # tranform dates
-    tLimits <- transDate(begin=begin,end=end)
+    cat("No begin(-date) set, getting data from the beginning\n")
   } 
+  if (is.null(end))
+  {
+    cat("No end(-date) set, getting data up to the most actual\n")
+  } 
+  
+  # tranform dates
+  tLimits <- transDate(begin=begin,end=end)
   
   dates  <- list()
   output <- list() # path info for the invisible output
   l=0
   
-  for(z in seq_along(product$PRODUCT))
+  for(z in seq_along(product@PRODUCT))
   { # Platforms MOD/MYD
     
-    if (product$TYPE[z]=="Swath") 
-    {
-      cat("'Swath'-products not yet supported, jumping to the next.\n")
-    } else 
-    {
-      todo <- paste0(product$PRODUCT[z],".",product$CCC[z])
+      todo <- paste0(product@PRODUCT[z],".",product@CCC[[z]])
       for (u in seq_along(todo))
       {
         # tileID
-        if (product$TYPE[z]=="CMG") 
+        if (product@TYPE[z]=="CMG") 
         {
           tileID="GLOBAL"
           ntiles=1 
@@ -155,19 +142,23 @@ setMethod("getHdf",
             extent = getTile(x = extent, tileH = tileH, tileV = tileV)
           }
           
-          tileID <- extent@tile
-          ntiles <- length(tileID)
+          if (product@TYPE[z] == "Tile") {
+            tileID <- extent@tile
+            ntiles <- length(tileID)
+          } else {
+            tileID = NULL; ntiles = 0
+          }
         }
         
         ## ensure compatibility with servers other than those specified in 
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
-        server <- product$SOURCE[[z]]
+        server <- product@SOURCE[[z]]
 
         if (!any(server %in% c("NTSG", "NSIDC"))) {
           
           ## if product is not available from desired server, throw error        
           if (!any(opts$MODISserverOrder %in% server)) {
-            stop(paste(product$PRODUCT, product$CCC, sep = ".")
+            stop(paste(product@PRODUCT[z], product@CCC[[z]], sep = ".")
                  , " is available from "
                  , paste(server, collapse = " and ")
                  , " only, please adjust 'MODISoptions(MODISserverOrder = ...)' accordingly.")
@@ -189,8 +180,8 @@ setMethod("getHdf",
         ## this time, suppress console output from `getStruc`
         jnk <- capture.output(
           onlineInfo <- suppressWarnings(
-            getStruc(product = product$PRODUCT[z], server = server, 
-                     collection = product$CCC[z], begin = tLimits$begin, 
+            getStruc(product = product@PRODUCT[z], server = server, 
+                     collection = product@CCC[[z]], begin = tLimits$begin, 
                      end = tLimits$end, wait = wait)
           )
         )
@@ -202,7 +193,7 @@ setMethod("getHdf",
           {
             cat(server," seems not online, trying on '",server_alt,"':\n",sep="")
             jnk = capture.output(
-              onlineInfo <- getStruc(product = product$PRODUCT[z], collection = product$CCC[z],
+              onlineInfo <- getStruc(product = product@PRODUCT[z], collection = product@CCC[[z]],
                                      begin = tLimits$begin, end = tLimits$end, 
                                      wait = wait, server = server_alt)
             )
@@ -224,7 +215,7 @@ setMethod("getHdf",
         datedirs <- datedirs[!is.na(datedirs)]            
         sel <- datedirs
         
-        st = correctStartDate(tLimits$begin, sel, product$PRODUCT[z]
+        st = correctStartDate(tLimits$begin, sel, product@PRODUCT[z]
                               , quiet = opts$quiet)
         us = sel >= st & sel <= tLimits$end
 
@@ -304,8 +295,8 @@ setMethod("getHdf",
                 })) # found empty dir!
                 
                 if (onlineInfo$source == "NTSG") {
-                  ftpfiles = gsub(paste0("\\.", product$CCC[z], "\\.")
-                                  , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
+                  ftpfiles = gsub(paste0("\\.", product@CCC[[z]], "\\.")
+                                  , ifelse(product@PF3 == "MOD16", ".105.", ".305.")
                                   , ftpfiles)
                 }
                 
@@ -315,8 +306,8 @@ setMethod("getHdf",
                   { # if tile is missing get it
                     dts = dates[[l]][i, j+1]
                     if (onlineInfo$source == "NTSG") {
-                      dts = gsub(paste0("\\.", product$CCC[z], "\\.")
-                                 , ifelse(product$PF3 == "MOD16", ".105.", ".305.")
+                      dts = gsub(paste0("\\.", product@CCC[[z]], "\\.")
+                                 , ifelse(product@PF3 == "MOD16", ".105.", ".305.")
                                  , dts)
                       dts = paste(c(strsplit(dts, "\\.")[[1]][1:4], "*.hdf"), collapse = ".")
                     }
@@ -363,11 +354,10 @@ setMethod("getHdf",
           names(output)[l] <- todo[u]
         } else 
         {
-          warning(paste("No", product$PRODUCT, "files found for the period from"
+          warning(paste("No", product@PRODUCT, "files found for the period from"
                         , tLimits$begin, "to", paste0(tLimits$end, ".")))
         }
       } 
-    }
   }
   return(invisible(output))
           }) ## END: FTP vs ARC check and download 

@@ -48,13 +48,12 @@ delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=
     opts <- combineOptions(...)
 
     # product/dates/extent
-    product     <- getProduct(x=product,quiet=TRUE)
-    product$CCC <- getCollection(product=product,collection=collection,quiet=TRUE)
-    
+    product     <- getProduct(x = product, quiet = TRUE, collection = collection)
+
     info <- list()
-    for (z in seq_along(product$PRODUCT))
+    for (z in seq_along(product@PRODUCT))
     {    
-       info[[z]] <-  paste0(product$PRODUCT[z],".",product$CCC[[which(names(product$CCC)==product$PRODUCT[z])]])
+       info[[z]] <-  paste0(product@PRODUCT[z],".",product@CCC[[which(names(product@CCC)==product@PRODUCT[z])]])
     }
     cat("\nYou are about to delete\n - products:", paste(unlist(info),collapse=", "),"\n")
     rm(info)
@@ -94,9 +93,9 @@ delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=
         # bypass checks if a complete product has to be deleted! 
         if (is.null(begin) & is.null(end) & ext$tile[1]=="global")
         {
-            for (z in seq_along(product$PRODUCT))
+            for (z in seq_along(product@PRODUCT))
             {
-                todo <- paste0(product$PRODUCT[z],".",product$CCC[[which(names(product$CCC)==product$PRODUCT[z])]])
+                todo <- paste0(product@PRODUCT[z],".",product@CCC[[which(names(product@CCC)==product@PRODUCT[z])]])
         
                 for(u in seq_along(todo))
                 {
@@ -112,9 +111,9 @@ delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=
             
         } else 
         { 
-            for (z in seq_along(product$PRODUCT))
+            for (z in seq_along(product@PRODUCT))
             {
-                todo <- paste0(product$PRODUCT[z],".",product$CCC[[which(names(product$CCC)==product$PRODUCT[z])]])
+                todo <- paste0(product@PRODUCT[z],".",product@CCC[[which(names(product@CCC)==product@PRODUCT[z])]])
             
                 for(u in seq_along(todo))
                 {
@@ -142,7 +141,7 @@ delHdf <- function(product, collection=NULL, extent="global", tileV=NULL, tileH=
                         
                         subprod <- getProduct(allLocal[1])
 
-                        if (subprod$TYPE=="CMG")
+                        if (subprod@TYPE=="CMG")
                         {
                             useExt <- "global"
                         } else {

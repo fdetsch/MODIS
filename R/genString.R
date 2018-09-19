@@ -7,36 +7,32 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                       opts = NULL, ...)
 {
   
-  if (is.null(opts))
-    opts <- combineOptions(checkTools = FALSE, quiet = TRUE, ...)
+  if (is.null(opts)) {
+    opts <- combineOptions(...)
+  }
   
-  product <- getProduct(x=x,quiet=TRUE)
+  product <- getProduct(x = x, quiet = TRUE, collection = collection, checkTools = FALSE)
   if (is.null(product)) {
     stop("'x' must be a valid product listed in getProduct().")
   }
 
-  if(length(product$PRODUCT)>1)
-  {
-    warning("genString() does not support multiple products! Generating 'path' for the first product: ", product$PRODUCT[1], "\n")
-    product <- lapply(product,function(x){x[1]}) # take only the first argument
+  if (length(product@PRODUCT) > 1) {
+    x = ifelse(inherits(product, "MODISproduct"), product@PRODUCT[1], product@request[1])
+    product = getProduct(x , quiet = TRUE, collection = product@CCC[[1]], checkTools = FALSE)
+    warning("genString() does not support multiple products/files! Generating "
+            , "paths for the first product/file only: ", x)
   }
-
-  product$CCC = if (is.null(collection)) {
-    unlist(getCollection(product = product$PRODUCT, checkTools = FALSE))
-  } else {
-    sprintf("%03d",as.numeric(unlist(collection)[1]))
-  }
-
-  if (!is.null(date)) 
+  
+  if (!is.null(date) & inherits(product, "MODISfile")) 
   {
-    product$DATE <- list(paste0("A",transDate(date)$beginDOY)) # generates MODIS file date format "AYYYYDDD"
+    product@DATE <- paste0("A",transDate(date)$beginDOY) # generates MODIS file date format "AYYYYDDD"
   }
 
   ## if options have not been passed down, create them from '...'
   opts$auxPath <- setPath(opts$auxPath)
   remotePath <- localPath <- NULL    
     
-  if (is.null(product$DATE)) # if x is a PRODUCT and date is not provided 
+  if (is.null(date)) # if x is a PRODUCT and date is not provided 
   { 
     if (local) 
     {
@@ -83,7 +79,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
       {
         stringX <- MODIS_FTPinfo[[e]]
         
-        if(grepl(product$SOURCE,pattern=stringX$name) & what %in% stringX$content)
+        if(grepl(product@SOURCE,pattern=stringX$name) & what %in% stringX$content)
         {
           n=n+1                    
           if(is.null(stringX$variablepath))
@@ -171,7 +167,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
       {
         stringX <- MODIS_FTPinfo[[e]]
         
-        if(grepl(product$SOURCE,pattern=stringX$name) & what %in% stringX$content)
+        if(grepl(product@SOURCE,pattern=stringX$name) & what %in% stringX$content)
         {
           struc <- stringX$variablepath    
           tempString <- strsplit(struc,"/")[[1]]
@@ -207,7 +203,7 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
                 if (i == 4)
                   
                   # MOD16A2
-                  if (product$PRODUCT == "MOD16A2")
+                  if (product@PRODUCT == "MOD16A2")
                     string[[l]] <- paste0("D", string[[l]])
                   else 
                     string[[l]] <- ""

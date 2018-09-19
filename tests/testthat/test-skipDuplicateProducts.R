@@ -13,6 +13,6 @@ test_that("product selection w/pattern matching includes derivatives", {
   out2 = skipDuplicateProducts("MOD14.*")
   expect_match(out2, "MOD14\\.\\*")
   
-  lns = capture.output(getProduct(out2))
-  expect_equal(length(lns), length(grep(out2, MODIS_Products$PRODUCT)))
+  prd = getProduct(out2, quiet = TRUE)
+  expect_equal(length(prd@PRODUCT), length(grep(out2, MODIS_Products$PRODUCT)))
 })

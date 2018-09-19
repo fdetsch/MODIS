@@ -123,10 +123,9 @@ runGdal <- function(product, collection=NULL,
     }
     
     # absolutely needed
-    product <- getProduct(product, quiet=TRUE)
+    product <- getProduct(product, quiet=TRUE, collection = collection)
     
     # optional and if missing it is added here:
-    product$CCC <- getCollection(product,collection=collection, quiet = opts$quiet)
     tLimits     <- transDate(begin=begin,end=end)
     
     dataFormat <- toupper(opts$dataFormat) 
@@ -163,9 +162,9 @@ runGdal <- function(product, collection=NULL,
     # output pixel size in output proj units (default is "asIn", but there are 2 chances of changing this argument: pixelSize, and if extent comes from a Raster* object.
      
     if (!inherits(extent, "MODISextent")) {
-      extent = if (product$TYPE[1] == "Tile" | 
+      extent = if (product@TYPE[1] == "Tile" | 
                    (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & 
-                    product$TYPE[1]=="CMG")) {
+                    product@TYPE[1]=="CMG")) {
         getTile(x = extent, tileH = tileH, tileV = tileV
                 , outProj = opts$outProj, pixelSize = opts$pixelSize)
       } else {
@@ -190,10 +189,10 @@ runGdal <- function(product, collection=NULL,
     cp <- OutputCompression(opts)           # compression
     q <- QuietOutput(opts)                  # quiet
     
-    lst_product <- vector("list", length(product$PRODUCT))
-    for (z in seq_along(product$PRODUCT)) {
+    lst_product <- vector("list", length(product@PRODUCT))
+    for (z in seq_along(product@PRODUCT)) {
       # z=1
-      todo <- paste(product$PRODUCT[[z]], product$CCC[[product$PRODUCT[z]]], sep = ".")
+      todo <- paste(product@PRODUCT[[z]], product@CCC[[product@PRODUCT[z]]], sep = ".")
       
       if(z==1)
       {
@@ -215,10 +214,10 @@ runGdal <- function(product, collection=NULL,
         # u=1
         ftpdirs      <- list()
         
-        server = if (length(unlist(product$SOURCE)) > 1) {
-          unlist(product$SOURCE)[which(unlist(product$SOURCE) == opts$MODISserverOrder[1])]
+        server = if (length(unlist(product@SOURCE)) > 1) {
+          unlist(product@SOURCE)[which(unlist(product@SOURCE) == opts$MODISserverOrder[1])]
         } else {
-          unlist(product$SOURCE)
+          unlist(product@SOURCE)
         }
           
         ftpdirs[[1]] <- as.Date(getStruc(product = strsplit(todo[u], "\\.")[[1]][1],
@@ -638,7 +637,7 @@ runGdal <- function(product, collection=NULL,
           lst_todo[[u]] <- lst_ofile
           
         } else {
-          warning(paste("No", product$PRODUCT, "files found for the period from"
+          warning(paste("No", product@PRODUCT, "files found for the period from"
                         , tLimits$begin, "to", paste0(tLimits$end, ".")))
           lst_todo[[u]] <- NA
         }
@@ -647,7 +646,7 @@ runGdal <- function(product, collection=NULL,
       lst_product[[z]] <- lst_todo[[1]]
     }
     
-    names(lst_product) <- paste(product$PRODUCT, product$CCC, sep = ".")
+    names(lst_product) <- paste(product@PRODUCT, product@CCC, sep = ".")
     return(lst_product)
 }
 

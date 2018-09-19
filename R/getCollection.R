@@ -87,24 +87,28 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 
     load(fls_col)
     
-    if (forceCheck | sum(!productN$PRODUCT %in% colnames(MODIScollection))>0) 
+    if (forceCheck | sum(!productN@PRODUCT %in% colnames(MODIScollection))>0) 
     {
       sturheit <- stubborn(level=opts$stubbornness)
       
       load(system.file("external", "MODIS_FTPinfo.RData", package = "MODIS"))
       
-      for (i in seq_along(productN$PRODUCT)) 
+      for (i in seq_along(productN@PRODUCT)) 
       {	
         ## retrieve ftp server address based on product source information
-        server <- unlist(productN$SOURCE[[i]])
+        server <- unlist(productN@SOURCE[[i]])
         
         ftp_id <- sapply(MODIS_FTPinfo, function(i) i$name %in% server)
         ftp_id <- which(ftp_id)[1]
         
         nms = paste0("PF", ftp_id)
-        ftp <- file.path(MODIS_FTPinfo[[ftp_id]]$basepath, productN[[nms]][i], "/")
-        cat("Updating collection from", server[1], "for product:"
-            , productN$PRODUCT[i], "\n")
+        ftp <- file.path(MODIS_FTPinfo[[ftp_id]]$basepath, methods::slot(productN, nms)[i], "/")
+        
+        if (!opts$quiet) {
+          cat("Updating collection from"
+              , ifelse(server[1] == "LPDAAC", "LP DAAC", server[1])
+              , "for product:", productN@PRODUCT[i], "\n")
+        }
         
         if(exists("dirs")) 
         {
@@ -124,12 +128,15 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
         
         if (!exists("dirs")) 
         {
-          cat("Server is not available, using stored information from previous calls (this should be mostly fine)\n")
+          if (!opts$quiet) {
+            cat("Server is not available, using stored information from"
+                , "previous calls (this should be mostly fine).\n")
+          }
         } else 
         {
           
           ## choose relevant folders and remove empty ones
-          dirs = grep(paste0(productN$PRODUCT[i], "\\.[[:digit:]]{3}"), dirs
+          dirs = grep(paste0(productN@PRODUCT[i], "\\.[[:digit:]]{3}"), dirs
                       , value = TRUE)
           
           ids = sapply(file.path(ftp, dirs, "/"), function(ftpdir) {
@@ -205,8 +212,9 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     }
     
     #write.table(MODIScollection,file.path(opts$auxPath,"collections",fsep="/"))
-    ind <- which(colnames(MODIScollection)%in%productN$PRODUCT)
-
+    ind = sapply(productN@PRODUCT, function(i) match(i, colnames(MODIScollection)))
+    ind = na.omit(ind)
+    
     if(length(ind)==1)
     {
 	    res <- list(MODIScollection[,ind])
@@ -237,11 +245,11 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
 	
 	    if (sum(isOk==FALSE)==length(isOk)) 
 	    {
-		    cat("Product(s) not available in collection '",collection,"'. Try 'getCollection('",productN$request,"',newest=FALSE,forceCheck=TRUE)'\n",sep="")
+		    cat("Product(s) not available in collection '",collection,"'. Try 'getCollection('",productN@request,"',newest=FALSE,forceCheck=TRUE)'\n",sep="")
 	        return(invisible(isOk))
 	    } else if (sum(isOk==FALSE)>0 & sum(isOk==FALSE)<length(isOk))
 	    {
-		    cat("Not all the products in your input are available in collection '", collection,"'. Try 'getCollection('", productN$request, "', newest=FALSE, forceCheck=TRUE)'\n", sep="")
+		    cat("Not all the products in your input are available in collection '", collection,"'. Try 'getCollection('", productN@request, "', newest=FALSE, forceCheck=TRUE)'\n", sep="")
 	    }
 
 	    res <- isOk[isOk!=FALSE]
@@ -249,7 +257,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     } else if (newest) 
     {
 	    if (!opts$quiet & !forceCheck) {
-	      cat("No collection specified, getting the newest for", productN$PRODUCT, "\n")
+	      cat("No collection specified, getting the newest for", productN@PRODUCT, "\n")
 	    }
 
 	    res <- lapply(res,function(x)

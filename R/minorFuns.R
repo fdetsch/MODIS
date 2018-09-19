@@ -510,18 +510,18 @@ isSupported <- function(x)
       return(FALSE)
     } else 
     {
-      secName <- defineName(product$request)
+      secName <- defineName(product@request)
       
-      if (product$TYPE[1] == "Tile") 
+      if (product@TYPE[1] == "Tile") 
       {
         Tpat    <- "h[0-3][0-9]v[0-1][0-9]" # to enhance
         return(all((grep(secName["TILE"],pattern=Tpat)) + (substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
         
-      } else if (product$TYPE[1] == "CMG") 
+      } else if (product@TYPE[1] == "CMG") 
       {
         return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==5)))
         
-      } else if (product$TYPE[1] == "Swath")  # actually no support for Swath data!
+      } else if (product@TYPE[1] == "Swath")  # actually no support for Swath data!
       {
         #             return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
         #                } else {
@@ -555,13 +555,13 @@ defineName <- function(x) # "x" is a MODIS or filename
     if (sensor=="MODIS")
     {
       product <- getProduct(x=secName[1],quiet=TRUE)
-      if (product$TYPE=="Tile") 
+      if (product@TYPE=="Tile") 
       {
         names(secName) <- c("PRODUCT","DATE","TILE","CCC","PROCESSINGDATE","FORMAT")
-      } else if (product$TYPE=="CMG") 
+      } else if (product@TYPE=="CMG") 
       {
         names(secName) <- c("PRODUCT","DATE","CCC","PROCESSINGDATE","FORMAT")
-      } else if (product$TYPE=="Swath") 
+      } else if (product@TYPE=="Swath") 
       { 
         names(secName) <- c("PRODUCT","DATE","TIME","CCC","PROCESSINGDATE","FORMAT")
       } else 
@@ -848,7 +848,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
   ## extract collection information
   clc = sapply(x, function(i) {
     prd = getProduct(i, quiet = TRUE)
-    prd$CCC
+    prd@CCC
   })
 
   ## if options have not been passed down, create them from '...'
@@ -988,11 +988,12 @@ return(x)
 
 positionIndication = function(x) {
 
-  product = suppressWarnings(getProduct(x, quiet = TRUE))
+  product = getProduct(x, quiet = TRUE)
   
   if (!is.null(product)) {
-    ids = as.integer(sapply(c("POS1", "POS2"), function(i) product[[i]]))
-    pos = list("POS1" = ids[1], "POS2" = ids[2])
+    ids = lapply(c("POS1", "POS2"), function(i) methods::slot(product, i))
+    ids = do.call(rbind, ids)
+    pos = list("POS1" = ids[1, ], "POS2" = ids[2, ])
     
     return(pos)
     
@@ -1063,7 +1064,7 @@ fixOrphanedHoles = function(x) {
 ## skip unwanted products, see https://github.com/MatMatt/MODIS/issues/22
 skipDuplicateProducts = function(x, quiet = FALSE) {
   
-  products = getProduct()[, 2]
+  products = getProduct()[, 1]
   
   dpl = lapply(seq_along(products), function(i) {
     dpl = grep(products[i], products[-i], value = TRUE)

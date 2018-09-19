@@ -86,8 +86,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
     }
     
     # product/dates/extent
-    product     <- getProduct(x=product, quiet=TRUE)
-    product$CCC <- getCollection(product=product, collection=collection, quiet=TRUE)
+    product     <- getProduct(x = product, quiet = TRUE, collection = collection)
     tLimits     <- transDate(begin=begin, end=end)
 
     if (extent[1]=="global")
@@ -98,10 +97,10 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
         ext <- getTile(x = extent)
     }
 
-    for (z in seq_along(product$PRODUCT))
+    for (z in seq_along(product@PRODUCT))
     {
-      prod <- product$PRODUCT[z]
-      coll <- product$CCC[[which(names(product$CCC)==product$PRODUCT[z])]]
+      prod <- product@PRODUCT[z]
+      coll <- product@CCC[[which(names(product@CCC)==product@PRODUCT[z])]]
       todo <- paste0(prod,".", coll)
       
       ftpdirs  <- as.Date(getStruc(product=prod,collection=coll, begin=tLimits$begin, end=tLimits$end, wait=0)$dates)

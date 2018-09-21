@@ -256,7 +256,7 @@ runMrt <- function(product, collection = NULL
             sel     <- as.Date(avDates)
             
             st = correctStartDate(tLimits$begin, sel, prodname, quiet = opts$quiet)
-            us      <- sel >= tLimits$begin & sel <= tLimits$end
+            us      <- sel >= st & sel <= tLimits$end
             
             if (sum(us,na.rm=TRUE)>0)
             {

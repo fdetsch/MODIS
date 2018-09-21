@@ -27,6 +27,8 @@ An object of class \code{MODISfile}, typically created through
 
 \item{\code{FORMAT}}{File format as \code{character}.}
 
+\item{\code{SENSOR}}{Statically set to \code{"MODIS"}.}
+
 \item{\code{PLATFORM}}{Satellite platform on which MODIS sensor is mounted; one of 
 \code{c("Terra", "Aqua")}.}
 

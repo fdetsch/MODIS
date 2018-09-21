@@ -344,7 +344,8 @@ setMethod("getHdf",
             
             if(checkIntegrity)
             { # after each 'i' do the sizeCheck
-              isIn <- doCheckIntegrity(paste0(path$localPath,dates[[l]][i,-1]), opts = opts)
+              isIn <- doCheckIntegrity(paste0(path$localPath
+                                              , na.omit(dates[[l]][i,-1])), opts = opts)
             }
             suboutput[[i]] <- ifelse(is.na(dates[[l]][i,-1]), NA, paste0(path$localPath,dates[[l]][i,-1]))
           } # end i

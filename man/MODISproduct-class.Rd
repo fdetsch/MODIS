@@ -26,6 +26,8 @@ and NSIDC as \code{character}.}
 
 \item{\code{PRODUCT}}{MODIS product identified from 'request' as \code{character}.}
 
+\item{\code{SENSOR}}{Statically set to \code{"MODIS"}.}
+
 \item{\code{SOURCE}}{Product specific MODIS download server(s) as named \code{list}.}
 
 \item{\code{CCC}}{Product specific MODIS data collection(s) stored as 3-digit 

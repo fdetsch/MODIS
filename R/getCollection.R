@@ -94,9 +94,9 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
       # create it to avoid repeat authentication failures
       if (!file.exists("~/.netrc")) {
         jnk = EarthdataLogin()
-        usr = credentials()$login
-        pwd = credentials()$password
       }
+      usr = credentials()$login
+      pwd = credentials()$password
       
       sturheit <- stubborn(level=opts$stubbornness)
       

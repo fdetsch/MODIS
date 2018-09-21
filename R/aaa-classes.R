@@ -43,6 +43,7 @@ NULL
 #' \code{c("Terra", "Aqua")}.
 #' @slot TYPE Product type; one of \code{c("Tile", "CMG", "Swath")}.
 #' @slot PRODUCT MODIS product identified from 'request' as \code{character}.
+#' @slot SENSOR Statically set to \code{"MODIS"}.
 #' @slot SOURCE Product specific MODIS download server(s) as named \code{list}.
 #' @slot CCC Product specific MODIS data collection(s) stored as 3-digit 
 #' \code{character} objects in a named \code{list}.
@@ -61,6 +62,7 @@ setClass('MODISproduct',
                    PLATFORM = 'character', 
                    TYPE = 'character', 
                    PRODUCT = 'character', 
+                   SENSOR = 'character',
                    SOURCE = 'list', 
                    CCC = 'listORnull')
          )
@@ -82,6 +84,7 @@ NULL
 #' @slot PROCESSINGDATE Processing date string in the form \code{"\%Y\%j\%H\%M\%S"} 
 #' (see \code{\link{strptime}}).
 #' @slot FORMAT File format as \code{character}.
+#' @slot SENSOR Statically set to \code{"MODIS"}.
 #' @slot PLATFORM Satellite platform on which MODIS sensor is mounted; one of 
 #' \code{c("Terra", "Aqua")}.
 #' @slot PF1,PF2,PF3,PF4 Platform specific path feature for LP DAAC, LAADS, NTSG 
@@ -104,6 +107,7 @@ setClass('MODISfile',
                    CCC = 'character',
                    PROCESSINGDATE = 'character', 
                    FORMAT = 'character',
+                   SENSOR = 'character',
                    PLATFORM = 'character', 
                    PF1 = 'character', 
                    PF2 = 'character', 

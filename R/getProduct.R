@@ -71,24 +71,22 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
         gsub(" ", "", inbase) ## if 'isProduct', remove whitespaces
     }
 
-    if (!any(getProduct()[, 1] == tmp)) {
-      stop(tmp, " is not recognized, see `getProduct()[, 1]` for available products.")
-    }
-    
     product = sapply(tmp, function(i) skipDuplicateProducts(i, quiet = quiet))
     
     pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
-    info <- listPather(MODIS_Products, 
-                       sapply(pattern, function(i) {
-                         grep(i, MODIS_Products$PRODUCT, ignore.case = TRUE)
-                       }))
     
-    if (length(info$PRODUCT) == 0) {
+    ids = do.call(c, lapply(pattern, function(i) {
+      grep(i, MODIS_Products$PRODUCT, ignore.case = TRUE)
+    }))
+    
+    if (length(ids) == 0) {
       if (!quiet)
         cat("No product found with the name ", inbase
             , ". Try 'getProduct()' to list available products.\n", sep = "")
       
-      return(NULL)
+      return(invisible(NULL))
+    } else {
+      info <- listPather(MODIS_Products, ids)
     }
 
     info$PRODUCT <- toupper(info$PRODUCT)
@@ -108,6 +106,7 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
                          , CCC = fname$CCC
                          , PROCESSINGDATE = fname$PROCESSINGDATE
                          , FORMAT = fname$FORMAT
+                         , SENSOR = info$SENSOR
                          , PLATFORM = info$PLATFORM
                          , PF1 = info$PF1
                          , PF2 = info$PF2
@@ -140,10 +139,11 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
                          , PLATFORM = as.character(info$PLATFORM)
                          , TYPE = as.character(info$TYPE)
                          , PRODUCT = as.character(info$PRODUCT)
+                         , SENSOR = as.character(info$SENSOR)
                          , SOURCE = info$SOURCE
       )
       
-      out@CCC = getCollection(out, quiet = quiet, ...)
+      out@CCC = getCollection(out, quiet = TRUE, ...)
     }
     
     names(out@SOURCE) = out@PRODUCT

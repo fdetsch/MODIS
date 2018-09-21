@@ -28,6 +28,7 @@ getPart <- function(x, what = c('YYYY', 'DDD', 'DATE', 'SENSOR', 'PF1', 'PF2'
         C = as.numeric(x@CCC),
         CCC = x@CCC,
         PRODUCT = x@PRODUCT,
+        SENSOR = x@SENSOR,
         FORMAT = x@FORMAT,
         PROCESSINGDATE = x@PROCESSINGDATE,
     )

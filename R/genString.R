@@ -1,10 +1,8 @@
 # Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
 # Date : February 2012
 
-# 'date' is the date of an existing file! result from getStruc() and passed as single date! For format see ?transDate
-
-genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, remote=TRUE, 
-                      opts = NULL, ...)
+genString <- function(x, collection = NULL, date = NULL, what = "images"
+                      , local = TRUE, remote = TRUE, opts = NULL, ...)
 {
   
   if (is.null(opts)) {
@@ -23,16 +21,11 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
             , "paths for the first product/file only: ", x)
   }
   
-  if (!is.null(date) & inherits(product, "MODISfile")) 
-  {
-    product@DATE <- paste0("A",transDate(date)$beginDOY) # generates MODIS file date format "AYYYYDDD"
-  }
-
   ## if options have not been passed down, create them from '...'
   opts$auxPath <- setPath(opts$auxPath)
   remotePath <- localPath <- NULL    
     
-  if (is.null(date)) # if x is a PRODUCT and date is not provided 
+  if (inherits(product, "MODISproduct") & is.null(date)) # if x is a PRODUCT 
   { 
     if (local) 
     {
@@ -126,7 +119,24 @@ genString <- function(x, collection=NULL, date=NULL, what="images", local=TRUE, 
     }
   } else 
   { # if x is a file name
-          
+     
+    if (inherits(product, "MODISproduct")) {
+      product = methods::new("MODISfile"
+                             , request = product@request
+                             , PRODUCT = product@PRODUCT
+                             , DATE = paste0("A", transDate(date)$beginDOY)
+                             , CCC = (tmp <- product@CCC[[1]])[length(tmp)]
+                             , SENSOR = product@SENSOR
+                             , PLATFORM = product@PLATFORM
+                             , PF1 = product@PF1
+                             , PF2 = product@PF2
+                             , PF3 = product@PF3
+                             , PF4 = product@PF4
+                             , TYPE = product@TYPE
+                             , SOURCE = product@SOURCE
+                             )
+    }
+         
     if (local) 
     {
       tempString <- strsplit(opts$arcStructure,"/")[[1]]

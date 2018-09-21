@@ -89,6 +89,15 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     
     if (forceCheck | sum(!productN@PRODUCT %in% colnames(MODIScollection))>0) 
     {
+      
+      # ~/.netrc is mandatory for LP DAAC and NSIDC, hence if missing, 
+      # create it to avoid repeat authentication failures
+      if (!file.exists("~/.netrc")) {
+        jnk = EarthdataLogin()
+        usr = credentials()$login
+        pwd = credentials()$password
+      }
+      
       sturheit <- stubborn(level=opts$stubbornness)
       
       load(system.file("external", "MODIS_FTPinfo.RData", package = "MODIS"))
@@ -147,7 +156,7 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
               curl::handle_setopt(
                 handle = h,
                 httpauth = 1,
-                userpwd = paste0(credentials()$login, ":", credentials()$password)
+                userpwd = paste0(usr, ":", pwd)
               )
             }
               

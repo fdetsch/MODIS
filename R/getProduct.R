@@ -71,6 +71,10 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
         gsub(" ", "", inbase) ## if 'isProduct', remove whitespaces
     }
 
+    if (!any(getProduct()[, 1] == tmp)) {
+      stop(tmp, " is not recognized, see `getProduct()[, 1]` for available products.")
+    }
+    
     product = sapply(tmp, function(i) skipDuplicateProducts(i, quiet = quiet))
     
     pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"

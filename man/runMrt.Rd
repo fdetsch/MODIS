@@ -42,6 +42,10 @@ job name is appended to the root filename.}
 \item{...}{Additional arguments passed to \code{\link[MODIS]{MODISoptions}}, 
 see also 'Details' for some MRT specific settings.}
 }
+\value{
+A \code{list} of output filenames summarized by product and date, see also 
+Value in \code{link[MODIS]{runGdal}}.
+}
 \description{
 Specifying input parameters, this function gets MODIS grid data from the 
 archive (HTTP or local) and processes it with the MODIS Reprojection Tool 
@@ -53,12 +57,11 @@ for further information.
 Please note that in contrast to \code{\link[MODIS]{runGdal}}, MRT's 
 \code{resample} function does not offer an 'overwrite' option, and hence, 
 existing files will be overwritten (see also 
-\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 59).\cr\cr 
+\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 59).
 Further arguments that require particular attention when operating MRT are 
 summarized in the following list:
-}
-\section{\code{dataFormat}}{
-
+ 
+\strong{\code{dataFormat}}:\cr\cr
 Output file formats include:
 
 \itemize{
@@ -69,10 +72,8 @@ Output file formats include:
 
 Any other format specified through \code{\link[MODIS]{MODISoptions}} or 
 'dataFormat' is ignored and set to \code{"GeoTiff"}.
-}
 
-\section{\code{outProj}}{
-
+\strong{\code{outProj}}:\cr\cr
 MRT uses calls to the General Cartographic Transformation Package (GCTP) and as such allows projection to the following mapping 
 grids:
 
@@ -95,10 +96,8 @@ grids:
 
 See also 'References' and 
 \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, pp. 6 and 29.
-}
 
-\section{\code{projPara}}{
-
+\strong{\code{projPara}}:\cr\cr
 Output projection parameters are autodetected for 
 \code{outProj \%in\% c("SIN", "GEO")}:
 
@@ -111,7 +110,6 @@ For detailed information on defining paramters for other target projections,
 please refer to 'Appendix C: Projection Parameters' in the
 \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 65-66.
 }
-
 \examples{
 \dontrun{
 geo = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",

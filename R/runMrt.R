@@ -235,7 +235,7 @@ runMrt <- function(product, collection = NULL
                 job <- paste(todo[u],"_",format(Sys.time(), "%Y%m%d%H%M%S"),sep="")    
                 cat("No 'job' name specified, generated (date/time based)):",job,"\n")
             }
-            outDir <- file.path(opts$outDirPath,job,fsep="/")
+            outDir <- gsub("//", "/", file.path(opts$outDirPath,job,fsep="/"))
             dir.create(outDir, showWarnings = FALSE)
 
             ######################## along platform (TerraAqua)

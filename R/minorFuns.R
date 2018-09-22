@@ -715,8 +715,9 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
     
     for (a in seq_along(x))
     {  # a=1
-        path <- genString(x[a], collection = getCollection(x[a], quiet = TRUE), opts = opts)
+        path           <- genString(x[a], collection = getCollection(x[a], quiet = TRUE), opts = opts)
         path$localPath <- setPath(path$localPath)
+        destfile       <- paste0(path$localPath,x[a])
         
         hv <- seq_along(opts$MODISserverOrder)
         hv <- rep(hv,length=opts$stubbornness)
@@ -725,13 +726,19 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
         {     
           if (!opts$quiet)
           {
+            if(length(path$remotePath) > 1 & opts$dlmethod == "aria2")
+            {
+              cat("\nMultisocket connection to:",paste(names(path$remotePath), collapse = ' and '),"\n############################\n")
+            } else
+            {
               cat("\nGetting file from:",opts$MODISserverOrder[hv[g]],"\n############################\n")
+            }
           }
-          destfile <- paste0(path$localPath,x[a])
           
+          # we need to check the behaviour of aira on windows...
           if(!.Platform$OS=="windows" & opts$dlmethod=="aria2")
           {
-            out[a] <- system(paste0("aria2c -x 3 --file-allocation=none ",paste(path$remotePath[which(names(path$remotePath)==opts$MODISserverOrder[hv[g]])],x[a],sep="/",collapse="")," -d ", dirname(destfile)))
+            out[a] <- system(paste0("aria2c -x2 --file-allocation=none ", paste(path$remotePath,x[a],sep="/",collapse=" "), " -d ", dirname(destfile)))
           } else
           {
 

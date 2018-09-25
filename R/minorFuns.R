@@ -700,6 +700,14 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
     usr = credentials()$login
     pwd = credentials()$password
     
+    # ~/.netrc is mandatory for LP DAAC and NSIDC, hence if missing, 
+    # create it to avoid repeat authentication failures
+    if (any(is.null(c(usr, pwd)))) {
+      jnk = EarthdataLogin()
+      usr = credentials()$login
+      pwd = credentials()$password
+    }
+    
     ## if options have not been passed down, create them from '...'
     if (is.null(opts))
       opts <- combineOptions(...)
@@ -735,10 +743,10 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
             }
           }
           
-          # we need to check the behaviour of aira on windows...
-          if(!.Platform$OS=="windows" & opts$dlmethod=="aria2")
+          # we need to check the behaviour of aria on windows...
+          if(opts$dlmethod=="aria2")
           {
-            out[a] <- system(paste0("aria2c -x2 --file-allocation=none ", paste(path$remotePath,x[a],sep="/",collapse=" "), " -d ", dirname(destfile)))
+            out[a] <- system(paste0("aria2c -x2 --file-allocation=none --allow-overwrite=true ", paste(path$remotePath,x[a],sep="/",collapse=" "), " -d ", dirname(destfile)))
           } else
           {
 
@@ -783,14 +791,6 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
               if (!file.exists(ofl))
                 jnk = file.create(ofl)
               on.exit(file.remove(ofl))
-              
-              # ~/.netrc is mandatory for LP DAAC and NSIDC, hence if missing, 
-              # create it to avoid repeat authentication failures
-              if (any(is.null(c(usr, pwd)))) {
-                jnk = EarthdataLogin()
-                usr = credentials()$login
-                pwd = credentials()$password
-              }
               
               # wget extras
               extra <- if (method == "wget") {

@@ -90,13 +90,15 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
     if (forceCheck | sum(!productN@PRODUCT %in% colnames(MODIScollection))>0) 
     {
       
-      # ~/.netrc is mandatory for LP DAAC and NSIDC, hence if missing, 
-      # create it to avoid repeat authentication failures
-      if (!file.exists("~/.netrc")) {
-        jnk = EarthdataLogin()
+      # Earthdata login credentials in ~/.netrc are mandatory for LP DAAC and 
+      # NSIDC, hence if missing, create them to avoid authentication failures
+      crd = credentials()
+      usr = crd$login; pwd = crd$password
+      
+      if (any(is.null(c(usr, pwd)))) {
+        crd = EarthdataLogin()
+        usr = crd$login; pwd = crd$password
       }
-      usr = credentials()$login
-      pwd = credentials()$password
       
       sturheit <- stubborn(level=opts$stubbornness)
       

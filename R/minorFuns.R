@@ -1118,20 +1118,3 @@ correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   
   return(begin)
 }
-
-# ## Earthdata login credentials from .netrc file
-# credentials = function() {
-#   
-#   # try to locate .netrc file
-#   nrc = path.expand("~/.netrc")
-#   if (!file.exists(nrc))
-#     stop("~/.netrc file required. Either run EarthdataLogin() or set" 
-#          , " MODISoptions(MODISserverOrder = 'LAADS').")
-#   
-#   # if file exists, import contents
-#   lns = readLines(nrc)
-#   crd = sapply(strsplit(lns, " "), "[[", 2)
-#   usr = crd[2]; pwd = crd[3]
-#   
-#   return(c("User" = usr, "Password" = pwd))
-# }

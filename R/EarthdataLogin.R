@@ -12,8 +12,7 @@
 #' username and password are read from the terminal.
 #' 
 #' @return 
-#' An \code{invisible()} absolute file path of the created \code{.netrc} file as 
-#' \code{character}.
+#' The \code{\link{invisible}} Earthdata login credentials as \code{list}.
 #' 
 #' @author 
 #' Matteo Mattiuzzi and Florian Detsch
@@ -44,6 +43,14 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
   # get servers found on .netrc
   machine <- unlist(listPather(lns,'machine'))
   
+  # if earthdata server is not in the netrc file
+  ind = if (!server %in% machine) {
+    # if server not present, add it in a new line
+    length(lns)+1
+  } else {
+    which(machine == server)[1]
+  }
+  
   # create file
   if(!file.exists(nrc))
   {
@@ -54,7 +61,12 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
   {
     if(sum(machine %in% server)>0)
     {
-      insert <- tolower(readline(paste0("Earthdata credentials seem to be present, do you want to change them? (y/n) \n",sep="")))
+      if (any(is.null(lns[[ind]]$login), is.null(lns[[ind]]$password))) {
+        cat("'", nrc, "' with defective Earthdata login credentials found! Please correct them now...\n", sep = "")
+        insert = "y"
+      } else {
+        insert <- tolower(readline(paste0("Earthdata credentials seem to be present, do you want to change them? (y/n) \n",sep="")))
+      }
     } else
     {
       cat("'",nrc,"' without Earthdata login credentials found! Please add them now...\n",sep="")
@@ -76,14 +88,6 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
     }
   }
   # Y: add (new) credentials. N: reformat .netrc file
-  
-  # if earthdata server is not in the netrc file
-  ind = if (!server %in% machine) {
-    # if server not present, add it in a new line
-    length(lns)+1
-  } else {
-    which(machine == server)
-  }
   
   # if credentials are present, do not change, unless specified by arguments or confirmed
   if(is.null(usr))
@@ -122,19 +126,15 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
 
   Sys.chmod(nrc, mode = "600", use_umask = TRUE)
   
-  return(invisible(nrc))
+  return(invisible(credentials()))
 }
 
 ## Earthdata login credentials from .netrc file
 readCredentials = function() {
   
-  # e .netrc file
+  # ~/.netrc file
   nrc = path.expand("~/.netrc")
   
-  # if (!file.exists(nrc)) {
-  #   stop("~/.netrc file required. Either run EarthdataLogin() or set"
-  #        , " MODISoptions(MODISserverOrder = 'LAADS').")
-    
   if (file.exists(nrc))
   {  
     lns = readLines(nrc)
@@ -157,14 +157,14 @@ readCredentials = function() {
       if(length(strsplit(lns[i]," ")[[1]])==2)
       {
         machine = strsplit(lns[i], " ")[[1]][2]
-        login = strsplit(lns[i+1], " ")[[1]][2]
-        password = strsplit(lns[i+2], " ")[[1]][2]
+        login = if (!is.na(tmp <- strsplit(lns[i+1], " ")[[1]][2])) tmp
+        password = if (!is.na(tmp <- strsplit(lns[i+2], " ")[[1]][2])) tmp
       } else
       {
         # if credentials are within a single line
         machine = strsplit(lns[i], " ")[[1]][2]
-        login = strsplit(lns[i], " ")[[1]][4]
-        password = strsplit(lns[i], " ")[[1]][6]   
+        login = if (!is.na(tmp <- strsplit(lns[i], " ")[[1]][4])) tmp
+        password = if (!is.na(tmp <- strsplit(lns[i], " ")[[1]][6])) tmp
       }
       result[[j]] <- list(machine=machine,login=login,password=password)
     }

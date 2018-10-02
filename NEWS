@@ -10,6 +10,7 @@ New features:
 Changes:
 
   * When running getHdf() (or runGdal()) with LP DAAC or NSIDC as target download server and Earthdata login credentials in ~/.netrc are missing, the user is forced to insert the required information on the command line. This is intended to avoid repeat authentication failures.
+  * Functions checkIntegrity(), OutProj(), PixelSize(), ResamplingType(), BlockSize(), OutputCompression(), QuietOutput(), genString(), checkTools(), ModisFileDownloader(), and doCheckIntegrity() no longer have an 'opts' argument.
 
 
 MODIS 1.1.3

@@ -327,7 +327,7 @@ setMethod("getHdf",
                       }
                       
                       dates[[l]][i,j+1] <- HDF
-                      hdf <- ModisFileDownloader(HDF, opts = opts)
+                      hdf <- do.call(ModisFileDownloader, c(list(x = HDF), opts))
                       mtr[j] <- hdf
                       
                     } else 
@@ -344,8 +344,10 @@ setMethod("getHdf",
             
             if(checkIntegrity & !all(is.na(dates[[l]][i, -1])))
             { # after each 'i' do the sizeCheck
-              isIn <- doCheckIntegrity(paste0(path$localPath
-                                              , na.omit(dates[[l]][i,-1])), opts = opts)
+              isIn <- do.call(doCheckIntegrity
+                              , c(list(x = paste0(path$localPath
+                                                  , na.omit(dates[[l]][i,-1])))
+                                  , opts))
             }
             suboutput[[i]] <- ifelse(is.na(dates[[l]][i,-1]), NA, paste0(path$localPath,dates[[l]][i,-1]))
           } # end i
@@ -389,14 +391,14 @@ setMethod("getHdf",
                 i = paste0(i, ".hdf")
               }              
               
-              path <- genString(i, opts = opts)
+              path <- do.call(genString, c(list(x = i), opts))
               path$localPath <- setPath(path$localPath)
               
               if (!file.exists(paste0(path$localPath, "/", i))) 
-                ModisFileDownloader(i, opts = opts)
+                do.call(ModisFileDownloader, c(list(x = i), opts))
               
               if(checkIntegrity)
-                jnk <- doCheckIntegrity(i, opts = opts)
+                jnk <- do.call(doCheckIntegrity, c(list(x = i), opts))
               
               gsub("//", "/", paste0(path$local, "/", i))
             })

@@ -49,7 +49,8 @@ getSds <- function(HdfName,SDSstring=NULL,method="gdal")
     
     HdfName <- HdfName[1]
     
-    checkTool <- checkTools(tool=method,quiet=TRUE, opts = opts)[[method]][[method]]
+    opts2 = opts; opts2 = opts2[names(opts) != "quiet"]
+    checkTool <- do.call(checkTools, c(list(tool = method, quiet = TRUE), opts2))[[method]][[method]]
     
     if (!checkTool)
     {

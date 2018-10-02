@@ -2,13 +2,11 @@
 # Date : February 2012
 
 genString <- function(x, collection = NULL, date = NULL, what = "images"
-                      , local = TRUE, remote = TRUE, opts = NULL, ...)
+                      , local = TRUE, remote = TRUE, ...)
 {
   
-  if (is.null(opts)) {
-    opts <- combineOptions(...)
-  }
-  
+  opts <- combineOptions(...)
+
   product <- getProduct(x = x, quiet = TRUE, collection = collection, checkTools = FALSE)
   if (is.null(product)) {
     stop("'x' must be a valid product listed in getProduct().")

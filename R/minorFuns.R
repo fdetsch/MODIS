@@ -127,8 +127,7 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
   }
 }
 
-checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
-                       , opts = NULL)
+checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE, ...)
 {
     tool <- toupper(tool)
     
@@ -196,8 +195,7 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
         GDAL <- FALSE
         gdv  <- NA
         
-        if (is.null(opts))
-          opts <- combineOptions(checkTools = FALSE)
+        opts <- combineOptions(..., checkTools = FALSE)
         
         if (.Platform$OS=="unix")
         {    
@@ -686,7 +684,7 @@ makeRandomString <- function(n=1, length=12)
 }
 
 # this function care about the download of files. Based on remotePath (result of genString) it alterates the effort on available sources and stops after succeded download or by reacing the stubbornness thresshold.
-ModisFileDownloader <- function(x, opts = NULL, ...)
+ModisFileDownloader <- function(x, ...)
 {
     x <- basename(x)
 
@@ -694,9 +692,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
     usr = credentials()$login
     pwd = credentials()$password
     
-    ## if options have not been passed down, create them from '...'
-    if (is.null(opts))
-      opts <- combineOptions(...)
+    opts <- combineOptions(...)
     
     opts$stubbornness <- stubborn(opts$stubbornness)
     opts$quiet <- as.logical(opts$quiet)
@@ -709,7 +705,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
     
     for (a in seq_along(x))
     {  # a=1
-        path <- genString(x[a], collection = getCollection(x[a], quiet = TRUE), opts = opts)
+        path <- do.call(genString, c(list(x = x[a], collection = getCollection(x[a], quiet = TRUE)), opts))
         path$localPath <- setPath(path$localPath)
         
         hv <- seq_along(opts$MODISserverOrder)
@@ -841,7 +837,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
 return(!as.logical(out)) 
 }
 
-doCheckIntegrity <- function(x, opts = NULL, ...) {
+doCheckIntegrity <- function(x, ...) {
   
   x <- basename(x)
   
@@ -851,9 +847,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
     prd@CCC
   })
 
-  ## if options have not been passed down, create them from '...'
-  if (is.null(opts))
-    opts <- combineOptions(...)
+  opts <- combineOptions(...)
   
   opts$stubbornness <- stubborn(opts$stubbornness)
   
@@ -866,7 +860,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
       out[a] <- NA
     } else
     { 
-      path <- genString(x[a], collection = clc[a], opts = opts)
+      path <- do.call(genString, c(list(x = x[a], collection = clc[a]), opts))
       path$localPath <- setPath(path$localPath) 
       
       hv <- 1:length(path$remotePath)
@@ -876,7 +870,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
       {     
         if (g==1)
         {
-          out[a] <- checkIntegrity(x = x[a], opts = opts)
+          out[a] <- do.call(checkIntegrity, c(list(x = x[a]), opts))
         }
         
         if (is.na(out[a]))
@@ -891,13 +885,13 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
             cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
           }
           unlink(x[a])
-          out[a] <- ModisFileDownloader(x[a], opts = opts)
+          out[a] <- do.call(ModisFileDownloader, c(list(x = x[a]), opts))
         } else if (out[a]) 
         {
           break
         }
         
-        out[a] <- checkIntegrity(x = x[a], opts = opts)
+        out[a] <- do.call(checkIntegrity, c(list(x = x[a]), opts))
         g=g+1
       }
     }

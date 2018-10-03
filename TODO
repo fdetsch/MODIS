@@ -32,6 +32,13 @@ whittaker.raster()
 getHdf():
 - download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
 
+getGranule():
+- tileH,tileV
+- remaining 'extent' inputs (sf::st_bbox, MODISextent, character, Raster*, missing)
+
+getCollection():
+- retrieval from LAADS (ie. MOD03)
+
 Automated wget, curl check if any("LPDAAC", "NSIDP") %in% opts$MODISserverOrder
 
 General solution for "//"

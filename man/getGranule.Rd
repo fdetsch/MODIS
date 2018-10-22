@@ -5,8 +5,7 @@
 \title{Get MODIS Swath Granules}
 \usage{
 getGranule(product, collection = NULL, begin = NULL, end = NULL,
-  DayNightFlag = c("D", "N", "B", "X"), tileH = NULL, tileV = NULL,
-  extent = NULL, ...)
+  DayNightFlag = c("D", "N", "B", "X"), extent = NULL, ...)
 }
 \arguments{
 \item{product, collection, begin, end, tileH, tileV, extent, ...}{See 
@@ -29,8 +28,12 @@ Get MODIS swath granules for a specific geographic area, time period and
 data(meuse)
 pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
 
-grn = getGranule("MOD14", begin = "2000360", end = "2001003"
+begin <- '2017001'
+end   <- '2017010'
+ 
+grn = getGranule("MOD14", begin = begin, end = end
                  , extent = pts, DayNightFlag = "D")
+                 
 }
 
 }

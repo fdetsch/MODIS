@@ -1,6 +1,6 @@
 ## MODIS 
 
-[![](http://www.r-pkg.org/badges/version/MODIS)](http://www.r-pkg.org/pkg/MODIS)
+[![](https://www.r-pkg.org/badges/version/MODIS)](https://www.r-pkg.org/pkg/MODIS)
 
 Acquisition and Processing of MODIS Products
 

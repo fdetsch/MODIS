@@ -148,7 +148,7 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE, .
             cat("Checking availability of MRT:\n")
         }
     
-        if(mrtH=="") 
+        if(mrtH=="" & !quiet) 
         {
             cat("  'MRT_HOME' not set/found! MRT is NOT enabled! See: 'https://lpdaac.usgs.gov/tools/modis_reprojection_tool'\n")
         } else 
@@ -157,7 +157,7 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE, .
             {
                 cat("  'MRT_HOME' found:", mrtH,"\n")
             }
-            if (mrtDD=="") 
+            if (mrtDD=="" & !quiet) 
             {
                cat("  'MRT_DATA_DIR' not set/found! MRT is NOT enabled! You need to set the path, read in the MRT manual! 'https://lpdaac.usgs.gov/tools/modis_reprojection_tool'\n")
             } else 

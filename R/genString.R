@@ -1,4 +1,4 @@
-# Author: Matteo Mattiuzzi, matteo.mattiuzzi@boku.ac.at
+# Author: Matteo Mattiuzzi, matteo@mattiuzzi.com
 # Date : February 2012
 
 genString <- function(x, collection = NULL, date = NULL, what = "images"

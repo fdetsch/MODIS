@@ -26,10 +26,6 @@
 #' \code{\link{writeRaster}}.
 #' @param NAflag \code{integer}. Default \code{255} used for \code{x} = Raster* object. Set specific NA value, see 
 #' \code{\link{writeRaster}}.
-#' @param Na2Zero \code{logical}. Default \code{TRUE} used for \code{x} = Raster* object. MODIS QC layers usually do
-#' not have an NA value assigned. R (also seen on QGIS and ArcGIS) interprets 
-#' automatically a NA value(typically 0 with datatype INT1U and not further 
-#' specified). \code{Na2Zero} in essence is doing \code{x[is.na(x)] <- 0}. 
 #' @param ... Other arguments passed to \code{\link{writeRaster}}. 
 #'    
 #' 
@@ -141,138 +137,150 @@
 #' @describeIn makeWeights Extract bit-encoded information from \code{Raster*} file
 #' @aliases extractBits
 #' @export extractBits
-extractBits <- function(x, bitShift=2, bitMask=15, Na2Zero=TRUE, filename='', datatype='INT1U', NAflag=255,...)
+extractBits <- function(x, bitShift=2, bitMask=15, filename='', datatype='INT1U', NAflag=255,...)
 {
   if (inherits(x,"Raster"))
   {
+    stopifnot(inherits(x,"RasterLayer"))
+    
     opts <- combineOptions(...)
     
-    out <- brick(x, values=FALSE)
-    if(nlayers(out)==1)
+    if(!inMemory(x))
     {
-        out <- raster(x)
+      naok <- validNa(filename(x))[[1]]
+      na   <- getNa(filename(x))[[1]]
+    } else
+    { # switch off recoding
+      naok <- TRUE
+      na   <- NULL
     }
+    
+    out <- raster(x)
     out <- writeStart(out, filename=filename, datatype=datatype, NAflag=NAflag,...)
 
     minrows <- max(floor(opts$cellchunk/ncol(out)),1)
-    tr  <- blockSize(out,minrows = minrows)
+    tr      <- blockSize(out,minrows = minrows)
 
     for (i in 1:tr$n) 
     { # i=1
       # cat(i,'/',tr$n,'\n')
         v  <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
-        ve <- dim(v)
-        
-        if(Na2Zero)
+
+        if(!isTRUE(naok))
         {
-          v[is.na(v)] <- 0    
+          v[is.na(v)] <- na   
         }
         v <- as.integer(v)
         
         # decode bits
         v <- bitAnd(bitShiftR(v, bitShift ), bitMask)
-        
-        if (!is.null(ve))
-        {
-            v <- matrix(v,ncol=ve[2],nrow=ve[1],byrow=FALSE)
-        } 
-
         out <- writeValues(out, v, tr$row[i])
       }
-      out <- writeStop(out)
+    out <- writeStop(out)
 
-      return(out)
-    } else
+    return(out)
+  } else
+  {
+    ve <- dim(x)
+    
+    # decode bits
+    x <- bitAnd(bitShiftR(x, bitShift ), bitMask)
+
+    if (!is.null(ve))
     {
-        ve <- dim(x)
-        
-        # decode bits
-        x <- bitAnd(bitShiftR(x, bitShift ), bitMask)
-
-        if (!is.null(ve))
-        {
-            x <- matrix(x,ncol=ve[2],nrow=ve[1],byrow=FALSE)
-        }
-        return(x)
+        x <- matrix(x,ncol=ve[2],nrow=ve[1],byrow=FALSE)
     }
+    return(x)
+  }
 }    
 
 
 #' @export makeWeights
 #' @name makeWeights
-makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', decodeOnly=FALSE,...)
-{
+makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, decodeOnly=FALSE, filename='', datatype='INT1U', NAflag=255,...)
+  {
     if (inherits(x,"Raster"))
     {
-        out <- brick(x, values=FALSE)
-        if(nlayers(out)==1)
-        {
-            out <- raster(x)
-        }
-    
-        out <- writeStart(out, filename=filename,...)
-        tr  <- blockSize(out)
-    
-        for (i in 1:tr$n) 
-        {
-            v  <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
-            ve <- dim(v)
+      stopifnot(inherits(x,"RasterLayer"))
+      
+      opts <- combineOptions(...)
+      if(!inMemory(x))
+      {
+        naok <- validNa(filename(x))[[1]]
+        na   <- getNa(filename(x))[[1]]
+      } else
+      { # switch off recoding
+        naok <- TRUE
+        na   <- NULL
+      }
+      
+      out <- raster(x)
+      out <- writeStart(out, filename=filename, datatype=datatype, NAflag=NAflag,...)
+      
+      minrows <- max(floor(opts$cellchunk/ncol(out)),1)
+      tr      <- blockSize(out,minrows = minrows)
+      
+      for (i in 1:tr$n) 
+      { # i=1
+        # cat(i,'/',tr$n,'\n')
+        v  <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
 
-            # decode bits
-            v <- bitAnd(bitShiftR(v, bitShift ), bitMask)
-            
-            if (!is.null(threshold))
-            {
-                v[v > threshold] <- bitMask
-            }
-           
-            if (!decodeOnly)
-            {
-                # turn up side down and scale bits for weighting
-                v <- ((-1) * (v - bitMask))/bitMask
-                v[v > 1] <- 1
-                v[v < 0] <- 0      
-            }
-    
-            if (!is.null(ve))
-            {
-                v <- matrix(v,ncol=ve[2],nrow=ve[1],byrow=FALSE)
-            } 
-    
-            out <- writeValues(out, v, tr$row[i])
+        if(!isTRUE(naok))
+        {
+          v[is.na(v)] <- na   
         }
-        out <- writeStop(out)
-        return(out)
-    } else
-    {
-        ve <- dim(x)
         
-        # decode bits
-        x <- bitAnd(bitShiftR(x, bitShift ), bitMask)
-
+        v <- as.integer(v)
+        v <- bitAnd(bitShiftR(v, bitShift ), bitMask)
+        
         if (!is.null(threshold))
         {
-            x[x > threshold] <- bitMask
+          v[v > threshold] <- bitMask
         }
-       
+        
         if (!decodeOnly)
         {
-            # turn up side down and scale bits for weighting
-            # theoretically best is 0 but the lowest value I have ever noticed is 1! So: (x-1)
-            x <- ((-1) * (x - bitMask))/bitMask     
-            x[x > 1] <- 1
-            x[x < 0] <- 0
+          # turn up side down and scale bits for weighting
+          v <- (-1 * (v - bitMask))/bitMask
+          v[v > 1] <- 1
+          v[v < 0] <- 0 # this should not happen!?   
         }
-
-        if (!is.null(ve))
-        {
-            x <- matrix(x,ncol=ve[2],nrow=ve[1],byrow=FALSE)
-        }
-
-        return(x)
+        
+        # decode bits
+        out <- writeValues(out, v, tr$row[i])
+      }
+      out <- writeStop(out)
+      
+      return(out)
+    } else
+    {
+      ve <- dim(x)
+      
+      # decode bits
+      v <- bitAnd(bitShiftR(x, bitShift ), bitMask)
+      
+      if (!is.null(threshold))
+      {
+        v[v > threshold] <- bitMask
+      }
+      
+      if (!decodeOnly)
+      {
+        # turn up side down and scale bits for weighting
+        v <- (-1 * (v - bitMask))/bitMask
+        v[v > 1] <- 1
+        v[v < 0] <- 0      
+      }
+      
+      if (!is.null(ve))
+      {
+        v <- matrix(v,ncol=ve[2],nrow=ve[1],byrow=FALSE)
+      }
+      return(v)
     }
-}    
+  }    
 
+ 
 ### maskWater (experimental)
 #' @describeIn makeWeights Masks water (additional information required)
 #' @aliases maskWater
@@ -296,7 +304,7 @@ maskWater <- function(X, bitShift=NULL, bitMask = NULL, keep = NULL, datatype="I
         
         if(is.null(bits))
         {
-            stop(paste("No 'Land/Water Flag' found, please set 'bitShift', 'bitMask' manualy. See: https://lpdaac.usgs.gov/products/modis_products_table/",tolower(prodinfo),sep=""))
+            stop(paste0("No 'Land/Water Flag' found, please set 'bitShift', 'bitMask' manualy. See: https://lpdaac.usgs.gov/products/modis_products_table/",tolower(prodinfo)))
         } else 
         {
             message("Ok 'Land/Water Flag' found!")

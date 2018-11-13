@@ -1,4 +1,4 @@
-#' Extract Bit-Encoded Information and Create Weights Raster
+#' Extract Bit-Encoded Information and create Weights Raster
 #' 
 #' @description 
 #' This function applies \code{\link{bitAnd}} and \code{\link{bitShiftR}} 
@@ -22,9 +22,16 @@
 #' @param keep If \code{NULL} (default), bits are only encoded, else an 
 #' \code{integer} vector of values you want to keep (becomes \code{TRUE}), the 
 #' rest becomes \code{NA}. See examples.
-#' @param datatype \code{character}. Output datatype, see 
+#' @param datatype \code{character}. Default \code{INT1U} used for \code{x} = Raster* object.. Output datatype, see 
 #' \code{\link{writeRaster}}.
-#' @param ... Other arguments passed to \code{\link{writeRaster}}.     
+#' @param NAflag \code{integer}. Default \code{255} used for \code{x} = Raster* object. Set specific NA value, see 
+#' \code{\link{writeRaster}}.
+#' @param Na2Zero \code{logical}. Default \code{TRUE} used for \code{x} = Raster* object. MODIS QC layers usually do
+#' not have an NA value assigned. R (also seen on QGIS and ArcGIS) interprets 
+#' automatically a NA value(typically 0 with datatype INT1U and not further 
+#' specified). \code{Na2Zero} in essence is doing \code{x[is.na(x)] <- 0}. 
+#' @param ... Other arguments passed to \code{\link{writeRaster}}. 
+#'    
 #' 
 #' @return 
 #' A \code{Raster*} object.
@@ -134,51 +141,53 @@
 #' @describeIn makeWeights Extract bit-encoded information from \code{Raster*} file
 #' @aliases extractBits
 #' @export extractBits
-extractBits <- function(x, bitShift=2, bitMask=15, filename='',...)
+extractBits <- function(x, bitShift=2, bitMask=15, Na2Zero=TRUE, filename='', datatype='INT1U', NAflag=255,...)
 {
-    if (inherits(x,"Raster"))
+  if (inherits(x,"Raster"))
+  {
+    opts <- combineOptions(...)
+    
+    out <- brick(x, values=FALSE)
+    if(nlayers(out)==1)
     {
-        out <- brick(x, values=FALSE)
-        if(nlayers(out)==1)
+        out <- raster(x)
+    }
+    out <- writeStart(out, filename=filename, datatype=datatype, NAflag=NAflag,...)
+
+    minrows <- max(floor(opts$cellchunk/ncol(out)),1)
+    tr  <- blockSize(out,minrows = minrows)
+
+    for (i in 1:tr$n) 
+    { # i=1
+      # cat(i,'/',tr$n,'\n')
+        v  <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
+        ve <- dim(v)
+        
+        if(Na2Zero)
         {
-            out <- raster(x)
+          v[is.na(v)] <- 0    
         }
-    
-        out <- writeStart(out, filename=filename,...)
-        tr  <- blockSize(out)
-    
-        for (i in 1:tr$n) 
-        { # i=1
-            v  <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
-            ve <- dim(v)
-            
-            #v[v==0] <- NA    
-            
-            # decode bits
-            v <- bitAnd(bitShiftR(v, bitShift ), bitMask)
-            
-            # set to 
-            #v[is.na(v)] <- bitMask
-                        
-            if (!is.null(ve))
-            {
-                v <- matrix(v,ncol=ve[2],nrow=ve[1],byrow=FALSE)
-            } 
-    
-            out <- writeValues(out, v, tr$row[i])
-        }
-        out <- writeStop(out)
-        return(out)
+        v <- as.integer(v)
+        
+        # decode bits
+        v <- bitAnd(bitShiftR(v, bitShift ), bitMask)
+        
+        if (!is.null(ve))
+        {
+            v <- matrix(v,ncol=ve[2],nrow=ve[1],byrow=FALSE)
+        } 
+
+        out <- writeValues(out, v, tr$row[i])
+      }
+      out <- writeStop(out)
+
+      return(out)
     } else
     {
         ve <- dim(x)
         
-        #x[x==0] <- NA
-
         # decode bits
         x <- bitAnd(bitShiftR(x, bitShift ), bitMask)
-
-        #x[is.na(x)] <- bitMask        
 
         if (!is.null(ve))
         {
@@ -209,13 +218,9 @@ makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', 
             v  <- getValues(x, row=tr$row[i], nrows=tr$nrows[i])
             ve <- dim(v)
 
-            #v[v==0] <- NA    
-            
             # decode bits
             v <- bitAnd(bitShiftR(v, bitShift ), bitMask)
             
-            #v[is.na(v)] <- bitMask
-                    
             if (!is.null(threshold))
             {
                 v[v > threshold] <- bitMask
@@ -242,12 +247,8 @@ makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', 
     {
         ve <- dim(x)
         
-        #x[x==0] <- NA
-
         # decode bits
         x <- bitAnd(bitShiftR(x, bitShift ), bitMask)
-
-        #x[is.na(x)] <- bitMask        
 
         if (!is.null(threshold))
         {
@@ -276,7 +277,7 @@ makeWeights <- function(x, bitShift=2, bitMask=15, threshold=NULL, filename='', 
 #' @describeIn makeWeights Masks water (additional information required)
 #' @aliases maskWater
 #' @export maskWater
-maskWater <- function(X, bitShift=NULL, bitMask = NULL, keep = NULL, datatype="INT1U",...)
+maskWater <- function(X, bitShift=NULL, bitMask = NULL, keep = NULL, datatype="INT1U", NAflag=255,...)
 {
     if (!inherits(X,"Raster"))
     {
@@ -302,7 +303,7 @@ maskWater <- function(X, bitShift=NULL, bitMask = NULL, keep = NULL, datatype="I
         }
     }
     
-    result <- extractBits(X, bitShift = bitShift, bitMask = bitMask,...)
+    result <- extractBits(X, bitShift = bitShift, bitMask = bitMask, datatype=datatype, NAflag=NAflag,...)
 
     if (!is.null(keep))
     {

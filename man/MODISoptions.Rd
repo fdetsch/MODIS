@@ -63,7 +63,7 @@ frequently occur after many requests.}
 called from inside \code{\link{getHdf}}.}
 
 \item{cellchunk}{Default 1 (=use raster default), comparable with chunksize
-in \code{\link{rasterOption}}. But as no effect was found in adapting chunksize, 
+in \code{\link{rasterOptions}}. But as no effect was found in adapting chunksize, 
 MODIS applies its own variant:
 \strong{minrows <- max(floor(cellchunk/ncol(x)),1) 
 blockSize(x,minrows=minrows)}. 

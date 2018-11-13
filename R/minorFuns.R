@@ -971,12 +971,13 @@ getValidRange <- function(x)
   
   gdalPath <- getOption("MODIS_gdalPath")[1]
   gdalPath <- correctPath(gdalPath)
-  cmd <- paste0(gdalPath,"gdalinfo ")
+  cmd      <- paste0(gdalPath,"gdalinfo ")
   
   for (i in seq_along(x))
   {
-    tmp    <- system(paste0(cmd,shQuote(x[i])),intern=TRUE)
-    tmp    <- grep(tmp,pattern="valid_range=",value=TRUE)
+    tmp <- system(paste0(cmd,shQuote(x[i])),intern=TRUE)
+    tmp <- grep(tmp,pattern="valid_range=",value=TRUE)
+    
     if (length(tmp)!=0)
     {
       tmp <- strsplit(tmp,"=")[[1]][2]

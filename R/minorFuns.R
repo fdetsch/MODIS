@@ -960,6 +960,66 @@ getNa <- function(x)
   return(res)
 }
 
+# get valid Range as specified in hdf metadata: getSds(x)$SDS4gdal
+getValidRange <- function(x)
+{
+  name <- res <- vector(mode="list",length=length(x))
+  
+  iw   <- getOption("warn") 
+  options(warn=-1)
+  on.exit(options(warn=iw))
+  
+  gdalPath <- getOption("MODIS_gdalPath")[1]
+  gdalPath <- correctPath(gdalPath)
+  cmd <- paste0(gdalPath,"gdalinfo ")
+  
+  for (i in seq_along(x))
+  {
+    tmp    <- system(paste0(cmd,shQuote(x[i])),intern=TRUE)
+    tmp    <- grep(tmp,pattern="valid_range=",value=TRUE)
+    if (length(tmp)!=0)
+    {
+      tmp <- strsplit(tmp,"=")[[1]][2]
+      res[[i]] <- as.numeric(strsplit(tmp,",")[[1]])
+    } else
+    {
+      res[[i]] <- NA
+    }
+    nam       <- strsplit(x[i],":")[[1]] 
+    name[[i]] <- nam[length(nam)]
+  }
+  
+  names(res) <- unlist(name)
+  res[is.na(res)] <- NULL
+  return(res)
+}
+
+validNa <- function(x)
+{
+  na <- getNa(x)
+  vr <- getValidRange(x)
+  
+  for(i in seq_along(vr))
+  {
+    #dt <- dataType(raster(x[i]))
+    
+    if(!is.na(vr[[i]][1]))
+    {
+      if(na[[i]] < vr[[i]][1] | na[[i]] > vr[[i]][2])
+      {
+        na[[i]] <- TRUE
+      } else
+      {
+        na[[i]] <- FALSE
+      }
+    } else
+    {
+      na[[i]] <- NA
+    }
+  }
+  return(na)
+}
+
 correctPath <- function(x,isFile=FALSE)
 {
   if(!is.null(x))

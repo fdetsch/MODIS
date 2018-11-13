@@ -63,10 +63,10 @@ frequently occur after many requests.}
 called from inside \code{\link{getHdf}}.}
 
 \item{cellchunk}{Default 1 (=use raster default), comparable with chunksize
-in ?rasterOption. But as no effect was found in adapting chunksize, 
-MODIS appies its own variant:
-minrows <- max(floor(cellchunk/ncol(x)),1) 
-blockSize(x,minrows=minrows). 
+in \code{\link{rasterOption}}. But as no effect was found in adapting chunksize, 
+MODIS applies its own variant:
+\strong{minrows <- max(floor(cellchunk/ncol(x)),1) 
+blockSize(x,minrows=minrows)}. 
 On a reasonable working station you can easily increase cellchunk to 500000.}
 
 \item{systemwide}{A \code{logical} determining whether changes made to 

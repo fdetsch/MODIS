@@ -4,15 +4,17 @@
 \alias{extractBits}
 \alias{makeWeights}
 \alias{maskWater}
-\title{Extract Bit-Encoded Information and Create Weights Raster}
+\title{Extract Bit-Encoded Information and create Weights Raster}
 \usage{
-extractBits(x, bitShift = 2, bitMask = 15, filename = "", ...)
+extractBits(x, bitShift = 2, bitMask = 15, Na2Zero = TRUE,
+  filename = "", datatype = "INT1U", NAflag = 255, minrows = 500,
+  ...)
 
 makeWeights(x, bitShift = 2, bitMask = 15, threshold = NULL,
   filename = "", decodeOnly = FALSE, ...)
 
 maskWater(X, bitShift = NULL, bitMask = NULL, keep = NULL,
-  datatype = "INT1U", ...)
+  datatype = "INT1U", NAflag = 255, ...)
 }
 \arguments{
 \item{x}{\code{matrix}, vector or \code{Raster*} object.}
@@ -23,8 +25,22 @@ maskWater(X, bitShift = NULL, bitMask = NULL, keep = NULL,
 \item{bitMask}{\code{integer}. Bit mask size, see examples and 
 \code{\link{detectBitInfo}}.}
 
+\item{Na2Zero}{\code{logical}. Default \code{TRUE}. MODIS QC layers usually do
+not have an NA value assigned. R (also seen on QGIS and ArcGIS) interprets 
+automatically a NA value(typically 0 with datatype INT1U and not further 
+specified). \code{Na2Zero} in essence is doing \code{x[is.na(x)] <- 0}. 
+#' @param minrows \code{integer}. Default \code{100}. Passed to 
+\code{\link{blockSize}}. Minimum number of rows in each block. Can make 
+quite a difference to the performance.}
+
 \item{filename}{\code{character} passed to \code{\link{writeRaster}}. If not 
 specified, output is written to a temporary file.}
+
+\item{datatype}{\code{character}. Default \code{INT1U}. Output datatype, see 
+\code{\link{writeRaster}}.}
+
+\item{NAflag}{\code{integer}. Default \code{255}. Set specific NA value, see 
+\code{\link{writeRaster}}.}
 
 \item{...}{Other arguments passed to \code{\link{writeRaster}}.}
 
@@ -39,9 +55,6 @@ selected bits and convert to decimal system.}
 \item{keep}{If \code{NULL} (default), bits are only encoded, else an 
 \code{integer} vector of values you want to keep (becomes \code{TRUE}), the 
 rest becomes \code{NA}. See examples.}
-
-\item{datatype}{\code{character}. Output datatype, see 
-\code{\link{writeRaster}}.}
 }
 \value{
 A \code{Raster*} object.

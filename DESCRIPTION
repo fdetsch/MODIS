@@ -49,5 +49,5 @@ Imports:
 SystemRequirements: GDAL (>= 1.8.0)    
 ByteCompile: TRUE
 Encoding: UTF-8
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Suggests: testthat

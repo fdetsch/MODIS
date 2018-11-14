@@ -995,6 +995,7 @@ getValidRange <- function(x)
   return(res)
 }
 
+# If NA is within valid range mistrust
 validNa <- function(x)
 {
   na <- getNa(x)
@@ -1006,7 +1007,7 @@ validNa <- function(x)
     
     if(!is.na(vr[[i]][1]))
     {
-      if(na[[i]] < vr[[i]][1] | na[[i]] > vr[[i]][2])
+      if(na[[i]] < min(vr[[i]]) | na[[i]] > max(vr[[i]][2]))
       {
         na[[i]] <- TRUE
       } else

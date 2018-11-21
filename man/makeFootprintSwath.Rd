@@ -11,9 +11,17 @@ listGeometa(platform = c("terra", "aqua"), begin = NULL,
 \arguments{
 \item{platform}{\code{Character} of length 1, either MODIS "terra" or "aqua"}
 
+\item{begin}{Start date of time series. Default NULL which means start with 
+the first existing image, see \code{\link[MODIS]{transDate}} for mor details.}
+
+\item{end}{End date of time series. Default is \code{\link{Sys.Date}}.
+See \code{\link[MODIS]{transDate}} for more details.}
+
 \item{collection}{integer or character, valid values are collection 5 or 6}
 
 \item{...}{currently only works for the MODIS outDirPath root directory.}
+
+\item{extent}{\code{\link[sf]{sf}} oject defining the aoi (other will follow).}
 
 \item{DayNightFlag}{A \code{character} vector of allowed day/night flags.
 This can be an arbitrary combination of \code{"D"} (day), \code{"N"} (night), 

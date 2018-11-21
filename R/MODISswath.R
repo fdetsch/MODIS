@@ -4,12 +4,12 @@
 #' Get MODIS swath granules for a specific geographic area, time period and 
 #' (optionally) time of day.
 #' 
-#' @param extent \code{\link[sf]{sf} oject defining the aoi (other will follow).
+#' @param extent \code{\link[sf]{sf}} oject defining the aoi (other will follow).
 #' @param platform \code{Character} of length 1, either MODIS "terra" or "aqua"
 #' @param begin Start date of time series. Default NULL which means start with 
-#' the first existing image, see \code{\link[MODIS]{transDate} for mor details.
-#' @param end End date of time series. Default is \code{\link[base]{Sys.Date}.
-#' See \code{\link[MODIS]{transDate} for more details. 
+#' the first existing image, see \code{\link[MODIS]{transDate}} for mor details.
+#' @param end End date of time series. Default is \code{\link{Sys.Date}}.
+#' See \code{\link[MODIS]{transDate}} for more details. 
 #' @param collection integer or character, valid values are collection 5 or 6
 #' @param DayNightFlag A \code{character} vector of allowed day/night flags.
 #' This can be an arbitrary combination of \code{"D"} (day), \code{"N"} (night), 

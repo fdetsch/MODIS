@@ -596,7 +596,6 @@ filesUrl <- function(url)
     
     iw   <- options()$warn 
     options(warn=-1)
-    on.exit(options(warn=iw))
 
     ## LP DAAC, NSIDC
     if (grepl("usgs.gov|nsidc", url)) 
@@ -665,6 +664,9 @@ filesUrl <- function(url)
       
     }
 
+    ## reset 'warn' option (multiple on.exit() calls are ignored and only the last one is executed)
+    options(warn=iw)
+    
     ## format and return    
     fnames <- gsub(fnames,pattern="/",replacement="")
     return(fnames)

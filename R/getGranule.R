@@ -41,6 +41,11 @@ getGranule = function(product, collection = NULL
   options(stringsAsFactors = FALSE)
   on.exit(options(stringsAsFactors = saf))
   
+  ## suppress download.file() warnings
+  w = options("warn")
+  options(warn = -1)
+  on.exit(options(warn = w))
+  
   ## MODISoptions
   opts = combineOptions(...)
   sturheit = stubborn(level = opts$stubbornness)

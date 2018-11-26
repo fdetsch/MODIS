@@ -4,15 +4,17 @@
 \alias{extractBits}
 \alias{makeWeights}
 \alias{maskWater}
-\title{Extract Bit-Encoded Information and Create Weights Raster}
+\title{Extract Bit-Encoded Information and create Weights Raster}
 \usage{
-extractBits(x, bitShift = 2, bitMask = 15, filename = "", ...)
+extractBits(x, bitShift = 2, bitMask = 15, filename = "",
+  datatype = "INT1U", NAflag = 255, ...)
 
 makeWeights(x, bitShift = 2, bitMask = 15, threshold = NULL,
-  filename = "", decodeOnly = FALSE, ...)
+  decodeOnly = FALSE, filename = "", datatype = "INT1U",
+  NAflag = 255, ...)
 
 maskWater(X, bitShift = NULL, bitMask = NULL, keep = NULL,
-  datatype = "INT1U", ...)
+  datatype = "INT1U", NAflag = 255, ...)
 }
 \arguments{
 \item{x}{\code{matrix}, vector or \code{Raster*} object.}
@@ -25,6 +27,12 @@ maskWater(X, bitShift = NULL, bitMask = NULL, keep = NULL,
 
 \item{filename}{\code{character} passed to \code{\link{writeRaster}}. If not 
 specified, output is written to a temporary file.}
+
+\item{datatype}{\code{character}. Default \code{INT1U} used for \code{x} = Raster* object.. Output datatype, see 
+\code{\link{writeRaster}}.}
+
+\item{NAflag}{\code{integer}. Default \code{255} used for \code{x} = Raster* object. Set specific NA value, see 
+\code{\link{writeRaster}}.}
 
 \item{...}{Other arguments passed to \code{\link{writeRaster}}.}
 
@@ -39,9 +47,6 @@ selected bits and convert to decimal system.}
 \item{keep}{If \code{NULL} (default), bits are only encoded, else an 
 \code{integer} vector of values you want to keep (becomes \code{TRUE}), the 
 rest becomes \code{NA}. See examples.}
-
-\item{datatype}{\code{character}. Output datatype, see 
-\code{\link{writeRaster}}.}
 }
 \value{
 A \code{Raster*} object.

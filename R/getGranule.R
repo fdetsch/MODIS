@@ -10,7 +10,7 @@
 #' This can be an arbitrary combination of \code{"D"} (day), \code{"N"} (night), 
 #' \code{"B"} (both), \code{"X"} (not designated). By default, all flags are 
 #' accepted.
-#' 
+#'   
 #' @return 
 #' Identified granules as \code{character}.
 #' 
@@ -23,16 +23,22 @@
 #' data(meuse)
 #' pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
 #'
-#' grn = getGranule("MOD14", begin = "2000360", end = "2001003"
+#' begin <- '2017001'
+#' end   <- '2017010'
+#'  
+#' grn = getGranule("MOD14", begin = begin, end = end
 #'                  , extent = pts, DayNightFlag = "D")
+#'                  
 #' }
 #' 
 #' @export getGranule
 #' @name getGranule
+#'
+#'  
 getGranule = function(product, collection = NULL
                       , begin = NULL, end = NULL
                       , DayNightFlag = c("D", "N", "B", "X")
-                      , tileH = NULL, tileV = NULL, extent = NULL, ...) {
+                      , extent = NULL, ...) {
   
   ### ENVIRONMENT ----
   
@@ -81,7 +87,10 @@ getGranule = function(product, collection = NULL
                   , as.integer(prd@CCC)
                   , toupper(prd@PLATFORM))
   
-  yrs = unique(substr(dts, 1, 4))
+  # create ifl
+  idr
+  
+  yrs = unique(format(dts,'%Y'))
   mtd = do.call(c, lapply(yrs, function(yr) {
     ifl = file.path(idr, paste0(yr, ".csv"))
     ofl = tempfile(fileext = ".csv")

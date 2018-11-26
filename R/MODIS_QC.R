@@ -246,6 +246,36 @@ MYD15A3H_QC <- data.frame(
   bitMask=c(1,1,1,3,7)
 )
 
+#### M.D16
+
+MOD16A2_QC <- data.frame(
+  LongName=c("MODLAND_QC bits", "Sensor", "DeadDetector", "CloudState (inherited from Aggregate_QC bits {0,1} cloud state)",
+             "SCF_QC (five level confidence score)"),
+  bitShift=c(0,1,2,3,5),
+  bitMask=c(1,1,1,3,7)
+)
+
+MYD16A2_QC <- data.frame(
+  LongName=c("MODLAND_QC bits", "Sensor", "DeadDetector", "CloudState (inherited from Aggregate_QC bits {0,1} cloud state)",
+             "SCF_QC (five level confidence score)"),
+  bitShift=c(0,1,2,3,5),
+  bitMask=c(1,1,1,3,7)
+)
+
+MOD16A3_QC <- data.frame(
+  LongName=c("MODLAND_QC bits", "Sensor", "DeadDetector", "CloudState (inherited from Aggregate_QC bits {0,1} cloud state)",
+             "SCF_QC (five level confidence score)"),
+  bitShift=c(0,1,2,3,5),
+  bitMask=c(1,1,1,3,7)
+)
+
+MYD16A3_QC <- data.frame(
+  LongName=c("MODLAND_QC bits", "Sensor", "DeadDetector", "CloudState (inherited from Aggregate_QC bits {0,1} cloud state)",
+             "SCF_QC (five level confidence score)"),
+  bitShift=c(0,1,2,3,5),
+  bitMask=c(1,1,1,3,7)
+)
+
 #### M.D17
 
 MOD17A2_QC <- data.frame(

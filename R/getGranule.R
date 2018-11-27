@@ -33,8 +33,6 @@
 #' 
 #' @export getGranule
 #' @name getGranule
-#'
-#'  
 getGranule = function(product, collection = NULL
                       , begin = NULL, end = NULL
                       , DayNightFlag = c("D", "N", "B", "X")
@@ -48,9 +46,8 @@ getGranule = function(product, collection = NULL
   on.exit(options(stringsAsFactors = saf))
   
   ## suppress download.file() warnings
-  w = options("warn")
+  w = getOption("warn")
   options(warn = -1)
-  on.exit(options(warn = w))
   
   ## MODISoptions
   opts = combineOptions(...)
@@ -86,9 +83,6 @@ getGranule = function(product, collection = NULL
   idr = file.path("https://ladsweb.modaps.eosdis.nasa.gov/archive/geoMeta"
                   , as.integer(prd@CCC)
                   , toupper(prd@PLATFORM))
-  
-  # create ifl
-  idr
   
   yrs = unique(format(dts,'%Y'))
   mtd = do.call(c, lapply(yrs, function(yr) {
@@ -172,6 +166,9 @@ getGranule = function(product, collection = NULL
     sct = suppressWarnings(rgeos::gIntersects(extent, pys, byid = TRUE))
     out[[h]] = grn[apply(sct, 1, FUN = any), "GranuleID"]
   }
+  
+  ## reset permanent warnings setting
+  options(warn = w)
   
   names(out) = basename(mtd)
   return(out)

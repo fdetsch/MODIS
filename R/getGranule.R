@@ -38,7 +38,7 @@
 getGranule = function(product, collection = NULL
                       , begin = NULL, end = NULL
                       , DayNightFlag = c("D", "N", "B", "X")
-                      , extent = NULL, ...) {
+                      , tileH = NULL, tileV = NULL, extent = NULL, ...) {
   
   ### ENVIRONMENT ----
   

@@ -600,7 +600,7 @@ filesUrl <- function(url)
     ## LP DAAC, NSIDC
     if (grepl("usgs.gov|nsidc", url)) 
     {
-      h <- curl::new_handle()
+      h <- curl::new_handle(CONNECTTIMEOUT = 60L)
       if (grepl("nsidc", url)) {
         curl::handle_setopt(
           handle = h,
@@ -804,7 +804,7 @@ ModisFileDownloader <- function(x, ...)
             
             # curl download from LP DAAC or NSIDC
             out[a] = if (method == "curl" & server %in% c("LPDAAC", "NSIDC")) {
-              h = curl::new_handle()
+              h = curl::new_handle(CONNECTTIMEOUT = 60L)
               curl::handle_setopt(
                 handle = h,
                 httpauth = 1,

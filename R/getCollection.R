@@ -54,7 +54,8 @@
 #' 
 #' @export getCollection
 #' @name getCollection
-getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,as="character", ...)
+getCollection <- function(product, collection = NULL, newest = TRUE
+                          , forceCheck = FALSE, as = "character", ...)
 {
     opts <- combineOptions(...)
 
@@ -152,8 +153,9 @@ getCollection <- function(product,collection=NULL,newest=TRUE,forceCheck=FALSE,a
           
           ids = sapply(file.path(ftp, dirs, "/"), function(ftpdir) {
             
-            # define curl handle
-            h <- curl::new_handle()
+            # define curl handle with extended waiting time for slow DNS servers
+            # (see also https://github.com/jeroen/curl/issues/72)
+            h <- curl::new_handle(CONNECTTIMEOUT = 60L)
             if (grepl("nsidc", ftpdir)) {
               curl::handle_setopt(
                 handle = h,

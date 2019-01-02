@@ -214,11 +214,10 @@ runGdal <- function(product, collection=NULL,
         # u=1
         ftpdirs      <- list()
         
-        server = if (length(unlist(product@SOURCE)) > 1) {
-          unlist(product@SOURCE)[which(unlist(product@SOURCE) == opts$MODISserverOrder[1])]
-        } else {
-          unlist(product@SOURCE)
-        }
+        server = product@SOURCE[[z]]
+        if (length(server) > 1) {
+          server = server[which(server == opts$MODISserverOrder[1])]
+        } 
           
         ftpdirs[[1]] <- as.Date(getStruc(product = strsplit(todo[u], "\\.")[[1]][1],
                                          collection = strsplit(todo[u], "\\.")[[1]][2],

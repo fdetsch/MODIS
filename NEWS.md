@@ -3,6 +3,7 @@
 Bugfixes:
 
   * Missing compatibility of repDoy() with results from extractDate().
+  * Duplicate server issue when passing multiple products on to runGdal().
 
 
 ## MODIS 1.1.4

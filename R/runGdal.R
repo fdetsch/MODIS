@@ -176,18 +176,24 @@ runGdal <- function(product, collection=NULL,
     ### GDAL command line arguments -----
     
     ## obligatory arguments
-    t_srs <- OutProj(product, extent, opts) # outProj
-    tr <- PixelSize(extent, opts)           # pixelSize
-    rt <- ResamplingType(opts)              # resamplingType
+    t_srs <- do.call(OutProj, c(list(product = product, extent = extent), opts))
+    # t_srs <- OutProj(product, extent, opts) # outProj
+    tr <- do.call(PixelSize, c(list(extent = extent), opts))
+    # tr <- PixelSize(extent, opts)           # pixelSize
+    rt <- do.call(ResamplingType, opts)
+    # rt <- ResamplingType(opts)              # resamplingType
     s_srs <- InProj(product)                # inProj
     te <- TargetExtent(extent,              # targetExtent
                        outProj = strsplit(t_srs, "'|\"")[[1]][2]) 
     
     ## non-obligatory arguments (GTiff blocksize and compression, see 
     ## http://www.gdal.org/frmt_gtiff.html)
-    bs <- BlockSize(opts)                   # blockSize
-    cp <- OutputCompression(opts)           # compression
-    q <- QuietOutput(opts)                  # quiet
+    bs <- do.call(BlockSize, opts)
+    # bs <- BlockSize(opts)                   # blockSize
+    cp <- do.call(OutputCompression, opts)
+    # cp <- OutputCompression(opts)           # compression
+    q <- do.call(QuietOutput, opts)
+    # q <- QuietOutput(opts)                  # quiet
     
     lst_product <- vector("list", length(product@PRODUCT))
     for (z in seq_along(product@PRODUCT)) {

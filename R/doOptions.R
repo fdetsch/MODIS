@@ -196,7 +196,7 @@ checkGdalDriver <- function(path=NULL)
   
   driver = try(
     do.call(if (.Platform$OS=="windows") shell else system # os dependent call
-            , list(command = cmd, intern = TRUE))
+            , list(cmd, intern = TRUE))
   , silent = TRUE)
 
   ## if gdalinfo coudn't be found, return FALSE  

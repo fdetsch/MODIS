@@ -1,9 +1,9 @@
 # lazy loading
 ##########################################
 
-suppressWarnings(
-  avl <- "MODIS" %in% installed.packages()
-)
+## check if package is installed (<-> do not use installed.packages() here, see 
+## documentation)
+avl = length(find.package("MODIS", quiet = TRUE) > 0)
 
 ofl = ifelse(!avl
              , file.path(getwd(), "inst/external")

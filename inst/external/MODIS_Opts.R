@@ -46,7 +46,7 @@ cellchunk <- 1
 # More related to Windows, but also to other OS in case of a non standard location of GDAL
 # ON WINDOWS install 'OSGeo4W' (recommanded) or 'FWTools', and use SINGLE FORWARD SLASH ('/')!
 # consult '?MODISoptions' for more details
-# Run: 'MODIS:::.checkTools()' to try to autodetect.
+# Run: 'MODIS:::checkTools()' to try to autodetect.
 # Example:
 # gdalPath <- 'C:/OSGeo4W/bin'
   

@@ -11,8 +11,7 @@ EarthdataLogin(usr = NULL, pwd = NULL)
 username and password are read from the terminal.}
 }
 \value{
-An \code{invisible()} absolute file path of the created \code{.netrc} file as 
-\code{character}.
+The \code{\link{invisible}} Earthdata login credentials as \code{list}.
 }
 \description{
 Create a hidden \code{.netrc} file with Earthdata login credentials in your 

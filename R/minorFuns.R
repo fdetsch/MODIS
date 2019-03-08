@@ -127,8 +127,7 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
   }
 }
 
-checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
-                       , opts = NULL)
+checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE, ...)
 {
     tool <- toupper(tool)
     
@@ -149,7 +148,7 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
             cat("Checking availability of MRT:\n")
         }
     
-        if(mrtH=="") 
+        if(mrtH=="" & !quiet) 
         {
             cat("  'MRT_HOME' not set/found! MRT is NOT enabled! See: 'https://lpdaac.usgs.gov/tools/modis_reprojection_tool'\n")
         } else 
@@ -158,7 +157,7 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
             {
                 cat("  'MRT_HOME' found:", mrtH,"\n")
             }
-            if (mrtDD=="") 
+            if (mrtDD=="" & !quiet) 
             {
                cat("  'MRT_DATA_DIR' not set/found! MRT is NOT enabled! You need to set the path, read in the MRT manual! 'https://lpdaac.usgs.gov/tools/modis_reprojection_tool'\n")
             } else 
@@ -196,8 +195,7 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE
         GDAL <- FALSE
         gdv  <- NA
         
-        if (is.null(opts))
-          opts <- combineOptions(checkTools = FALSE)
+        opts <- combineOptions(..., checkTools = FALSE)
         
         if (.Platform$OS=="unix")
         {    
@@ -510,27 +508,21 @@ isSupported <- function(x)
       return(FALSE)
     } else 
     {
-      secName <- defineName(product$request)
+      secName <- defineName(product@request)
       
-      if (product$SENSOR[1] == "MODIS") 
+      if (product@TYPE[1] == "Tile") 
       {
-        if (product$TYPE[1] == "Tile") 
-        {
-          Tpat    <- "h[0-3][0-9]v[0-1][0-9]" # to enhance
-          return(all((grep(secName["TILE"],pattern=Tpat)) + (substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
-          
-        } else if (product$TYPE[1] == "CMG") 
-        {
-          return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==5)))
-          
-        } else if (product$TYPE[1] == "Swath")  # actually no support for Swath data!
-        {
-#             return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
-#                } else {
-          return(FALSE)
-        }
-      } else 
+        Tpat    <- "h[0-3][0-9]v[0-1][0-9]" # to enhance
+        return(all((grep(secName["TILE"],pattern=Tpat)) + (substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
+        
+      } else if (product@TYPE[1] == "CMG") 
       {
+        return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==5)))
+        
+      } else if (product@TYPE[1] == "Swath")  # actually no support for Swath data!
+      {
+        #             return(all((substr(secName["DATE"],1,1) == "A") + (length(secName)==6)))
+        #                } else {
         return(FALSE)
       }
     }
@@ -561,13 +553,13 @@ defineName <- function(x) # "x" is a MODIS or filename
     if (sensor=="MODIS")
     {
       product <- getProduct(x=secName[1],quiet=TRUE)
-      if (product$TYPE=="Tile") 
+      if (product@TYPE=="Tile") 
       {
         names(secName) <- c("PRODUCT","DATE","TILE","CCC","PROCESSINGDATE","FORMAT")
-      } else if (product$TYPE=="CMG") 
+      } else if (product@TYPE=="CMG") 
       {
         names(secName) <- c("PRODUCT","DATE","CCC","PROCESSINGDATE","FORMAT")
-      } else if (product$TYPE=="Swath") 
+      } else if (product@TYPE=="Swath") 
       { 
         names(secName) <- c("PRODUCT","DATE","TIME","CCC","PROCESSINGDATE","FORMAT")
       } else 
@@ -604,12 +596,11 @@ filesUrl <- function(url)
     
     iw   <- options()$warn 
     options(warn=-1)
-    on.exit(options(warn=iw))
 
     ## LP DAAC, NSIDC
     if (grepl("usgs.gov|nsidc", url)) 
     {
-      h <- curl::new_handle()
+      h <- curl::new_handle(CONNECTTIMEOUT = 60L)
       if (grepl("nsidc", url)) {
         curl::handle_setopt(
           handle = h,
@@ -673,6 +664,9 @@ filesUrl <- function(url)
       
     }
 
+    ## reset 'warn' option (multiple on.exit() calls are ignored and only the last one is executed)
+    options(warn=iw)
+    
     ## format and return    
     fnames <- gsub(fnames,pattern="/",replacement="")
     return(fnames)
@@ -692,7 +686,7 @@ makeRandomString <- function(n=1, length=12)
 }
 
 # this function care about the download of files. Based on remotePath (result of genString) it alterates the effort on available sources and stops after succeded download or by reacing the stubbornness thresshold.
-ModisFileDownloader <- function(x, opts = NULL, ...)
+ModisFileDownloader <- function(x, ...)
 {
     x <- basename(x)
 
@@ -700,18 +694,8 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
     usr = credentials()$login
     pwd = credentials()$password
     
-    # ~/.netrc is mandatory for LP DAAC and NSIDC, hence if missing, 
-    # create it to avoid repeat authentication failures
-    if (any(is.null(c(usr, pwd)))) {
-      jnk = EarthdataLogin()
-      usr = credentials()$login
-      pwd = credentials()$password
-    }
-    
-    ## if options have not been passed down, create them from '...'
-    if (is.null(opts))
-      opts <- combineOptions(...)
-    
+    opts <- combineOptions(...)
+
     opts$stubbornness <- stubborn(opts$stubbornness)
     opts$quiet <- as.logical(opts$quiet)
     
@@ -723,7 +707,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
     
     for (a in seq_along(x))
     {  # a=1
-        path           <- genString(x[a], collection = getCollection(x[a], quiet = TRUE), opts = opts)
+        path <- do.call(genString, c(list(x = x[a], collection = getCollection(x[a], quiet = TRUE)), opts))
         path$localPath <- setPath(path$localPath)
         destfile       <- paste0(path$localPath,x[a])
         
@@ -819,7 +803,7 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
             
             # curl download from LP DAAC or NSIDC
             out[a] = if (method == "curl" & server %in% c("LPDAAC", "NSIDC")) {
-              h = curl::new_handle()
+              h = curl::new_handle(CONNECTTIMEOUT = 60L)
               curl::handle_setopt(
                 handle = h,
                 httpauth = 1,
@@ -854,19 +838,17 @@ ModisFileDownloader <- function(x, opts = NULL, ...)
 return(!as.logical(out)) 
 }
 
-doCheckIntegrity <- function(x, opts = NULL, ...) {
+doCheckIntegrity <- function(x, ...) {
   
   x <- basename(x)
   
   ## extract collection information
   clc = sapply(x, function(i) {
     prd = getProduct(i, quiet = TRUE)
-    prd$CCC
+    prd@CCC
   })
 
-  ## if options have not been passed down, create them from '...'
-  if (is.null(opts))
-    opts <- combineOptions(...)
+  opts <- combineOptions(...)
   
   opts$stubbornness <- stubborn(opts$stubbornness)
   
@@ -879,7 +861,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
       out[a] <- NA
     } else
     { 
-      path <- genString(x[a], collection = clc[a], opts = opts)
+      path <- do.call(genString, c(list(x = x[a], collection = clc[a]), opts))
       path$localPath <- setPath(path$localPath) 
       
       hv <- 1:length(path$remotePath)
@@ -889,7 +871,7 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
       {     
         if (g==1)
         {
-          out[a] <- checkIntegrity(x = x[a], opts = opts)
+          out[a] <- do.call(checkIntegrity, c(list(x = x[a]), opts))
         }
         
         if (is.na(out[a]))
@@ -904,13 +886,13 @@ doCheckIntegrity <- function(x, opts = NULL, ...) {
             cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
           }
           unlink(x[a])
-          out[a] <- ModisFileDownloader(x[a], opts = opts)
+          out[a] <- do.call(ModisFileDownloader, c(list(x = x[a]), opts))
         } else if (out[a]) 
         {
           break
         }
         
-        out[a] <- checkIntegrity(x = x[a], opts = opts)
+        out[a] <- do.call(checkIntegrity, c(list(x = x[a]), opts))
         g=g+1
       }
     }
@@ -979,6 +961,68 @@ getNa <- function(x)
   return(res)
 }
 
+# get valid Range as specified in hdf metadata: getSds(x)$SDS4gdal
+getValidRange <- function(x)
+{
+  name <- res <- vector(mode="list",length=length(x))
+  
+  iw   <- getOption("warn") 
+  options(warn=-1)
+  on.exit(options(warn=iw))
+  
+  gdalPath <- getOption("MODIS_gdalPath")[1]
+  gdalPath <- correctPath(gdalPath)
+  cmd      <- paste0(gdalPath,"gdalinfo ")
+  
+  for (i in seq_along(x))
+  {
+    tmp <- system(paste0(cmd,shQuote(x[i])),intern=TRUE)
+    tmp <- grep(tmp,pattern="valid_range=",value=TRUE)
+    
+    if (length(tmp)!=0)
+    {
+      tmp <- strsplit(tmp,"=")[[1]][2]
+      res[[i]] <- as.numeric(strsplit(tmp,",")[[1]])
+    } else
+    {
+      res[[i]] <- NA
+    }
+    nam       <- strsplit(x[i],":")[[1]] 
+    name[[i]] <- nam[length(nam)]
+  }
+  
+  names(res) <- unlist(name)
+  res[is.na(res)] <- NULL
+  return(res)
+}
+
+# If NA is within valid range mistrust
+validNa <- function(x)
+{
+  na <- getNa(x)
+  vr <- getValidRange(x)
+  
+  for(i in seq_along(vr))
+  {
+    #dt <- dataType(raster(x[i]))
+    
+    if(!is.na(vr[[i]][1]))
+    {
+      if(na[[i]] < min(vr[[i]]) | na[[i]] > max(vr[[i]][2]))
+      {
+        na[[i]] <- TRUE
+      } else
+      {
+        na[[i]] <- FALSE
+      }
+    } else
+    {
+      na[[i]] <- NA
+    }
+  }
+  return(na)
+}
+
 correctPath <- function(x,isFile=FALSE)
 {
   if(!is.null(x))
@@ -1001,11 +1045,12 @@ return(x)
 
 positionIndication = function(x) {
 
-  product = suppressWarnings(getProduct(x, quiet = TRUE))
+  product = getProduct(x, quiet = TRUE)
   
   if (!is.null(product)) {
-    ids = as.integer(sapply(c("POS1", "POS2"), function(i) product[[i]]))
-    pos = list("POS1" = ids[1], "POS2" = ids[2])
+    ids = lapply(c("POS1", "POS2"), function(i) methods::slot(product, i))
+    ids = do.call(rbind, ids)
+    pos = list("POS1" = ids[1, ], "POS2" = ids[2, ])
     
     return(pos)
     
@@ -1076,7 +1121,7 @@ fixOrphanedHoles = function(x) {
 ## skip unwanted products, see https://github.com/MatMatt/MODIS/issues/22
 skipDuplicateProducts = function(x, quiet = FALSE) {
   
-  products = getProduct()[, 2]
+  products = getProduct()[, 1]
   
   dpl = lapply(seq_along(products), function(i) {
     dpl = grep(products[i], products[-i], value = TRUE)
@@ -1130,20 +1175,3 @@ correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   
   return(begin)
 }
-
-# ## Earthdata login credentials from .netrc file
-# credentials = function() {
-#   
-#   # try to locate .netrc file
-#   nrc = path.expand("~/.netrc")
-#   if (!file.exists(nrc))
-#     stop("~/.netrc file required. Either run EarthdataLogin() or set" 
-#          , " MODISoptions(MODISserverOrder = 'LAADS').")
-#   
-#   # if file exists, import contents
-#   lns = readLines(nrc)
-#   crd = sapply(strsplit(lns, " "), "[[", 2)
-#   usr = crd[2]; pwd = crd[3]
-#   
-#   return(c("User" = usr, "Password" = pwd))
-# }

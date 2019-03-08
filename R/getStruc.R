@@ -11,25 +11,28 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
   
   #########################
   # Check product 
-  inp = product
-  product <- getProduct(x=product,quiet=TRUE)
-  
-  if (is.null(product)) {
-    stop("Product '", inp, "' not recognized. See getProduct() for a list of "
-         , "available products.")
-  } else rm(inp)
-
-  # Check collection
-  product$CCC = getCollection(product = product, collection = collection
-                              , forceCheck = forceCheck) 
+  if (!inherits(product, "MODISproduct")) {
+    inp = product
+    product <- getProduct(x = product, quiet = TRUE
+                          , collection = collection, forceCheck = forceCheck)
+    
+    if (is.null(product)) {
+      stop("Product '", inp, "' not recognized. See getProduct() for a list of "
+           , "available products.")
+    } else rm(inp)
+    
+    # Check collection
+    product@CCC = getCollection(product = product, collection = collection
+                                , forceCheck = forceCheck) 
+  }
   
   # Check server
   if (is.null(server)) {
-    server = unlist(product$SOURCE)[1]
+    server = unlist(product@SOURCE)[1]
     
-  } else if (!server %in% (srv <- unlist(product$SOURCE))) {
+  } else if (!server %in% (srv <- unlist(product@SOURCE))) {
     if (!opts$quiet) {
-      warning(paste0(product$PRODUCT, ".", product$CCC), " is not available from "
+      warning(paste0(product@PRODUCT, ".", product@CCC), " is not available from "
               , server, ", retrieving structure from ", srv[1], " instead.")
     }
     
@@ -41,8 +44,8 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
   ########################
   
   # load aux
-  col    <- product$CCC[[1]]
-  basnam <- paste0(product$PRODUCT[1],".",product$CCC[[1]],".",server)
+  col    <- product@CCC[[1]]
+  basnam <- paste0(product@PRODUCT[1],".",product@CCC[[1]],".",server)
   info   <- list.files(path=opts$auxPath,pattern=paste0(basnam,".*.txt"),full.names=TRUE)[1]
   
   output <- list(dates=NULL,source=server,online=NA)
@@ -102,9 +105,9 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
       on.exit(unlink(lockfile))
     }
     
-    path <- genString(x=product$PRODUCT[1], collection=col, local=FALSE)
+    path <- genString(x=product@PRODUCT[1], collection=col, local=FALSE)
     
-    cat("Downloading structure on '",server,"' for: ",product$PRODUCT[1],".",col,"\n",sep="")
+    cat("Downloading structure on '",server,"' for: ",product@PRODUCT[1],".",col,"\n",sep="")
     
     if(exists("FtpDayDirs"))
     {
@@ -199,7 +202,7 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
       }
       options("warn"=opt$warn)
       
-      if (product$PRODUCT != "MOD16A3") {
+      if (product@PRODUCT != "MOD16A3") {
         Ypath <- paste0(startPath,years,"/")
         
         ouou <- vector(length=length(years),mode="list")

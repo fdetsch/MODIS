@@ -34,11 +34,19 @@ pixelSize      <- 'asIn'
 dataFormat     <- 'GTiff'
   
 #########################
-# 4.) Set path to GDAL _bin_ directory
+# 4) Defaults related to raster package:
+# Cellchunk: Comparable with chunksize in ?rasterOption.
+# But as no effect was found in adapting chunksize,
+# MODIS applies its own variant:minrows <- max(floor(cellchunk/ncol(x)),1) blockSize(x,minrows=minrows).
+# On a reasonable working station you can easily increase this to 500000, set 1 for raster defaults
+cellchunk <- 1
+
+#########################
+# 5.) Set path to GDAL _bin_ directory
 # More related to Windows, but also to other OS in case of a non standard location of GDAL
 # ON WINDOWS install 'OSGeo4W' (recommanded) or 'FWTools', and use SINGLE FORWARD SLASH ('/')!
 # consult '?MODISoptions' for more details
-# Run: 'MODIS:::.checkTools()' to try to autodetect.
+# Run: 'MODIS:::checkTools()' to try to autodetect.
 # Example:
 # gdalPath <- 'C:/OSGeo4W/bin'
   

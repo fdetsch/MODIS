@@ -189,34 +189,30 @@ checkOutProj <- function(proj, tool, quiet=FALSE
 # returns 0 if a given GDAL supports HDF4 else 1 
 checkGdalDriver <- function(path=NULL)
 {
-  inW <- getOption("warn")
-  on.exit(options(warn=inW))
-  options(warn=-1)
-  
+
   path <- correctPath(path)
   
   cmd <- paste0(path,'gdalinfo --formats')
   
-  if(.Platform$OS=="windows")
+  driver = try(
+    do.call(if (.Platform$OS=="windows") shell else system # os dependent call
+            , list(cmd, intern = TRUE))
+  , silent = TRUE)
+
+  ## if gdalinfo coudn't be found, return FALSE  
+  if (inherits(driver, "try-error"))
   {
-    driver <- try(shell(cmd,intern=TRUE),silent=TRUE)
-  } else
-  { 
-    driver <- try(system(cmd,intern=TRUE), silent=TRUE)
-  }
-    
-  if (class(driver) == "try-error")
-  {
-    options(warn=inW)
-    warning("No gdal installation found please install 'gdal' on your system first!")
+    warning("No GDAL installation found, please install it on your system first!")
     return(FALSE)
-  }
     
-  if (any(grepl(driver, pattern = "HDF4"))) {
-    return(TRUE)
+  ## else check if HDF4 driver is available
   } else {
-    warning("HDF4 driver seems to be lacking. Please install GDAL with HDF4 support.")
-    return(FALSE)
+    if (any(grepl(driver, pattern = "HDF4"))) {
+      return(TRUE)
+    } else {
+      warning("HDF4 driver seems to be lacking, please install GDAL with HDF4 support.")
+      return(FALSE)
+    }
   }
 }
 

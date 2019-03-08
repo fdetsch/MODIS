@@ -123,10 +123,9 @@ runGdal <- function(product, collection=NULL,
     }
     
     # absolutely needed
-    product <- getProduct(product, quiet=TRUE)
+    product <- getProduct(product, quiet=TRUE, collection = collection)
     
     # optional and if missing it is added here:
-    product$CCC <- getCollection(product,collection=collection, quiet = opts$quiet)
     tLimits     <- transDate(begin=begin,end=end)
     
     dataFormat <- toupper(opts$dataFormat) 
@@ -163,9 +162,9 @@ runGdal <- function(product, collection=NULL,
     # output pixel size in output proj units (default is "asIn", but there are 2 chances of changing this argument: pixelSize, and if extent comes from a Raster* object.
      
     if (!inherits(extent, "MODISextent")) {
-      extent = if (product$TYPE[1] == "Tile" | 
+      extent = if (product@TYPE[1] == "Tile" | 
                    (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & 
-                    product$TYPE[1]=="CMG")) {
+                    product@TYPE[1]=="CMG")) {
         getTile(x = extent, tileH = tileH, tileV = tileV
                 , outProj = opts$outProj, pixelSize = opts$pixelSize)
       } else {
@@ -177,23 +176,29 @@ runGdal <- function(product, collection=NULL,
     ### GDAL command line arguments -----
     
     ## obligatory arguments
-    t_srs <- OutProj(product, extent, opts) # outProj
-    tr <- PixelSize(extent, opts)           # pixelSize
-    rt <- ResamplingType(opts)              # resamplingType
+    t_srs <- do.call(OutProj, c(list(product = product, extent = extent), opts))
+    # t_srs <- OutProj(product, extent, opts) # outProj
+    tr <- do.call(PixelSize, c(list(extent = extent), opts))
+    # tr <- PixelSize(extent, opts)           # pixelSize
+    rt <- do.call(ResamplingType, opts)
+    # rt <- ResamplingType(opts)              # resamplingType
     s_srs <- InProj(product)                # inProj
     te <- TargetExtent(extent,              # targetExtent
                        outProj = strsplit(t_srs, "'|\"")[[1]][2]) 
     
     ## non-obligatory arguments (GTiff blocksize and compression, see 
     ## http://www.gdal.org/frmt_gtiff.html)
-    bs <- BlockSize(opts)                   # blockSize
-    cp <- OutputCompression(opts)           # compression
-    q <- QuietOutput(opts)                  # quiet
+    bs <- do.call(BlockSize, opts)
+    # bs <- BlockSize(opts)                   # blockSize
+    cp <- do.call(OutputCompression, opts)
+    # cp <- OutputCompression(opts)           # compression
+    q <- do.call(QuietOutput, opts)
+    # q <- QuietOutput(opts)                  # quiet
     
-    lst_product <- vector("list", length(product$PRODUCT))
-    for (z in seq_along(product$PRODUCT)) {
+    lst_product <- vector("list", length(product@PRODUCT))
+    for (z in seq_along(product@PRODUCT)) {
       # z=1
-      todo <- paste(product$PRODUCT[[z]], product$CCC[[product$PRODUCT[z]]], sep = ".")
+      todo <- paste(product@PRODUCT[[z]], product@CCC[[product@PRODUCT[z]]], sep = ".")
       
       if(z==1)
       {
@@ -215,11 +220,10 @@ runGdal <- function(product, collection=NULL,
         # u=1
         ftpdirs      <- list()
         
-        server = if (length(unlist(product$SOURCE)) > 1) {
-          unlist(product$SOURCE)[which(unlist(product$SOURCE) == opts$MODISserverOrder[1])]
-        } else {
-          unlist(product$SOURCE)
-        }
+        server = product@SOURCE[[z]]
+        if (length(server) > 1) {
+          server = server[which(server == opts$MODISserverOrder[1])]
+        } 
           
         ftpdirs[[1]] <- as.Date(getStruc(product = strsplit(todo[u], "\\.")[[1]][1],
                                          collection = strsplit(todo[u], "\\.")[[1]][2],
@@ -638,7 +642,7 @@ runGdal <- function(product, collection=NULL,
           lst_todo[[u]] <- lst_ofile
           
         } else {
-          warning(paste("No", product$PRODUCT, "files found for the period from"
+          warning(paste("No", product@PRODUCT, "files found for the period from"
                         , tLimits$begin, "to", paste0(tLimits$end, ".")))
           lst_todo[[u]] <- NA
         }
@@ -647,7 +651,7 @@ runGdal <- function(product, collection=NULL,
       lst_product[[z]] <- lst_todo[[1]]
     }
     
-    names(lst_product) <- paste(product$PRODUCT, product$CCC, sep = ".")
+    names(lst_product) <- paste(product@PRODUCT, product@CCC, sep = ".")
     return(lst_product)
 }
 

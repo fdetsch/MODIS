@@ -6,8 +6,8 @@
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
   dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait,
-  quiet, systemwide = FALSE, save = TRUE, checkTools = TRUE,
-  checkWriteDrivers = TRUE, ask = TRUE)
+  quiet, cellchunk, systemwide = FALSE, save = TRUE,
+  checkTools = TRUE, checkWriteDrivers = TRUE, ask = TRUE)
 }
 \arguments{
 \item{localArcPath}{\code{character}, defaults to 
@@ -62,6 +62,13 @@ frequently occur after many requests.}
 
 \item{quiet}{\code{logical} passed eg to \code{\link{download.file}} which is 
 called from inside \code{\link{getHdf}}.}
+
+\item{cellchunk}{Default 1 (=use raster default), comparable with chunksize
+in \code{\link{rasterOptions}}. But as no effect was found in adapting chunksize, 
+MODIS applies its own variant:
+\strong{minrows <- max(floor(cellchunk/ncol(x)),1) 
+blockSize(x,minrows=minrows)}. 
+On a reasonable working station you can easily increase cellchunk to 500000.}
 
 \item{systemwide}{A \code{logical} determining whether changes made to 
 \code{\link{MODISoptions}} are to be applied system or user-wide (default), 

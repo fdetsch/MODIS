@@ -61,17 +61,17 @@ orgStruc <- function(from,to,structure, pattern, move=FALSE, quiet=FALSE)
   
   if (!missing(structure))
   {
-    opts$acrStructure <- structure
+    opts$arcStructure <- structure
   }
     ###########################
     
   if(missing(pattern)) 
   {
   	cat(paste0("No 'pattern' set, moving/coping all MODIS grid data found in '", from,"'.\n"))
-  	avFiles <- unlist(list.files(from, pattern=".hdf$", recursive=TRUE, full.names=TRUE))
+  	avFiles <- list.files(from, pattern=".hdf$", recursive=TRUE, full.names=TRUE)
   } else 
   {
-  	avFiles <- unlist(list.files(from, pattern=pattern, recursive=TRUE, full.names=TRUE))
+  	avFiles <- list.files(from, pattern=pattern, recursive=TRUE, full.names=TRUE)
   }
   
   if (length(avFiles)==0) {stop("No HDF nor HDF.XML files found!\n")}

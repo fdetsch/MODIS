@@ -144,8 +144,7 @@ runMrt <- function(product, collection = NULL
         stop("MRT path not set or MRT not installed on your system!")
     }
         
-    product     <- getProduct(product,quiet=TRUE)
-    product$CCC <- getCollection(product,collection=collection)
+    product     <- getProduct(product, quiet = TRUE, collection = collection)
     tLimits          <- transDate(begin=begin,end=end)
     
     opts$localArcPath <- setPath(opts$localArcPath)
@@ -158,9 +157,9 @@ runMrt <- function(product, collection = NULL
     ext <- getExtension(opts$dataFormat)
     
     if (!inherits(extent, "MODISextent")) {
-      extent = if (product$TYPE[1] == "Tile" |
+      extent = if (product@TYPE[1] == "Tile" |
                    (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) &
-                    product$TYPE[1]=="CMG")) {
+                    product@TYPE[1]=="CMG")) {
         getTile(x = extent, tileH = tileH, tileV = tileV
                 , outProj = "asIn"
                 , pixelSize = "asIn")
@@ -215,11 +214,11 @@ runMrt <- function(product, collection = NULL
         cat("Output projection parameters specified!\nUsing:\n ",projPara,"\n")
     }
 
-    lst_product <- vector("list", length(product$PRODUCT))
-    for (z in 1:length(product$PRODUCT))
+    lst_product <- vector("list", length(product@PRODUCT))
+    for (z in 1:length(product@PRODUCT))
     {
       
-      # if (product$TYPE[z]=="CMG") 
+      # if (product@TYPE[z]=="CMG") 
       # {
       #   tileID="GLOBAL"
       #   ntiles=1 
@@ -229,7 +228,7 @@ runMrt <- function(product, collection = NULL
       #   ntiles    <- length(extent@tile)
       # }
 
-        todo <- paste(product$PRODUCT[z],".",product$CCC[[product$PRODUCT[z]]],sep="")    
+        todo <- paste(product@PRODUCT[z],".",product@CCC[[product@PRODUCT[z]]],sep="")    
     
         lst_todo <- vector("list", length(todo))
         for(u in 1:length(todo))
@@ -267,7 +266,7 @@ runMrt <- function(product, collection = NULL
                 for (l in 1:length(avDates))
                 { 
                   files = unlist(
-                    do.call(getHdf, c(list(product = product$PRODUCT[z]
+                    do.call(getHdf, c(list(product = product@PRODUCT[z]
                                            , collection = strsplit(todo[u], "\\.")[[1]][2]
                                            , begin = avDates[l], end = avDates[l]
                                            , tileH = extent@tileH, tileV = extent@tileV)
@@ -439,7 +438,7 @@ runMrt <- function(product, collection = NULL
               lst_todo[[u]] <- lst_ofile
                 
             } else {
-              warning(paste("No", product$PRODUCT, "files found for the period from"
+              warning(paste("No", product@PRODUCT, "files found for the period from"
                             , tLimits$begin, "to", paste0(tLimits$end, ".")))
               lst_todo[[u]] <- NA
             }
@@ -448,7 +447,7 @@ runMrt <- function(product, collection = NULL
         lst_product[[z]] <- lst_todo[[1]]
     } # z
 
-    names(lst_product) <- paste(product$PRODUCT, product$CCC, sep = ".")
+    names(lst_product) <- paste(product@PRODUCT, product@CCC, sep = ".")
     return(lst_product)
 }
 

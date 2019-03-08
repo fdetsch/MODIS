@@ -43,6 +43,12 @@
 #' internal online download call via \code{\link{download.file}} or 
 #' \code{\link[curl]{curl}}. Reduces the chance of connection errors that 
 #' frequently occur after many requests.
+#' @param cellchunk Default 1 (=use raster default), comparable with chunksize
+#' in \code{\link{rasterOptions}}. But as no effect was found in adapting chunksize, 
+#' MODIS applies its own variant:
+#' \strong{minrows <- max(floor(cellchunk/ncol(x)),1) 
+#' blockSize(x,minrows=minrows)}. 
+#' On a reasonable working station you can easily increase cellchunk to 500000.
 #' @param systemwide A \code{logical} determining whether changes made to 
 #' \code{\link{MODISoptions}} are to be applied system or user-wide (default), 
 #' see 'Details'.
@@ -124,9 +130,9 @@
 #' @name MODISoptions
 MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj, 
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
-                         dlmethod, stubbornness, wait, quiet, 
-                         systemwide = FALSE, save = TRUE, checkTools = TRUE
-                         , checkWriteDrivers = TRUE, ask = TRUE)
+                         dlmethod, stubbornness, wait, quiet, cellchunk,
+                         systemwide = FALSE, save = TRUE, checkTools = TRUE,
+                         checkWriteDrivers = TRUE, ask = TRUE)
 {
   # This function collects the package options from up to 3 files and creates 
   # the .MODIS_Opts.R file (location depending on systemwide=T/F, see below):
@@ -296,7 +302,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     opt$gdalPath <- correctPath(gdalPath)
     if(all(!grepl("gdalinfo", dir(opt$gdalPath))))
     {
-      stop(paste0("The 'gdalPath' you have provided '",normalizePath(opt$gdalPath,"/",FALSE) ,"' does not contain any gdal utilities, make sure to address the folder with GDAL executables (ie: gdalinfo)!"))
+      stop(paste0("The 'gdalPath' you have provided '",normalizePath(opt$gdalPath,"/",FALSE) ,"' does not contain any gdal utilities, make sure to address the folder with GDAL executables (i.e.: gdalinfo)!"))
     }
   }
   opt$gdalPath <- correctPath(opt$gdalPath)
@@ -335,7 +341,8 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     if (isOk) 
     {
       opt$gdalOk  <- TRUE
-      gdalVersion <- checkTools(tool="GDAL",quiet=TRUE, opts = opt)$GDAL$version
+      opt2 = opt; opt2 = opt2[names(opt) != "quiet"]
+      gdalVersion <- do.call("checkTools", c(list(tool = "GDAL", quiet = TRUE), opt2))$GDAL$version
     } else
     {
       opt$gdalOk  <- FALSE
@@ -343,7 +350,8 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     }
     
     # MRT
-    mrt <- checkTools(tool="MRT",quiet=TRUE, opts = opt)$MRT
+    opt2 = opt; opt2 = opt2[names(opt) != "quiet"]
+    mrt <- do.call("checkTools", c(list(tool = "MRT", quiet = TRUE), opt2))$MRT
     if(mrt$MRT)
     {
       opt$mrtOk  <- TRUE
@@ -380,6 +388,13 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   {
     opt$gdalOutDriver <- gdalWriteDriver(renew = FALSE, quiet = FALSE, gdalPath=opt$gdalPath,outDirPath=opt$outDirPath)
   }
+  
+  if(!missing(cellchunk))
+  {
+    opt$cellchunk <- cellchunk
+  }
+  
+  #########
   
   if (save) {
     
@@ -443,7 +458,15 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     write(paste0('dataFormat     <- \'',opt$dataFormat,'\''),filename)
     write('  ', filename)	
     write('#########################', filename)
-    write('# 4.) Set path to GDAL _bin_ directory', filename)
+    write('# 4) Defaults related to raster package:', filename)	 
+    write('# Cellchunk: Comparable with chunksize in ?rasterOption.',filename)
+    write('# But as no effect was found in adapting chunksize,', filename)	
+    write('# MODIS applies its own variant:minrows <- max(floor(cellchunk/ncol(x)),1) blockSize(x,minrows=minrows).', filename)	
+    write('# On a reasonable working station you can easily increase this to 500000, set 1 for raster defaults', filename)	
+    write(paste0('cellchunk <- ',opt$cellchunk), filename)
+    write('  ', filename)    
+    write('#########################', filename)
+    write('# 5.) Set path to GDAL _bin_ directory', filename)
     write('# More related to Windows, but also to other OS in case of a non standard location of GDAL', filename)
     write('# ON WINDOWS install \'OSGeo4W\' (recommanded) or \'FWTools\'', filename)
     write('# consult \'?MODISoptions\' for more details', filename)        
@@ -487,8 +510,9 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   cat('pixelSize      :', opt$pixelSize, '\n')
   cat('outProj        :', opt$outProj, '\n')
   cat('resamplingType :', opt$resamplingType, '\n')
-  cat('dataFormat     :', opt$dataFormat, '\n\n\n')
-
+  cat('dataFormat     :', opt$dataFormat, '\n')
+  cat('cellchunk      :', opt$cellchunk,'\n\n\n')
+  
   # remove ftpstring* from opt (old "~/.MODIS_Opts.R" style)
   oldftp <- grep(names(opt),pattern="^ftpstring*")
   

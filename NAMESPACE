@@ -31,6 +31,8 @@ export(temporalComposite)
 export(transDate)
 export(whittaker.raster)
 exportClasses(MODISextent)
+exportClasses(MODISfile)
+exportClasses(MODISproduct)
 if (.Platform$OS.type=="windows") importFrom(utils,shortPathName)
 
 import(bitops)

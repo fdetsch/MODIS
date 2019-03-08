@@ -2,7 +2,7 @@
 
 Changes:
 
-  * Optimized lazy load operations in preparation for R-3.6.0 release.
+  * Moved internal datasets (products, collections, etc.) from manual creation in zz_lazyload.R, which also had an unnecessary installed.packages() call in it, to R/sysdata.rda.
   
 
 ## MODIS 1.1.4

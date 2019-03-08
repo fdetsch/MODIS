@@ -19,7 +19,7 @@ This month      | In total
 
 ### News
 
-**MODIS_1.1.4** is now available from [CRAN](https://cran.r-project.org/package=MODIS). Please refer to [NEWS](https://github.com/MatMatt/MODIS/blob/master/NEWS.md) for a detailed change log.
+**MODIS_1.1.5** is now available from [CRAN](https://cran.r-project.org/package=MODIS). Please refer to [NEWS](https://github.com/MatMatt/MODIS/blob/master/NEWS.md) for a detailed change log.
 
 
 ====

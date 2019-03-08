@@ -2,85 +2,143 @@
 % Please edit documentation in R/runMrt.R
 \name{runMrt}
 \alias{runMrt}
-\title{Run MODIS Reprojection Tool with Specified Parameters}
+\title{Run MODIS Reprojection Tool}
 \source{
-You can obtain MRT-grid after registration from: 
-\url{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}.
+You can obtain the MRT software after registration from  
+\href{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}{LP DAAC}.
 }
 \usage{
-runMrt(...)
+runMrt(product, collection = NULL, begin = NULL, end = NULL,
+  extent = NULL, tileH = NULL, tileV = NULL, SDSstring = NULL,
+  job = NULL, datum = "NODATUM", zone = NULL, projPara = NULL,
+  mosaic = TRUE, anonym = TRUE, ...)
 }
 \arguments{
-\item{...}{See Details.}
+\item{product, collection, begin, end, extent, tileH, tileV, SDSstring, job}{See \code{\link[MODIS]{runGdal}}
+and functions linked therein.}
+
+\item{datum}{The output datum used for datum conversion as \code{character}, 
+defaults to \code{"NODATUM"}. Supported datums are \code{"NAD27"}, 
+\code{"NAD83"}, \code{"WGS66"}, \code{"WGS72"} and \code{"WGS84"}, see 
+\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 7-8.}
+
+\item{zone}{Output zone number as \code{integer}, relevant only for 
+UTM projections (i.e., \code{outProj = "UTM"}. Valid values are \code{–60} to 
+\code{+60}.}
+
+\item{projPara}{Output projection parameters as \code{character} string, see 
+'Details'. Ignored if \code{outProj \%in\% c("SIN", "GEO")}. If not specified 
+and using another target projection, the default settings for \code{"GEO"} 
+are assumed.}
+
+\item{mosaic}{A \code{logical} that toggles mosaicking on (default) or off. 
+One example where \code{mosaic = FALSE} makes sense is for large spatial 
+extents because maximum supported HDF4 filesize is 2GB; if crossed, 
+mosaicking will fail.}
+
+\item{anonym}{A \code{logical}, defaults to \code{TRUE}. If \code{FALSE}, the 
+job name is appended to the root filename.}
+
+\item{...}{Additional arguments passed to \code{\link[MODIS]{MODISoptions}}, 
+see also 'Details' for some MRT specific settings.}
+}
+\value{
+A \code{list} of output filenames summarized by product and date, see also 
+Value in \code{link[MODIS]{runGdal}}.
 }
 \description{
 Specifying input parameters, this function gets MODIS grid data from the 
-archive (HTTP or local) and processes them with the 'MRT-grid' tool. See 
-also the 'MRT' manual, available online via 
-\url{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}, 
+archive (HTTP or local) and processes it with the MODIS Reprojection Tool 
+(MRT). At any point, you are highly encouraged to consult the
+\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual} 
 for further information.
 }
 \details{
-\describe{
-\tabular{rll}{
-\tab \code{product}\tab See \code{\link{getProduct}}.\cr
-\tab \code{begin}\tab See \code{\link{transDate}}.\cr
-\tab \code{end}\tab See \code{\link{transDate}}.\cr
-\tab \code{extent}\tab See \code{\link{getTile}}.\cr
-\tab \code{SDSstring}\tab See \code{\link{getSds}}. Default is to extract all 
-SDS.\cr
-\tab \code{job}\tab \code{character}. Name of the current job for the 
-creation of the output folder. If not specified, it is created in 
-'PRODUCT.COLLECTION_DATETIME'\cr
+Please note that in contrast to \code{\link[MODIS]{runGdal}}, MRT's 
+\code{resample} function does not offer an 'overwrite' option, and hence, 
+existing files will be overwritten (see also 
+\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 59).
+Further arguments that require particular attention when operating MRT are 
+summarized in the following list:
+ 
+\strong{\code{dataFormat}}:\cr\cr
+Output file formats include:
 
-\tab \code{localArcPath}\tab \code{character}. Defaults to 
-\code{options("MODIS_localArcPath")}. Local path to look for and/or download 
-MODIS files.\cr
-\tab \code{outDirPath}\tab \code{character}. Defaults to 
-\code{options("MODIS_outDirPath")}. Root directory where to write \code{job} 
-folder.\cr
-
-\tab \code{dataType}\tab \code{character}, defaults to \code{'GeoTiff'} (see 
-\code{\link{MODISoptions}}. 'MRT' supports: \code{"raw binary"} (hdr+dat), 
-\code{"HDF-EOS"} (hdf), and \code{"GeoTiff"} (tif). Any other format 
-specified through \code{\link{MODISoptions}} or \code{dataType}, is switched 
-to 'GeoTiff'.\cr
-
-\tab \code{outProj}\tab \code{character}, see 'MRT' manual.\cr
-\tab \code{zone}\tab Optional UTM zone number when \code{outProj = "UTM"}. If 
-not set, it is autodetected. See 'MRT' manual.\cr
-\tab \code{projPara}\tab \code{character} in the form "6371007.18 0.00 0.00 
-...". For \code{outProj \%in\% c("GEO","SIN")}, it is autodetected. See 'MRT' 
-manual.\cr
-\tab \code{datum}\tab \code{character}, defaults to 'NODATUM'. See 'MRT' 
-manual.\cr
-
-\tab \code{mosaic}\tab \code{logical}, defaults to \code{TRUE}. Mosaic files 
-or not? One case for setting \code{mosaic=FALSE} is a too large \code{extent}. 
-HDF4 file supports max 2GB filesize, if crossed mosaicing process will fail.\cr
-\tab \code{anonym}\tab \code{logical}, defaults to \code{TRUE}. If 
-\code{FALSE}, the job name is added at the end of the root filename.\cr
-\tab \code{quiet}\tab \code{logical}, defaults to \code{FALSE}. It is up to 
-you to switch to 'boring' alias \code{FALSE}. Not fully implemented!\cr
-\tab \code{dlmethod}\tab default \code{options("MODIS_dlmethod")}. Argument 
-passed to \code{\link{download.file}} (see \code{\link{MODISoptions}}).\cr
-\tab \code{stubbornness}\tab Default is \code{options("MODIS_stubborness")}. See \code{?MODISoptions}\cr
+\itemize{
+\item{\code{"raw binary"} (\code{.hdr} and \code{.dat})}
+\item{\code{"HDF-EOS"} (\code{.hdf})}
+\item{\code{"GeoTiff"} (\code{.tif}; default)}
 }
+
+Any other format specified through \code{\link[MODIS]{MODISoptions}} or 
+'dataFormat' is ignored and set to \code{"GeoTiff"}.
+
+\strong{\code{outProj}}:\cr\cr
+MRT uses calls to the General Cartographic Transformation Package (GCTP) and as such allows projection to the following mapping 
+grids:
+
+\itemize{
+\item{Albers Equal Area (\code{"AEA"})}
+\item{Equirectangular (\code{"ER"})}
+\item{Geographic (\code{"GEO"})}
+\item{Hammer (\code{"HAM"})}
+\item{Integerized Sinusoidal (\code{"ISIN"})}
+\item{Interrupted Goode Homolosine (\code{"IGH"})}
+\item{Lambert Azimuthal (\code{"LA"})}
+\item{Lambert Conformal Conic (\code{"LCC"})}
+\item{Mercator (\code{"MERCAT"})}
+\item{Molleweide (\code{"MOL"})}
+\item{Polar Stereographic (\code{"PS"})}
+\item{Sinusoidal (\code{"SIN"})}
+\item{Transverse Mercator (\code{"TM"})}
+\item{Universal Transverse Mercator (\code{"UTM"})}
 }
+
+See also 'References' and 
+\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, pp. 6 and 29.
+
+\strong{\code{projPara}}:\cr\cr
+Output projection parameters are autodetected for 
+\code{outProj \%in\% c("SIN", "GEO")}:
+
+\itemize{
+\item{\code{"SIN"}: \code{"6371007.18 0.00 0.00 0.00 0.00 0.00 0.00 0.00 86400.00 0.00 0.00 0.00 0.00 0.00 0.00"}}
+\item{\code{"GEO"}: \code{"0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"}}
+}
+
+For detailed information on defining paramters for other target projections, 
+please refer to 'Appendix C: Projection Parameters' in the
+\href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 65-66.
 }
 \examples{
 \dontrun{
-runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
-        job="ExampleGEOdelme", outProj="GEO")
-runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
-        job="ExampleSINdelme", outProj="SIN")
-runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
-        job="ExampleUTMdelme", outProj="UTM")
+geo = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+             job="ExampleGEOdelme", outProj="GEO")
+sin = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+             job="ExampleSINdelme", outProj="SIN")
+utm = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+             job="ExampleUTMdelme", outProj="UTM", zone = 33)
 }
+
+}
+\references{
+Dwyer J, Schmidt G (2006) The MODIS Reprojection Tool, 162-177,
+doi:\href{https://doi.org/10.1007/978-3-540-37294-3_9}{10.1007/978-3-540-37294-3_9}. 
+In: Qu JJ, Gao W, Kafatos M, Murphy RE, Salomonson VV (eds) Earth Science 
+Satellite Remote Sensing. Springer: Berlin, Heidelberg.
+
+Elassal AA (1989) General Cartographic Transformation Package (GCTP), Version 
+II. NOAA Technical Report NOS124 CGS9. NOAA: Rockville, MD, USA. Available 
+online \href{https://www.ngs.noaa.gov/PUBS_LIB/GeneralCartographicTransformationPackage_v2_TR_NOS124_CGS9.pdf}{here}
+(2018-09-13).
+
+Land Processes DAAC, USGS Earth Resources Observation and Science Center 
+(2011) MODIS Reprojection Tool User's Manual. Release 4.1, April 2011. 
+Available online \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{here}.
 }
 \seealso{
-\code{\link{getHdf}}.
+\code{\link[MODIS]{MODISoptions}}, \code{\link[MODIS]{runGdal}}.
 }
 \author{
-Matteo Mattiuzzi and Forrest Stevens
+Matteo Mattiuzzi, Forrest Stevens and Florian Detsch
 }

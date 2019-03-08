@@ -2,7 +2,7 @@
 #'
 #' Download and processing functionalities for the Moderate Resolution Imaging 
 #' Spectroradiometer (MODIS). The package provides automated access to the 
-#' global online data archives (LPDAAC and LAADS) and processing capabilities 
+#' global online data archives (LP DAAC and LAADS) and processing capabilities 
 #' such as file conversion, mosaicking, subsetting and time series filtering.
 #'
 #' @name MODIS-package
@@ -19,7 +19,7 @@
 #' @importFrom devtools install_github
 #' @importFrom grDevices dev.new dev.off png
 #' @importFrom graphics abline box grid locator title
-#' @importFrom mapedit selectFeatures
+#' @importFrom mapedit drawFeatures selectFeatures
 #' @importFrom maps map.axes
 #' @importFrom maptools map2SpatialPolygons map2SpatialLines checkPolygonsHoles
 #' @importFrom methods as new slot

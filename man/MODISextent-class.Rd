@@ -16,7 +16,7 @@ An object of class \code{MODISextent}, typically created through
 
 \item{\code{tileV}}{MODIS vertical tile ID as \code{integer}.}
 
-\item{\code{extent}}{Extent information, see \code{\link{getTile}}.}
+\item{\code{extent}}{\code{Extent} information, see \code{\link{getTile}}.}
 
 \item{\code{system}}{Sensor system as \code{character}.}
 

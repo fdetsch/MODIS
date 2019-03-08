@@ -39,7 +39,7 @@ detectBitInfo <- function(product, what='all',warn=TRUE)
   }
   
   product  <- strsplit(product,"\\.")[[1]][1]
-  prodinfo <- getProduct(product,quiet=TRUE)$PRODUCT[1]
+  prodinfo <- getProduct(product,quiet=TRUE)@PRODUCT[1]
   if(is.null(prodinfo))
   {
     stop()

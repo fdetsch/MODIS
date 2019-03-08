@@ -10,6 +10,10 @@
 #' \href{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}{MODIS Sinusoidal grid}
 #' (e.g., \code{tileH = 1:5}). If specified, no cropping is performed and the 
 #' full tile(s) (if more than one then also mosaicked) is (are) processed! 
+#' @param mode Interactive selection mode as \code{character}. Available options 
+#' are \code{"click"} (default) and \code{"draw"} that trigger interactive MODIS 
+#' tile selection and free feature drawing, respectively. Ignored if any of 'x' 
+#' or 'tileH,tileV' is NOT missing.
 #' @param ... Additional arguments passed to \code{\link{MODISoptions}}. Here, 
 #' only 'outProj' and 'pixelSize' are relevant, and this only if 'x' is an 
 #' object of class \code{character}, \code{map}, \code{Extent} or \code{bbox}.
@@ -35,7 +39,8 @@
 #'   \code{missing}:\cr
 #'   \tab If 'tileH,tileV' are specified, 'x' will be ignored. If no such tile 
 #'   indices are provided and 'x' is missing, a viewer window pops up that 
-#'   allows interactive tile selection from the global MODIS Sinusoidal grid.\cr
+#'   allows interactive tile selection from the global MODIS Sinusoidal grid or, 
+#'   if \code{mode = "draw"}, free feature drawing.\cr
 #'   \cr 
 #'   \code{character}:\cr
 #'   \tab Either the country name of a \code{map} object (see \code{\link{map}})
@@ -107,7 +112,7 @@
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
+getTile <- function(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ...) {
  
   opts = combineOptions(...)
   
@@ -115,9 +120,12 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
   target <- NULL  
   
   ## if inputs are missing, select tile(s) interactively
-  if (all(sapply(c(x, tileH, tileV), is.null))) {
-    x = mapSelect()
+  if (missing(x) & (is.null(tileH) | is.null(tileV))) {
+    x = mapSelect(mode = mode[1])
     tileH = x$h; tileV = x$v
+    fromMap = TRUE
+  } else {
+    fromMap = FALSE
   }
   
   # ## recycle tile lengths to enable creation of tile pairs
@@ -166,8 +174,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
     }
   } else {
     
-    fromMap <- FALSE
-    prj <- sp::CRS("+init=epsg:4326")
+    prj <- sp::CRS(sp::proj4string(sr))
     oprj = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
 
     # filename string to Raster/vector conversion
@@ -201,8 +208,11 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       
       # if coord. ref. is missing, set to EPSG:4326
       target <- list(outProj = raster::projection(x)
-                     , extent = raster::extent(x)
-                     , pixelSize = NULL) 
+                     , extent = if (pts_1 <- (inherits(x, "SpatialPoints") & length(x) == 1L)) {
+                       NULL
+                     } else {
+                       raster::extent(x)
+                     }, pixelSize = NULL) 
       
       if (inherits(x, "Raster"))
         target$pixelSize <- raster::res(x)
@@ -220,13 +230,20 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       
     # 'sf' method  
     } else if (inherits(x, "sf")) {
-      target <- list(outProj = sf::st_crs(x)$proj4string
-                     , extent = raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
-                     , pixelSize = NULL)
       
-      if (!raster::compareCRS(target$outProj, prj)) {
-        x <- sf::st_transform(x, prj@projargs)
+      pts_1 <- grepl("POINT", sf::st_geometry_type(x))[1] & nrow(x) == 1L
+      
+      if (!fromMap) {
+        target <- list(outProj = sf::st_crs(x)$proj4string
+                       , extent = if (pts_1) NULL else raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
+                       , pixelSize = NULL)
+        
+        if (!raster::compareCRS(target$outProj, prj)) {
+          x <- sf::st_transform(x, prj@projargs)
+        }
       }
+      
+      x <- methods::as(x, "Spatial")
 
     # 'map' | 'Extent' | 'bbox' method  
     } else if (inherits(x, c("map", "Extent", "bbox"))) {
@@ -246,7 +263,7 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       spy = sp::spTransform(spy, if (opts$outProj == "asIn") {
         oprj 
       } else {
-        if (!is.na(as.integer(opts$outProj))) {
+        if (!is.na(suppressWarnings(as.integer(opts$outProj)))) {
           opts$outProj = paste0("+init=epsg:", as.integer(opts$outProj))
         }
         sp::CRS(opts$outProj)
@@ -256,9 +273,6 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
                      , extent = raster::extent(spy)
                      , pixelSize = opts$pixelSize)
     }
-    
-    if (inherits(x, "sf"))
-      x <- methods::as(x, "Spatial")
     
     ## capture errors related to orphaned holes and self-intersection
     if (inherits(x, 'Spatial')) {
@@ -274,18 +288,32 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
       }
     }
     
-    selected <- raster::crop(sr, x)
+    selected <- if (inherits(x, "Spatial")) {
+      sr[x, ]
+    } else {
+      raster::crop(sr, x)
+    }
     tileH  <- unique(selected@data$h)
     tileV  <- unique(selected@data$v)
     
     tiles <- as.character(apply(selected@data,1,function(x) {paste("h",sprintf("%02d",x[2]),"v",sprintf("%02d",x[3]),sep="")}))
+    
+    if (exists("pts_1")) {
+      if (pts_1) {
+        tt <- tiletable[(tiletable$ih %in% tileH) &
+                          (tiletable$iv %in% tileV) & (tiletable$lon_min > -999), ]
+        
+        x <- raster::extent(c(min(tt$lon_min), max(tt$lon_max)
+                              , min(tt$lat_min), max(tt$lat_max)))
+      }
+    }
   }
   
   result = methods::new("MODISextent"
                         , tile = tiles
                         , tileH = as.integer(tileH)
                         , tileV = as.integer(tileV)
-                        , extent = x
+                        , extent = raster::extent(x)
                         , system = "MODIS"
                         , target = target)
   
@@ -294,11 +322,16 @@ getTile <- function(x = NULL, tileH = NULL, tileV = NULL, ...) {
 
 
 
-mapSelect <- function() {
+mapSelect <- function(mode = c("click", "draw")) {
   
   grd <- sf::st_as_sf(sr, quiet = TRUE)
-  sel <- mapedit::selectFeatures(grd)
   
+  sel = if (mode[1] == "click") {
+    mapedit::selectFeatures(grd)
+  } else {
+    mapedit::drawFeatures(mode = mode[1])
+  }
+
   return(sel)
 }
 

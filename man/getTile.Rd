@@ -4,7 +4,8 @@
 \alias{getTile}
 \title{Get MODIS Tile ID(s)}
 \usage{
-getTile(x = NULL, tileH = NULL, tileV = NULL, ...)
+getTile(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"),
+  ...)
 }
 \arguments{
 \item{x}{Extent information, see Details. Ignored if \code{tileH} and
@@ -15,6 +16,11 @@ vertical tile number(s) of the
 \href{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}{MODIS Sinusoidal grid}
 (e.g., \code{tileH = 1:5}). If specified, no cropping is performed and the 
 full tile(s) (if more than one then also mosaicked) is (are) processed!}
+
+\item{mode}{Interactive selection mode as \code{character}. Available options 
+are \code{"click"} (default) and \code{"draw"} that trigger interactive MODIS 
+tile selection and free feature drawing, respectively. Ignored if any of 'x' 
+or 'tileH,tileV' is NOT missing.}
 
 \item{...}{Additional arguments passed to \code{\link{MODISoptions}}. Here, 
 only 'outProj' and 'pixelSize' are relevant, and this only if 'x' is an 
@@ -32,7 +38,8 @@ If \code{x} is of class (see Examples for use cases)
   \code{missing}:\cr
   \tab If 'tileH,tileV' are specified, 'x' will be ignored. If no such tile 
   indices are provided and 'x' is missing, a viewer window pops up that 
-  allows interactive tile selection from the global MODIS Sinusoidal grid.\cr
+  allows interactive tile selection from the global MODIS Sinusoidal grid or, 
+  if \code{mode = "draw"}, free feature drawing.\cr
   \cr 
   \code{character}:\cr
   \tab Either the country name of a \code{map} object (see \code{\link{map}})

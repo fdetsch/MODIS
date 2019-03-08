@@ -7,14 +7,17 @@
 #' @param x \code{character}. MODIS filename, product name, regular expression 
 #' passed to \code{pattern} in \code{\link{grep}}, or missing.
 #' @param quiet \code{logical}, defaults to \code{FALSE}.
+#' @param ... Additional arguments passed to \code{\link[MODIS]{getCollection}}.
 #' 
 #' @return 
-#' An invisible \code{list} with information usable by other functions or, if 
-#' 'x' is missing, a \code{data.frame} with information about all products 
-#' available.
+#' If 'x' is missing, a \code{data.frame} with information about all MODIS 
+#' products available. In case of \code{character} input, an invisible 
+#' \code{\link{MODISproduct-class}} or \code{\link{MODISfile-class}} object 
+#' depending on the type of input (product/regular expression or filename); the 
+#' object holds information usable by other functions. 
 #' 
 #' @author 
-#' Matteo Mattiuzzi
+#' Matteo Mattiuzzi and Florian Detsch
 #' 
 #' @examples 
 #' getProduct() # list available products
@@ -27,15 +30,19 @@
 #' internal_info <- getProduct("MOD11C3", quiet = TRUE) 
 #' internal_info
 #' 
+#' # or use a valid filename
+#' fileinfo <- getProduct("MYD11A1.A2009001.h18v04.006.2015363221538.hdf")
+#' fileinfo
+#' 
 #' @export getProduct
 #' @name getProduct
-getProduct <- function(x=NULL,quiet=FALSE) 
+getProduct <- function(x = NULL, quiet = FALSE, ...) 
 {    
 
 #load(system.file("external", "MODIS_Products.RData", package="MODIS"))
 
     if (is.null(x)) { # if x isn't provided, return table of supported files.
-      cls = c("SENSOR", "PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")
+      cls = c("PRODUCT", "TOPIC", "PLATFORM","TYPE", "RES", "TEMP_RES")
       products = as.data.frame(MODIS_Products[cls])
       products = data.frame(products[order(products$PRODUCT), ]
                             , row.names = 1:nrow(products))
@@ -43,9 +50,9 @@ getProduct <- function(x=NULL,quiet=FALSE)
       return(products)
     }
 
-    if (is.list(x) && names(x) %in% c("request", "PRODUCT", "TOPIC", "DATE", "TILE", "TILEV", "TILEH", "CCC", "PROCESSINGDATE", "FORMAT", "SENSOR", "PLATFORM", "PF1", "PF2", "PF3", "TOPIC", "TYPE", "RES", "TEMP_RES", "INTERNALSEPARATOR")) 
+    if (inherits(x, "MODISproduct")) 
     {
-        # if TRUE than it is a result from a getProduct() call. A good idea would be to have a CLASS for it!
+        # if TRUE then it is a result from a getProduct() call. 
         return(x)
     }
     
@@ -53,7 +60,7 @@ getProduct <- function(x=NULL,quiet=FALSE)
     inbase  <- basename(x) # if x is a filename(+path) remove the path
     
     isProduct = any(sapply(inbase, function(i) {
-      grepl(gsub(" ", "", i), getProduct()[, 2])
+      grepl(gsub(" ", "", i), getProduct()[, 1])
     }))
     
     tmp = if (!isProduct) {
@@ -67,60 +74,80 @@ getProduct <- function(x=NULL,quiet=FALSE)
     product = sapply(tmp, function(i) skipDuplicateProducts(i, quiet = quiet))
     
     pattern <- sub(pattern="MXD", replacement="M.D", x=product, ignore.case=TRUE) # make a regEx out of "x"
-    info <- listPather(MODIS_Products, 
-                       grep(paste(pattern, collapse = "|")
-                            , MODIS_Products$PRODUCT,ignore.case=TRUE))
-
-    if (length(info$PRODUCT) == 0) {
+    
+    ids = do.call(c, lapply(pattern, function(i) {
+      grep(i, MODIS_Products$PRODUCT, ignore.case = TRUE)
+    }))
+    
+    if (length(ids) == 0) {
       if (!quiet)
         cat("No product found with the name ", inbase
             , ". Try 'getProduct()' to list available products.\n", sep = "")
       
-      return(NULL)
+      return(invisible(NULL))
+    } else {
+      info <- listPather(MODIS_Products, ids)
     }
-    if (info$SENSOR[1]=="MODIS") 
-    {
-        info$PRODUCT <- toupper(info$PRODUCT)
-    }
-    
+
+    info$PRODUCT <- toupper(info$PRODUCT)
+
     if (isFile)
     { # in this case it must be a filename
 
-      names(x) = "request"
       fname = getInfo(x, product = info$PRODUCT, type = info$TYPE)
       result <- c(x, fname, info)
       result <- result[!duplicated(names(result))]
-      result <- as.list(sapply(result,function(x)as.character(x)))
       
-      return(invisible(result))  
-      
+      out = methods::new("MODISfile"
+                         , request = x
+                         , PRODUCT = fname$PRODUCT
+                         , DATE = fname$DATE
+                         , TILE = fname$TILE
+                         , CCC = fname$CCC
+                         , PROCESSINGDATE = fname$PROCESSINGDATE
+                         , FORMAT = fname$FORMAT
+                         , SENSOR = info$SENSOR
+                         , PLATFORM = info$PLATFORM
+                         , PF1 = info$PF1
+                         , PF2 = info$PF2
+                         , PF3 = info$PF3
+                         , PF4 = info$PF4
+                         , TYPE = result$TYPE
+                         , SOURCE = result$SOURCE
+                         , POS1 = as.integer(result$POS1)
+                         , POS2 = as.integer(result$POS2))
+
     } else  # if not a file
     {
         if (!quiet) 
         {
            for (i in seq_along(info$PRODUCT)) 
            {
-               cat(paste(info$PRODUCT[i],'the',info$TEMP_RES[i],info$TYPE[i], info$TOPIC[i],'product from',info$SENSOR[i], info$PLATFORM[i],'with a ground resolution of', info$RES[i],'\n', sep = " "))
+               cat(paste(info$PRODUCT[i],'the',info$TEMP_RES[i],info$TYPE[i], info$TOPIC[i],'product from MODIS', info$PLATFORM[i],'with a ground resolution of', info$RES[i],'\n', sep = " "))
            }
         }
 
-        if (info$SENSOR[1] == "MODIS") 
-        {    
-            PD <- substr(info$PRODUCT, 4, nchar(as.character(info$PRODUCT)))
-            
-            return(
-                invisible(
-                    list(request = inbase, PF1 = as.character(info$PF1),
-                    PF2 = as.character(info$PF2), PF3 = as.character(info$PF3)
-                    , PF4 = as.character(info$PF4)
-                    , PD = PD, PLATFORM = as.character(info$PLATFORM),
-                    TYPE = as.character(info$TYPE), PRODUCT = as.character(info$PRODUCT),
-                    SENSOR = as.character(info$SENSOR), SOURCE=info$SOURCE)
-                )
-            )
-    
-        } ## else if ... (add additional sensors)        
+      PD <- substr(info$PRODUCT, 4, nchar(as.character(info$PRODUCT)))
+      
+      out = methods::new("MODISproduct"
+                         , request = inbase
+                         , PF1 = as.character(info$PF1)
+                         , PF2 = as.character(info$PF2)
+                         , PF3 = as.character(info$PF3)
+                         , PF4 = as.character(info$PF4)
+                         , PD = PD
+                         , PLATFORM = as.character(info$PLATFORM)
+                         , TYPE = as.character(info$TYPE)
+                         , PRODUCT = as.character(info$PRODUCT)
+                         , SENSOR = as.character(info$SENSOR)
+                         , SOURCE = info$SOURCE
+      )
+      
+      out@CCC = getCollection(out, quiet = TRUE, ...)
     }
+    
+    names(out@SOURCE) = out@PRODUCT
+    return(invisible(out))
 }
 
 

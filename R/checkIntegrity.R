@@ -1,9 +1,6 @@
-checkIntegrity <- function(x, opts = NULL, ...) {
+checkIntegrity <- function(x, ...) {
   
-  ## if options have not been passed down, create them from '...'
-  if (is.null(opts))
-    opts <- combineOptions(...)
-  
+  opts <- combineOptions(...)
   opts$stubbornness <- stubborn(opts$stubbornness)
   
   iw   <- getOption("warn") 

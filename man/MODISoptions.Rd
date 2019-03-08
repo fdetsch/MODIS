@@ -6,8 +6,8 @@
 \usage{
 MODISoptions(localArcPath, outDirPath, pixelSize, outProj, resamplingType,
   dataFormat, gdalPath, MODISserverOrder, dlmethod, stubbornness, wait,
-  quiet, systemwide = FALSE, save = TRUE, checkTools = TRUE,
-  checkWriteDrivers = TRUE, ask = TRUE)
+  quiet, cellchunk, systemwide = FALSE, save = TRUE,
+  checkTools = TRUE, checkWriteDrivers = TRUE, ask = TRUE)
 }
 \arguments{
 \item{localArcPath}{\code{character}, defaults to 
@@ -46,9 +46,10 @@ available are inhibited.}
 
 \item{dlmethod}{\code{character}, defaults to \code{auto}. See 'method' in 
 \code{\link{download.file}}. On Unix (also Mac?), it is suggested to use 
-\code{"wget"} or, if installed, \code{"aria2"}. In order to download MODIS 
-files from LPDAAC and NSIDC, please note that either wget (default) or curl 
-must be installed and made available through the PATH environmental variable.}
+\code{"wget"} or, if installed, \code{"aria2"} (supports multi source download).
+In order to download MODIS files from LP DAAC and NSIDC, please note that either
+wget (default) or curl must be installed and made available through the PATH 
+environmental variable.}
 
 \item{stubbornness}{\code{numeric}. The number of retries after the target 
 server has refused a connection. Higher values increase the chance of getting 
@@ -61,6 +62,13 @@ frequently occur after many requests.}
 
 \item{quiet}{\code{logical} passed eg to \code{\link{download.file}} which is 
 called from inside \code{\link{getHdf}}.}
+
+\item{cellchunk}{Default 1 (=use raster default), comparable with chunksize
+in \code{\link{rasterOptions}}. But as no effect was found in adapting chunksize, 
+MODIS applies its own variant:
+\strong{minrows <- max(floor(cellchunk/ncol(x)),1) 
+blockSize(x,minrows=minrows)}. 
+On a reasonable working station you can easily increase cellchunk to 500000.}
 
 \item{systemwide}{A \code{logical} determining whether changes made to 
 \code{\link{MODISoptions}} are to be applied system or user-wide (default), 
@@ -123,12 +131,12 @@ is a reliable tool and, after the change of the 'LP DAAC' datapool from FTP
 to HTTP (May 2013), \code{dlmethod = 'auto'} seems not to work properly. On 
 Windows, on the other hand, \code{dlmethod = 'auto'} seems to work fine. 
 
-Please note that in order to download MODIS files from LPDAAC, you are 
-required to register for an Earthdata Login Profile 
+Please note that in order to download MODIS files from LP DAAC and NSIDC, you 
+are required to register for an Earthdata Login Profile 
 (\url{https://urs.earthdata.nasa.gov/users/new}) and create a read-only 
 .netrc file in your home directory containing the Earthdata server address as 
 well as your login credentials. An automated solution for the creation of a 
-workable .netrc file is provided through \code{\link{lpdaacLogin}}.
+workable .netrc file is provided through \code{\link[MODIS]{EarthdataLogin}}.
 }
 \examples{
 \dontrun{

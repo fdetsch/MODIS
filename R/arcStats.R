@@ -135,13 +135,13 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
       # remove not requested tiles
       if(length(locDates)==0)
       {
-          tileinfo <- ext$tile
+          tileinfo <- ext@tile
       } else if (extent[1]=="global") 
       {
           tileinfo <- unique(sapply(basename(locDates),function(x){x <- getProduct(x);getPart(x,"TILE")}))
       } else
       {
-          tileinfo <- ext$tile
+          tileinfo <- ext@tile
       }
                            
       available <- needed <- percent <- rep(0,length(tileNames))
@@ -190,8 +190,8 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
           colors <- c("#00000000", "#FF0000", "#F90005", "#F4000A", "#EF000F", "#EA0014", "#E50019", "#E0001E", "#DA0024", "#D50029", "#D0002E", "#CB0033", "#C60038", "#C1003D", "#BC0042", "#B60048", "#B1004D", "#AC0052", "#A70057", "#A2005C", "#9D0061", "#970067", "#92006C", "#8D0071", "#880076", "#83007B", "#7E0080", "#790085", "#73008B", "#6E0090", "#690095", "#64009A", "#5F009F", "#5A00A4", "#5400AA", "#4F00AF", "#4A00B4", "#4500B9", "#4000BE", "#3B00C3", "#3600C8", "#3000CE", "#2B00D3", "#2600D8", "#2100DD", "#1C00E2", "#1700E7", "#1200EC", "#0C00F2", "#0700F7", "#0200FC", "#0002FC", "#0007F7", "#000CF2", "#0012EC", "#0017E7", "#001CE2", "#0021DD", "#0026D8", "#002BD3", "#0030CE", "#0036C8", "#003BC3", "#0040BE", "#0045B9", "#004AB4", "#004FAF", "#0055A9", "#005AA4", "#005F9F", "#00649A", "#006995", "#006E90", "#00738B", "#007985", "#007E80", "#00837B", "#008876", "#008D71", "#00926C", "#009767", "#009D61", "#00A25C", "#00A757", "#00AC52", "#00B14D", "#00B648", "#00BC42", "#00C13D", "#00C638", "#00CB33", "#00D02E", "#00D529", "#00DA24", "#00E01E", "#00E519", "#00EA14", "#00EF0F", "#00F40A", "#00F905", "#00FF00")
 
           
-          xlim <- c(ext$extent@xmin,ext$extent@xmax)
-          ylim <- c(ext$extent@ymin,ext$extent@ymax)
+          xlim <- c(ext@extent@xmin,ext@extent@xmax)
+          ylim <- c(ext@extent@ymin,ext@extent@ymax)
           
           xax <- data.frame(x=seq(-180,180,by=10),y=rep(0,37),tileID=c(0:35,""))
           yax <- data.frame(x=rep(0,19),y=seq(90,-90,by=-10),tileID=c(0:17,""))
@@ -224,7 +224,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
              
           if(!isLonLat(opts$outProj))
           {
-              tmp <- raster(ext$extent)
+              tmp <- raster(ext@extent)
               projection(tmp) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
               tmp <- projectExtent(tmp,opts$outProj)
                
@@ -268,7 +268,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
               out <- table
           } else 
           {
-              out <- table[table$tile %in% ext$tile,]
+              out <- table[table$tile %in% ext@tile,]
           }
           write.csv(x=out,file=paste(opts$outDirPath,todo,".",outName,".csv",sep=""),row.names = FALSE)                
       }

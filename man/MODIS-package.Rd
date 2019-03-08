@@ -10,7 +10,7 @@ MODIS Acquisition and Processing
 \details{
 Download and processing functionalities for the Moderate Resolution Imaging 
 Spectroradiometer (MODIS). The package provides automated access to the 
-global online data archives (LPDAAC and LAADS) and processing capabilities 
+global online data archives (LP DAAC and LAADS) and processing capabilities 
 such as file conversion, mosaicking, subsetting and time series filtering.
 }
 \author{

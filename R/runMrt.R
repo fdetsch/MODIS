@@ -1,100 +1,151 @@
-#' Run MODIS Reprojection Tool with Specified Parameters
+#' Run MODIS Reprojection Tool
 #' 
 #' @description 
 #' Specifying input parameters, this function gets MODIS grid data from the 
-#' archive (HTTP or local) and processes them with the 'MRT-grid' tool. See 
-#' also the 'MRT' manual, available online via 
-#' \url{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}, 
+#' archive (HTTP or local) and processes it with the MODIS Reprojection Tool 
+#' (MRT). At any point, you are highly encouraged to consult the
+#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual} 
 #' for further information.
 #' 
-#' @param ... See Details.
+#' @param product,collection,begin,end,extent,tileH,tileV,SDSstring,job See \code{\link[MODIS]{runGdal}}
+#' and functions linked therein.
+#' @param datum The output datum used for datum conversion as \code{character}, 
+#' defaults to \code{"NODATUM"}. Supported datums are \code{"NAD27"}, 
+#' \code{"NAD83"}, \code{"WGS66"}, \code{"WGS72"} and \code{"WGS84"}, see 
+#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 7-8.
+#' @param zone Output zone number as \code{integer}, relevant only for 
+#' UTM projections (i.e., \code{outProj = "UTM"}. Valid values are \code{–60} to 
+#' \code{+60}. 
+#' @param projPara Output projection parameters as \code{character} string, see 
+#' 'Details'. Ignored if \code{outProj \%in\% c("SIN", "GEO")}. If not specified 
+#' and using another target projection, the default settings for \code{"GEO"} 
+#' are assumed.
+#' @param mosaic A \code{logical} that toggles mosaicking on (default) or off. 
+#' One example where \code{mosaic = FALSE} makes sense is for large spatial 
+#' extents because maximum supported HDF4 filesize is 2GB; if crossed, 
+#' mosaicking will fail.
+#' @param anonym A \code{logical}, defaults to \code{TRUE}. If \code{FALSE}, the 
+#' job name is appended to the root filename.
+#' @param ... Additional arguments passed to \code{\link[MODIS]{MODISoptions}}, 
+#' see also 'Details' for some MRT specific settings.
 #' 
-#' @details  
-#' \describe{
-#' \tabular{rll}{
-#' \tab \code{product}\tab See \code{\link{getProduct}}.\cr
-#' \tab \code{begin}\tab See \code{\link{transDate}}.\cr
-#' \tab \code{end}\tab See \code{\link{transDate}}.\cr
-#' \tab \code{extent}\tab See \code{\link{getTile}}.\cr
-#' \tab \code{SDSstring}\tab See \code{\link{getSds}}. Default is to extract all 
-#' SDS.\cr
-#' \tab \code{job}\tab \code{character}. Name of the current job for the 
-#' creation of the output folder. If not specified, it is created in 
-#' 'PRODUCT.COLLECTION_DATETIME'\cr
+#' @return 
+#' A \code{list} of output filenames summarized by product and date, see also 
+#' Value in \code{link[MODIS]{runGdal}}.
 #' 
-#' \tab \code{localArcPath}\tab \code{character}. Defaults to 
-#' \code{options("MODIS_localArcPath")}. Local path to look for and/or download 
-#' MODIS files.\cr
-#' \tab \code{outDirPath}\tab \code{character}. Defaults to 
-#' \code{options("MODIS_outDirPath")}. Root directory where to write \code{job} 
-#' folder.\cr
+#' @details 
+#' Please note that in contrast to \code{\link[MODIS]{runGdal}}, MRT's 
+#' \code{resample} function does not offer an 'overwrite' option, and hence, 
+#' existing files will be overwritten (see also 
+#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 59).
+#' Further arguments that require particular attention when operating MRT are 
+#' summarized in the following list:
+#'  
+#' \strong{\code{dataFormat}}:\cr\cr
+#' Output file formats include:
 #' 
-#' \tab \code{dataType}\tab \code{character}, defaults to \code{'GeoTiff'} (see 
-#' \code{\link{MODISoptions}}. 'MRT' supports: \code{"raw binary"} (hdr+dat), 
-#' \code{"HDF-EOS"} (hdf), and \code{"GeoTiff"} (tif). Any other format 
-#' specified through \code{\link{MODISoptions}} or \code{dataType}, is switched 
-#' to 'GeoTiff'.\cr
-#' 
-#' \tab \code{outProj}\tab \code{character}, see 'MRT' manual.\cr
-#' \tab \code{zone}\tab Optional UTM zone number when \code{outProj = "UTM"}. If 
-#' not set, it is autodetected. See 'MRT' manual.\cr
-#' \tab \code{projPara}\tab \code{character} in the form "6371007.18 0.00 0.00 
-#' ...". For \code{outProj \%in\% c("GEO","SIN")}, it is autodetected. See 'MRT' 
-#' manual.\cr
-#' \tab \code{datum}\tab \code{character}, defaults to 'NODATUM'. See 'MRT' 
-#' manual.\cr
-#' 
-#' \tab \code{mosaic}\tab \code{logical}, defaults to \code{TRUE}. Mosaic files 
-#' or not? One case for setting \code{mosaic=FALSE} is a too large \code{extent}. 
-#' HDF4 file supports max 2GB filesize, if crossed mosaicing process will fail.\cr
-#' \tab \code{anonym}\tab \code{logical}, defaults to \code{TRUE}. If 
-#' \code{FALSE}, the job name is added at the end of the root filename.\cr
-#' \tab \code{quiet}\tab \code{logical}, defaults to \code{FALSE}. It is up to 
-#' you to switch to 'boring' alias \code{FALSE}. Not fully implemented!\cr
-#' \tab \code{dlmethod}\tab default \code{options("MODIS_dlmethod")}. Argument 
-#' passed to \code{\link{download.file}} (see \code{\link{MODISoptions}}).\cr
-#' \tab \code{stubbornness}\tab Default is \code{options("MODIS_stubborness")}. See \code{?MODISoptions}\cr
+#' \itemize{
+#' \item{\code{"raw binary"} (\code{.hdr} and \code{.dat})}
+#' \item{\code{"HDF-EOS"} (\code{.hdf})}
+#' \item{\code{"GeoTiff"} (\code{.tif}; default)}
 #' }
+#' 
+#' Any other format specified through \code{\link[MODIS]{MODISoptions}} or 
+#' 'dataFormat' is ignored and set to \code{"GeoTiff"}.
+#' 
+#' \strong{\code{outProj}}:\cr\cr
+#' MRT uses calls to the General Cartographic Transformation Package (GCTP) and as such allows projection to the following mapping 
+#' grids:
+#' 
+#' \itemize{
+#' \item{Albers Equal Area (\code{"AEA"})}
+#' \item{Equirectangular (\code{"ER"})}
+#' \item{Geographic (\code{"GEO"})}
+#' \item{Hammer (\code{"HAM"})}
+#' \item{Integerized Sinusoidal (\code{"ISIN"})}
+#' \item{Interrupted Goode Homolosine (\code{"IGH"})}
+#' \item{Lambert Azimuthal (\code{"LA"})}
+#' \item{Lambert Conformal Conic (\code{"LCC"})}
+#' \item{Mercator (\code{"MERCAT"})}
+#' \item{Molleweide (\code{"MOL"})}
+#' \item{Polar Stereographic (\code{"PS"})}
+#' \item{Sinusoidal (\code{"SIN"})}
+#' \item{Transverse Mercator (\code{"TM"})}
+#' \item{Universal Transverse Mercator (\code{"UTM"})}
 #' }
+#' 
+#' See also 'References' and 
+#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, pp. 6 and 29.
+#' 
+#' \strong{\code{projPara}}:\cr\cr
+#' Output projection parameters are autodetected for 
+#' \code{outProj \%in\% c("SIN", "GEO")}:
+#' 
+#' \itemize{
+#' \item{\code{"SIN"}: \code{"6371007.18 0.00 0.00 0.00 0.00 0.00 0.00 0.00 86400.00 0.00 0.00 0.00 0.00 0.00 0.00"}}
+#' \item{\code{"GEO"}: \code{"0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"}}
+#' }
+#' 
+#' For detailed information on defining paramters for other target projections, 
+#' please refer to 'Appendix C: Projection Parameters' in the
+#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 65-66. 
 #' 
 #' @author 
-#' Matteo Mattiuzzi and Forrest Stevens
+#' Matteo Mattiuzzi, Forrest Stevens and Florian Detsch
 #' 
 #' @seealso 
-#' \code{\link{getHdf}}.
+#' \code{\link[MODIS]{MODISoptions}}, \code{\link[MODIS]{runGdal}}.
 #' 
 #' @source 
-#' You can obtain MRT-grid after registration from: 
-#' \url{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}.
+#' You can obtain the MRT software after registration from  
+#' \href{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}{LP DAAC}.
+#' 
+#' @references 
+#' Dwyer J, Schmidt G (2006) The MODIS Reprojection Tool, 162-177,
+#' doi:\href{https://doi.org/10.1007/978-3-540-37294-3_9}{10.1007/978-3-540-37294-3_9}. 
+#' In: Qu JJ, Gao W, Kafatos M, Murphy RE, Salomonson VV (eds) Earth Science 
+#' Satellite Remote Sensing. Springer: Berlin, Heidelberg.
+#' 
+#' Elassal AA (1989) General Cartographic Transformation Package (GCTP), Version 
+#' II. NOAA Technical Report NOS124 CGS9. NOAA: Rockville, MD, USA. Available 
+#' online \href{https://www.ngs.noaa.gov/PUBS_LIB/GeneralCartographicTransformationPackage_v2_TR_NOS124_CGS9.pdf}{here}
+#' (2018-09-13).
+#' 
+#' Land Processes DAAC, USGS Earth Resources Observation and Science Center 
+#' (2011) MODIS Reprojection Tool User's Manual. Release 4.1, April 2011. 
+#' Available online \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{here}.
 #' 
 #' @examples 
 #' \dontrun{
-#' runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
-#'         job="ExampleGEOdelme", outProj="GEO")
-#' runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
-#'         job="ExampleSINdelme", outProj="SIN")
-#' runMrt( product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
-#'         job="ExampleUTMdelme", outProj="UTM")
+#' geo = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+#'              job="ExampleGEOdelme", outProj="GEO")
+#' sin = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+#'              job="ExampleSINdelme", outProj="SIN")
+#' utm = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002", SDSstring="101",
+#'              job="ExampleUTMdelme", outProj="UTM", zone = 33)
 #' }
-
-
-
-
+#' 
 #' @export runMrt
 #' @name runMrt
-runMrt <- function(...)
+runMrt <- function(product, collection = NULL
+                   , begin = NULL, end = NULL
+                   , extent = NULL, tileH = NULL, tileV = NULL
+                   , SDSstring = NULL, job = NULL
+                   , datum = "NODATUM", zone = NULL, projPara = NULL
+                   , mosaic = TRUE, anonym = TRUE
+                   , ...)
 {
-    MODISoptions(save=FALSE)
-    
-    opts <- combineOptions(...)
+
+    dots = list(...)
+    opts = do.call(combineOptions, dots)
+
     if (!opts$mrtOk)
     {
         stop("MRT path not set or MRT not installed on your system!")
     }
         
-    opts$product     <- getProduct(opts$product,quiet=TRUE)
-    opts$product$CCC <- getCollection(opts$product,collection=opts$collection)
-    tLimits          <- transDate(begin=opts$begin,end=opts$end)
+    product     <- getProduct(product, quiet = TRUE, collection = collection)
+    tLimits          <- transDate(begin=begin,end=end)
     
     opts$localArcPath <- setPath(opts$localArcPath)
     opts$outDirPath   <- setPath(opts$outDirPath)
@@ -104,89 +155,91 @@ runMrt <- function(...)
         stop('dataFormat=\'',opts$dataFormat ,'\' is not supported by MRT (only \'raw binary\', \'HDF-EOS\' or \'GeoTiff\')')
     } 
     ext <- getExtension(opts$dataFormat)
-             
-    ################################
-    # Some defaults:
-    if (is.null(opts$quiet))    {opts$quiet  <- FALSE} 
-    if (is.null(opts$mosaic))   {opts$mosaic <- TRUE} 
-    if (is.null(opts$anonym))   {opts$anonym <- TRUE} 
-
+    
+    if (!inherits(extent, "MODISextent")) {
+      extent = if (product@TYPE[1] == "Tile" |
+                   (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) &
+                    product@TYPE[1]=="CMG")) {
+        getTile(x = extent, tileH = tileH, tileV = tileV
+                , outProj = "asIn"
+                , pixelSize = "asIn")
+      } else {
+        NULL
+      }
+    }
+    
     opts$resamplingType <- checkResamplingType(opts$resamplingType,tool="mrt",quiet=TRUE)
     opts$outProj        <- checkOutProj(opts$outProj,tool="mrt",quiet=TRUE)
     
     if (opts$outProj[1]=="asIn")
     {
-        if(as.numeric(opts$product$CCC) > 3) # this fails if a COLLECTION is "025"...don't know if this exists!
-        {
-            opts$outProj <- list(short="SIN",long="Sinusoidal")
-        } else
-        {
-            opts$outProj <- list(short="ISIN", long="Integerized Sinusoidal")
-        }
+      opts$outProj <- list(short="SIN",long="Sinusoidal")
     }
     cat("Output projection:", opts$outProj$long,"\n")    
     if (opts$outProj$short=="UTM")
     {
-        if (is.null(opts$zone)) 
+      zone = checkUTMZone(zone)
+      
+        if (is.null(zone)) 
         {
             cat("No UTM zone specified using MRT autodetection.\n")            
         } else 
         {
-            cat("Using UTM zone:", opts$zone,"\n")
+            cat("Using UTM zone:", zone,"\n")
         }
     }
 
     cat("Output pixel size:", opts$pixelSize,"\n")
     cat("Resampling method:", opts$resamplingType,"\n")
  
-    if (is.null(opts$datum))
+    if (!toupper(datum) %in% c("NAD27", "NAD83", "WGS66", "WGS72", "WGS84", "NODATUM"))
     {
-        cat("No Datum specified, using 'NODATUM'!\n")
-        opts$datum <- "NODATUM"
-    } else if (!toupper(opts$datum) %in% c("NAD27", "NAD83", "WGS66", "WGS72", "WGS84", "NODATUM"))
-    {
-        stop('"datum" must be one of: "NAD27", "NAD83", "WGS66", "WGS72", "WGS84" or "NODATUM"')
+      stop('Output "datum" must be one of: "NAD27", "NAD83", "WGS66", "WGS72", "WGS84" or "NODATUM"')
+    } else {
+      cat("Datum conversion:", datum, "\n")
     }
     
-    if (is.null(opts$projPara)) 
+    if (is.null(projPara)) 
     {
         if(opts$outProj$short=="SIN") # maybe we should add other
         {
-            opts$projPara <- "6371007.18 0.00 0.00 0.00 0.00 0.00 0.00 0.00 86400.00 0.00 0.00 0.00 0.00 0.00 0.00"
+            projPara <- "6371007.18 0.00 0.00 0.00 0.00 0.00 0.00 0.00 86400.00 0.00 0.00 0.00 0.00 0.00 0.00"
         } else 
         {
-            cat("No output projection parameters specified. Reprojecting with no Parameters!\n")
-            opts$projPara <- "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+            cat("No output projection parameters specified, using 'GEO' default settings!\n")
+            projPara <- "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
         }
     } else 
     {
-        cat("Output projection parameters specified!\nUsing:\n ",opts$projPara,"\n")
+        cat("Output projection parameters specified!\nUsing:\n ",projPara,"\n")
     }
 
-    for (z in 1:length(opts$product$PRODUCT))
+    lst_product <- vector("list", length(product@PRODUCT))
+    for (z in 1:length(product@PRODUCT))
     {
-            
-        if (opts$product$TYPE[z]=="CMG") 
-        {
-            tileID="GLOBAL"
-            ntiles=1 
-        } else 
-        {
-            opts$extent <- getTile(x=opts$extent,tileH=opts$tileH,tileV=opts$tileV)
-            ntiles    <- length(opts$extent$tile)
-        }
+      
+      # if (product@TYPE[z]=="CMG") 
+      # {
+      #   tileID="GLOBAL"
+      #   ntiles=1 
+      # } else 
+      # {
+      #   extent <- getTile(x=extent,tileH=tileH,tileV=tileV)
+      #   ntiles    <- length(extent@tile)
+      # }
+
+        todo <- paste(product@PRODUCT[z],".",product@CCC[[product@PRODUCT[z]]],sep="")    
     
-        todo <- paste(opts$product$PRODUCT[z],".",opts$product$CCC[[opts$product$PRODUCT[z]]],sep="")    
-    
+        lst_todo <- vector("list", length(todo))
         for(u in 1:length(todo))
         {
-            if (is.null(opts$job))
+            if (is.null(job))
             {
-                opts$job <- paste(todo[u],"_",format(Sys.time(), "%Y%m%d%H%M%S"),sep="")    
-                cat("No 'job' name specified, generated (date/time based)):",opts$job,"\n")
+                job <- paste(todo[u],"_",format(Sys.time(), "%Y%m%d%H%M%S"),sep="")    
+                cat("No 'job' name specified, generated (date/time based)):",job,"\n")
             }
-            outDir <- file.path(opts$outDirPath,opts$job,fsep="/")
-            dir.create(outDir)
+            outDir <- gsub("//", "/", file.path(opts$outDirPath,job,fsep="/"))
+            dir.create(outDir, showWarnings = FALSE)
 
             ######################## along platform (TerraAqua)
             ftpdirs <- list()    ##  FRS: Fix provided by Ahmadou Dicko
@@ -200,25 +253,34 @@ runMrt <- function(...)
             avDates <- avDates[!is.na(avDates)]        
             
             sel     <- as.Date(avDates)
-            us      <- sel >= tLimits$begin & sel <= tLimits$end
+            
+            st = correctStartDate(tLimits$begin, sel, prodname, quiet = opts$quiet)
+            us      <- sel >= st & sel <= tLimits$end
             
             if (sum(us,na.rm=TRUE)>0)
             {
                 avDates <- avDates[us]
 
             ######################### along begin -> end date
+                lst_ofile <- as.list(rep(NA, length(avDates)))
                 for (l in 1:length(avDates))
                 { 
-                    files <- unlist(getHdf(product=opts$product$PRODUCT[z],collection=strsplit(todo[u],"\\.")[[1]][2],begin=avDates[l],end=avDates[l],tileH=opts$extent$tileH,tileV=opts$extent$tileV,stubbornness=opts$stubbornness))
-                    
+                  files = unlist(
+                    do.call(getHdf, c(list(product = product@PRODUCT[z]
+                                           , collection = strsplit(todo[u], "\\.")[[1]][2]
+                                           , begin = avDates[l], end = avDates[l]
+                                           , tileH = extent@tileH, tileV = extent@tileV)
+                                      , opts))
+                  )
+
                     if (length(files)!=0)
                     {
-                        mos <- opts$mosaic
+                        mos <- mosaic
         
                         if (mos)
                         {
                             # if not all files available switch "off" mosaicking and process single files. Problematic in areas with tiles outside land!
-                            if (sum(file.exists(files)) < length(opts$extent$tile))
+                            if (sum(file.exists(files)) < length(extent@tile))
                             {
                                 mos <- FALSE
                             } else {
@@ -240,12 +302,12 @@ runMrt <- function(...)
                         {
                             w <- options("warn")
                             options(warn=-1)
-                            if (is.null(opts$SDSstring))
+                            if (is.null(SDSstring))
                             {
-                                opts$SDSstring <- rep(1,length(getSds(HdfName=files[q],method="mrt")$SDSnames))
+                                SDSstring <- rep(1,length(getSds(HdfName=files[q],method="mrt")$SDSnames))
                             }    
                 
-                            SDSstringIntern <- getSds(HdfName=files[q],SDSstring=opts$SDSstring,method="mrt")
+                            SDSstringIntern <- getSds(HdfName=files[q],SDSstring=SDSstring,method="mrt")
                             options(warn=w$warn)
                             
                             if (!opts$quiet && u == 1 && l == 1)
@@ -258,7 +320,14 @@ runMrt <- function(...)
                                 TmpMosNam <- paste("TmpMosaic",makeRandomString(),".hdf",sep="")
                                 ### in subset
                                 paraname <- file.path(outDir,"/MRTgMosaic.prm",fsep="/") # create mosaic prm file
+                                on.exit({
+                                  try(unlink(paraname), silent = TRUE)
+                                  try(unlink(paste(outDir,TmpMosNam,sep="/")), silent = TRUE)
+                                })
+                                
                                 filename = file(paraname, open="wt")
+                                on.exit(try(close(filename), silent = TRUE))
+                                
                                 write(paste("\"",files,"\"",sep='',collapse=' '), filename)
                                 close(filename)
                         
@@ -284,14 +353,19 @@ runMrt <- function(...)
                                 basenam <- paste(strsplit(basenam,"\\.")[[1]][c(1,2,3,4)],collapse=".")    
                             }
         
-                            if (!opts$anonym)
+                            if (!anonym)
                             {   
-                                basenam <- paste(basenam,opts$job,sep=".")
+                                basenam <- paste(basenam,job,sep=".")
                             }
     
                             #### Write prm File
                             paraname <- paste(outDir,"/MRTgResample.prm",sep="")
+                            on.exit({
+                              try(unlink(paraname), silent = TRUE)
+                            })
+                            
                             filename = file(paraname, open="wt")
+                            on.exit(try(close(filename), silent = TRUE))
 
                             if (mos)
                             {
@@ -304,10 +378,10 @@ runMrt <- function(...)
     
                             write('SPATIAL_SUBSET_TYPE = INPUT_LAT_LONG',filename)
     
-                            if (!is.null(opts$extent$extent))
+                            if (!is.null(extent@extent))
                             {
-                                write(paste('SPATIAL_SUBSET_UL_CORNER = (',opts$extent$extent@ymax,' ',opts$extent$extent@xmin,')',sep=''),filename)
-                                write(paste('SPATIAL_SUBSET_LR_CORNER = (',opts$extent$extent@ymin,' ',opts$extent$extent@xmax,')',sep=''),filename)
+                                write(paste('SPATIAL_SUBSET_UL_CORNER = (',extent@extent@ymax,' ',extent@extent@xmin,')',sep=''),filename)
+                                write(paste('SPATIAL_SUBSET_LR_CORNER = (',extent@extent@ymin,' ',extent@extent@xmax,')',sep=''),filename)
                             }
                             if (opts$pixelSize!="asIn")
                             {
@@ -318,18 +392,18 @@ runMrt <- function(...)
                             
                             write(paste('OUTPUT_PROJECTION_TYPE = ',opts$outProj$short,sep=''),filename)
                             
-                            if (opts$outProj$short=="UTM" && !is.null(opts$zone))
+                            if (opts$outProj$short=="UTM" && !is.null(zone))
                             {
-                                write(paste('UTM_ZONE = ',opts$zone,sep=''),filename)
+                                write(paste('UTM_ZONE = ',zone,sep=''),filename)
                             }
         
-                            if (!is.null(opts$projPara))
+                            if (!is.null(projPara))
                             {
-                                write(paste('OUTPUT_PROJECTION_PARAMETERS = ( ',opts$projPara,' )',sep=''),filename)
+                                write(paste('OUTPUT_PROJECTION_PARAMETERS = ( ',projPara,' )',sep=''),filename)
                             }
-                            if (!is.null(opts$datum))
+                            if (!is.null(datum))
                             {
-                                write(paste('DATUM =', opts$datum,sep=''),filename)
+                                write(paste('DATUM = ', datum,sep=''),filename)
                             }
                             close(filename)
     
@@ -346,14 +420,34 @@ runMrt <- function(...)
                                 unlink(paste(outDir,TmpMosNam,sep="/"))
                             }
                         }
+                      
+                      xtr = gsub(" ", "_", SDSstringIntern$SDSnames)
+                      lst_ofile[[l]] = sapply(xtr, function(pttrn) {
+                        list.files(outDir, full.names = TRUE, ignore.case = TRUE
+                                   , pattern = paste(basenam, pttrn, ext, sep = ".*"))
+                      })
+                      lst_ofile[[l]] = as.character(lst_ofile[[l]])
+                      
                     } else {
-                        cat("Missing files on",avDates[l],"jumping to the next date",sep="\n")
+                      warning(paste0("No file found for date: ",avDates[l]))
+                      lst_ofile[[l]] <- NA
                     }
                 } # l, avDates
+                
+              names(lst_ofile) <- avDates
+              lst_todo[[u]] <- lst_ofile
+                
             } else {
-                cat("No files found for",todo[u],"within the date range\n")
+              warning(paste("No", product@PRODUCT, "files found for the period from"
+                            , tLimits$begin, "to", paste0(tLimits$end, ".")))
+              lst_todo[[u]] <- NA
             }
         } # u   
-    }
+        
+        lst_product[[z]] <- lst_todo[[1]]
+    } # z
+
+    names(lst_product) <- paste(product@PRODUCT, product@CCC, sep = ".")
+    return(lst_product)
 }
 

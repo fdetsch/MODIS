@@ -1,8 +1,4 @@
-getProduct():
-# make a class modisproduct
-
 longer term changes:
-- what about removing runMrt support?
 - reduce the capability of functions eg:
     completely separate getHdf from runGdal (also getProduct, getCollection etc should be removed from those functions.
     This should allow runGdal to run in a more general manner like a input file list that is crunched. This should result in some more lines to code when using runGdal but is also allows more freedom and performance. AND last but not least at all also much easier handling of the package development.
@@ -26,9 +22,6 @@ runGdal()
 - include scale factor during SDS extraction?  
 - speed up when downloaded hdf / processed tif files are already present
   
-getTile()
-- interactive polygon drawing via mapedit
-  
 qualityControl
 - method based on maximum value from preceding / current / succeeding image (i.e., from user-defined window) as proposed by Yang et al. (2013, http://dx.doi.org/10.1109/LGRS.2012.2219576)
 
@@ -39,10 +32,15 @@ whittaker.raster()
 getHdf():
 - download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
 
+getGranule():
+- tileH,tileV
+- remaining 'extent' inputs (sf::st_bbox, MODISextent, character, Raster*, missing)
+
+getCollection():
+- retrieval from LAADS (ie. MOD03)
+
 Automated wget, curl check if any("LPDAAC", "NSIDP") %in% opts$MODISserverOrder
 
 General solution for "//"
 
 Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs
-
-handle = new_handle(CONNECTTIMEOUT = 60) (taken from https://github.com/jeroen/curl/issues/72)

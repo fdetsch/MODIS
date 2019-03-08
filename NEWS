@@ -1,3 +1,31 @@
+MODIS 1.1.5
+
+Changes:
+
+  * Moved internal datasets (products, collections, etc.) from manual creation in zz_lazyload.R, which also had an unnecessary installed.packages() call in it, to R/sysdata.rda.
+
+Bugfixes:
+
+  * Missing compatibility of repDoy() with results from extractDate().
+  * Duplicate server issue when passing multiple products on to runGdal().
+
+
+MODIS 1.1.4
+
+New features: 
+
+  * After temporary inoperability, runMRT() is fully functional again.
+  * Interactive feature drawing is now implemented in getTile(), check out the documentation.
+  * getTile() supports 'sp' or 'sf' point geometries with length = 1 (i.e. a single point), in which case the target extent is the MODIS tile covering the specified location.
+  * Multiple source download using aria2 whenever more than one server is available (e.g. LAADS and LP DAAC)
+  * New classes 'MODISproduct' and 'MODISfile' created by getProduct().
+
+Changes:
+
+  * When running getHdf() (or runGdal()) with LP DAAC or NSIDC as target download server and Earthdata login credentials in ~/.netrc are missing, the user is forced to insert the required information on the command line. This is intended to avoid repeat authentication failures.
+  * Functions checkIntegrity(), OutProj(), PixelSize(), ResamplingType(), BlockSize(), OutputCompression(), QuietOutput(), genString(), checkTools(), ModisFileDownloader(), and doCheckIntegrity() no longer have an 'opts' argument.
+
+
 MODIS 1.1.3
 
 New features: 

@@ -49,14 +49,10 @@ Checks and retrieves available MODIS collection(s) for a given product.
 \examples{
 \dontrun{
 
-# update or get collections for MOD11C3 and MYD11C3
-getCollection(product="M.D11C3")
-getCollection(product="M.D11C3",newest=FALSE)
-
-getCollection(product="M.D11C3",collection=3)
-getCollection(product="M.D11C3",collection=41)
-getCollection(product="M.D11C3",collection="041")
-getCollection(product="M.D11C3",forceCheck=TRUE)
+# update or get collections for MCD12C1 and MCD12Q1
+getCollection(product = "MCD12.*")
+getCollection(product = "MCD12.*", newest = FALSE)
+getCollection(product = "MCD12.*", forceCheck = TRUE)
 }
 
 }

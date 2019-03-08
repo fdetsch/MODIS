@@ -1,5 +1,9 @@
 ## MODIS 1.1.5
 
+Changes:
+
+  * Moved internal datasets (products, collections, etc.) from manual creation in zz_lazyload.R, which also had an unnecessary installed.packages() call in it, to R/sysdata.rda.
+
 Bugfixes:
 
   * Missing compatibility of repDoy() with results from extractDate().

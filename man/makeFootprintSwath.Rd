@@ -67,5 +67,5 @@ fp
 
 }
 \author{
-Florain Detsch and Matteo Mattiuzzi
+Florian Detsch and Matteo Mattiuzzi
 }

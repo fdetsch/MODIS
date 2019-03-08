@@ -31,7 +31,7 @@
 #' @return 
 #' Identified granules as \code{character}.
 #' 
-#' @author Florain Detsch and Matteo Mattiuzzi
+#' @author Florian Detsch and Matteo Mattiuzzi
 #' 
 #' 
 #' @examples 

@@ -132,34 +132,37 @@ getGranule = function(product, collection = NULL
     ## apply day/night flag
     grn = grn[grn$DayNightFlag %in% DayNightFlag, ]
     
-    ## create polygons from bounding box
-    crn = sapply(c("West", "East", "South", "North"), function(i) {
-      grep(i, names(grn))
-    })
+    ## find and format g-ring coordinates
+    crn = sapply(c("GRingLon", "GRingLat"), function(i) {
+      grep(i, names(grn)) # [c(1:4, 1)]
+    }) 
+
+    for (i in crn[, 1]) {
+      ids = grn[, i] < 0
+      grn[ids, i] = 360 + grn[ids, i]
+    }
     
+    crn = rbind(crn, crn[1, ]) # to close polygon
+    
+    ## create polygons from bounding box
     pys = do.call(raster::bind, lapply(1:nrow(grn), function(i) {
-      crd = unlist(grn[i, crn])
+      crd = t(sapply(1:nrow(crn), function(j) {
+        as.numeric(unlist(grn[i, crn[j, ]]))
+      })); # crd[order(crd[, 1]), ]
+
       
-      # if granule crosses dateline, create two polygons
-      if (crd[2] < crd[1]) {
-        crd2.1 = crd2.2 = crd
-        
-        crd2.1[2] = 180; ext2.1 = raster::extent(crd2.1)
-        spy2.1 = as(ext2.1, "SpatialPolygons") 
-        crd2.2[1] = -180; ext2.2 = raster::extent(crd2.2)
-        spy2.2 = as(ext2.2, "SpatialPolygons")
-        
-        spy2 = raster::bind(spy2.1, spy2.2)
-        spy2 = maptools::unionSpatialPolygons(spy2, IDs = rep(i, length(spy2)))
-        
-        # else accept as is  
+      if (max(crd[, 1]) - min(crd[, 1]) >= 180) {
+        crd[crd[, 1] < 0, 1] = crd[crd[, 1] < 0, 1] + 360
+        spy1 = sf::st_polygon(list(crd))
+        spy1 = sf::st_sfc(spy1, crs = "+proj=longlat +lon_wrap=180")
+        spy2 = sf::st_transform(spy1, crs = 4326)
+        spy2 = sf::st_wrap_dateline(spy2)
       } else {
-        ext2 = raster::extent(crd)
-        spy2 = as(ext2, "SpatialPolygons")
+        spy1 = sf::st_polygon(list(crd))
+        spy2 = sf::st_sfc(spy1, crs = 4326)
       }
-      
-      sp::proj4string(spy2) = "+init=epsg:4326"
-      return(spy2)
+
+      return(as(spy2, "Spatial"))
     }))
     
     ## find intersecting granules

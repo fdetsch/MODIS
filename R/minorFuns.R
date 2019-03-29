@@ -131,7 +131,7 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE, .
 {
     tool <- toupper(tool)
     
-    iw   <- options()$warn 
+    iw   <- options()$warn
     options(warn=-1)
     on.exit(options(warn=iw))
     
@@ -238,9 +238,26 @@ checkTools <- function(tool = c("MRT", "GDAL", "wget", "curl"), quiet = FALSE, .
                                , show.output.on.console = FALSE
                                , ignore.stdout = TRUE, ignore.stderr = TRUE)
             
+            ## check if gdalinfo.exe can be found in another location
+            if (gdalcode > 0) {
+              gdalcode = system("gdalinfo --version", intern = FALSE
+                                , show.output.on.console = FALSE
+                                , ignore.stdout = TRUE, ignore.stderr = TRUE)
+              
+              if (gdalcode == 0) {
+                gdal_dir = dirname(system("where gdalinfo", intern = TRUE))
+                message("GDAL executables couldn't be found in ", opts$gdalPath
+                        , ", but in ", gdal_dir, ".\n"
+                        , "  Run `MODISoptions(gdalPath = '", gdal_dir
+                        , "')` to make this setting permanent.")
+                opts$gdalPath = gdal_dir
+                cmd = file.path(opts$gdalPath, "gdalinfo --version")
+              }
+            }
+            
             if (gdalcode > 0)
             {
-                cat("'FWTools/OSGeo4W' installation not found or path not set.\nIf you don't have installed one of them you can get it from 'http://fwtools.maptools.org/' or 'http://trac.osgeo.org/osgeo4w/' (recommanded)\nTrying to autodetect path to 'FWTools/OSGeo4W' (this may takes some time, you can interupt this process and set it manually, see 'gdalPath' argument in '?MODISoptions':\n\n")
+                cat("'FWTools/OSGeo4W' installation not found or path not set.\nIf you don't have installed one of them you can get it from 'http://fwtools.maptools.org/' or 'http://trac.osgeo.org/osgeo4w/' (recommended)\nTrying to autodetect path to 'FWTools/OSGeo4W' (this may take some time, you can interrupt this process and set it manually, see 'gdalPath' argument in '?MODISoptions':\n\n")
                 
                 a <- dirname(list.files(path="c:/",pattern="^gdalinfo.exe$", full.names=TRUE, recursive=TRUE,include.dirs=TRUE))
 

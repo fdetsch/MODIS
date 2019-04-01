@@ -43,6 +43,14 @@ devtools::install_github("MatMatt/MODIS", ref = "develop")
 
 ====
 
+### Additional resources
+
+* https://stevemosher.wordpress.com/modis-tutorial/
+* http://strimas.com/ebird-best-practices/habitat.html#habitat-dl
+
+
+====
+
 ### Contact
 
 Please file bug reports and feature requests at https://github.com/MatMatt/MODIS/issues.

@@ -234,7 +234,7 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     b      <- list()
     b[[1]] <- brick(raster(vi),nl=length(fitt), values=FALSE)  
     b[[1]] <- writeStart(b[[1]], filename=oname, datatype=opts$datatype, overwrite=opts$overwrite)
-    names(b[[a]]) <- timeInfo$outputLayerDates
+    names(b[[1]]) <- timeInfo$outputLayerDates
     
   } else if (outputAs=="single")
   {

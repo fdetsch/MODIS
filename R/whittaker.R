@@ -288,6 +288,7 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
       
       wtu <- t(wtu)
       set0[wtu==0] <- TRUE
+      set0[is.na(wtu)] <- TRUE
       
     ## else if 'VI_Quality' is not supplied, then weight = 1:  
     } else {

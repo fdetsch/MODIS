@@ -58,6 +58,7 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
     
     ## moody but seams to work!!
     inbase  <- basename(x) # if x is a filename(+path) remove the path
+    inbase = gsub("\\.[[:digit:]]{3}", "", inbase)
     
     isProduct = any(sapply(inbase, function(i) {
       grepl(gsub(" ", "", i), getProduct()[, 1])
@@ -130,7 +131,7 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
       PD <- substr(info$PRODUCT, 4, nchar(as.character(info$PRODUCT)))
       
       out = methods::new("MODISproduct"
-                         , request = inbase
+                         , request = x
                          , PF1 = as.character(info$PF1)
                          , PF2 = as.character(info$PF2)
                          , PF3 = as.character(info$PF3)

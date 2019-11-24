@@ -218,7 +218,7 @@ getTile <- function(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ..
         target$pixelSize <- raster::res(x)
       
       # if required, spTransform() extent object
-      if (!raster::compareCRS(x, prj) & !is.na(target$outProj)) {
+      if (!sp::identicalCRS(x, sr) & !is.na(target$outProj)) {
         x <- if (inherits(x, "Raster")) {
           raster::projectExtent(x, prj)
         } else {
@@ -238,12 +238,14 @@ getTile <- function(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ..
                        , extent = if (pts_1) NULL else raster::extent(sf::st_bbox(x)[c(1, 3, 2, 4)])
                        , pixelSize = NULL)
         
-        if (!raster::compareCRS(target$outProj, prj)) {
-          x <- sf::st_transform(x, prj@projargs)
+        x =  methods::as(x, "Spatial")
+        if (!sp::identicalCRS(x, sr)) {
+          x <- sp::spTransform(x, prj)
         }
+        
+      } else {
+        x <- methods::as(x, "Spatial")
       }
-      
-      x <- methods::as(x, "Spatial")
 
     # 'map' | 'Extent' | 'bbox' method  
     } else if (inherits(x, c("map", "Extent", "bbox"))) {
@@ -288,11 +290,15 @@ getTile <- function(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ..
       }
     }
     
-    selected <- if (inherits(x, "Spatial")) {
-      sr[x, ]
+    if (inherits(x, "Spatial")) {
+      selected = sr[x, ]
     } else {
-      raster::crop(sr, x)
+      selected = raster::crop(sr, x)
+      if (is.null(selected)) {
+        stop("Please assign a valid CRS to 'x' as it doesn't seem to be in EPSG:4326.")
+      }
     }
+    
     tileH  <- unique(selected@data$h)
     tileV  <- unique(selected@data$v)
     

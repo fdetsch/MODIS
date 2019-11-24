@@ -4,15 +4,14 @@
 #' Specifying input parameters, this function gets MODIS grid data from the 
 #' archive (HTTP or local) and processes it with the MODIS Reprojection Tool 
 #' (MRT). At any point, you are highly encouraged to consult the
-#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual} 
-#' for further information.
+#' MRT User's Manual (see References) for further information.
 #' 
 #' @param product,collection,begin,end,extent,tileH,tileV,SDSstring,job See \code{\link[MODIS]{runGdal}}
 #' and functions linked therein.
 #' @param datum The output datum used for datum conversion as \code{character}, 
 #' defaults to \code{"NODATUM"}. Supported datums are \code{"NAD27"}, 
 #' \code{"NAD83"}, \code{"WGS66"}, \code{"WGS72"} and \code{"WGS84"}, see 
-#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 7-8.
+#' MRT User's Manual, p. 7-8.
 #' @param zone Output zone number as \code{integer}, relevant only for 
 #' UTM projections (i.e., \code{outProj = "UTM"}. Valid values are \code{–60} to 
 #' \code{+60}. 
@@ -36,8 +35,7 @@
 #' @details 
 #' Please note that in contrast to \code{\link[MODIS]{runGdal}}, MRT's 
 #' \code{resample} function does not offer an 'overwrite' option, and hence, 
-#' existing files will be overwritten (see also 
-#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 59).
+#' existing files will be overwritten (see also MRT User's Manual, p. 59).
 #' Further arguments that require particular attention when operating MRT are 
 #' summarized in the following list:
 #'  
@@ -74,8 +72,7 @@
 #' \item{Universal Transverse Mercator (\code{"UTM"})}
 #' }
 #' 
-#' See also 'References' and 
-#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, pp. 6 and 29.
+#' See also 'References' and MRT User's Manual, pp. 6 and 29.
 #' 
 #' \strong{\code{projPara}}:\cr\cr
 #' Output projection parameters are autodetected for 
@@ -87,8 +84,8 @@
 #' }
 #' 
 #' For detailed information on defining paramters for other target projections, 
-#' please refer to 'Appendix C: Projection Parameters' in the
-#' \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{MRT User's Manual}, p. 65-66. 
+#' please refer to 'Appendix C: Projection Parameters' in the MRT User's Manual, 
+#' p. 65-66. 
 #' 
 #' @author 
 #' Matteo Mattiuzzi, Forrest Stevens and Florian Detsch
@@ -97,8 +94,8 @@
 #' \code{\link[MODIS]{MODISoptions}}, \code{\link[MODIS]{runGdal}}.
 #' 
 #' @source 
-#' You can obtain the MRT software after registration from  
-#' \href{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}{LP DAAC}.
+#' The MRT software has been \href{https://lpdaac.usgs.gov/news/downloadable-modis-reprojection-tool-mrt-and-mrtswath-tool-have-been-retired}{retired}, 
+#' and is hence no longer officialy available for download through LP DAAC.
 #' 
 #' @references 
 #' Dwyer J, Schmidt G (2006) The MODIS Reprojection Tool, 162-177,
@@ -113,7 +110,7 @@
 #' 
 #' Land Processes DAAC, USGS Earth Resources Observation and Science Center 
 #' (2011) MODIS Reprojection Tool User's Manual. Release 4.1, April 2011. 
-#' Available online \href{https://lpdaac.usgs.gov/sites/default/files/public/mrt41_usermanual_032811.pdf}{here}.
+#' Available online \href{http://www2.fct.unesp.br/docentes/carto/enner/Processamento\%20MODIS/MRT_usermanual.pdf}{here}.
 #' 
 #' @examples 
 #' \dontrun{

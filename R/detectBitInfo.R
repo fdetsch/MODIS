@@ -6,8 +6,8 @@
 #' 
 #' @param product \code{character}, see \code{\link{getProduct}}.
 #' @param what \code{character}. Parameter name, e.g. 'VI Quality' for all MOD13
-#' products (see \href{https://lpdaac.usgs.gov/sites/default/files/public/product_documentation/mod13_user_guide.pdf}{MODIS Vegetation Index User's Guide}, 
-#' Table 5, Parameter Name).
+#' products (see \href{https://lpdaac.usgs.gov/documents/103/MOD13_User_Guide_V6.pdf}{MODIS Vegetation Index User's Guide}, 
+#' Table 5, column 'Parameter Name').
 #' @param warn \code{logical}, whether or not to throw warning messages.
 #' 
 #' @return 

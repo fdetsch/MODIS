@@ -4,9 +4,16 @@
 \alias{arcStats}
 \title{Get Summary of Local MODIS Data}
 \usage{
-arcStats(product, collection = NULL, extent = "global",
-  begin = "2000.01.01", end = format(Sys.time(), "\%Y.\%m.\%d"),
-  asMap = TRUE, outName = NULL, ...)
+arcStats(
+  product,
+  collection = NULL,
+  extent = "global",
+  begin = "2000.01.01",
+  end = format(Sys.time(), "\%Y.\%m.\%d"),
+  asMap = TRUE,
+  outName = NULL,
+  ...
+)
 }
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}. MODIS grid 

@@ -4,9 +4,17 @@
 \alias{temporalComposite}
 \title{Calculate MODIS Composite Images}
 \usage{
-temporalComposite(x, y, timeInfo = extractDate(x, asDate =
-  TRUE)$inputLayerDates, interval = c("month", "year", "fortnight"),
-  fun = max, na.rm = TRUE, cores = 1L, filename = "", ...)
+temporalComposite(
+  x,
+  y,
+  timeInfo = extractDate(x, asDate = TRUE)$inputLayerDates,
+  interval = c("month", "year", "fortnight"),
+  fun = max,
+  na.rm = TRUE,
+  cores = 1L,
+  filename = "",
+  ...
+)
 }
 \arguments{
 \item{x}{\code{Raster*} or \code{character}. MODIS composite dataset with an 

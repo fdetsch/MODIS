@@ -6,15 +6,37 @@
 \alias{maskWater}
 \title{Extract Bit-Encoded Information and create Weights Raster}
 \usage{
-extractBits(x, bitShift = 2, bitMask = 15, filename = "",
-  datatype = "INT1U", NAflag = 255, ...)
+extractBits(
+  x,
+  bitShift = 2,
+  bitMask = 15,
+  filename = "",
+  datatype = "INT1U",
+  NAflag = 255,
+  ...
+)
 
-makeWeights(x, bitShift = 2, bitMask = 15, threshold = NULL,
-  decodeOnly = FALSE, filename = "", datatype = "INT1U",
-  NAflag = 255, ...)
+makeWeights(
+  x,
+  bitShift = 2,
+  bitMask = 15,
+  threshold = NULL,
+  decodeOnly = FALSE,
+  filename = "",
+  datatype = "INT1U",
+  NAflag = 255,
+  ...
+)
 
-maskWater(X, bitShift = NULL, bitMask = NULL, keep = NULL,
-  datatype = "INT1U", NAflag = 255, ...)
+maskWater(
+  X,
+  bitShift = NULL,
+  bitMask = NULL,
+  keep = NULL,
+  datatype = "INT1U",
+  NAflag = 255,
+  ...
+)
 }
 \arguments{
 \item{x}{\code{matrix}, vector or \code{Raster*} object.}

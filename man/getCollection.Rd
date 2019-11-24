@@ -4,8 +4,14 @@
 \alias{getCollection}
 \title{Get Available Collections of MODIS Product(s)}
 \usage{
-getCollection(product, collection = NULL, newest = TRUE,
-  forceCheck = FALSE, as = "character", ...)
+getCollection(
+  product,
+  collection = NULL,
+  newest = TRUE,
+  forceCheck = FALSE,
+  as = "character",
+  ...
+)
 }
 \arguments{
 \item{product}{\code{character}. MODIS grid product to check for existing 

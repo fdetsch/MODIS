@@ -4,8 +4,12 @@
 \alias{genTile}
 \title{Generate Global Tiling System}
 \usage{
-genTile(tileSize = 1, offset = 0, StartNameFrom = c(0, 0),
-  extent = list(xmin = -180, xmax = 180, ymin = -90, ymax = 90))
+genTile(
+  tileSize = 1,
+  offset = 0,
+  StartNameFrom = c(0, 0),
+  extent = list(xmin = -180, xmax = 180, ymin = -90, ymax = 90)
+)
 }
 \arguments{
 \item{tileSize}{\code{numeric}, size of a single tile in degrees (EPSG:4326).}

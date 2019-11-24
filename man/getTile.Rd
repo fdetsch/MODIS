@@ -4,8 +4,7 @@
 \alias{getTile}
 \title{Get MODIS Tile ID(s)}
 \usage{
-getTile(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"),
-  ...)
+getTile(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ...)
 }
 \arguments{
 \item{x}{Extent information, see Details. Ignored if \code{tileH} and

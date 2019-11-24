@@ -4,10 +4,22 @@
 \alias{runGdal}
 \title{Process MODIS HDF with GDAL}
 \usage{
-runGdal(product, collection = NULL, begin = NULL, end = NULL,
-  extent = NULL, tileH = NULL, tileV = NULL, SDSstring = NULL,
-  job = NULL, checkIntegrity = TRUE, forceDownload = TRUE,
-  overwrite = FALSE, maskValue = NULL, ...)
+runGdal(
+  product,
+  collection = NULL,
+  begin = NULL,
+  end = NULL,
+  extent = NULL,
+  tileH = NULL,
+  tileV = NULL,
+  SDSstring = NULL,
+  job = NULL,
+  checkIntegrity = TRUE,
+  forceDownload = TRUE,
+  overwrite = FALSE,
+  maskValue = NULL,
+  ...
+)
 }
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}.}

@@ -4,8 +4,17 @@
 \alias{delHdf}
 \title{Delete Local MODIS Grid Files}
 \usage{
-delHdf(product, collection = NULL, extent = "global", tileV = NULL,
-  tileH = NULL, begin = NULL, end = NULL, ask = TRUE, ...)
+delHdf(
+  product,
+  collection = NULL,
+  extent = "global",
+  tileV = NULL,
+  tileH = NULL,
+  begin = NULL,
+  end = NULL,
+  ask = TRUE,
+  ...
+)
 }
 \arguments{
 \item{product}{\code{character}, see \code{\link{getProduct}}.}

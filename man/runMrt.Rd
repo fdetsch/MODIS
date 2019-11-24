@@ -8,10 +8,23 @@ You can obtain the MRT software after registration from
 \href{https://lpdaac.usgs.gov/tools/modis_reprojection_tool}{LP DAAC}.
 }
 \usage{
-runMrt(product, collection = NULL, begin = NULL, end = NULL,
-  extent = NULL, tileH = NULL, tileV = NULL, SDSstring = NULL,
-  job = NULL, datum = "NODATUM", zone = NULL, projPara = NULL,
-  mosaic = TRUE, anonym = TRUE, ...)
+runMrt(
+  product,
+  collection = NULL,
+  begin = NULL,
+  end = NULL,
+  extent = NULL,
+  tileH = NULL,
+  tileV = NULL,
+  SDSstring = NULL,
+  job = NULL,
+  datum = "NODATUM",
+  zone = NULL,
+  projPara = NULL,
+  mosaic = TRUE,
+  anonym = TRUE,
+  ...
+)
 }
 \arguments{
 \item{product, collection, begin, end, extent, tileH, tileV, SDSstring, job}{See \code{\link[MODIS]{runGdal}}

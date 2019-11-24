@@ -4,8 +4,16 @@
 \alias{smooth.spline.raster}
 \title{Filter Time Series Imagery with a Cubic Spline}
 \usage{
-smooth.spline.raster(x, w = NULL, t = NULL, groupYears = TRUE,
-  timeInfo = orgTime(x), df = 6, outDirPath = "./", ...)
+smooth.spline.raster(
+  x,
+  w = NULL,
+  t = NULL,
+  groupYears = TRUE,
+  timeInfo = orgTime(x),
+  df = 6,
+  outDirPath = "./",
+  ...
+)
 }
 \arguments{
 \item{x}{\code{RasterBrick} (or \code{RasterStack}) or \code{character} vector 

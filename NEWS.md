@@ -4,6 +4,10 @@ New features:
 
   * On Windows, if gdalinfo.exe couldn't be found in specified 'gdalPath', scan other environment variables and, in case of success, provide further instructions.
 
+Changes:
+  * Ensured compatibility with GDAL3/PROJ6.
+  * Fixed broken weblinks.
+
 
 ## MODIS 1.1.5
 

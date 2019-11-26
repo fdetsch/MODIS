@@ -17,8 +17,8 @@ lpdaacLogin(server = "LPDAAC")
 Create a hidden .netrc file with Earthdata login credentials in your home 
 directory. If your priority server for MODIS file download is LP DAAC (see 
 also \code{\link{MODISoptions}}), these are subsequently used to 
-automatically login to \url{urs.earthdata.nasa.gov} and download required 
-files.
+automatically login to \url{https://urs.earthdata.nasa.gov/} and download 
+required files.
 }
 \examples{
 \dontrun{

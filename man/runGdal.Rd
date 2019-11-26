@@ -97,7 +97,7 @@ define the area of interest, and \code{outProj} and \code{pixelSize} are
 You need to have \href{https://gdal.org/}{GDAL} installed on your system.\cr\cr
 On Unix-alkes, install \code{gdal-bin}.\cr
 On Windows, you need to install GDAL through \href{http://trac.osgeo.org/osgeo4w/}{OSGeo4W} 
-or \href{FWTools}{http://fwtools.maptools.org/} since the standard GDAL does 
+or \href{http://fwtools.maptools.org/}{FWTools} since the standard GDAL does 
 not support HDF4 format.
 }
 \examples{

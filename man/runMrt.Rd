@@ -139,7 +139,7 @@ Satellite Remote Sensing. Springer: Berlin, Heidelberg.
 
 Elassal AA (1989) General Cartographic Transformation Package (GCTP), Version 
 II. NOAA Technical Report NOS124 CGS9. NOAA: Rockville, MD, USA. Available 
-online \href{https://www.ngs.noaa.gov/PUBS_LIB/GeneralCartographicTransformationPackage_v2_TR_NOS124_CGS9.pdf}{here}
+online \href{https://www.cmascenter.org/ioapi/documentation/all_versions/html/GCTP.pdf}{here}
 (2018-09-13).
 
 Land Processes DAAC, USGS Earth Resources Observation and Science Center 

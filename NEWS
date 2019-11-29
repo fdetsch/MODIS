@@ -6,6 +6,7 @@ New features:
 
 Changes:
   * Ensured compatibility with GDAL3/PROJ6.
+  * For non-NSIDC products, getCollection(..., forceCheck = TRUE) no longer requires Earthdata credentials.
   * Fixed broken weblinks.
 
 

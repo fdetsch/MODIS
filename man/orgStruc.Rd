@@ -19,8 +19,8 @@ defaults to \code{options("MODIS_localArcPath")}.}
 \item{pattern}{Regular expression passed to \code{\link{list.files}}. Insert 
 a pattern if you want to extract specific files from your archiv.}
 
-\item{move}{\code{logical}. If \code{TRUE} (default), files are moved and 
-duplicated files are deleted. If \code{FALSE}, files are just copied and thus 
+\item{move}{\code{logical}. If \code{TRUE}, files are moved and duplicated 
+files are deleted. If \code{FALSE} (default), files are just copied and thus 
 remain in the origin folder. Note that the copying process performs rather 
 slowly when dealing with large files, e.g. 250-m 'MOD13Q1'.}
 

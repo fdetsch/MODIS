@@ -16,8 +16,8 @@
 #' \code{options("MODIS_arcStructure")} (see Examples).
 #' @param pattern Regular expression passed to \code{\link{list.files}}. Insert 
 #' a pattern if you want to extract specific files from your archiv.
-#' @param move \code{logical}. If \code{TRUE} (default), files are moved and 
-#' duplicated files are deleted. If \code{FALSE}, files are just copied and thus 
+#' @param move \code{logical}. If \code{TRUE}, files are moved and duplicated 
+#' files are deleted. If \code{FALSE} (default), files are just copied and thus 
 #' remain in the origin folder. Note that the copying process performs rather 
 #' slowly when dealing with large files, e.g. 250-m 'MOD13Q1'.
 #' @param quiet \code{logical}, defaults to \code{FALSE}.
@@ -116,7 +116,7 @@ orgStruc <- function(from,to,structure, pattern, move=FALSE, quiet=FALSE)
 		    moved <- 2
 	    }
 
-    } else if (file.exists(file.path(path,fname,fsep="/")) & orpath!=path) 
+    } else if (file.exists(file.path(path,fname,fsep="/")) & orpath!=path & move) 
     { # if file exists in destdir & inpath!=outPath...it is duplicated in 2 different locations, so remove it
         unlink(x)
 	    if (file.exists(paste0(x,".xml"))) 

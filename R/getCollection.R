@@ -101,11 +101,6 @@ getCollection <- function(product, collection = NULL, newest = TRUE
     crd = credentials()
     usr = crd$login; pwd = crd$password
     
-    if (any(is.null(c(usr, pwd)))) {
-      crd = EarthdataLogin()
-      usr = crd$login; pwd = crd$password
-    }
-    
     sturheit <- stubborn(level=opts$stubbornness)
     
     load(system.file("external", "MODIS_FTPinfo.RData", package = "MODIS"))
@@ -162,6 +157,11 @@ getCollection <- function(product, collection = NULL, newest = TRUE
           # (see also https://github.com/jeroen/curl/issues/72)
           h <- curl::new_handle(CONNECTTIMEOUT = 60L)
           if (grepl("nsidc", ftpdir)) {
+            if (any(is.null(c(usr, pwd)))) {
+              crd = EarthdataLogin()
+              usr = crd$login; pwd = crd$password
+            }
+            
             curl::handle_setopt(
               handle = h,
               httpauth = 1,

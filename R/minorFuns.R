@@ -619,10 +619,20 @@ filesUrl <- function(url)
     {
       h <- curl::new_handle(CONNECTTIMEOUT = 60L)
       if (grepl("nsidc", url)) {
+        # Earthdata login credentials in ~/.netrc are mandatory for LP DAAC and 
+        # NSIDC, hence if missing, create them to avoid authentication failures
+        crd = credentials()
+        usr = crd$login; pwd = crd$password
+        
+        if (any(is.null(c(usr, pwd)))) {
+          crd = EarthdataLogin()
+          usr = crd$login; pwd = crd$password
+        }
+        
         curl::handle_setopt(
           handle = h,
           httpauth = 1,
-          userpwd = paste0(credentials()$login, ":",credentials()$password)
+          userpwd = paste0(usr, ":", pwd)
         )
       }
       

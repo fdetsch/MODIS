@@ -130,10 +130,10 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
 }
 
 ## Earthdata login credentials from .netrc file
-readCredentials = function() {
+readCredentials = function(path = "~/.netrc") {
   
-  # ~/.netrc file
-  nrc = path.expand("~/.netrc")
+  # .netrc file
+  nrc = path.expand(path)
   
   if (file.exists(nrc))
   {  
@@ -176,11 +176,11 @@ readCredentials = function() {
 }
 
 # internal function to retrieve a specific earthdata server (hard coded for its now sufficient)
-credentials <- function()
+credentials <- function(path = "~/.netrc")
 {
   #server   <- c('urs.earthdata.nasa.gov', 'e4ftl01.cr.usgs.gov','ladsweb.modaps.eosdis.nasa.gov', 'n5eil01u.ecs.nsidc.org')
   server   <- 'urs.earthdata.nasa.gov'
-  lns      <- readCredentials()
+  lns      <- readCredentials(path)
   machines <- unlist(listPather(lns,'machine'))
   select   <- which(machines %in% server)
   return(lns[[select]])

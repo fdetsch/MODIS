@@ -22,6 +22,3 @@ test_that("position indication works for shorter-than-standard products", {
                , as.Date("2000-03-05"))
 })
 
-
-
-  

@@ -2,6 +2,7 @@ MODIS 1.1.6
 
 New features:
 
+  * New set of MODIS products, including MCD43GF, MOD/MYD16A2GF, MOD/MYD16A3GF, MOD/MYD17A2HGF, MOD/MYD17A3, and MOD/MYD17A3HGF.
   * On Windows, if gdalinfo.exe couldn't be found in specified 'gdalPath', scan other environment variables and, in case of success, provide further instructions.
 
 Changes:

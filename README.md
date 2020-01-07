@@ -8,6 +8,13 @@
 
 ====
 
+### Important information
+
+As of 2019-12-05, LAADS requires [authentication via the User Registration System (URS)](https://ladsweb.modaps.eosdis.nasa.gov/alerts-and-issues/?id=35048). Since this is NOT YET part of the **MODIS** package, users are advised to use `MODISserverOrder = "LPDAAC"` until further notice. Please refer to [#77](https://github.com/MatMatt/MODIS/issues/77) for further information.
+
+
+====
+
 ### Package downloads
 
 This month      | In total

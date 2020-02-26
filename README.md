@@ -46,7 +46,7 @@ devtools::install_github("MatMatt/MODIS", ref = "develop")
 ### Additional resources
 
 * https://stevemosher.wordpress.com/modis-tutorial/
-* http://strimas.com/ebird-best-practices/habitat.html#habitat-dl
+* https://cornelllabofornithology.github.io/ebird-best-practices/covariates.html#covariates-dl
 
 
 ====

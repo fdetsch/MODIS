@@ -1148,18 +1148,13 @@ fixOrphanedHoles = function(x) {
 ## skip unwanted products, see https://github.com/MatMatt/MODIS/issues/22
 skipDuplicateProducts = function(x, quiet = FALSE) {
   
-  products = getProduct()[, 1]
+  products = as.character(getProduct()[, 1])
   
-  dpl = lapply(seq_along(products), function(i) {
-    dpl = grep(products[i], products[-i], value = TRUE)
-    if (length(dpl) > 0) {
-      data.frame(product = products[i], duplicate = dpl)
-    } else NULL
+  dpl = sapply(products, function(i) {
+    any(startsWith(products, i) & products != i)
   })
   
-  dpl = do.call(rbind, dpl)
-  
-  if (x %in% dpl$product) {
+  if (any(names(dpl) == x) && dpl[names(dpl) == x]) {
     if (!quiet) {
       warning("Processing ", x, " only. Use regular expressions (eg. '"
               , x, ".*') to select more than one product.")

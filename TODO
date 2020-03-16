@@ -44,5 +44,3 @@ Automated wget, curl check if any("LPDAAC", "NSIDP") %in% opts$MODISserverOrder
 General solution for "//"
 
 Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs
-
-Speed up extractDate, if possible

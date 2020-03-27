@@ -606,67 +606,72 @@ listPather <- function(x,index)
 filesUrl <- function(url)
 {
 
-    if (substr(url,nchar(url),nchar(url))!="/")
-    {
-       url <- paste0(url,"/") 
-    }
+  if (substr(url,nchar(url),nchar(url))!="/")
+  {
+    url <- paste0(url,"/") 
+  }
+  
+  iw = options()$warn 
+  options(warn = -1)
+  on.exit(options(warn = iw))
+  
+  h <- curl::new_handle(CONNECTTIMEOUT = 10L)
+  
+  ## laads, nsidc require login
+  if (grepl("nsidc|ladsweb", url)) {
+    crd = credentials()
+    usr = crd$login; pwd = crd$password
     
-    iw = options()$warn 
-    options(warn = -1)
-    on.exit(options(warn = iw))
-    
-    h <- curl::new_handle(CONNECTTIMEOUT = 60L)
-    
-    ## laads, nsidc require login
-    if (grepl("nsidc|ladsweb", url)) {
-      crd = credentials()
+    if (any(is.null(c(usr, pwd)))) {
+      crd = EarthdataLogin()
       usr = crd$login; pwd = crd$password
-      
-      if (any(is.null(c(usr, pwd)))) {
-        crd = EarthdataLogin()
-        usr = crd$login; pwd = crd$password
-      }
-      
-      curl::handle_setopt(
-        handle = h,
-        httpauth = 1,
-        userpwd = paste0(usr, ":", pwd)
-      )
     }
     
-    ## establish connection
-    is_laads = grepl("ladsweb", url)
-    con = curl::curl(
-      ifelse(is_laads, gsub("/$", ".csv", url), url)
-      , handle = h
+    curl::handle_setopt(
+      handle = h,
+      httpauth = 1,
+      userpwd = paste0(usr, ":", pwd)
     )
-    on.exit(
-      try(
-        close(con)
-        , silent = TRUE)
-    )
-    
-    ## read online content
-    if (!is_laads) {
-      co = readLines(con)
+  }
+  
+  ## establish connection
+  is_laads = grepl("ladsweb", url)
+  con = curl::curl(
+    ifelse(is_laads, gsub("/$", ".csv", url), url)
+    , handle = h
+  )
+  on.exit(
+    try(
       close(con)
-      
-      # extract '<a href=...> nodes
-      pttrn = '<a href=\"[[:graph:]]{1,}\">[[:graph:]]{1,}</a>'
-      tmp = sapply(co, function(i) {
-        regmatches(i, regexpr(pttrn, i))
-      })
-      
-      spl1 = sapply(strsplit(unlist(tmp), ">"), "[[", 2)
-      fnames = as.character(sapply(strsplit(spl1, "<"), "[[", 1))
-    } else {
-      tmp = utils::read.csv(con, colClasses = "character") # closes 'con' automatically
-      fnames = tmp$name[grep("[^NOTICE]", tmp$name)]
-    }
+      , silent = TRUE)
+  )
+  
+  ## read online content
+  if (!is_laads) {
+    co = readLines(con)
+    close(con)
     
-    ## format and return    
-    fnames <- gsub(fnames,pattern="/",replacement="")
-    return(fnames)
+    # extract '<a href=...> nodes
+    pttrn = '<a href=\"[[:graph:]]{1,}\">[[:graph:]]{1,}</a>'
+    tmp = sapply(co, function(i) {
+      regmatches(i, regexpr(pttrn, i))
+    })
+    
+    spl1 = sapply(strsplit(unlist(tmp), ">"), "[[", 2)
+    fnames = as.character(sapply(strsplit(spl1, "<"), "[[", 1))
+  } else {
+    tmp = utils::read.csv(con, colClasses = "character") # closes 'con' automatically
+    fnames = tmp$name[grep("[^NOTICE]", tmp$name)]
+  }
+  
+  ## remove handle and run garbage collector to prevent '504 gateway time-out' encountered for laads
+  ## (https://stackoverflow.com/questions/32524513/in-some-cases-rvest-keeps-connection-open)
+  rm(h)
+  gc(verbose = FALSE)
+  
+  ## format and return    
+  fnames <- gsub(fnames,pattern="/",replacement="")
+  return(fnames)
 }
 
 

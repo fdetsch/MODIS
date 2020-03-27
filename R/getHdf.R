@@ -154,7 +154,7 @@ setMethod("getHdf",
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
         server <- product@SOURCE[[z]]
 
-        if (!any(server %in% c("NTSG", "NSIDC"))) {
+        if (!any(server == "NSIDC")) {
           
           ## if product is not available from desired server, throw error        
           if (!any(opts$MODISserverOrder %in% server)) {

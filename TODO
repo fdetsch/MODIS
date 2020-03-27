@@ -37,7 +37,7 @@ getGranule():
 - remaining 'extent' inputs (sf::st_bbox, MODISextent, character, Raster*, missing)
 
 getCollection():
-- retrieval from LAADS (ie. MOD03)
+- retrieval from LAADS (ie. MOD03), particularly during LPDAAC downtime
 
 Automated wget, curl check if any("LPDAAC", "NSIDP") %in% opts$MODISserverOrder
 

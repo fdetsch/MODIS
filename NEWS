@@ -2,6 +2,8 @@ MODIS 1.1.7
 
 Changes:
 
+  * Re-enabled LAADS data retrieval.
+
 
 MODIS 1.1.6
 
@@ -11,6 +13,7 @@ New features:
   * On Windows, if gdalinfo.exe couldn't be found in specified 'gdalPath', scan other environment variables and, in case of success, provide further instructions.
 
 Changes:
+
   * Ensured compatibility with GDAL3/PROJ6.
   * For non-NSIDC products, getCollection(..., forceCheck = TRUE) no longer requires Earthdata credentials.
   * Fixed broken weblinks.

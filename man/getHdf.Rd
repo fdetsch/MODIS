@@ -70,24 +70,24 @@ a <- getHdf(HdfName = c("MYD11A1.A2009001.h18v04.006.2015363221538.hdf",
                         "MYD11A1.A2009017.h18v04.006.2015364115403.hdf"))
 a
 
-# Get all MODIS Terra and Aqua M*D11A1 data from 1 December 2016 up to today
-# (can be ran in a sceduled job for daily archive update)
-b1 <- getHdf(product = "M.D11A1", begin = "2016.12.01", 
+# Get all MODIS Terra and Aqua M*D11A1 data from the past 30 days
+# (can be run in a scheduled job for regular archive update)
+b1 <- getHdf(product = "M.D13A2", begin = Sys.Date() - 30, 
              tileH = 18:19, tileV = 4) 
 b1               
 
 # Same tiles with a 'list' extent
-Austria <- list(xmax = 17.47, xmin = 9.2, ymin = 46.12, ymax = 49.3)
-b2 <- getHdf(product = "M.D11A1", begin = "2016336", extent = Austria)
+Austria <- extent(9.2, 17.47, 46.12, 49.3)
+b2 <- getHdf(product = "MOD13A2", begin = "2020001", end = "2020031", extent = Austria)
 b2
 
 # Using country boarders from 'mapdata' package
-c <- getHdf(product = "M.D11A1", begin = "2016306", end = "2016335",
+c <- getHdf(product = "MOD13A2", begin = "2016180", end = "2016210",
             extent = "Luxembourg")
 c             
        
 # Interactive selection of spatial extent, see getTile()
-d <- getHdf(product = "M.D11A1", begin = "2016306", end = "2016307")
+d <- getHdf(product = "MOD13A2", begin = "2016180", end = "2016210", extent = getTile())
 d
 }
 

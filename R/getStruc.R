@@ -149,11 +149,18 @@ getStruc <- function(product, collection = NULL, server = NULL, begin = NULL
       Ypath = paste0(startPath, FtpDayDirs, "/")
       
       ouou = mapply(function(i, j) {
-        paste0(i, filesUrl(j))
+        cat("\t...", i, "\n")
+        ou = try(log("e"), silent = TRUE)
+        g = 1L
+        
+        while (inherits(ou, "try-error") & g <= sturheit) {
+          if (g > 1) Sys.sleep(opts$wait)
+          ou = try(paste0(i, filesUrl(j)), silent = TRUE)
+          g = g + 1L
+        }
+        
+        return(ou)
       }, FtpDayDirs, Ypath, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-      # mapply(function(i, j) {
-      #   paste0(i, formatC(read.csv(gsub("/$", ".csv", j))$name, width = 3, flag = 0))
-      # }, years, Ypath)
       as.Date(unlist(ouou),"%Y%j")
     } 
   }

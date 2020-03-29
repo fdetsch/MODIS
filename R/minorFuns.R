@@ -615,7 +615,9 @@ filesUrl <- function(url)
   options(warn = -1)
   on.exit(options(warn = iw))
   
-  h <- curl::new_handle(CONNECTTIMEOUT = 10L)
+  h <- curl::new_handle(
+    connecttimeout = 10L
+  )
   
   ## laads, nsidc require login
   if (grepl("nsidc|ladsweb", url)) {

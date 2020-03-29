@@ -666,11 +666,6 @@ filesUrl <- function(url)
     fnames = tmp$name[grep("[^NOTICE]", tmp$name)]
   }
   
-  ## remove handle and run garbage collector to prevent '504 gateway time-out' encountered for laads
-  ## (https://stackoverflow.com/questions/32524513/in-some-cases-rvest-keeps-connection-open)
-  rm(h)
-  gc(verbose = FALSE)
-  
   ## format and return    
   fnames <- gsub(fnames,pattern="/",replacement="")
   return(fnames)
@@ -755,58 +750,46 @@ ModisFileDownloader <- function(x, ...)
                             collapse = "")
             
             ## adapt 'dlmethod' and 'extra' if server == "LPDAAC"
-            if (server %in% c("LPDAAC", "NSIDC")) {
-              if (!opts$dlmethod %in% c("wget", "curl")) {
-
-                cmd = try(system("wget -h", intern = TRUE), silent = TRUE)
-                method = "wget"
-                
-                if (inherits(cmd, "try-error")) {
-                  cmd = try(system("curl -h", intern = TRUE), silent = TRUE)
-                  method = "curl"
-                }
-                
-                if (inherits(cmd, "try-error")) {
-                  stop("Make sure either 'wget' or 'curl' is available in "
-                       , "order to download data from LP DAAC or NSIDC.")
-                }
-              } else {
-                method <- opts$dlmethod
+            if (!opts$dlmethod %in% c("wget", "curl")) {
+              
+              cmd = try(system("wget -h", intern = TRUE), silent = TRUE)
+              method = "wget"
+              
+              if (inherits(cmd, "try-error")) {
+                cmd = try(system("curl -h", intern = TRUE), silent = TRUE)
+                method = "curl"
               }
               
-              # cookies
-              ofl = file.path(tempdir(), ".cookies.txt")
-              if (!file.exists(ofl))
-                jnk = file.create(ofl)
-              on.exit(file.remove(ofl))
-              
-              # wget extras
-              extra <- if (method == "wget") {
-                paste("--user", usr, "--password", pwd
-                      , "--load-cookies", ofl
-                      , "--save-cookies", ofl
-                      , "--keep-session-cookie --no-check-certificate")
-                
-              # curl extras  
-              } else {
-                paste('--user', paste(usr, pwd, sep = ":")
-                      , '-k -L -c', ofl, '-b', ofl)
+              if (inherits(cmd, "try-error")) {
+                stop("Make sure either 'wget' or 'curl' is available in "
+                     , "order to download data.")
               }
-              
-            ## else if server == "NTSG", choose 'wget' as download method  
-            } else if (server == "NTSG") {
-              method <- "wget"
-              extra <- getOption("download.file.extra")
-              
-            ## else use default settings
             } else {
               method <- opts$dlmethod
-              extra <- getOption("download.file.extra")
+            }
+            
+            # cookies
+            ofl = file.path(tempdir(), ".cookies.txt")
+            if (!file.exists(ofl))
+              jnk = file.create(ofl)
+            on.exit(file.remove(ofl))
+            
+            # wget extras
+            extra <- if (method == "wget") {
+              paste("--user", usr, "--password", pwd
+                    , "--load-cookies", ofl
+                    , "--save-cookies", ofl
+                    , "--keep-session-cookie --no-check-certificate")
+              
+              # curl extras  
+            } else {
+              paste('--user', paste(usr, pwd, sep = ":")
+                    , '-k -L -c', ofl, '-b', ofl)
             }
             
             
-            # curl download from LP DAAC or NSIDC
-            out[a] = if (method == "curl" & server %in% c("LPDAAC", "NSIDC")) {
+            # curl download
+            out[a] = if (method == "curl") {
               h = curl::new_handle(CONNECTTIMEOUT = 60L)
               curl::handle_setopt(
                 handle = h,

@@ -112,7 +112,7 @@
 #' 
 #' @export getTile
 #' @name getTile
-getTile <- function(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ...) {
+getTile <- function(x = NULL, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ...) {
  
   opts = combineOptions(...)
   
@@ -120,7 +120,7 @@ getTile <- function(x, tileH = NULL, tileV = NULL, mode = c("click", "draw"), ..
   target <- NULL  
   
   ## if inputs are missing, select tile(s) interactively
-  if (missing(x) & (is.null(tileH) | is.null(tileV))) {
+  if (is.null(x) && (is.null(tileH) | is.null(tileV))) {
     x = mapSelect(mode = mode[1])
     tileH = x$h; tileV = x$v
     fromMap = TRUE

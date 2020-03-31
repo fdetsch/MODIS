@@ -71,7 +71,7 @@ if ( !isGeneric("getHdf") ) {
 #' c             
 #'        
 #' # Interactive selection of spatial extent, see getTile()
-#' d <- getHdf(product = "MOD13A2", begin = "2016180", end = "2016210", extent = getTile())
+#' d <- getHdf(product = "MOD13A2", begin = "2016180", end = "2016210")
 #' d
 #' }
 #' 

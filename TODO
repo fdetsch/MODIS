@@ -6,6 +6,7 @@ longer term changes:
 - I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
 - Accelerate 'Downloading structure on ...'
 - Any file in 'inst/external' no longer required? 
+- get rid of certain dependencies
 
 detectBitInfo()
 - recent products supported? (see whittaker.raster)
@@ -31,7 +32,6 @@ whittaker.raster()
 
 getHdf():
 - download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
-- test with no extent specified, ie. interactive
 
 getGranule():
 - tileH,tileV
@@ -48,3 +48,6 @@ Save MODIS Sinusoidal proj4 string somewhere: +proj=sinu +lon_0=0 +x_0=0 +y_0=0 
 
 getStruc():
 - if specified, restrict to dates
+
+getTile():
+- if non-interactive, display aoi

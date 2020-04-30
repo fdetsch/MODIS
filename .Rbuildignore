@@ -1,6 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^.*\TODO$
+^TODO$
 ^.*\NEWS.md$
 ^R/addCollection\.R$
 ^R/addProduct\.R$
@@ -14,3 +14,4 @@
 ^R/getGranule\.R$
 ^R/MODISswath\.R$
 ^R/MODISswath$
+^TODO$

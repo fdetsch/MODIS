@@ -6,7 +6,7 @@ longer term changes:
 - I was quite good to avoid the creation of classes, I am not sure if we really need it...maybe yes? S3 should be enough I guess? 
 - Accelerate 'Downloading structure on ...'
 - Any file in 'inst/external' no longer required? 
-- get rid of certain dependencies
+- get rid of certain dependencies, eg. 'maptools'
 
 detectBitInfo()
 - recent products supported? (see whittaker.raster)
@@ -50,4 +50,5 @@ getStruc():
 - if specified, restrict to dates
 
 getTile():
+- if interactive and `mode = "draw"`, handle errors for incomplete shapes
 - if non-interactive, display aoi

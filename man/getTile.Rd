@@ -41,9 +41,10 @@ If \code{x} is of class (see Examples for use cases)
   if \code{mode = "draw"}, free feature drawing.\cr
   \cr 
   \code{character}:\cr
-  \tab Either the country name of a \code{map} object (see \code{\link{map}})
-  or a valid file path of a raster image or ESRI shapefile (shp). The former 
-  approach also supports pattern matching via regular expressions.\cr
+  \tab The country name of a \code{map} object (see \code{\link{map}}) with 
+  pattern matching via regular expressions enabled. Alternatively, a valid 
+  file path to an ESRI shapefile (.shp) or an image readable by 
+  \code{\link[raster]{raster}}.\cr
   \cr
   \code{Raster*}:\cr
   \tab Spatial extent, resolution, and projection of the specified 
@@ -53,9 +54,10 @@ If \code{x} is of class (see Examples for use cases)
   \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
   \cr
   \code{Extent}, \code{bbox}:\cr
-  \tab Boundary coordinates from \code{Extent} and \code{bbox} objects are 
-  assumed to be in \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} 
-  as such objects have no projection information attached.\cr
+  \tab Boundary coordinates from \code{Extent} objects are generally assumed 
+  to be in \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as 
+  such objects have no projection information attached. The same applies for 
+  'bbox' objects lacking CRS information.\cr
   \cr
   Other:\cr
   \tab \code{Spatial}, \code{sf}, or \code{map} object.

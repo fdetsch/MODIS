@@ -35,7 +35,7 @@ test_that("target specs are inherited from raster", {
   expect_equal(getTile(rst)@target$extent, raster::extent(rst)) # is identical
   
   # crs
-  expect_equal(getTile(rst)@target$outProj, raster::projection(rst))
+  expect_equal(getTile(rst)@target$outProj, sf::st_crs(rst))
   
   # res
   expect_equal(getTile(rst)@target$pixelSize, raster::res(rst))

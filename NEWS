@@ -3,6 +3,7 @@ MODIS 1.2.0
 Changes:
 
   * getHdf(), runGdal() with no extent info (ie. 'x = tileH = tileV = NULL') triggers interactive tile selection. 
+  * LP DAAC is default download server (previously LAADS).
 
 
 MODIS 1.1.7

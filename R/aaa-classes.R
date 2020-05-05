@@ -7,7 +7,8 @@
 #' @slot tile MODIS tile ID as \code{character}.
 #' @slot tileH MODIS horizontal tile ID as \code{integer}.
 #' @slot tileV MODIS vertical tile ID as \code{integer}.
-#' @slot extent \code{Extent} information, see \code{\link{getTile}}.
+#' @slot extent \code{Extent} information in 
+#' \href{https://epsg.io/4326}{EPSG:4326}, see \code{\link{getTile}}.
 #' @slot system Sensor system as \code{character}.
 #' @slot target If applicable, a \code{list} with additional target information.
 #' 

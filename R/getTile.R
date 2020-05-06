@@ -26,11 +26,10 @@ if (!isGeneric("getTile")) {
 #' specified.
 #' @param mode Interactive selection mode as \code{character}. Available options 
 #' are \code{"click"} (default) and \code{"draw"} that trigger interactive MODIS 
-#' tile selection and free feature drawing, respectively. Ignored if any of 'x' 
-#' or 'tileH,tileV' is NOT missing.
-#' @param ... Additional arguments passed to \code{\link{MODISoptions}}. Here, 
-#' only 'outProj' and 'pixelSize' are relevant, and this only if 'x' is an 
-#' object of class \code{character}, \code{map}, \code{Extent} or \code{bbox}.
+#' tile selection and free feature drawing, respectively. Triggered only if 'x' 
+#' and tile IDs are omitted.
+#' @param ... Additional arguments passed to \code{\link{MODISoptions}}, see
+#' Details.
 #' 
 #' @return 
 #' A \code{MODISextent} object.
@@ -48,13 +47,15 @@ if (!isGeneric("getTile")) {
 #' easy data access is granted through \code{\link{getData}}. 
 #' 
 #' @details 
-#' If \code{x} is of class (see Examples for use cases)
+#' Unless stated otherwise in the following, target 'outProj' and 'pixelSize' 
+#' are carried over from \code{\link[MODIS]{MODISoptions}}.
+#' 
+#' If 'x' is of class (see Examples for use cases)
 #' \tabular{ll}{
 #'   \code{missing}:\cr
-#'   \tab If 'tileH,tileV' are specified, 'x' will be ignored. If no such tile 
-#'   indices are provided and 'x' is missing, a viewer window pops up that 
-#'   allows interactive tile selection from the global MODIS Sinusoidal grid or, 
-#'   if \code{mode = "draw"}, free feature drawing.\cr
+#'   \tab If tile IDs (see Arguments) are also missing, a viewer window 
+#'   pops up that allows for interactive tile selection from the global MODIS 
+#'   Sinusoidal grid or, if \code{mode = "draw"}, free feature drawing.\cr
 #'   \cr 
 #'   \code{character}:\cr
 #'   \tab The country name of a \code{map} object (see \code{\link{map}}) with 
@@ -75,8 +76,11 @@ if (!isGeneric("getTile")) {
 #'   such objects have no projection information attached. The same applies for 
 #'   'bbox' objects lacking CRS information.\cr
 #'   \cr
+#'   \code{sf}, \code{Spatial}:\cr
+#'   \tab Except for resolution, same as for \code{Raster*}.\cr
+#'   \cr
 #'   Other:\cr
-#'   \tab \code{Spatial}, \code{sf}, or \code{map} object.
+#'   \tab A \code{map} object.
 #' }
 #' 
 #' @examples 
@@ -84,6 +88,8 @@ if (!isGeneric("getTile")) {
 #' # ex 1 ############
 #' # interactive tile selection
 #' getTile()
+#' getTile(mode = "draw")
+#' }
 #' 
 #' # ex 2: Spatial (taken from ?rgdal::readOGR) ############
 #' dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
@@ -124,7 +130,6 @@ if (!isGeneric("getTile")) {
 #' # or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 #' m2 <- map("state", region = "new jersey", fill = TRUE)
 #' getTile(m2)
-#' }
 #' 
 #' @export getTile
 #' @name getTile
@@ -190,7 +195,8 @@ mapSelect = function(
     ### . draw mode ----
     
   } else {
-    mapedit::drawFeatures()
+    drawing = mapedit::drawFeatures()
+    suppressMessages(sr[drawing, ])
   }
 }
 
@@ -303,7 +309,26 @@ methods::setMethod(
         getTile(raster::raster(x), ...)
       }
     } else {
-      # TODO: 'map' method
+      x.bu = x
+      on.exit(rm(x.bu))
+      
+      x = try(
+        maps::map("worldHires", x, plot = FALSE, fill = TRUE)
+        , silent = TRUE
+      )
+      
+      if (inherits(x, "try-error")) {
+        stop(
+          "Country name not valid. Check availability with map('worldHires, '"
+          , x.bu
+          , "'), or use '?search4map' function"
+        )
+      }
+      
+      getTile(
+        x
+        , ...
+      )
     }
   }
 )
@@ -364,6 +389,43 @@ methods::setMethod(
       , extent = raster::extent(x)
       , system = "MODIS"
       , target = target
+    )
+  }
+)
+
+
+### 4 MAP ====
+
+methods::setOldClass("map")
+
+#' @aliases getTile,map-method
+#' @rdname getTile
+methods::setMethod(
+  "getTile"
+  , methods::signature(
+    x = "map"
+  )
+  , function(
+    x
+    , ...
+  ) {
+    
+    opts = combineOptions(...)
+    
+    x = sf::st_transform(
+      sf::st_as_sf(x)
+      , if (opts$outProj == "asIn") {
+        sf::st_crs("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs") 
+      } else {
+        if (!is.na(suppressWarnings(as.integer(opts$outProj)))) {
+          opts$outProj = paste0("+init=epsg:", as.integer(opts$outProj))
+        }
+        sf::st_crs(opts$outProj)
+      })
+    
+    getTile(
+      sf::st_as_sf(x)
+      , pixelSize = opts$pixelSize
     )
   }
 )

@@ -8,6 +8,8 @@
 \alias{getTile,character-method}
 \alias{getTile,Raster,ANY,ANY-method}
 \alias{getTile,Raster-method}
+\alias{getTile,map,ANY,ANY-method}
+\alias{getTile,map-method}
 \alias{getTile,Extent,ANY,ANY-method}
 \alias{getTile,Extent-method}
 \alias{getTile,bbox,ANY,ANY-method}
@@ -26,6 +28,8 @@
 
 \S4method{getTile}{Raster,ANY,ANY}(x, tileH, tileV, ...)
 
+\S4method{getTile}{map,ANY,ANY}(x, tileH, tileV, ...)
+
 \S4method{getTile}{Extent,ANY,ANY}(x, tileH, tileV, ...)
 
 \S4method{getTile}{bbox,ANY,ANY}(x, tileH, tileV, ...)
@@ -37,12 +41,11 @@
 \arguments{
 \item{mode}{Interactive selection mode as \code{character}. Available options 
 are \code{"click"} (default) and \code{"draw"} that trigger interactive MODIS 
-tile selection and free feature drawing, respectively. Ignored if any of 'x' 
-or 'tileH,tileV' is NOT missing.}
+tile selection and free feature drawing, respectively. Triggered only if 'x' 
+and tile IDs are omitted.}
 
-\item{...}{Additional arguments passed to \code{\link{MODISoptions}}. Here, 
-only 'outProj' and 'pixelSize' are relevant, and this only if 'x' is an 
-object of class \code{character}, \code{map}, \code{Extent} or \code{bbox}.}
+\item{...}{Additional arguments passed to \code{\link{MODISoptions}}, see
+Details.}
 
 \item{x}{Extent information, see Details.}
 
@@ -60,13 +63,15 @@ A \code{MODISextent} object.
 Get MODIS tile ID(s) for a specific geographic area.
 }
 \details{
-If \code{x} is of class (see Examples for use cases)
+Unless stated otherwise in the following, target 'outProj' and 'pixelSize' 
+are carried over from \code{\link[MODIS]{MODISoptions}}.
+
+If 'x' is of class (see Examples for use cases)
 \tabular{ll}{
   \code{missing}:\cr
-  \tab If 'tileH,tileV' are specified, 'x' will be ignored. If no such tile 
-  indices are provided and 'x' is missing, a viewer window pops up that 
-  allows interactive tile selection from the global MODIS Sinusoidal grid or, 
-  if \code{mode = "draw"}, free feature drawing.\cr
+  \tab If tile IDs (see Arguments) are also missing, a viewer window 
+  pops up that allows for interactive tile selection from the global MODIS 
+  Sinusoidal grid or, if \code{mode = "draw"}, free feature drawing.\cr
   \cr 
   \code{character}:\cr
   \tab The country name of a \code{map} object (see \code{\link{map}}) with 
@@ -87,8 +92,11 @@ If \code{x} is of class (see Examples for use cases)
   such objects have no projection information attached. The same applies for 
   'bbox' objects lacking CRS information.\cr
   \cr
+  \code{sf}, \code{Spatial}:\cr
+  \tab Except for resolution, same as for \code{Raster*}.\cr
+  \cr
   Other:\cr
-  \tab \code{Spatial}, \code{sf}, or \code{map} object.
+  \tab A \code{map} object.
 }
 }
 \note{
@@ -101,6 +109,8 @@ easy data access is granted through \code{\link{getData}}.
 # ex 1 ############
 # interactive tile selection
 getTile()
+getTile(mode = "draw")
+}
 
 # ex 2: Spatial (taken from ?rgdal::readOGR) ############
 dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
@@ -141,7 +151,6 @@ getTile(m1)
 # or use 'map' objects directly (remember to use map(..., fill = TRUE)): 
 m2 <- map("state", region = "new jersey", fill = TRUE)
 getTile(m2)
-}
 
 }
 \seealso{

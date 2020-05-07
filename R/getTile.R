@@ -188,14 +188,31 @@ mapSelect = function(
     sr_tls = paste(sr$h, sr$v)
     tt_tls = paste(tt_sbs$ih, tt_sbs$iv)
     
-    mapedit::selectFeatures(
+    ftrs = mapedit::selectFeatures(
       sr[!sr_tls %in% tt_tls, ]
     )
+    
+    ## fail safe: no tile selected
+    if (nrow(ftrs) == 0) {
+      stop("No feature selected.")
+    }
+    
+    return(ftrs)
+    
     
     ### . draw mode ----
     
   } else {
-    drawing = mapedit::drawFeatures()
+    drawing = try(
+      mapedit::drawFeatures()
+      , silent = TRUE
+    )
+    
+    ## fail safe: shape not closed
+    if (inherits(drawing, "try-error")) {
+      stop("Shape needs to be closed.")
+    }
+    
     suppressMessages(sr[drawing, ])
   }
 }
@@ -219,10 +236,6 @@ methods::setMethod(
     , tileV
     , ...
   ) {
-    
-    opts = combineOptions(
-      ...
-    )
     
     tileH = as.integer(tileH)
     tileV = as.integer(tileV)
@@ -496,7 +509,7 @@ methods::setMethod(
     
     getTile(
       sf::st_as_sf(x)
-      , ...
+      , pixelSize = opts$pixelSize
     )
   }
 )

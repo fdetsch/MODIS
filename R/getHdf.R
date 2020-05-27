@@ -86,7 +86,7 @@ setMethod("getHdf",
           signature(product = "character"),
           function(product, HdfName,
                    begin = NULL, end = NULL, 
-                   tileH = NULL, tileV = NULL, extent = NULL, 
+                   tileH, tileV, extent, 
                    collection = NULL, checkIntegrity = TRUE, 
                    forceDownload = TRUE, ...) {
             
@@ -125,6 +125,12 @@ setMethod("getHdf",
   output <- list() # path info for the invisible output
   l=0
   
+  ## pass missing args on to getTile() (see 
+  ## https://stackoverflow.com/questions/31557805/passing-missing-argument-from-function-to-function-in-r)
+  args = as.list(match.call())
+  args[[1]] <- NULL # remove first list element, it's the function call
+  args = args[names(args) %in% c("extent", "tileH", "tileV")]
+  
   for(z in seq_along(product@PRODUCT))
   { # Platforms MOD/MYD
     
@@ -138,8 +144,8 @@ setMethod("getHdf",
           ntiles=1 
         } else 
         {
-          if (!inherits(extent, "MODISextent")) {
-            extent = getTile(x = extent, tileH = tileH, tileV = tileV)
+          if (missing(extent) || !inherits(extent, "MODISextent")) {
+            extent = do.call(getTile, args, envir = parent.frame())
           }
           
           if (product@TYPE[z] == "Tile") {

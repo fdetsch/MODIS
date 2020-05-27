@@ -110,7 +110,7 @@
 #' @name runGdal
 runGdal <- function(product, collection=NULL, 
                     begin=NULL, end=NULL, 
-                    extent=NULL, tileH=NULL, tileV=NULL, 
+                    extent, tileH, tileV, 
                     SDSstring=NULL, job=NULL, checkIntegrity=TRUE, 
                     forceDownload=TRUE, overwrite = FALSE, maskValue=NULL, ...)
 {
@@ -158,15 +158,22 @@ runGdal <- function(product, collection=NULL,
     
     #### settings with messages
     # output pixel size in output proj units (default is "asIn", but there are 2 chances of changing this argument: pixelSize, and if extent comes from a Raster* object.
-     
-    if (!inherits(extent, "MODISextent")) {
-      extent = if (product@TYPE[1] == "Tile" | 
-                   (all(!is.null(extent) | !is.null(tileH) & !is.null(tileV)) & 
-                    product@TYPE[1]=="CMG")) {
-        getTile(x = extent, tileH = tileH, tileV = tileV
-                , outProj = opts$outProj, pixelSize = opts$pixelSize)
-      } else {
-        NULL
+    
+    ## pass missing args on to getTile() (see 
+    ## https://stackoverflow.com/questions/31557805/passing-missing-argument-from-function-to-function-in-r)
+    args = as.list(match.call())
+    args[[1]] <- NULL # remove first list element, it's the function call
+    args = args[names(args) %in% c("extent", "tileH", "tileV")]
+    
+    if (missing(extent) || !inherits(extent, "MODISextent")) {
+      extent = if (product@TYPE[1] == "Tile" || 
+                   (product@TYPE[1] == "CMG" && 
+                    any(!missing(extent), all(!missing(tileH), !missing(tileV))))) {
+        do.call(
+          getTile
+          , c(args, outProj = opts$outProj, pixelSize = opts$pixelSize)
+          , envir = parent.frame()
+        )
       }
     }
 

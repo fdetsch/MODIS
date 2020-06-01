@@ -109,14 +109,7 @@
 #' @export whittaker.raster
 whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda = 5000, nIter= 3, outputAs="single", collapse=FALSE, prefixSuffix=c("MCD","ndvi"), outDirPath=".", outlierThreshold=NULL, mergeDoyFun="max", ...)
 {
-  # debug 
-  # w=wt; t=inT; groupYears=TRUE; lambda = 5000; nIter= 3; outDirPath = "./"; collapse=FALSE; opt <- MODIS:::combineOptions();removeOutlier=FALSE;mergeDoyFun="max";opts$outDirPath <- MODIS:::setPath(outDirPath)
-  # w=NULL; t=NULL; groupYears=TRUE; lambda = 5000; nIter= 5; outDirPath = "./SUB/";collapse=TRUE; opts <- MODIS:::combineOptions();removeOutlier=FALSE;mergeDoyFun="max"
-  
-  # opt <- list(bitShift=2,bitMask=15,threshold=6)
-  # opt <- list(bitShift=2,bitMask=15)
-  # opt <- list()
-  
+
   opts <- combineOptions(...)
 
   outDirPath     <- setPath(outDirPath)
@@ -127,9 +120,7 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
   dataFormat     <- opts$dataFormat
   rasterOut      <- toupper(raster::writeFormats())
   
-  if(toupper(dataFormat) %in% rasterOut[,"name"]) {
-    dataFormat <- getExtension(dataFormat)
-  } else {
+  if(!toupper(dataFormat) %in% rasterOut[,"name"]) {
     stop("Unknown or unsupported data format: '", dataFormat, "'. Please run 
          raster::writeFormats() (column 'name') for supported file types.\n")
   }
@@ -201,17 +192,19 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     d <- sprintf("%03d",seq(as.numeric(format(min(timeInfo$outputLayerDates),"%j")),as.numeric(format(max(timeInfo$outputLayerDates),"%j")),by=timeInfo$call$nDays))
     if(outputAs=="single")
     {
-      oname <- paste0(outDirPath,prefixSuffix[1],".",d,".",prefixSuffix[2],dataFormat)
+      oname <- paste0(outDirPath,prefixSuffix[1],".",d,".",prefixSuffix[2])
       b     <- vector(mode="list",length=length(oname)) 
       for(a in seq_along(oname))
       {      
         b[[a]] <- raster(vi)
-        b[[a]] <- writeStart(b[[a]], filename=oname[a], datatype=opts$datatype, overwrite=opts$overwrite)
+        b[[a]] <- writeStart(b[[a]], filename=oname[a], datatype=opts$datatype
+                             , overwrite=opts$overwrite, format = dataFormat)
       }
     } else
     {
       b      <- list()
-      b[[1]] <- writeStart(brick(raster(vi),nl=length(d)), filename=oname, datatype=opts$datatype, overwrite=opts$overwrite)
+      b[[1]] <- writeStart(brick(raster(vi),nl=length(d)), filename=oname, datatype=opts$datatype
+                           , overwrite=opts$overwrite, format = dataFormat)
       names(b[[1]]) <- paste0("doy",d)
     }
   } else if (outputAs=="yearly")
@@ -220,31 +213,34 @@ whittaker.raster <- function(vi, w=NULL, t=NULL, timeInfo = orgTime(vi), lambda 
     for (a in seq_along(unique(format(timeInfo$outputLayerDates,"%Y"))))
     {
       y <- unique(format(timeInfo$outputLayerDates,"%Y"))[a]
-      oname  <- paste0(outDirPath,prefixSuffix[1],".year",y,".",nameL,inlam,".",prefixSuffix[2],dataFormat)
+      oname  <- paste0(outDirPath,prefixSuffix[1],".year",y,".",nameL,inlam,".",prefixSuffix[2])
       names  <- timeInfo$outputLayerDates[format(timeInfo$outputLayerDates,"%Y")==y]
       b[[a]] <- brick(raster(vi),nl=as.integer(sum(format(timeInfo$outputLayerDates,"%Y")==y)), values=FALSE)
-      b[[a]] <- writeStart(b[[a]], filename=oname, datatype=opts$datatype, overwrite=opts$overwrite)
+      b[[a]] <- writeStart(b[[a]], filename=oname, datatype=opts$datatype
+                           , overwrite=opts$overwrite, format = dataFormat)
       names(b[[a]]) <- names
     }
   } else if(outputAs=="one") 
   {
     y      <- unique(format(timeInfo$outputLayerDates,"%Y"))
-    oname  <- paste0(outDirPath,prefixSuffix[1],"_from",paste0(y,collapse="to"),".",nameL,inlam,".",prefixSuffix[2],dataFormat)
+    oname  <- paste0(outDirPath,prefixSuffix[1],"_from",paste0(y,collapse="to"),".",nameL,inlam,".",prefixSuffix[2])
     
     b      <- list()
     b[[1]] <- brick(raster(vi),nl=length(fitt), values=FALSE)  
-    b[[1]] <- writeStart(b[[1]], filename=oname, datatype=opts$datatype, overwrite=opts$overwrite)
+    b[[1]] <- writeStart(b[[1]], filename=oname, datatype=opts$datatype
+                         , overwrite=opts$overwrite, format = dataFormat)
     names(b[[1]]) <- timeInfo$outputLayerDates
     
   } else if (outputAs=="single")
   {
     d     <- sort(format(timeInfo$outputLayerDates,"%Y%j"))
-    oname <- paste0(outDirPath,prefixSuffix[1],".",d,".",nameL,inlam,".",prefixSuffix[2],dataFormat)
+    oname <- paste0(outDirPath,prefixSuffix[1],".",d,".",nameL,inlam,".",prefixSuffix[2])
     b     <- vector(mode="list",length=length(oname)) 
     for(a in seq_along(oname))
     {      
       b[[a]] <- raster::raster(vi)
-      b[[a]] <- writeStart(b[[a]], filename=oname[a], datatype=opts$datatype, overwrite=opts$overwrite)
+      b[[a]] <- writeStart(b[[a]], filename=oname[a], datatype=opts$datatype
+                           , overwrite=opts$overwrite, format = dataFormat)
     }
   } 
   

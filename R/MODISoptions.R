@@ -337,11 +337,10 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   if(checkTools)
   {
     # GDAL
-    isOk <- checkGdalDriver(path=opt$gdalPath)
+    isOk <- checkHdf4Driver()
     if (isOk) 
     {
       opt$gdalOk  <- TRUE
-      opt2 = opt; opt2 = opt2[names(opt) != "quiet"]
       gdalVersion <- do.call("checkTools", c(list(tool = "GDAL", quiet = TRUE)))$GDAL$version
     } else
     {
@@ -350,7 +349,6 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     }
     
     # MRT
-    opt2 = opt; opt2 = opt2[names(opt) != "quiet"]
     mrt <- do.call("checkTools", c(list(tool = "MRT", quiet = TRUE)))$MRT
     if(mrt$MRT)
     {
@@ -371,8 +369,8 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     {
       opt$mrtOk <- FALSE
     }
-    gdalVersion <- "Not checked, run 'MODISoptions(checkPackages=TRUE)'"
-    mrtVersion  <- "Not checked, run 'MODISoptions(checkPackages=TRUE)'"
+    gdalVersion <- "Not checked."
+    mrtVersion  <- "Not checked."
   }   
   
   if(!missing(dataFormat))
@@ -386,7 +384,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   
   if(checkTools & opt$gdalOk & checkWriteDrivers)
   {
-    opt$gdalOutDriver <- gdalWriteDriver(renew = FALSE, quiet = FALSE, gdalPath=opt$gdalPath,outDirPath=opt$outDirPath)
+    opt$gdalOutDriver <- getGdalWriteDrivers()
   }
   
   if(!missing(cellchunk))

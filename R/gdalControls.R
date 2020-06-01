@@ -149,3 +149,19 @@ QuietOutput <- function(...) {
     NULL
   }
 }
+
+
+### gdal drivers ----
+
+getGdalDrivers = function() {
+  sf::st_drivers(
+    what = "raster"
+  )
+}
+
+getGdalWriteDrivers = function() {
+  subset(
+    getGdalDrivers()
+    , write
+  )
+}

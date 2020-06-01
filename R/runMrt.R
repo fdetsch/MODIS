@@ -151,7 +151,7 @@ runMrt <- function(product, collection = NULL
     {
         stop('dataFormat=\'',opts$dataFormat ,'\' is not supported by MRT (only \'raw binary\', \'HDF-EOS\' or \'GeoTiff\')')
     } 
-    ext <- getExtension(opts$dataFormat)
+    ext = checkMrtWriteDriver(opts$dataFormat)
     
     if (!inherits(extent, "MODISextent")) {
       extent = if (product@TYPE[1] == "Tile" |

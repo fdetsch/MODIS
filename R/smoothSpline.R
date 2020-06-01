@@ -106,13 +106,9 @@ smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = 
     dataFormat <- opt$dataFormat
     rasterOut  <- toupper(writeFormats())
 
-    
-    if(dataFormat %in% rasterOut[,"name"])
-    {
-        dataFormat <- getExtension(dataFormat)
-    } else
-    {
-        stop("Argument dataFormat='",dataFormat,"' in 'smooth.spline.raster()' is unknown/not supported. Please run 'writeFormats()' (column 'name') so list available dataFormat's")
+    if(!toupper(dataFormat) %in% rasterOut[,"name"]) {
+      stop("Unknown or unsupported data format: '", dataFormat, "'. Please run 
+         raster::writeFormats() (column 'name') for supported file types.\n")
     }
     
     if (!inherits(x, "Raster")) 
@@ -149,13 +145,15 @@ smooth.spline.raster <- function(x, w=NULL, t=NULL, groupYears=TRUE, timeInfo = 
         {
             y <- unique(format(timeInfo$outputLayerDates,"%Y"))[a]
             b[[a]] <- brick(raster(x),nl=as.integer(sum(format(timeInfo$outputLayerDates,"%Y")==y)), values=FALSE)
-            b[[a]] <- writeStart(b[[a]], filename=paste(opt$outDirPath,"/NDVI_",nameDf,indf,"_year",y,dataFormat,sep=""),...)
+            b[[a]] <- writeStart(b[[a]], filename=paste0(opt$outDirPath,"/NDVI_",nameDf,indf,"_year",y)
+                                 , format = dataFormat)
         }
     
     } else 
     {
         b[[1]] <- brick(raster(x),nl=as.integer(length(timeInfo$outSeq)), values=FALSE)  
-        b[[1]] <- writeStart(b[[1]], filename=paste(opt$outDirPath,"/NDVI_",nameDf,indf,"_fullPeriod",dataFormat,sep=""),...)
+        b[[1]] <- writeStart(b[[1]], filename=paste0(opt$outDirPath,"/NDVI_",nameDf,indf,"_fullPeriod")
+                             , format = dataFormat)
     }
         
     tr <- blockSize(x)

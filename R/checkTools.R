@@ -145,3 +145,46 @@ checkCurl = function() {
   
   list(CURL = CURL, version = curltext)
 }
+
+
+checkHdf4Driver = function() {
+  avl = "HDF4" %in% sf::st_drivers(what = "raster")$name
+  if (!avl) {
+    warning("HDF4 driver seems to be lacking, please install GDAL with HDF4 support.")
+  }
+  return(avl)
+}
+
+
+checkGdalWriteDriver = function(dataFormat) {
+  if (toupper(dataFormat) == 'RAW BINARY') {
+    stop("dataFormat = '", dataFormat, "' is MRT specific, "
+         , "run MODIS:::getGdalWriteDrivers() for GDAL supported write formats.")
+  }
+  nms = getGdalWriteDrivers()$name
+  avl = toupper(dataFormat) == toupper(nms)
+  if (!any(avl)) {
+    stop("dataFormat = '", dataFormat, "' not recognized by GDAL, "
+         , "run MODIS:::getGdalWriteDrivers() for supported write formats.")
+  }
+  return(nms[avl])
+}
+
+
+checkMrtWriteDriver = function(dataFormat) {
+  nms = c('raw binary', 'hdf-eos', 'hdf4image','gtiff', 'geotiff')
+  avl = tolower(dataFormat) == nms
+  if(!any(avl)) {
+    stop("dataFormat = '", dataFormat, "' not recognized by MRT, "
+         , "choose one of c('raw binary', 'HDF-EOS', 'GeoTiff')."
+    )
+  } 
+  switch(
+    nms[avl]
+    , "raw binary" = ".hdr"
+    , "hdf-eos" = ".hdf"
+    , "hdf4image" = ".hdf"
+    , "gtiff" = ".tif"
+    , "geotiff" = ".tif"
+  )
+}

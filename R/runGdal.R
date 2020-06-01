@@ -127,11 +127,7 @@ runGdal <- function(product, collection=NULL,
     tLimits     <- transDate(begin=begin,end=end)
     
     dataFormat <- toupper(opts$dataFormat) 
-    if (dataFormat == 'RAW BINARY')
-    {
-        stop('in argument dataFormat=\'raw binary\', format not supported by GDAL (it is MRT specific) type: \'options("MODIS_gdalOutDriver")\' (column \'name\') to list available inputs')
-    }
-  
+
     if(dataFormat == 'HDF-EOS')
     {
         dataFormat <- "HDF4IMAGE"
@@ -142,20 +138,13 @@ runGdal <- function(product, collection=NULL,
     
     if(is.null(opts$gdalOutDriver))
     {
-        opts$gdalOutDriver <- gdalWriteDriver()
+        opts$gdalOutDriver = getGdalWriteDrivers()
         options("MODIS_gdalOutDriver"=opts$gdalOutDriver) # save for current session
     }
     
-    if (any(grepl(dataFormat, opts$gdalOutDriver$name, ignore.case = TRUE)))
-    {
-        dataFormat <- grep(opts$gdalOutDriver$name, pattern=paste("^",dataFormat,"$",sep=""),ignore.case = TRUE,value=TRUE)
-        of <- paste0(" -of ",dataFormat)
-        extension  <- getExtension(dataFormat)
-    } else 
-    {
-        stop('in argument dataFormat=\'',opts$dataFormat,'\', format not supported by GDAL type: \'gdalWriteDriver()\' (column \'name\') to list available inputs')
-    }
-    
+    dataFormat = checkGdalWriteDriver(dataFormat)
+    of = paste0(" -of ", dataFormat)
+
     #### settings with messages
     # output pixel size in output proj units (default is "asIn", but there are 2 chances of changing this argument: pixelSize, and if extent comes from a Raster* object.
     
@@ -307,35 +296,6 @@ runGdal <- function(product, collection=NULL,
                   srcnodata <- NULL
                   dstnodata <- NULL 
                 }
-                
-                if (grepl("M.D13C2\\.005", todo))
-                {
-                  if(i==1)
-                  {
-                    cat("\n###############\nM.D13C2.005 is likely to have a problem in metadata extent information, it is corrected on the fly\n###############\n") 
-                  }
-                  ranpat     <- makeRandomString(length=21)
-                  randomName <- paste0(outDir,"/deleteMe_",ranpat,".tif") 
-                  on.exit(unlink(list.files(path=outDir,pattern=ranpat,full.names=TRUE),recursive=TRUE))
-                  for(ix in seq_along(gdalSDS))
-                  {
-                    cmd1 <- paste0(opts$gdalPath,"gdal_translate -a_nodata ",NAS[[naID]]," '",gdalSDS[ix],"' '",randomName[ix],"'")   
-                    cmd2 <- paste0(opts$gdalPath,"gdal_edit.py -a_ullr -180 90 180 -90 '",randomName[ix],"'")
-                    
-                    if (.Platform$OS=="unix")
-                    {
-                      system(cmd1,intern=TRUE)
-                      system(cmd2,intern=TRUE)
-                    } else
-                    {
-                      shell(cmd1,intern=TRUE)
-                      shell(cmd2,intern=TRUE)
-                    }
-
-                  }
-                  gdalSDS <- randomName
-
-                } 
                 
                 
                 ### unix ----
@@ -626,11 +586,6 @@ runGdal <- function(product, collection=NULL,
                       jnk = file.remove(dmy)
                     }
                   }
-                }
-                
-                if (grepl("M.D13C2\\.005", todo)) {
-                  unlink(list.files(path = outDir, pattern = ranpat, 
-                                    full.names = TRUE), recursive = TRUE)
                 }
                 
                 ofiles[i] <- ofile

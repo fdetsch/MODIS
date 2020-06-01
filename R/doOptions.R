@@ -57,10 +57,10 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
     } else if (resamplingType %in% c("cubicspline","lanczos"))
     {
       if(!quiet)
-    {
-      warning(resamplingType," resamling is only supported by GDAL, not by MRT tool. If you use MRT 'near' is used insead")
-    }
-    resamplingType='nn'
+      {
+        warning(resamplingType," resamling is only supported by GDAL, not by MRT tool. If you use MRT 'near' is used insead")
+      }
+      resamplingType='nn'
     } else
     {
       if(!quiet)
@@ -91,7 +91,7 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
 # checks validity of outProj and returns for tool="MRT" the short name (see mrt manual) and in case of "GDAL" the prj4 string!
 checkOutProj <- function(proj, tool, quiet=FALSE
                          # , zone = NULL
-                         )
+)
 {
   tool <- toupper(tool)
   if (!tool %in% c("GDAL", "MRT"))
@@ -106,16 +106,16 @@ checkOutProj <- function(proj, tool, quiet=FALSE
   
   # this is here because we could think in a conversion between GDAL and MRT inputs! (the available in MRT is the limiting factor)
   MRTprojs <- matrix(byrow=T,ncol=2,
-  c("AEA", "Albers Equal Area", "ER", "Equirectangular", "GEO", "Geographic", 
-  "IGH", "Interrupted Goode Homolosine", "HAM", "Hammer", "ISIN", "Integerized Sinusoidal", 
-  "LA", "Lambert Azimuthal Equal Area", "LCC", "Lambert Conformal Conic", 
-  "MERCAT", "Mercator", "MOL", "Molleweide", "PS", "Polar Stereographic", 
-  "SIN", "Sinusoidal", "TM", "Transverse Mercator", "UTM", "Universal Transverse Mercator"),
-  dimnames=list(NULL,c("short","long")))
-
+                     c("AEA", "Albers Equal Area", "ER", "Equirectangular", "GEO", "Geographic", 
+                       "IGH", "Interrupted Goode Homolosine", "HAM", "Hammer", "ISIN", "Integerized Sinusoidal", 
+                       "LA", "Lambert Azimuthal Equal Area", "LCC", "Lambert Conformal Conic", 
+                       "MERCAT", "Mercator", "MOL", "Molleweide", "PS", "Polar Stereographic", 
+                       "SIN", "Sinusoidal", "TM", "Transverse Mercator", "UTM", "Universal Transverse Mercator"),
+                     dimnames=list(NULL,c("short","long")))
+  
   if (tool=="GDAL") # EPRS:xxxx or xxxx or "+proj=sin...." 
   { 
-
+    
     inW <- getOption("warn")
     on.exit(options(warn=inW))
     options(warn=-1)
@@ -124,22 +124,22 @@ checkOutProj <- function(proj, tool, quiet=FALSE
     {
       if (toupper(proj) %in% c("GEO","GEOGRAPHIC"))
       { 
-          proj <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")@projargs
+        proj <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")@projargs
       } else if (toupper(proj) %in% c("SIN","SINUSOIDAL"))
       {
-          proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
-      # } else if (toupper(proj) %in% c("UTM", "Universal Transverse Mercator")) 
-      # {
-      #   if (is.null(zone)) {
-      #     stop("An UTM zone needs to be specified when `outProj = 'UTM'`.")
-      #   }
-      #   
-      #   hemisphere = if (zone < 0) " +south " else " "
-      #   proj = paste0("+proj=utm "
-      #                , "+zone=", zone
-      #                , hemisphere
-      #                # , if (datum != "NODATUM") paste0("+datum=", datum)
-      #                , "+ellps=WGS84 +datum=WGS84 +units=m +no_defs")
+        proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
+        # } else if (toupper(proj) %in% c("UTM", "Universal Transverse Mercator")) 
+        # {
+        #   if (is.null(zone)) {
+        #     stop("An UTM zone needs to be specified when `outProj = 'UTM'`.")
+        #   }
+        #   
+        #   hemisphere = if (zone < 0) " +south " else " "
+        #   proj = paste0("+proj=utm "
+        #                , "+zone=", zone
+        #                , hemisphere
+        #                # , if (datum != "NODATUM") paste0("+datum=", datum)
+        #                , "+ellps=WGS84 +datum=WGS84 +units=m +no_defs")
       } else
       {
         stop("Could not convert 'outProj' argument",proj, "to a sp::CRS compatible string!")
@@ -182,36 +182,6 @@ checkOutProj <- function(proj, tool, quiet=FALSE
       }
       
       return(list(short = MRTprojs[ind],long = MRTprojs[indL]))
-    }
-  }
-}
-
-# returns 0 if a given GDAL supports HDF4 else 1 
-checkGdalDriver <- function(path=NULL)
-{
-
-  path <- correctPath(path)
-  
-  cmd <- paste0(path,'gdalinfo --formats')
-  
-  driver = try(
-    do.call(if (.Platform$OS=="windows") shell else system # os dependent call
-            , list(cmd, intern = TRUE))
-  , silent = TRUE)
-
-  ## if gdalinfo coudn't be found, return FALSE  
-  if (inherits(driver, "try-error"))
-  {
-    warning("No GDAL installation found, please install it on your system first!")
-    return(FALSE)
-    
-  ## else check if HDF4 driver is available
-  } else {
-    if (any(grepl(driver, pattern = "HDF4"))) {
-      return(TRUE)
-    } else {
-      warning("HDF4 driver seems to be lacking, please install GDAL with HDF4 support.")
-      return(FALSE)
     }
   }
 }

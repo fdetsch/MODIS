@@ -130,6 +130,7 @@ setMethod("getHdf",
   args = as.list(match.call())
   args[[1]] <- NULL # remove first list element, it's the function call
   args = args[names(args) %in% c("extent", "tileH", "tileV")]
+  names(args)[names(args) == "extent"] = "x"
   
   for(z in seq_along(product@PRODUCT))
   { # Platforms MOD/MYD

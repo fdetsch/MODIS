@@ -153,6 +153,7 @@ runGdal <- function(product, collection=NULL,
     args = as.list(match.call())
     args[[1]] <- NULL # remove first list element, it's the function call
     args = args[names(args) %in% c("extent", "tileH", "tileV")]
+    names(args)[names(args) == "extent"] = "x"
     
     if (missing(extent) || !inherits(extent, "MODISextent")) {
       extent = if (product@TYPE[1] == "Tile" || 

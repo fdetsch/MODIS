@@ -2,38 +2,35 @@
 % Please edit documentation in R/getSds.R
 \name{getSds}
 \alias{getSds}
-\title{List SDS Layers in an .HDF File}
+\title{List SDS Layers in an \code{.HDF} File}
 \usage{
-getSds(HdfName, SDSstring = NULL, method = "gdal")
+getSds(HdfName, SDSstring = NULL, ...)
 }
 \arguments{
 \item{HdfName}{\code{character}. (Absolute) filename from which to extract 
-SDS names.}
+SDS names. Non-existing files are being looked up recursively in 
+\code{getOption("MODIS_localArcPath")}.}
 
-\item{SDSstring}{\code{character}, see Value.}
+\item{SDSstring}{An optional \code{character} string of 1s and 0s, see Value.}
 
-\item{method}{\code{character}, defaults to \code{"gdal"}. Caution: on 
-Windows, the default 'GDAL' installation doesn't support HDF4 files. Install 
-'FWTools' or use \code{method = "mrt"} instead.}
+\item{...}{Currently not used.}
 }
 \value{
-A \code{list} or \code{character}. If \code{SDSstring} is provided, the 
-function reports extracted SDS and a formatted SDSsting (e.g., "11101"). If 
-not provided, the SDS names in \code{HdfName} are returned.  Consult the MRT 
-manual for details.
+A \code{list}. If \code{SDSstring} is provided, the function reports matching 
+SDS and a formatted 'SDSstring' (e.g., "1 1 1 0 1"). If omitted, the names of 
+all SDS in 'HdfName' are returned.
 }
 \description{
-This function lists the names of all scientific datasets (SDS) contained in a 
-specified MODIS grid HDF file.
+List the names of all scientific datasets (SDS) contained in a specified 
+MODIS grid HDF file.
 }
 \examples{
 \dontrun{
-getSds(HdfName="XXX.hdf")
-getSds(HdfName="/path/XXX.hdf",method="gdal") # require GDAL (FWTools on Windows)
-getSds(HdfName="/path/XXX.hdf",method="mrt") # require MRTool
+getSds(HdfName="/path/XXX.hdf")
+# example w/'SDSstring' 
 }
 
 }
 \author{
-Matteo Mattiuzzi
+Matteo Mattiuzzi, Florian Detsch
 }

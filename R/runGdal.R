@@ -168,27 +168,24 @@ runGdal <- function(product, collection=NULL,
     }
 
     
-    ### GDAL command line arguments -----
+    # ### GDAL command line arguments -----
+    # 
+    # ## obligatory arguments
+    # t_srs <- do.call(OutProj, c(list(product = product, extent = extent), opts))
+    # tr <- do.call(PixelSize, c(list(extent = extent), opts))
+    # rt <- do.call(ResamplingType, opts)
+    # s_srs <- InProj(product)                # inProj
+    # te <- TargetExtent(extent,              # targetExtent
+    #                    outProj = strsplit(t_srs, "'|\"")[[1]][2]) 
+    # 
+    # ## non-obligatory arguments (GTiff blocksize and compression, see 
+    # ## http://www.gdal.org/frmt_gtiff.html)
+    # bs <- do.call(BlockSize, opts)
+    # cp <- do.call(OutputCompression, opts)
+    # q <- do.call(QuietOutput, opts)
+
     
-    ## obligatory arguments
-    t_srs <- do.call(OutProj, c(list(product = product, extent = extent), opts))
-    # t_srs <- OutProj(product, extent, opts) # outProj
-    tr <- do.call(PixelSize, c(list(extent = extent), opts))
-    # tr <- PixelSize(extent, opts)           # pixelSize
-    rt <- do.call(ResamplingType, opts)
-    # rt <- ResamplingType(opts)              # resamplingType
-    s_srs <- InProj(product)                # inProj
-    te <- TargetExtent(extent,              # targetExtent
-                       outProj = strsplit(t_srs, "'|\"")[[1]][2]) 
-    
-    ## non-obligatory arguments (GTiff blocksize and compression, see 
-    ## http://www.gdal.org/frmt_gtiff.html)
-    bs <- do.call(BlockSize, opts)
-    # bs <- BlockSize(opts)                   # blockSize
-    cp <- do.call(OutputCompression, opts)
-    # cp <- OutputCompression(opts)           # compression
-    q <- do.call(QuietOutput, opts)
-    # q <- QuietOutput(opts)                  # quiet
+    ### PRODUCT PROCESSING ====
     
     lst_product <- vector("list", length(product@PRODUCT))
     for (z in seq_along(product@PRODUCT)) {
@@ -257,15 +254,16 @@ runGdal <- function(product, collection=NULL,
             
             if(length(files)>0)
             {
-              w <- getOption("warn")
-              options("warn"= -1)
-              SDS <- list()
-              for (y in seq_along(files))
-              { # get all SDS names for one chunk
-                SDS[[y]] <- getSds(HdfName=files[y], SDSstring=SDSstring, method="GDAL")
-              }
-              options("warn"= w)
-            
+              SDS = lapply(
+                files
+                , function(y) {
+                  getSds(
+                    HdfName = y
+                    , SDSstring = SDSstring
+                  )
+                }
+              )
+
               NAS <- getNa(SDS[[1]]$SDS4gdal)
 
               ## loop over sds

@@ -540,10 +540,6 @@ getNa <- function(x)
 {
   name <- res <- vector(mode="list",length=length(x))
   
-  iw   <- getOption("warn") 
-  options(warn=-1)
-  on.exit(options(warn=iw))
-
   gdalPath <- getOption("MODIS_gdalPath")[1]
   gdalPath <- correctPath(gdalPath)
   cmd <- paste0(gdalPath,"gdalinfo ")

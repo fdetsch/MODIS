@@ -536,32 +536,21 @@ setPath <- function(path, ask=FALSE, showWarnings=FALSE, mkdir = TRUE)
 }
 
 # get NA values from getSds(x)$SDS4gdal
-getNa <- function(x)
-{
-  name <- res <- vector(mode="list",length=length(x))
-  
-  gdalPath <- getOption("MODIS_gdalPath")[1]
-  gdalPath <- correctPath(gdalPath)
-  cmd <- paste0(gdalPath,"gdalinfo ")
-  
-  for (i in seq_along(x))
-  {
-    tmp    <- system(paste0(cmd,shQuote(x[i])),intern=TRUE)
-    tmp    <- grep(tmp,pattern="NoData Value=",value=TRUE)
-    if (length(tmp)!=0)
-    {
-        res[[i]] <- as.numeric(strsplit(tmp,"=")[[1]][2])
-    } else
-    {
-        res[[i]] <- NA
-    }
-    nam       <- strsplit(x[i],":")[[1]] 
-    name[[i]] <- nam[length(nam)]
-  }
-  
-  names(res) <- unlist(name)
-  res[is.na(res)] <- NULL
-  return(res)
+getNa = function(x) {
+  Filter(
+    Negate(is.null)
+    , Map(
+      function(i) {
+        tmp = sf::gdal_utils(source = i, quiet = TRUE)
+        tmp = regmatches(tmp, regexpr("NoData Value=[-]{0,1}\\d+", tmp))
+        
+        if (length(tmp) > 0) {
+          as.numeric(strsplit(tmp, "=")[[1]][2])
+        }
+      }
+      , stats::setNames(x, getSdsNames(x))
+    )
+  )
 }
 
 # get valid Range as specified in hdf metadata: getSds(x)$SDS4gdal

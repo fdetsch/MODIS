@@ -44,12 +44,7 @@ getSds = function(
   
   SDSnames = unlist(sf::gdal_subdatasets(HdfName[1]))
   SDSnames = gsub("\"", "", SDSnames)
-  sds = sapply(
-      strsplit(SDSnames, ":")
-      , function(x) {
-          x[length(x)]
-      }
-  )
+  sds = getSdsNames(SDSnames)
   
   if (!is.null(SDSstring))
   {
@@ -76,3 +71,8 @@ getSds = function(
   }
 }
 
+
+getSdsNames = function(x) {
+  x = strsplit(x, ":")
+  mapply(`[`, x, lengths(x))
+}

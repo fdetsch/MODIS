@@ -128,6 +128,51 @@ search4map <- function(pattern="",database='worldHires',plot=FALSE)
 }
 
 
+getExtension = function(dataFormat, ...) {
+  
+  ### . legacy ----
+  
+  dataFormat = toupper(dataFormat)
+  if(dataFormat %in% c("HDF-EOS","HDF4IMAGE")) # MRT + GDAL
+  {
+    return(".hdf")
+  } else if (dataFormat %in% c("GTIFF", "GEOTIFF"))  # MRT + GDAL
+  {
+    return(".tif")
+  } else if (dataFormat =="RAW BINARY")  # MRT + GDAL
+  {
+    return(".hdr")
+  } else if (dataFormat == "ENVI") 
+  {
+    return("") # should generate a '.hdr' file + a file without extension
+  } else if (dataFormat == "FITS") 
+  {
+    return(NA)
+  } else if (dataFormat == "ILWIS")
+  {
+    return(".mpr")
+  } else 
+  {
+    
+    ### . gdalinfo (if available) ----
+    
+    if (system("gdalinfo --version", ignore.stdout = TRUE) == 0) {
+      stdout = system(paste("gdalinfo --format", dataFormat), intern = TRUE)
+      
+      ext = regmatches(stdout, regexpr("Extension[s]{0,1}: [[:alnum:] ]*", stdout))
+      if (length(ext) > 0) {
+        ext = gsub("Extension[s]{0,1}: ", "", ext)
+        if (ext != "") {
+          paste0(".", sapply(strsplit(ext, " "), "[[", 1))
+        } else ext
+      } else {
+        NA
+      }
+    } else NA
+  }
+}
+
+
 isSupported <- function(x) 
 {
   fname <- basename(x)

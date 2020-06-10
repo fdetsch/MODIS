@@ -1,11 +1,10 @@
 ### input projection -----
 
 InProj <- function(product) {
-  
   if (product@TYPE[1] == "Tile") {
-    paste0(' -s_srs ', shQuote("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"))
+    "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
   } else {
-    paste0(' -s_srs ', shQuote("+proj=longlat +ellps=clrk66 +no_defs"))
+    "+proj=longlat +ellps=clrk66 +no_defs"
   }
 }
 
@@ -19,7 +18,7 @@ OutProj <- function(product, extent, ...) {
   cat("########################\n")
   if(!is.null(extent@target$outProj)) {
     outProj <- checkOutProj(extent@target$outProj, tool = "GDAL")
-    cat("outProj          = ", outProj, " (if applicable, derived from Raster*/Spatial*/sf* object)\n")
+    cat("outProj          = ", if (inherits(outProj, "crs")) outProj$proj4string else outProj, " (if applicable, derived from Raster*/Spatial*/sf* object)\n")
     
   } else {
     outProj <- checkOutProj(opts$outProj, tool = "GDAL")
@@ -34,7 +33,7 @@ OutProj <- function(product, extent, ...) {
     }
   }
   
-  paste0(' -t_srs ', shQuote(outProj))
+  if (inherits(outProj, "crs")) outProj$proj4string else outProj
 }
 
 
@@ -55,11 +54,11 @@ PixelSize <- function(extent, ...) {
   
   if (pixelSize[1] != "asIn") {
     if (length(pixelSize) == 1) {
-      paste(" -tr", pixelSize, pixelSize)
+      rep(pixelSize, 2)
     } else {
-      paste(" -tr", paste0(pixelSize, collapse = " "))
+      pixelSize
     }
-  } else NULL
+  }
 }
 
 
@@ -72,15 +71,13 @@ ResamplingType <- function(...) {
   opts$resamplingType <- checkResamplingType(opts$resamplingType, tool = "gdal")
   
   cat("resamplingType   = ", opts$resamplingType, "\n")
-  paste(" -r", opts$resamplingType)
+  opts$resamplingType
 }
   
 
 ### target extent -----
 
 TargetExtent <- function(extent, outProj) {
-  
-  te <- NULL # if extent comes from tileV/H
   
   if (!is.null(extent@target$extent)) { # all extents but not tileV/H
     if (is.null(extent@target$outProj)) { # map or list extents (always LatLon)
@@ -100,8 +97,9 @@ TargetExtent <- function(extent, outProj) {
     }
   }
   
-  if (exists("rx")) te <- paste(" -te", rx@xmin, rx@ymin, rx@xmax, rx@ymax)  
-  return(te)
+  if (exists("rx")) {
+    as.character(sf::st_bbox(rx))
+  }
 }
 
 
@@ -111,11 +109,9 @@ BlockSize <- function(...) {
   
   opts <- combineOptions(...)
   
-  if (is.null(opts$blockSize)) {
-    NULL
-  } else {
+  if (!is.null(opts$blockSize)) {
     opts$blockSize <- as.integer(opts$blockSize)
-    paste0(" -co BLOCKYSIZE=", opts$blockSize)
+    paste0("BLOCKYSIZE=", opts$blockSize)
   }
 }
 
@@ -126,12 +122,8 @@ OutputCompression <- function(...) {
 
   opts <- combineOptions(...)
   
-  if (is.null(opts$compression)) {
-    " -co compress=lzw -co predictor=2"
-  } else if (isTRUE(opts$compression)) {
-    " -co compress=lzw -co predictor=2"
-  } else {
-    NULL
+  if (is.null(opts$compression) || isTRUE(opts$compression)) {
+    c("compress=lzw", "predictor=2")
   }
 }
 
@@ -144,9 +136,7 @@ QuietOutput <- function(...) {
   
   ## if 'quiet = FALSE' or not available, show full console output
   if ("quiet" %in% names(opts)) {
-    if (opts$quiet) " -q" else NULL
-  } else {
-    NULL
+    if (opts$quiet) "-q"
   }
 }
 

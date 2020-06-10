@@ -43,8 +43,7 @@ getSds = function(
   }
   
   SDSnames = unlist(sf::gdal_subdatasets(HdfName[1]))
-  SDSnames = gsub("\"", "", SDSnames)
-  sds = getSdsNames(SDSnames)
+  sds = gsub("\"", "", getSdsNames(SDSnames))
   
   if (!is.null(SDSstring))
   {

@@ -99,7 +99,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE
     stop("checkOptProj Error: Unknown 'tool'. Allowed are 'MRT' or 'GDAL'")
   }
   
-  if(proj=="asIn") # lot of troubles because of this!
+  if (proj == "asIn" || inherits(proj, "crs")) # lot of troubles because of 'asIn'!
   {
     return(proj)
   }

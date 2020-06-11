@@ -17,15 +17,14 @@
 #' \code{\link{CRS}}. As for \code{\link{runMrt}}, please consult the MRT manual. 
 #' Since the two pocessing methods do not have common methods, it is suggested 
 #' to stick with the default settings (see Details).
-#' @param resamplingType Defaults to \code{"NN"} (Nearest Neightbour). MRT and 
-#' GDAL both support \code{c('NN', 'CC', 'BIL')}. In addition, GDAL supports 
-#' \code{cubicspline} and \code{lanczos} and, from \code{GDAL >= 1.10.0} onwards, 
-#' also \code{mode} and \code{average}.
+#' @param resamplingType Defaults to \code{"NN"} (Nearest Neighbour). MRT and 
+#' GDAL both support \code{c('NN', 'CC', 'BIL')}. GDAL additionally supports all 
+#' resampling methods listed under \url{https://gdal.org/programs/gdalwarp.html}.
 #' @param dataFormat \code{character}, defaults to \code{"GTiff"}. One of 
-#' \code{getOption("MODIS_gdalOutDriver")} (column 'name').
-#' @param gdalPath \code{character}. Path to gdal bin directory and more 
-#' relevant for Windows users. Use \code{MODIS:::checkTools("GDAL")} to try to 
-#' detect it automatically.
+#' \code{getOption("MODIS_gdalOutDriver")$name} (column 'name').
+#' @param gdalPath \code{character}. Path to gdal bin directory, used to relate 
+#' writable \code{sf::st_drivers("raster")} to file extensions in case of 
+#' non-standard formats.
 #' @param MODISserverOrder \code{character}. Possible options are \code{"LPDAAC"}
 #' (default) and \code{"LAADS"} (see 'dlmethod' and 'Details'). If only one 
 #' server is selected, all efforts to download data from the second server 
@@ -58,7 +57,7 @@
 #' @param checkTools \code{logical}, defaults to \code{TRUE}. Check if external 
 #' tools (i.e., GDAL and MRT) are installed and reachable through R.
 #' @param checkWriteDrivers \code{logical}. If \code{TRUE} (default), find write 
-#' drivers supported by local GDAL installation.
+#' drivers supported by \strong{sf} GDAL installation.
 #' @param ask \code{logical}. If \code{TRUE} (default) and permanent settings 
 #' file does not exist (see Details), the user is asked whether to create it.
 #' 
@@ -94,10 +93,6 @@
 #' \item{or a fixed 'pixelSize' for different products,}
 #' \item{or a 'resamplingType' that is not \code{"NN"}.}
 #' }
-#' 
-#' On Windows, you have to set 'gdalPath' to the location of GDAL executables 
-#' (i.e., the '.../GDAL../bin' directory). On Unix-alikes, this should not be 
-#' required unless you want to specify a non-default GDAL installation.
 #' 
 #' On an unixoid OS, it is suggested to use \code{dlmethod = 'wget'} because it 
 #' is a reliable tool and, after the change of the 'LP DAAC' datapool from FTP 
@@ -300,14 +295,9 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   if (!missing(gdalPath))
   {
     opt$gdalPath <- correctPath(gdalPath)
-    if(all(!grepl("gdalinfo", dir(opt$gdalPath))))
-    {
-      stop(paste0("The 'gdalPath' you have provided '",normalizePath(opt$gdalPath,"/",FALSE) ,"' does not contain any gdal utilities, make sure to address the folder with GDAL executables (i.e.: gdalinfo)!"))
-    }
   }
   opt$gdalPath <- correctPath(opt$gdalPath)
-  options(MODIS_gdalPath=opt$gdalPath) # needs to be exportet now as it is required by checkTools a few lines bellow (uses combineOptions())! Maybe not the best solution!
-  
+
   if(is.null(opt$MODISserverOrder))
   {
     opt$MODISserverOrder <- c("LPDAAC", "LAADS")
@@ -465,10 +455,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     write('  ', filename)    
     write('#########################', filename)
     write('# 5.) Set path to GDAL _bin_ directory', filename)
-    write('# More related to Windows, but also to other OS in case of a non standard location of GDAL', filename)
-    write('# ON WINDOWS install \'OSGeo4W\' (recommanded) or \'FWTools\'', filename)
-    write('# consult \'?MODISoptions\' for more details', filename)        
-    write('# Run: \'MODIS:::checkTools()\' to try to autodetect location.', filename)
+    write('# Optional, used to relate writable sf::st_drivers("raster") to file extensions for non-standard formats.', filename)        
     write('# Example (USE SINGLE FORWARD SLASH \'/\'!):', filename)
     write('# gdalPath <- \'C:/OSGeo4W/bin/\'', filename)
     write('  ', filename)

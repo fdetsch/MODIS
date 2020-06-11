@@ -19,27 +19,12 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
   {
     if (resamplingType %in% c("nn","cc","bil"))
     {
-      if(resamplingType=="nn")
-      {
-        resamplingType <- "near"
-      }
-      if(resamplingType=="cc")
-      {
-        resamplingType <- "cubic"
-      }
-      if(resamplingType=="bil")
-      {
-        resamplingType <- "bilinear"
-      }
-    } else
-    {
-      # for efficiency gdv should be stored as variable
-      gdv <- checkTools('GDAL',quiet=TRUE)$GDAL$vercheck
-      
-      if (gdv[1] == 1 & gdv[2] < 10 & resamplingType %in% c("average","mode"))
-      {
-        stop("resamplingType= 'average' and 'mode' requires GDAL >= 1.10.0")
-      }
+      resamplingType = switch(
+        resamplingType
+        , "nn" = "near"
+        , "cc" = "cubic"
+        , "bil" = "bilinear"
+      )
     }
   }
   
@@ -94,11 +79,8 @@ checkOutProj <- function(proj, tool, quiet=FALSE
 )
 {
   tool <- toupper(tool)
-  if (!tool %in% c("GDAL", "MRT"))
-  {
-    stop("checkOptProj Error: Unknown 'tool'. Allowed are 'MRT' or 'GDAL'")
-  }
-  
+  tool <- match.arg(tool)
+
   if (proj == "asIn" || inherits(proj, "crs")) # lot of troubles because of 'asIn'!
   {
     return(proj)
@@ -113,7 +95,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE
                        "SIN", "Sinusoidal", "TM", "Transverse Mercator", "UTM", "Universal Transverse Mercator"),
                      dimnames=list(NULL,c("short","long")))
   
-  if (tool=="GDAL") # EPRS:xxxx or xxxx or "+proj=sin...." 
+  if (tool=="GDAL") # EPSG:xxxx or xxxx or "+proj=sin...." 
   { 
     
     inW <- getOption("warn")
@@ -155,7 +137,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE
       proj <- proj@projargs
     } else
     {
-      options(warn=inW) # here warning is usefull
+      options(warn=inW) # here warning is useful
       proj <- CRS(proj)@projargs
     }
     return(proj)

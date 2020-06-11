@@ -46,7 +46,6 @@ Imports:
     sp,
     stats,
     utils
-SystemRequirements: GDAL (>= 1.8.0)    
 ByteCompile: TRUE
 Encoding: UTF-8
 RoxygenNote: 7.1.0

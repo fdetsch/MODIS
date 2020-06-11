@@ -2,7 +2,7 @@
 
 InProj <- function(product) {
   if (product@TYPE[1] == "Tile") {
-    "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+    "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs"
   } else {
     "+proj=longlat +ellps=clrk66 +no_defs"
   }
@@ -27,7 +27,7 @@ OutProj <- function(product, extent, ...) {
   
   if (outProj == "asIn") {
     if (product@TYPE[1] == "Tile") {
-      outProj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+      outProj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs"
     } else {
       outProj <- "+proj=longlat +ellps=clrk66 +no_defs" # CMG proj
     }

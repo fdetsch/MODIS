@@ -79,7 +79,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
     
     if (opts$outProj == "asIn")
     {
-        opts$outProj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"        
+        opts$outProj <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs"
     } else 
     {
         opts$outProj <- checkOutProj(opts$outProj,tool="GDAL")
@@ -244,7 +244,7 @@ arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.0
           globe <- list("sp.lines", as(globe, "SpatialLines"), lwd=0.8)                    
           
            
-          if(opts$outProj=="+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
+          if(opts$outProj=="+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs")
           {
               print(
                   spplot(srx, zcol="percent", col.regions=colors, colorkey=TRUE,at=0:101,xlab="H-Tiles",ylab="V-Tiles", xlim=xlim, ylim=ylim, sp.layout=globe,

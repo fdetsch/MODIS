@@ -127,7 +127,7 @@ checkOutProj <- function(proj, tool, quiet=FALSE
         proj <- CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")@projargs
       } else if (toupper(proj) %in% c("SIN","SINUSOIDAL"))
       {
-        proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")@projargs
+        proj <- CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs")@projargs
         # } else if (toupper(proj) %in% c("UTM", "Universal Transverse Mercator")) 
         # {
         #   if (is.null(zone)) {

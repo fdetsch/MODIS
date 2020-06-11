@@ -428,7 +428,7 @@ methods::setMethod(
     x = sf::st_transform(
       sf::st_as_sf(x)
       , if (opts$outProj == "asIn") {
-        sf::st_crs("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs") 
+        sf::st_crs("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs") 
       } else {
         if (!is.na(suppressWarnings(as.integer(opts$outProj)))) {
           opts$outProj = paste0("+init=epsg:", as.integer(opts$outProj))
@@ -499,7 +499,7 @@ methods::setMethod(
     x = sf::st_transform(
       x
       , if (opts$outProj == "asIn") {
-        sf::st_crs("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs") 
+        sf::st_crs("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m +no_defs") 
       } else {
         if (!is.na(suppressWarnings(as.integer(opts$outProj)))) {
           opts$outProj = paste0("+init=epsg:", as.integer(opts$outProj))

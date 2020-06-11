@@ -2,6 +2,7 @@
 
 Changes:
 
+  * Moved GDAL operations to sf::gdal_utils().
   * getHdf(), runGdal() with no extent info (ie. 'x = tileH = tileV = NULL') triggers interactive tile selection. 
   * LP DAAC is default download server (previously LAADS).
   * MRT method for getSds() is no longer available.

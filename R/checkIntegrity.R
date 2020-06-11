@@ -1,50 +1,31 @@
-checkIntegrity <- function(x, ...) {
+checkIntegrity = function(x, ...) {
   
-  opts <- combineOptions(...)
-  opts$stubbornness <- stubborn(opts$stubbornness)
+  out = rep(NA, length(x))
   
-  iw   <- getOption("warn") 
-  options(warn=-1)
-  on.exit(options(warn=iw))
-  
-  if(!opts$gdalOk)
-  {
-    warning("Something wrong with your GDAL installation, see '?MODISoptions' for more details")
-  } else
-  {
-    cmd <- paste0(opts$gdalPath,"gdalinfo ") 
-    out <- rep(NA,length(x))
-    
-    for (i in seq_along(x))
-    {
-      if (basename(x[i])=="NA" | is.na(basename(x[i])))
-      {
-        out[i] <- NA
-      } else
-      {
-        if (dirname(x[i])==".")
-        {
-          x[i] <- paste0(genString(x = x[i], remote = FALSE
-                                   , collection = getCollection(x[i], quiet = TRUE))$localPath, basename(x[i]))        
-        }
-        
-        if (!file.exists(x[i]))
-        {
-          out[i] <- NA
-        } else
-        {
-          try(a <- system(paste0(cmd,correctPath(x[i],isFile=TRUE)), intern=TRUE), silent=TRUE)
-          
-          if(length(grep(a,pattern="gdalinfo failed")==1) | length(a)==0)
-          {
-            out[i] <- FALSE
-          } else 
-          {
-            out[i] <- TRUE
-          }
-        }
+  for (i in seq_along(x)) {
+    bsn = basename(x[i])
+    if (is.na(bsn) || bsn == "NA") {
+      next
+    } else {
+      if (dirname(x[i]) == ".") {
+        x[i] = paste0(
+          genString(
+            x = x[i]
+            , remote = FALSE
+            , collection = getCollection(x[i], quiet = TRUE)
+          )$localPath
+          , bsn
+        )
+      }
+      
+      if (file.exists(x[i])) {
+        out[i] = sf::gdal_utils(
+          source = correctPath(x[i], isFile = TRUE)
+          , quiet = TRUE
+        ) != ""
       }
     }
-    return(out)
   }
+  
+  return(out)
 }

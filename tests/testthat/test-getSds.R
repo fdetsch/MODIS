@@ -1,9 +1,9 @@
 context("getSds")
 
-hdf_name = list.files(
-  "inst/external"
-  , pattern = "MOD13A2.A2016145.*.hdf"
-  , full.names = TRUE
+hdf_name = system.file(
+  "external"
+  , "MOD13A2.A2016145.h18v04.006.2016166145124.hdf"
+  , package = "MODIS"
 )
 
 

@@ -20,7 +20,8 @@ jnk = capture.output(
                  , begin = "2016145", end = "2016145"
                  , tileH = 18, tileV = 4
                  , SDSstring = "111", job = "test-runGdal"
-                 , checkIntegrity = FALSE, forceDownload = FALSE)
+                 , checkIntegrity = FALSE, forceDownload = FALSE
+                 , overwrite = TRUE)
 )
 
 test_that("runGdal() creates expected output", {
@@ -29,6 +30,6 @@ test_that("runGdal() creates expected output", {
   
   rst = raster::stack(fls)
   expect_is(rst, "Raster")
-  expect_equal(dim(rst), c(185, 219, 3))
+  expect_equal(dim(rst), c(1200, 1410, 3))
 })
 

@@ -74,7 +74,7 @@ checkResamplingType <- function(resamplingType,tool,quiet=FALSE)
 }
 
 # checks validity of outProj and returns for tool="MRT" the short name (see mrt manual) and in case of "GDAL" the prj4 string!
-checkOutProj <- function(proj, tool, quiet=FALSE
+checkOutProj <- function(proj, tool = c("GDAL", "MRT"), quiet=FALSE
                          # , zone = NULL
 )
 {

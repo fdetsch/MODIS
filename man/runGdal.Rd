@@ -48,9 +48,7 @@ output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.
 \item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines 
 whether or not to overwrite existing SDS output files.}
 
-\item{maskValue}{\code{numeric}. Value to be excluded when resampling (via gdalwarp -srcnodata argument).
-This allows non-data values, for example water, to be ignored and thus not effect the final data.
-NOTE: this argument will be ignored if the original SDS has a No Data value defined.}
+\item{maskValue}{Currently ignored.}
 
 \item{...}{Additional arguments passed to \code{\link{MODISoptions}}, e.g. 
 'wait'. Permanent settings for these arguments are temporarily overridden.}

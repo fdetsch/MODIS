@@ -6,6 +6,7 @@ Changes:
   * getHdf(), runGdal() with no extent info (ie. 'x = tileH = tileV = NULL') triggers interactive tile selection. 
   * LP DAAC is default download server (previously LAADS).
   * MRT method for getSds() is no longer available.
+  * In runGdal(), 'maskValue' is currently ignored until a suitable workaround for multiple nodata values per raster band is found.
 
 
 ## MODIS 1.1.7

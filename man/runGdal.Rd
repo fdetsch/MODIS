@@ -96,7 +96,7 @@ define the area of interest, and \code{outProj} and \code{pixelSize} are
 # LST in Austria
 runGdal( product="MOD11A1", extent="austria", begin="2010001", end="2010005", SDSstring="101")
 
-# LST with interactiv area selection
+# LST with interactive tile selection
 runGdal( product="MOD11A1", begin="2010001", end="2010005", SDSstring="101")
 
 ### outProj examples
@@ -106,7 +106,7 @@ runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001",
          SDSstring="101", outProj="EPSG:32634")
 
 runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
-         SDSstring="101", outProj="32634")
+         SDSstring="101", outProj=32634)
 
 runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
          SDSstring="101", outProj="+proj=utm +zone=34 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")

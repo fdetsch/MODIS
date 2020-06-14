@@ -69,7 +69,7 @@
 #' # LST in Austria
 #' runGdal( product="MOD11A1", extent="austria", begin="2010001", end="2010005", SDSstring="101")
 #' 
-#' # LST with interactiv area selection
+#' # LST with interactive tile selection
 #' runGdal( product="MOD11A1", begin="2010001", end="2010005", SDSstring="101")
 #' 
 #' ### outProj examples
@@ -79,7 +79,7 @@
 #'          SDSstring="101", outProj="EPSG:32634")
 #' 
 #' runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
-#'          SDSstring="101", outProj="32634")
+#'          SDSstring="101", outProj=32634)
 #' 
 #' runGdal( job="LSTaustria", product="MOD11A1", extent="Austria", begin="2010001", end="2010005",
 #'          SDSstring="101", outProj="+proj=utm +zone=34 +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
@@ -151,7 +151,7 @@ runGdal <- function(product, collection=NULL,
                     any(!missing(extent), all(!missing(tileH), !missing(tileV))))) {
         do.call(
           getTile
-          , c(args, outProj = opts$outProj, pixelSize = opts$pixelSize)
+          , append(args, list(outProj = opts$outProj, pixelSize = opts$pixelSize))
           , envir = parent.frame()
         )
       }
@@ -161,8 +161,8 @@ runGdal <- function(product, collection=NULL,
     ### GDAL command line arguments -----
 
     ## obligatory arguments
-    t_srs <- do.call(OutProj, c(list(product = product, extent = extent), opts))
-    tr <- do.call(PixelSize, c(list(extent = extent), opts))
+    t_srs <- do.call(OutProj, append(list(product = product, extent = extent), opts))
+    tr <- do.call(PixelSize, append(list(extent = extent), opts))
     rt <- do.call(ResamplingType, opts)
     s_srs <- InProj(product)                # inProj
     te <- TargetExtent(extent,              # targetExtent
@@ -274,36 +274,33 @@ runGdal <- function(product, collection=NULL,
                 
                 naID <- which(SDS[[1]]$SDSnames[i] == names(NAS))
                 nodataValue = srcnodata = dstnodata = if (length(naID) > 0) NAS[[naID]]
-                srcnodata = c("srcnodata" = srcnodata)
-                dstnodata = c("dstnodata" = dstnodata)
-                
-                ifile <- paste0(gdalSDS,collapse='" "')
-                
+
                 if (!file.exists(ofile) || overwrite) {
                   
                   if (file.exists(ofile)) {
                     jnk = file.remove(ofile)
                   }
                   
+                  ## create first set of gdal options required by subsequent step
+                  lst = list(dataFormat, co, rt, srcnodata, dstnodata)
+                  names(lst) = paste0(
+                    "-"
+                    , c("of", "co", "r", "srcnodata", "dstnodata")
+                  )
+                  lst = Filter(Negate(is.null), lst)
+                  
+                  params = character()
+                  for (j in seq(lst)) {
+                    params = c(params, names(lst)[j], lst[[j]])
+                  }
+                  
                   ## if required, adjust pixel size and/or target extent
                   if (is.null(tr) | (!is.null(extent@target) & t_srs == s_srs)) {
                     
                     # extract whole tile
-                    lst = list(dataFormat, co, rt, srcnodata, dstnodata)
-                    names(lst) = paste0(
-                      "-"
-                      , c("of", "co", "r", "srcnodata", "dstnodata")
-                    )
-                    lst = Filter(Negate(is.null), lst)
-                    
-                    params = character()
-                    for (j in seq(lst)) {
-                      params = c(params, names(lst)[j], lst[[j]])
-                    }
-                    
                     sf::gdal_utils(
                       util = "warp"
-                      , source = ifile
+                      , source = gdalSDS
                       , destination = ofile
                       , options = c(
                         params
@@ -326,7 +323,7 @@ runGdal <- function(product, collection=NULL,
                     
                     # if 'outProj == "asIn"', make sure input and output grid
                     # alignment is identical
-                    if (!is.null(extent@target) & t_srs == s_srs) {
+                    if (!is.null(extent@target$extent) & t_srs == s_srs) {
                       tmp = raster::crop(tmp, extent@target$extent, snap = "out")
                       te = as.character(sf::st_bbox(tmp))
                     }
@@ -354,7 +351,8 @@ runGdal <- function(product, collection=NULL,
                   #     maskValue = maskValue[maskValue != nodataValue]
                   #   }
                   #   
-                  #   
+                  #   ifile <- paste0(gdalSDS,collapse='" "')
+                  #
                   #   # if No Data Value is not already defined 
                   #   if (is.null(srcnodata)) {
                   #     nodataValue = maskValue[1]
@@ -407,7 +405,7 @@ runGdal <- function(product, collection=NULL,
                   jnk = file.remove(ofile)
                   sf::gdal_utils(
                     util = "warp"
-                    , source = ifile
+                    , source = gdalSDS
                     , destination = ofile
                     , options = c(
                       params

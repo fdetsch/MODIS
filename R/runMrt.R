@@ -263,10 +263,10 @@ runMrt <- function(product, collection = NULL
                 for (l in 1:length(avDates))
                 { 
                   files = unlist(
-                    do.call(getHdf, c(list(product = product@PRODUCT[z]
-                                           , collection = strsplit(todo[u], "\\.")[[1]][2]
-                                           , begin = avDates[l], end = avDates[l]
-                                           , tileH = extent@tileH, tileV = extent@tileV)
+                    do.call(getHdf, append(list(product = product@PRODUCT[z]
+                                                , collection = strsplit(todo[u], "\\.")[[1]][2]
+                                                , begin = avDates[l], end = avDates[l]
+                                                , tileH = extent@tileH, tileV = extent@tileV)
                                       , opts))
                   )
 

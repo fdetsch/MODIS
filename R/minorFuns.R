@@ -523,7 +523,7 @@ doCheckIntegrity <- function(x, ...) {
       {     
         if (g==1)
         {
-          out[a] <- do.call(checkIntegrity, c(list(x = x[a]), opts))
+          out[a] <- do.call(checkIntegrity, append(list(x = x[a]), opts))
         }
         
         if (is.na(out[a]))
@@ -538,13 +538,13 @@ doCheckIntegrity <- function(x, ...) {
             cat(basename(x[a]),"is corrupted, trying to re-download it!\n\n")
           }
           unlink(x[a])
-          out[a] <- do.call(ModisFileDownloader, c(list(x = x[a]), opts))
+          out[a] <- do.call(ModisFileDownloader, append(list(x = x[a]), opts))
         } else if (out[a]) 
         {
           break
         }
         
-        out[a] <- do.call(checkIntegrity, c(list(x = x[a]), opts))
+        out[a] <- do.call(checkIntegrity, append(list(x = x[a]), opts))
         g=g+1
       }
     }

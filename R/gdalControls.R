@@ -22,7 +22,7 @@ OutProj <- function(product, extent, ...) {
     
   } else {
     outProj <- checkOutProj(opts$outProj, tool = "GDAL")
-    cat("outProj          = ", outProj, "\n")
+    cat("outProj          = ", if (inherits(outProj, "crs")) outProj$proj4string else outProj, "\n")
   }
   
   if (outProj == "asIn") {
@@ -91,8 +91,9 @@ TargetExtent <- function(extent, outProj) {
   
   if (is.null(extent@target)) {
     if(!is.null(extent@extent)) {
-      rx <- raster(extent@extent, crs = "+init=epsg:4326") 
-      rx <- projectExtent(rx, outProj)
+      rx <- raster(extent@extent, crs = "+init=epsg:4326")
+      # suppress 'Discarded ... unknown in CRS definition' warning
+      rx <- suppressWarnings(projectExtent(rx, outProj))
       rx <- extent(rx) 
     }
   }

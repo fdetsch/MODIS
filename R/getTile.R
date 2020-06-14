@@ -149,7 +149,8 @@ methods::setMethod(
     mode = c("click", "draw")
     , ...
   ) {
-    x = mapSelect(mode = mode[1])
+    mode = match.arg(mode)
+    x = mapSelect(mode = mode)
     # x = x[order(x$h, x$v), ]
     
     tiles = paste0(
@@ -424,7 +425,7 @@ methods::setMethod(
   ) {
     
     opts = combineOptions(...)
-    
+
     x = sf::st_transform(
       sf::st_as_sf(x)
       , if (opts$outProj == "asIn") {

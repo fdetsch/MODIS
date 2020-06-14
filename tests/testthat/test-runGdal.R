@@ -15,8 +15,11 @@ jnk = capture.output(
            , quiet = TRUE)
 )
 
+
+### 0 default settings ----
+
 jnk = capture.output(
-  tfs <- runGdal("MOD13A2", collection = "006"
+  tfs0 <- runGdal("MOD13A2", collection = "006"
                  , begin = "2016145", end = "2016145"
                  , tileH = 18, tileV = 4
                  , SDSstring = "111", job = "test-runGdal"
@@ -24,12 +27,32 @@ jnk = capture.output(
                  , overwrite = TRUE)
 )
 
-test_that("runGdal() creates expected output", {
-  fls = unlist(tfs)
-  expect_length(fls, 3L)
-  
-  rst = raster::stack(fls)
-  expect_is(rst, "Raster")
-  expect_equal(dim(rst), c(1200, 1410, 3))
+rst0 = raster::stack(unlist(tfs0))
+
+test_that("runGdal() creates standard output", {
+  expect_equal(raster::nlayers(rst0), 3L)
+  expect_equal(dim(rst0), c(1200, 1410, 3))
 })
 
+
+### 1 custom settings ----
+
+jnk = capture.output(
+  tfs1 <- runGdal(
+    "MOD13A2", collection = "006"
+    , begin = "2016145", end = "2016145"
+    , tileH = 18, tileV = 4
+    , SDSstring = "1", job = "test-runGdal"
+    , outProj = 32632, pixelSize = 1000
+    , checkIntegrity = FALSE, forceDownload = FALSE
+    , overwrite = TRUE
+  )
+)
+
+rst1 = raster::stack(unlist(tfs1))
+
+test_that("runGdal() creates customized output", {
+  expect_equal(raster::nlayers(rst1), 1L)
+  expect_identical(raster::res(rst1), c(1000, 1000))
+  expect_true(sf::st_crs(rst1) == sf::st_crs(32632))
+})

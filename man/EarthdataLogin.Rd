@@ -17,7 +17,7 @@ The \code{\link{invisible}} Earthdata login credentials as \code{list}.
 Create a hidden \code{.netrc} file with Earthdata login credentials in your 
 home directory. The information included therein is used to login to 
 \url{https://urs.earthdata.nasa.gov/} which is a mandatory requirement in 
-order to download MODIS data from LP DAAC and NSIDC (see also 
+order to download MODIS data from LP DAAC, LAADS and NSIDC (see also 
 \code{\link{MODISoptions}}). If \code{.netrc} does exists the function can
 be used to re-enter credentials.
 }

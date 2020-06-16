@@ -4,7 +4,7 @@
 #' Create a hidden \code{.netrc} file with Earthdata login credentials in your 
 #' home directory. The information included therein is used to login to 
 #' \url{https://urs.earthdata.nasa.gov/} which is a mandatory requirement in 
-#' order to download MODIS data from LP DAAC and NSIDC (see also 
+#' order to download MODIS data from LP DAAC, LAADS and NSIDC (see also 
 #' \code{\link{MODISoptions}}). If \code{.netrc} does exists the function can
 #' be used to re-enter credentials.  
 #' 
@@ -55,7 +55,7 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
   if(!file.exists(nrc))
   {
     cat("Creating clear text file '~/", basename(nrc)
-        , "' with Earthdata login credentials for LP DAAC and NSIDC...\n", sep = "")
+        , "' with Earthdata login credentials...\n", sep = "")
     insert <- 'y'
   } else
   {

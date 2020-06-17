@@ -16,11 +16,11 @@ Description: Download and processing functionalities for the Moderate Resolution
     subsetting and time series filtering.
 License: MIT + file LICENSE
 LazyData: TRUE
-Depends:
+Depends: 
     mapdata,
     R (>= 3.5.0),
     raster
-Imports:
+Imports: 
     bitops,
     curl,
     devtools,
@@ -41,4 +41,4 @@ Imports:
 ByteCompile: TRUE
 Encoding: UTF-8
 RoxygenNote: 7.1.0
-Suggests: testthat
+Suggests: tinytest

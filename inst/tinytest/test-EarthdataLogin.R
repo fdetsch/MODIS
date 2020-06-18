@@ -1,34 +1,37 @@
-context("EarthdataLogin")
-
-# nrc = "~/.netrc"
 nrc = file.path(tempdir(), ".netrc")
-if (file.exists(nrc)) {
-  on.exit(jnk <- file.rename(paste0(nrc, ".backup"), nrc))
+avl = file.exists(nrc)
+if (avl) {
   jnk = file.rename(nrc, paste0(nrc, ".backup"))
 }
 
-test_that("blank output if file is missing", {
-  expect_null(credentials(path = nrc))
-})
+expect_null(
+  MODIS:::credentials(path = nrc)
+  , info = "blank output if file is missing"
+)
 
-test_that("'login', 'password' is NULL if missing in .netrc", {
-  writeLines("machine urs.earthdata.nasa.gov", nrc)
-  lns = credentials(path = nrc)
-  expect_null(lns$login); expect_null(lns$password)
-})
+writeLines("machine urs.earthdata.nasa.gov", nrc)
+lns = MODIS:::credentials(path = nrc)
+expect_null(lns$login, info = "'login' is NULL if missing in .netrc")
+expect_null(lns$password, info = "'password' is NULL if missing in .netrc (i)")
 
-test_that("'password' is NULL if missing in .netrc", {
-  writeLines(c("machine urs.earthdata.nasa.gov", "login some_usr"), nrc)
-  lns = credentials(path = nrc)
-  expect_null(lns$password)
-})
+writeLines(c("machine urs.earthdata.nasa.gov", "login some_usr"), nrc)
+lns = MODIS:::credentials(path = nrc)
+expect_null(lns$password, info = "'password' is NULL if missing in .netrc (ii)")
 
-test_that("credentials from .netrc are correctly imported", {
-  writeLines(c("machine urs.earthdata.nasa.gov", "login some_usr", "password some_pwd"), nrc)
-  lns = credentials(path = nrc)
-  expect_is(lns, "list")
-  expect_identical(names(lns), c("machine", "login", "password"))
-  expect_identical(lns$machine, "urs.earthdata.nasa.gov")
-  expect_identical(lns$login, "some_usr")
-  expect_identical(lns$password, "some_pwd")
-})
+## credentials from .netrc are correctly imported
+writeLines(c("machine urs.earthdata.nasa.gov", "login some_usr", "password some_pwd"), nrc)
+lns = MODIS:::credentials(path = nrc)
+expect_true(
+  all(
+    inherits(lns, "list")
+    , identical(names(lns), c("machine", "login", "password"))
+    , lns$machine == "urs.earthdata.nasa.gov"
+    , lns$login == "some_usr"
+    , lns$password == "some_pwd"
+  )
+  , info = "credentials from .netrc are correctly imported"
+)
+
+if (avl) {
+  jnk = file.rename(paste0(nrc, ".backup"), nrc)
+}

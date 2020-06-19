@@ -1,9 +1,5 @@
-context("getCollection")
-
-# getCollection("MOD17A3.055")
-# getCollection("MCD12C1.006")
-
-test_that("wrong collection creates console output", {
-  expect_output(getCollection("MCD12Q1.051", forceCheck = TRUE), "not available in collection")
-})
-
+expect_stdout(
+  getCollection("MCD12Q1.051", forceCheck = TRUE)
+  , pattern = "not available in collection '051'"
+  , info = "non-available collection creates console output"
+)

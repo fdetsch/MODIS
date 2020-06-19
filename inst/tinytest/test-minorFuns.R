@@ -1,6 +1,3 @@
-context("minorFuns")
-
-
 ### . getExtension ----
 
 xtn0 = Map(
@@ -8,12 +5,9 @@ xtn0 = Map(
   , c("GTiff", "HDF4Image", "ENVI", "raw binary")
 )
 
-test_that(
-  "important format extensions are correct"
-  , {
-    expect_identical(xtn0$GTiff, ".tif")
-    expect_identical(xtn0$HDF4Image, ".hdf")
-    expect_identical(xtn0$ENVI, "")
-    expect_identical(getExtension("raw binary"), ".hdr")
-  }
+expect_true(
+  all(
+    unlist(xtn0) == c(".tif", ".hdf", "", ".hdr")
+  )
+  , info = "important format extensions are correct"
 )

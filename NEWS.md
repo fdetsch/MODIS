@@ -2,7 +2,7 @@
 
 Changes:
 
-  * Migrated tests to tinytest.
+  * Migrated unit tests to tinytest.
 
 
 ## MODIS 1.2.0

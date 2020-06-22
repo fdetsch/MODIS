@@ -8,8 +8,6 @@
 ^resample\.log$
 ^R/getUTMZone\.R$
 ^inst/external/UTM_Zone_Boundaries\.rds$
-^tests/testthat/test-runGdal\.R$
-^tests/testthat/test-EarthdataLogin\.R$
 ^R/getGranule\.R$
 ^R/MODISswath\.R$
 ^R/MODISswath$

@@ -1,5 +1,3 @@
-context("runGdal")
-
 lap = file.path(tempdir(), "MODIS_ARC")
 odp = file.path(lap, "PROCESSED")
 jnk = capture.output(
@@ -29,10 +27,11 @@ jnk = capture.output(
 
 rst0 = raster::stack(unlist(tfs0))
 
-test_that("runGdal() creates standard output", {
-  expect_equal(raster::nlayers(rst0), 3L)
-  expect_equal(dim(rst0), c(1200, 1410, 3))
-})
+expect_equivalent(
+  dim(rst0)
+  , target = c(1200, 1410, 3)
+  , info = "default output has expected dimensions (# rows, cols, layers)"
+)
 
 
 ### 1 custom settings ----
@@ -51,8 +50,18 @@ jnk = capture.output(
 
 rst1 = raster::stack(unlist(tfs1))
 
-test_that("runGdal() creates customized output", {
-  expect_equal(raster::nlayers(rst1), 1L)
-  expect_identical(raster::res(rst1), c(1000, 1000))
-  expect_true(sf::st_crs(rst1) == sf::st_crs(32632))
-})
+expect_true(
+  raster::nlayers(rst1) == 1
+  , info = "customized output has expected # layers"
+)
+
+expect_equivalent(
+  raster::res(rst1)
+  , target = c(1000, 1000)
+  , info = "customized output has expected resolution"
+)
+
+expect_true(
+  sf::st_crs(rst1) == sf::st_crs(32632)
+  , info = "customized output inherits specified crs"
+)

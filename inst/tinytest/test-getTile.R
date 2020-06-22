@@ -1,51 +1,74 @@
-context("getTile")
-
-
 ### . points ----
 
-data(meuse)
+data(meuse, package = "sp")
 pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
 
-test_that("target extent defaults to full tile for point features with length = 1", {
-  expect_null(getTile(pts[1, ])@target$extent)
-})
+expect_null(
+  getTile(pts[1, ])@target$extent
+  , info = "target extent defaults to full tile for single point feature"
+)
 
-test_that("target extent is inherited from multi-point feature", {
-  expect_is(getTile(pts[1:2, ])@target$extent, "Extent")
-})
+expect_true(
+  inherits(getTile(pts[1:2, ])@target$extent, "Extent")
+  , info = "target extent inherited from multi-point feature is of class 'Extent'"
+)
 
 
 ### . rasters ----
 
-data(meuse.grid)
-sp::gridded(meuse.grid) = ~ x + y
-rst = raster::raster(meuse.grid)
+data(meuse.grid, package = "sp")
+x = sf::st_as_sf(
+  meuse.grid
+  , coords = c("x", "y")
+)
+
+rst = raster::raster(
+  sf::st_as_sf(
+    sf::st_make_grid(
+      x
+    )
+  )
+)
 
 ## raster with no crs and invalid latlon coords
-test_that("throw error for rasters lacking crs and with invalid coordinates", {
-  expect_error(getTile(rst), regexp = "assign a valid CRS")
-})
+expect_error(
+  getTile(rst)
+  , pattern = "assign a valid CRS"
+  , info = "rasters lacking crs and with invalid coordinates produce an error"
+)
 
 ## raster with valid crs
 raster::projection(rst) = "+init=epsg:28992"
+trgt = getTile(rst)@target
 
-test_that("target specs are inherited from raster", {
-  # extent
-  expect_is(getTile(rst)@target$extent, "Extent") # is 'Extent'
-  expect_equal(getTile(rst)@target$extent, raster::extent(rst)) # is identical
-  
-  # crs
-  expect_equal(getTile(rst)@target$outProj, sf::st_crs(rst))
-  
-  # res
-  expect_equal(getTile(rst)@target$pixelSize, raster::res(rst))
-  
-})
+expect_true(
+  inherits(trgt$extent, "Extent")
+  , info = "target extent inherited from raster is of class 'Extent'"
+)
+
+expect_identical(
+  trgt$extent
+  , target = raster::extent(rst)
+  , info = "target extent is inherited from raster"
+)
+
+expect_equivalent(
+  trgt$outProj
+  , target = sf::st_crs(rst)
+  , info = "target crs is inherited from raster"
+)
+
+expect_equivalent(
+  trgt$pixelSize
+  , target = raster::res(rst)
+  , info = "target resolution is inherited from raster"
+)
 
 ## raster with no crs, but valid latlon coords
 rst_ll = raster::projectRaster(rst, crs = "+init=epsg:4326")
 raster::projection(rst_ll) = NA
 
-test_that("throw no error for rasters lacking crs and with valid coordinates", {
-  expect_is(tl <- getTile(rst_ll), "MODISextent")
-})
+expect_true(
+  inherits(getTile(rst_ll), "MODISextent")
+  , info = "rasters lacking crs and with valid coordinates produce regular output"
+)

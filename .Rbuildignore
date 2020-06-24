@@ -8,6 +8,7 @@
 ^resample\.log$
 ^R/getUTMZone\.R$
 ^inst/external/UTM_Zone_Boundaries\.rds$
+^inst/tinytest/test-runGdal\.R$
 ^R/getGranule\.R$
 ^R/MODISswath\.R$
 ^R/MODISswath$

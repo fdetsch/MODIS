@@ -1,3 +1,10 @@
+MODIS 1.2.2
+
+Changes:
+
+  * .Rbuildignore test-runGdal().
+
+
 MODIS 1.2.1
 
 Changes:

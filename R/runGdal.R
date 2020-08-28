@@ -241,7 +241,9 @@ runGdal <- function(product, collection=NULL,
             )
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()
-            
+            # silently remove empty or invalid files from list
+            if (checkIntegrity) files <- files[checkIntegrity(files)]
+
             if(length(files)>0)
             {
               SDS = lapply(

@@ -291,7 +291,7 @@ runGdal <- function(product, collection=NULL,
                   
                   params = character()
                   for (j in seq(lst)) {
-                    params = c(params, names(lst)[j], lst[[j]])
+                    params = c(params, names(lst)[j], as.character(lst[[j]]))
                   }
                   
                   ## if required, adjust pixel size and/or target extent

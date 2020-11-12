@@ -68,11 +68,11 @@ if (!isGeneric("getTile")) {
 #'   \code{Raster*} are determined automatically. This information is used by 
 #'   \code{\link{runGdal}} to create perfectly matching files. If the 
 #'   \code{Raster*} comes with no valid CRS, 
-#'   \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
+#'   \href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
 #'   \cr
 #'   \code{Extent}, \code{bbox}:\cr
 #'   \tab Boundary coordinates from \code{Extent} objects are generally assumed 
-#'   to be in \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as 
+#'   to be in \href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as 
 #'   such objects have no projection information attached. The same applies for 
 #'   'bbox' objects lacking CRS information.\cr
 #'   \cr

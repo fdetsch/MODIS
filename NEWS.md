@@ -1,12 +1,6 @@
-## MODIS 1.2.3.9000 (2020-11-12)
+## MODIS 1.2.3.9000 (2021-05-26)
 
-#### ✨ features and improvements
-
-#### 🐛 bug fixes
-
-#### 💬 documentation etc
-
-#### 🍬 miscellaneous
+tbc.
 
 
 ## MODIS 1.2.3

@@ -1,3 +1,15 @@
+## MODIS 1.2.3.9000 (2021-05-26)
+
+tbc.
+
+
+## MODIS 1.2.3
+
+Bugfixes:
+
+  * Explicitly format sf::st_drivers() name columns as 'character', which caused problems on systems running R < 4.0.0.
+
+
 ## MODIS 1.2.2
 
 Changes:

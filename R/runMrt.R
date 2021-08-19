@@ -99,9 +99,9 @@
 #' 
 #' @references 
 #' Dwyer J, Schmidt G (2006) The MODIS Reprojection Tool, 162-177,
-#' doi:\href{https://doi.org/10.1007/978-3-540-37294-3_9}{10.1007/978-3-540-37294-3_9}. 
-#' In: Qu JJ, Gao W, Kafatos M, Murphy RE, Salomonson VV (eds) Earth Science 
-#' Satellite Remote Sensing. Springer: Berlin, Heidelberg.
+#' \doi{10.1007/978-3-540-37294-3_9}. In: Qu JJ, Gao W, Kafatos M, Murphy RE, 
+#' Salomonson VV (eds) Earth Science Satellite Remote Sensing. Springer: Berlin, 
+#' Heidelberg.
 #' 
 #' Elassal AA (1989) General Cartographic Transformation Package (GCTP), Version 
 #' II. NOAA Technical Report NOS124 CGS9. NOAA: Rockville, MD, USA. Available 

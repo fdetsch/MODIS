@@ -18,7 +18,7 @@
 #' 
 #' @seealso 
 #' \itemize{
-#' \item{\url{http://docs.opendap.org/index.php/DAP_Clients_-_Authentication#LDAP} 
+#' \item{\url{https://docs.opendap.org/index.php/DAP_Clients_-_Authentication#LDAP} 
 #' (section 2.2)}
 #' \item{\url{https://github.com/MatMatt/MODIS/issues/10}}
 #' }

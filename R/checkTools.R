@@ -2,42 +2,42 @@ checkTools = function(
   tool = c("MRT", "GDAL", "wget", "curl")
   , quiet = FALSE
 ) {
-  
+
   tool = tolower(tool)
-  
+
   iw = options()$warn
   options(warn = -1)
   on.exit(options(warn = iw))
-  
-  
+
+
   ### . mrt ----
-  
+
   MRT = if ("mrt" %in% tool) {
     checkMrt(quiet = quiet)
   }
-  
-  
+
+
   ### . gdal ----
-  
+
   GDAL = if ("gdal" %in% tool) {
     checkGdal(quiet = quiet)
   }
-  
-  
+
+
   ### . wget ----
-  
+
   WGET = if ("wget" %in% tool) {
     checkWget()
   }
-  
-  
+
+
   ### . curl ----
-  
+
   CURL = if ("curl" %in% tool) {
     checkCurl()
   }
-  
-  
+
+
   return(
     invisible(
       list(
@@ -55,25 +55,25 @@ checkMrt = function(quiet = FALSE) {
   MRT   <- FALSE
   mrtH  <- normalizePath(Sys.getenv("MRT_HOME"), winslash="/", mustWork = FALSE)
   mrtDD <- normalizePath(Sys.getenv("MRT_DATA_DIR"), winslash="/", mustWork = FALSE)
-  
+
   if (!quiet)
   {
     cat("Checking availability of MRT:\n")
   }
-  
-  if(mrtH=="" & !quiet) 
+
+  if(mrtH=="" & !quiet)
   {
     cat("  'MRT_HOME' not set/found! MRT is NOT enabled! See: 'https://lpdaac.usgs.gov/tools/modis_reprojection_tool'\n")
-  } else 
+  } else
   {
     if (!quiet)
     {
       cat("  'MRT_HOME' found:", mrtH,"\n")
     }
-    if (mrtDD=="" & !quiet) 
+    if (mrtDD=="" & !quiet)
     {
       cat("  'MRT_DATA_DIR' not set/found! MRT is NOT enabled! You need to set the path, read in the MRT manual! 'https://lpdaac.usgs.gov/tools/modis_reprojection_tool'\n")
-    } else 
+    } else
     {
       if (!quiet)
       {
@@ -81,7 +81,7 @@ checkMrt = function(quiet = FALSE) {
         cat("   MRT enabled, settings are fine!\n")
       }
       MRT <- TRUE
-    } 
+    }
   }
   if(MRT)
   {
@@ -96,7 +96,7 @@ checkMrt = function(quiet = FALSE) {
     {
       v <- "Enabled"
     }
-  } else 
+  } else
   {
     v <- "Version not determined"
   }
@@ -124,12 +124,12 @@ checkGdal = function(quiet = FALSE) {
 checkWget = function() {
   WGET = FALSE
   wgetOK = try(system("wget --version", intern = TRUE), silent = TRUE)
-  
+
   wgettext = if (!inherits(wgetOK, "try-error")) {
     WGET = TRUE
     regmatches(wgetOK[1], regexpr("GNU Wget [[:digit:]\\.]+", wgetOK[1]))
   } else ""
-  
+
   list(WGET = WGET, version = wgettext)
 }
 
@@ -137,12 +137,12 @@ checkWget = function() {
 checkCurl = function() {
   CURL = FALSE
   curlOK = try(system("curl --version", intern = TRUE), silent = TRUE)
-  
+
   curltext = if (!inherits(curlOK, "try-error")) {
     CURL = TRUE
     regmatches(curlOK[1], regexpr("curl [[:digit:]\\.]+", curlOK[1]))
   } else ""
-  
+
   list(CURL = CURL, version = curltext)
 }
 
@@ -161,7 +161,7 @@ checkGdalWriteDriver = function(dataFormat) {
     stop("dataFormat = '", dataFormat, "' is MRT specific, "
          , "run MODIS:::getGdalWriteDrivers() for GDAL supported write formats.")
   }
-  nms = getGdalWriteDrivers()$name
+  nms = as.character(getGdalWriteDrivers()$name)
   avl = toupper(dataFormat) == toupper(nms)
   if (!any(avl)) {
     stop("dataFormat = '", dataFormat, "' not recognized by GDAL, "
@@ -178,7 +178,7 @@ checkMrtWriteDriver = function(dataFormat) {
     stop("dataFormat = '", dataFormat, "' not recognized by MRT, "
          , "choose one of c('raw binary', 'HDF-EOS', 'GeoTiff')."
     )
-  } 
+  }
   switch(
     nms[avl]
     , "raw binary" = ".hdr"

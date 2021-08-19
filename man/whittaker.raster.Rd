@@ -97,7 +97,7 @@ this function is currently under heavy development.
 # to 'paste0(options("MODIS_outDirPath"),"fullCapa")'
 # You need to extract: 'vegetation index', 'VI_Quality layer', and 'composite day of the year',
 # this is expressed by the argument 'SDSstring'
-runGdal(product="MOD13A2",begin="2004340",extent="irland",end="2006020", job="fullCapa",
+runGdal(product="MOD13A2",begin="2004340",extent="ireland",end="2006020", job="fullCapa",
 SDSstring="101000000010")
 path <- paste0(options("MODIS_outDirPath"),"fullCapa")
 

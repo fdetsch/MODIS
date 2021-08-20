@@ -1,3 +1,14 @@
+## backup `sf::sf_use_s2()` setting before disabling (see
+## https://github.com/MatMatt/MODIS/issues/110)
+use_s2 = sf::sf_use_s2()
+
+jnk = utils::capture.output(
+  sf::sf_use_s2(
+    FALSE
+  )
+)
+
+
 ### . points ----
 
 data(meuse, package = "sp")
@@ -71,4 +82,51 @@ raster::projection(rst_ll) = NA
 expect_true(
   inherits(getTile(rst_ll), "MODISextent")
   , info = "rasters lacking crs and with valid coordinates produce regular output"
+)
+
+
+### test s2 with ellipsoidal coordinates ----
+
+## sample data
+dsn = system.file(
+  "vectors/Up.tab"
+  , package = "rgdal"
+)[1]
+
+Up = sf::st_read(
+  dsn
+  , quiet = TRUE
+)
+
+## failure
+jnk = utils::capture.output(
+  sf::sf_use_s2(
+    TRUE
+  )
+)
+
+expect_error(
+  getTile(Up)
+  , pattern = "Found \\d+ features with invalid spherical geometry"
+  , info = "Using s2 for geometries with ellipsoidal coordinates fails"
+)
+
+## success
+jnk = utils::capture.output(
+  sf::sf_use_s2(
+    FALSE
+  )
+)
+
+expect_inherits(
+  getTile(Up)
+  , class = "MODISextent"
+  , info = "Not using s2 for geometries with ellipsoidal coordinates succeeds"
+)
+
+## restore `sf::sf_use_s2()` setting
+jnk = utils::capture.output(
+  sf::sf_use_s2(
+    use_s2
+  )
 )

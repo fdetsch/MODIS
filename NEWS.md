@@ -1,6 +1,8 @@
 ## MODIS 1.2.3.9001 (2021-08-20)
 
-tbc.
+Changes:
+
+  * Skip currently failing `getTile()` example using **s2** for geometries with ellipsoidal coordinates (#110)
 
 
 ## MODIS 1.2.3

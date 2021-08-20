@@ -91,10 +91,12 @@ if (!isGeneric("getTile")) {
 #' getTile(mode = "draw")
 #' }
 #' 
+#' \dontrun{
 #' # ex 2: Spatial (taken from ?rgdal::readOGR) ############
 #' dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
 #' Up <- rgdal::readOGR(dsn, "Up")
-#' getTile(Up)
+#' getTile(Up) # currently fails unless `sf::sf_use_s2(TRUE)`
+#' }
 #' 
 #' # ex 3: sf ############
 #' ifl <- system.file("shape/nc.shp", package = "sf")
@@ -552,6 +554,8 @@ methods::setMethod(
   ) {
     
     opts = combineOptions(...)
+    
+    # TODO: `sf::sf_use_s2(FALSE)`
     
     # if coord. ref. is missing, set to EPSG:4326
     if (is.na(sf::st_crs(x))) {

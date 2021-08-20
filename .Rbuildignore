@@ -13,3 +13,4 @@
 ^R/MODISswath\.R$
 ^R/MODISswath$
 ^TODO$
+^dev_history\.R$

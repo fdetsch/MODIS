@@ -1,5 +1,6 @@
 library(MODIS)
 
+## enable permanent file storage
 lap = "~/Documents/data/MODIS_ARC"
 MODISoptions(
   localArcPath = lap
@@ -37,4 +38,27 @@ strs = stars::read_stars(
 
 plot(
   strs
+)
+
+
+### 114-help-downloading-modis-data-in-r ----
+
+product = "MOD13Q1"
+
+## retrieve most recent collection
+clc = getCollection(
+  product
+  , forceCheck = TRUE
+)
+
+## download and extract data
+tfs = runGdal(
+  product
+  , collection = clc
+  , tileH = 20
+  , tileV = 11
+  , begin = "2000.02.18"
+  , end = "2000.02.18"
+  , job = "MOD13Q1"
+  , SDSstring = "11" # ndvi, evi
 )

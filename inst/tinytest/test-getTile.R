@@ -1,14 +1,3 @@
-## backup `sf::sf_use_s2()` setting before disabling (see
-## https://github.com/MatMatt/MODIS/issues/110)
-use_s2 = sf::sf_use_s2()
-
-jnk = utils::capture.output(
-  sf::sf_use_s2(
-    FALSE
-  )
-)
-
-
 ### . points ----
 
 data(meuse, package = "sp")
@@ -85,7 +74,7 @@ expect_true(
 )
 
 
-### test s2 with ellipsoidal coordinates ----
+### spherical geometry w/o s2 ----
 
 ## sample data
 dsn = system.file(
@@ -98,35 +87,17 @@ Up = sf::st_read(
   , quiet = TRUE
 )
 
-## failure
-jnk = utils::capture.output(
-  sf::sf_use_s2(
-    TRUE
+expect_true(
+  any(
+    !sf::st_is_valid(
+      Up
+    )
   )
-)
-
-expect_error(
-  getTile(Up)
-  , pattern = "Found \\d+ features with invalid spherical geometry"
-  , info = "Using s2 for geometries with ellipsoidal coordinates fails"
-)
-
-## success
-jnk = utils::capture.output(
-  sf::sf_use_s2(
-    FALSE
-  )
+  , info = "sample data for testing spherical geometry w/o s2 is invalid"
 )
 
 expect_inherits(
   getTile(Up)
   , class = "MODISextent"
-  , info = "Not using s2 for geometries with ellipsoidal coordinates succeeds"
-)
-
-## restore `sf::sf_use_s2()` setting
-jnk = utils::capture.output(
-  sf::sf_use_s2(
-    use_s2
-  )
+  , info = "not using s2 for geometries with ellipsoidal coordinates succeeds"
 )

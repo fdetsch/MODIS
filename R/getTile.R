@@ -216,6 +216,14 @@ mapSelect = function(
       stop("Shape needs to be closed.")
     }
     
+    ## disable use of s2 for spherical geometries
+    use_s2 = modis_skip_s2()
+    on.exit(
+      modis_use_s2(
+        use_s2
+      )
+    )
+    
     suppressMessages(sr[drawing, ])
   }
 }
@@ -363,6 +371,14 @@ methods::setMethod(
     x
     , ...
   ) {
+    
+    # disable use of s2 for spherical geometries
+    use_s2 = modis_skip_s2()
+    on.exit(
+      modis_use_s2(
+        use_s2
+      )
+    )
     
     # if coord. ref. is missing, set to EPSG:4326
     if (is.na(raster::projection(x))) {
@@ -555,7 +571,13 @@ methods::setMethod(
     
     opts = combineOptions(...)
     
-    # TODO: `sf::sf_use_s2(FALSE)`
+    # disable use of s2 for spherical geometries
+    use_s2 = modis_skip_s2()
+    on.exit(
+      modis_use_s2(
+        use_s2
+      )
+    )
     
     # if coord. ref. is missing, set to EPSG:4326
     if (is.na(sf::st_crs(x))) {

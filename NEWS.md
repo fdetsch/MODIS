@@ -2,7 +2,7 @@
 
 Changes:
 
-  * Skip currently failing `getTile()` example using **s2** for geometries with ellipsoidal coordinates (#110)
+  * Set `sf::sf_use_s2(FALSE)` for spherical geometry (#110)
 
 
 ## MODIS 1.2.3

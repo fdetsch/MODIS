@@ -52,3 +52,8 @@ getStruc():
 getTile():
 - if interactive and `mode = "draw"`, handle errors for incomplete shapes
 - if non-interactive, display aoi
+
+separate issues
+* decide fate of `arcStats()`
+* feed non-existing collection in `list` format to `getCollection()` and handle 
+  'Error in cat([...])'

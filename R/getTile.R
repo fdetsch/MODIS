@@ -92,7 +92,7 @@ if (!isGeneric("getTile")) {
 #' }
 #' 
 #' # ex 2: Spatial (taken from ?rgdal::readOGR) ############
-#' dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
+#' dsn <- system.file("vectors/Up.tab", package = "rgdal")
 #' Up <- rgdal::readOGR(dsn, "Up")
 #' getTile(Up)
 #' 
@@ -213,6 +213,14 @@ mapSelect = function(
     if (inherits(drawing, "try-error")) {
       stop("Shape needs to be closed.")
     }
+    
+    ## disable use of s2 for spherical geometries
+    use_s2 = modis_skip_s2()
+    on.exit(
+      modis_use_s2(
+        use_s2
+      )
+    )
     
     suppressMessages(sr[drawing, ])
   }
@@ -361,6 +369,14 @@ methods::setMethod(
     x
     , ...
   ) {
+    
+    # disable use of s2 for spherical geometries
+    use_s2 = modis_skip_s2()
+    on.exit(
+      modis_use_s2(
+        use_s2
+      )
+    )
     
     # if coord. ref. is missing, set to EPSG:4326
     if (is.na(raster::projection(x))) {
@@ -552,6 +568,14 @@ methods::setMethod(
   ) {
     
     opts = combineOptions(...)
+    
+    # disable use of s2 for spherical geometries
+    use_s2 = modis_skip_s2()
+    on.exit(
+      modis_use_s2(
+        use_s2
+      )
+    )
     
     # if coord. ref. is missing, set to EPSG:4326
     if (is.na(sf::st_crs(x))) {

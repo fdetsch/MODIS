@@ -1,6 +1,8 @@
-## MODIS 1.2.3.9000 (2021-05-26)
+## MODIS 1.2.3.9003 (2021-08-27)
 
-tbc.
+Changes:
+
+  * Set `sf::sf_use_s2(FALSE)` for spherical geometry (#110)
 
 
 ## MODIS 1.2.3

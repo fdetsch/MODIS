@@ -113,7 +113,7 @@ getTile(mode = "draw")
 }
 
 # ex 2: Spatial (taken from ?rgdal::readOGR) ############
-dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
+dsn <- system.file("vectors/Up.tab", package = "rgdal")
 Up <- rgdal::readOGR(dsn, "Up")
 getTile(Up)
 

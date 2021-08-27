@@ -72,3 +72,32 @@ expect_true(
   inherits(getTile(rst_ll), "MODISextent")
   , info = "rasters lacking crs and with valid coordinates produce regular output"
 )
+
+
+### spherical geometry w/o s2 ----
+
+## sample data
+dsn = system.file(
+  "vectors/Up.tab"
+  , package = "rgdal"
+)[1]
+
+Up = sf::st_read(
+  dsn
+  , quiet = TRUE
+)
+
+expect_true(
+  any(
+    !sf::st_is_valid(
+      Up
+    )
+  )
+  , info = "sample data for testing spherical geometry w/o s2 is invalid"
+)
+
+expect_inherits(
+  getTile(Up)
+  , class = "MODISextent"
+  , info = "not using s2 for geometries with ellipsoidal coordinates succeeds"
+)

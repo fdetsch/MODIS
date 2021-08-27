@@ -795,3 +795,39 @@ correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   
   return(begin)
 }
+
+
+### s2 ----
+
+## see also https://github.com/MatMatt/MODIS/issues/110
+
+modis_skip_s2 = function() {
+  
+  use_s2 = sf::sf_use_s2()
+  
+  ## disable use of s2 for spherical geometries
+  jnk = modis_use_s2()
+  
+  return(
+    use_s2
+  )
+}
+
+
+modis_use_s2 = function(
+  use_s2 = FALSE
+) {
+  
+  ## omit console output from `sf::sf_use_s2()`
+  jnk = utils::capture.output(
+    sf::sf_use_s2(
+      use_s2
+    )
+  )
+  
+  return(
+    invisible(
+      jnk
+    )
+  )
+}

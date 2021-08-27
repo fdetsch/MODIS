@@ -91,12 +91,10 @@ if (!isGeneric("getTile")) {
 #' getTile(mode = "draw")
 #' }
 #' 
-#' \dontrun{
 #' # ex 2: Spatial (taken from ?rgdal::readOGR) ############
-#' dsn <- system.file("vectors/Up.tab", package = "rgdal")[1]
+#' dsn <- system.file("vectors/Up.tab", package = "rgdal")
 #' Up <- rgdal::readOGR(dsn, "Up")
-#' getTile(Up) # currently fails unless `sf::sf_use_s2(TRUE)`
-#' }
+#' getTile(Up)
 #' 
 #' # ex 3: sf ############
 #' ifl <- system.file("shape/nc.shp", package = "sf")

@@ -1,8 +1,24 @@
-checkEarthdataLogin = function() {
+checkEarthdataLogin = function(
+  method = NULL
+) {
   
   ## credentials
   crd = credentials()
   usr = crd$login; pwd = crd$password
+  
+  if (
+    is.null(usr) || usr == "" ||
+    is.null(pwd) || pwd == ""
+  ) {
+    warning(
+      "Earthdata Login credentials not available, "
+      , "please enter via `EarthdataLogin()`."
+    )
+    
+    return(
+      FALSE
+    )
+  }
   
   
   ### . curl_download() ----
@@ -26,7 +42,9 @@ checkEarthdataLogin = function() {
   
   ### . download.file() ----
   
-  method = getOption("MODIS_dlmethod")
+  if (is.null(method)) {
+    method = "auto"
+  }
   
   if (!method %in% c("wget", "curl")) {
     

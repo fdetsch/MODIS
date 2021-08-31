@@ -298,6 +298,12 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   }
   opt$gdalPath <- correctPath(opt$gdalPath)
 
+  if (is.null(opt$EarthdataLogin)) {
+    opt$EarthdataLogin = checkEarthdataLogin(
+      opt$dlmethod
+    )
+  }
+  
   if(is.null(opt$MODISserverOrder))
   {
     opt$MODISserverOrder <- c("LPDAAC", "LAADS")
@@ -422,6 +428,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     write('# consult \'?MODISoptions\' for more details', filename)
     write('  ', filename)
     
+    write(paste0('EarthdataLogin   <- ', opt$EarthdataLogin), filename)
     if(length(opt$MODISserverOrder)==2)
     {
       write(paste0('MODISserverOrder <- c(\'',paste(opt$MODISserverOrder,collapse="', '"),'\')' ), filename)
@@ -482,6 +489,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   
   cat('DOWNLOAD:\n')
   cat('_______________\n')
+  cat('EarthdataLogin   :', opt$EarthdataLogin, "\n")
   cat('MODISserverOrder :', paste(opt$MODISserverOrder,collapse=", "),'\n')
   cat('dlmethod         :', opt$dlmethod,'\n')
   cat('stubbornness     :', opt$stubbornness,'\n')

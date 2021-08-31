@@ -285,21 +285,19 @@ filesUrl <- function(url)
   )
   
   ## laads, nsidc require login
-  if (grepl("nsidc|ladsweb", url)) {
-    crd = credentials()
+  crd = credentials()
+  usr = crd$login; pwd = crd$password
+  
+  if (any(is.null(c(usr, pwd)))) {
+    crd = EarthdataLogin()
     usr = crd$login; pwd = crd$password
-    
-    if (any(is.null(c(usr, pwd)))) {
-      crd = EarthdataLogin()
-      usr = crd$login; pwd = crd$password
-    }
-    
-    curl::handle_setopt(
-      handle = h,
-      httpauth = 1,
-      userpwd = paste0(usr, ":", pwd)
-    )
   }
+  
+  curl::handle_setopt(
+    handle = h,
+    httpauth = 1,
+    userpwd = paste0(usr, ":", pwd)
+  )
   
   ## establish connection
   is_laads = grepl("ladsweb", url)

@@ -62,3 +62,54 @@ tfs = runGdal(
   , job = "MOD13Q1"
   , SDSstring = "11" # ndvi, evi
 )
+
+
+## 2021-08-31 ====
+
+sf::gdal_utils(
+  util = "info"
+  , source = system.file(
+    "external/MOD13A2.A2016145.h18v04.006.2016166145124.hdf"
+    , package = "MODIS"
+  )
+)
+
+product = "MOD11A1"
+
+clc = getCollection(
+  product
+  , forceCheck = TRUE
+)
+
+paths = MODIS:::genString(
+  product
+  , collection = clc
+  , date = "2020.01.01"
+)
+
+onl = MODIS:::filesUrl(
+  paths$remotePath$LPDAAC
+)
+
+x = file.path(
+  paths$remotePath$LPDAAC
+  , grep(
+    "h21v09.*.hdf$"
+    , onl
+    , value = TRUE
+  )
+)
+
+## without credentials --> 'cannot open URL' error
+download.file(
+  x
+  , destfile = tempfile(
+    fileext = ".hdf"
+  )
+)
+
+## without credentials --> empty response, ie `""`
+jnk = sf::gdal_utils(
+  util = "info"
+  , source = x
+)

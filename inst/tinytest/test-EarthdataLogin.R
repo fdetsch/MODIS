@@ -1,37 +1,106 @@
 nrc = file.path(tempdir(), ".netrc")
+
+## if available, backup existing .netrc file
 avl = file.exists(nrc)
 if (avl) {
   jnk = file.rename(nrc, paste0(nrc, ".backup"))
 }
+
+
+### 1 file unavailable ----
 
 expect_null(
   MODIS:::credentials(path = nrc)
   , info = "blank output if file is missing"
 )
 
-writeLines("machine urs.earthdata.nasa.gov", nrc)
-lns = MODIS:::credentials(path = nrc)
-expect_null(lns$login, info = "'login' is NULL if missing in .netrc")
-expect_null(lns$password, info = "'password' is NULL if missing in .netrc (i)")
 
-writeLines(c("machine urs.earthdata.nasa.gov", "login some_usr"), nrc)
-lns = MODIS:::credentials(path = nrc)
-expect_null(lns$password, info = "'password' is NULL if missing in .netrc (ii)")
+### 2 single-entry file ----
 
-## credentials from .netrc are correctly imported
-writeLines(c("machine urs.earthdata.nasa.gov", "login some_usr", "password some_pwd"), nrc)
+## with machine
+machine = "machine urs.earthdata.nasa.gov"
+
+writeLines(machine, nrc)
 lns = MODIS:::credentials(path = nrc)
-expect_true(
-  all(
-    inherits(lns, "list")
-    , identical(names(lns), c("machine", "login", "password"))
-    , lns$machine == "urs.earthdata.nasa.gov"
-    , lns$login == "some_usr"
-    , lns$password == "some_pwd"
-  )
-  , info = "credentials from .netrc are correctly imported"
+
+expect_inherits(
+  lns
+  , class = "list"
+  , info = "output inherits from class 'list'"
 )
 
+expect_identical(
+  names(lns)
+  , c("machine", "login", "password")
+  , info = "names of output 'list' are correct"
+)
+
+expect_identical(
+  lns$machine
+  , gsub("machine ", "", machine)
+  , info = "'machine' looks as expected (i.e. class 'character', content)"
+)
+expect_null(
+  lns$login
+  , info = "'login' is NULL if missing in .netrc"
+)
+expect_null(
+  lns$password
+  , info = "'password' is NULL if missing in .netrc (i)"
+)
+
+## -"- and login
+login = "login sad_boyd"
+
+write(login, nrc, append = TRUE)
+lns = MODIS:::credentials(path = nrc)
+
+expect_identical(
+  lns$login
+  , gsub("login ", "", login)
+  , info = "'login' looks as expected (i.e. class `character`, content)"
+)
+expect_null(
+  lns$password
+  , info = "'password' is NULL if missing in .netrc (ii)"
+)
+
+## -"- and password
+password = "password Lc557Gv$"
+
+write(password, nrc, append = TRUE)
+lns = MODIS:::credentials(path = nrc)
+
+expect_identical(
+  lns$password
+  , gsub("password ", "", password)
+  , info = "'password' looks as expected (i.e. class `character`, content)"
+)
+
+
+### 3 multi-entry file ----
+
+write(
+  paste(
+    ""
+    , "machine e4ftl01.cr.usgs.gov"
+    , "login romantic_swanson"
+    , "password 9yerTXd@"
+    , sep = "\n"
+  )
+  , file = nrc
+  , append = TRUE
+)
+
+expect_identical(
+  MODIS:::credentials(
+    path = nrc
+  )
+  , target = lns
+  , info = "credentials are extracted correctly in the presence of 2+ entries"
+)
+
+## if applicable, restore previous .netrc file
 if (avl) {
   jnk = file.rename(paste0(nrc, ".backup"), nrc)
 }

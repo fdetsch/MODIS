@@ -4,8 +4,11 @@ nrc = file.path(tempdir(), ".netrc")
 avl = file.exists(nrc)
 if (avl) {
   jnk = file.rename(nrc, paste0(nrc, ".backup"))
+  jnk = file.remove(nrc)
 }
 
+
+## `credentials()` ====
 
 ### 1 file unavailable ----
 
@@ -18,9 +21,9 @@ expect_null(
 ### 2 single-entry file ----
 
 ## with machine
-machine = "machine urs.earthdata.nasa.gov"
+machine = "urs.earthdata.nasa.gov"
 
-writeLines(machine, nrc)
+writeLines(paste("machine", machine), nrc)
 lns = MODIS:::credentials(path = nrc)
 
 expect_inherits(
@@ -37,7 +40,7 @@ expect_identical(
 
 expect_identical(
   lns$machine
-  , gsub("machine ", "", machine)
+  , machine
   , info = "'machine' looks as expected (i.e. class 'character', content)"
 )
 expect_null(
@@ -50,14 +53,14 @@ expect_null(
 )
 
 ## -"- and login
-login = "login sad_boyd"
+login = "sad_boyd"
 
-write(login, nrc, append = TRUE)
+write(paste("login", login), nrc, append = TRUE)
 lns = MODIS:::credentials(path = nrc)
 
 expect_identical(
   lns$login
-  , gsub("login ", "", login)
+  , login
   , info = "'login' looks as expected (i.e. class `character`, content)"
 )
 expect_null(
@@ -66,26 +69,31 @@ expect_null(
 )
 
 ## -"- and password
-password = "password Lc557Gv$"
+password = "Lc557Gv$"
 
-write(password, nrc, append = TRUE)
+write(paste("password", password), nrc, append = TRUE)
 lns = MODIS:::credentials(path = nrc)
 
 expect_identical(
   lns$password
-  , gsub("password ", "", password)
+  , password
   , info = "'password' looks as expected (i.e. class `character`, content)"
 )
 
 
 ### 3 multi-entry file ----
 
+other_creds = paste(
+  "machine e4ftl01.cr.usgs.gov"
+  , "login romantic_swanson"
+  , "password 9yerTXd@"
+  , sep = "\n"
+)
+
 write(
   paste(
     ""
-    , "machine e4ftl01.cr.usgs.gov"
-    , "login romantic_swanson"
-    , "password 9yerTXd@"
+    , other_creds
     , sep = "\n"
   )
   , file = nrc
@@ -98,6 +106,42 @@ expect_identical(
   )
   , target = lns
   , info = "credentials are extracted correctly in the presence of 2+ entries"
+)
+
+## delete temporary .netrc file
+jnk = file.remove(
+  nrc
+)
+
+
+## `EarthdataLogin()` ====
+
+write(
+  other_creds
+  , file = nrc
+)
+
+lns1 = EarthdataLogin(
+  usr = login
+  , pwd = password
+  , path = nrc
+)
+
+expect_identical(
+  lns1
+  , target = lns
+  , info = "credentials are correctly written to .netrc"
+)
+
+expect_identical(
+  paste(
+    readLines(
+      nrc
+    )[1:3]
+    , collapse = "\n"
+  )
+  , target = other_creds
+  , info = "other credentials remain untouched when updating .netrc"
 )
 
 ## if applicable, restore previous .netrc file

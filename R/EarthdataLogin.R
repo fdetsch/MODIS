@@ -10,6 +10,8 @@
 #' 
 #' @param usr,pwd Login credentials as \code{character}. If \code{NULL}, 
 #' username and password are read from the terminal.
+#' @param path Path to hidden \code{.netrc} file as \code{character}. The 
+#' default should not be changed unless for a good reason.
 #' 
 #' @return 
 #' The \code{\link{invisible}} Earthdata login credentials as \code{list}.
@@ -32,13 +34,15 @@
 #' 
 #' @export EarthdataLogin
 #' @name EarthdataLogin
-EarthdataLogin <- function(usr = NULL, pwd = NULL) {
+EarthdataLogin <- function(usr = NULL, pwd = NULL, path = "~/.netrc") {
   
   server = 'urs.earthdata.nasa.gov'
-  nrc <- path.expand("~/.netrc")
+  nrc <- path.expand(path)
   
   # read .netrc entire file
-  lns <- readCredentials()
+  lns <- readCredentials(
+    path = path
+  )
   
   # get servers found on .netrc
   machine <- unlist(listPather(lns,'machine'))
@@ -96,7 +100,7 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
     # if not in netrc file take it from the original server
     if(inherits(lin,'try-error'))
     {
-      lin <- credentials()$login
+      lin <- credentials(path = path)$login
     }
   } else 
   {
@@ -107,14 +111,14 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
     pw <- try(lns[[ind]]$password, silent = TRUE) 
     if(inherits(pw,'try-error'))
     {
-      pw <- credentials()$password  
+      pw <- credentials(path = path)$password  
     }
   } else 
   {
     pw <- pwd
   }
   
-  lns[[ind]] <- list(machine = server, login=lin, password=pw)          
+  lns[[ind]] <- list(machine = server, login=lin, password=pw)
 
   netrc <- file(nrc,open = 'w'); on.exit(close(netrc))
   for (i in seq_along(lns))
@@ -126,7 +130,7 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL) {
 
   Sys.chmod(nrc, mode = "600", use_umask = TRUE)
   
-  return(invisible(credentials()))
+  return(invisible(credentials(path = path)))
 }
 
 ## Earthdata login credentials from .netrc file

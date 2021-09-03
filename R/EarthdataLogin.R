@@ -73,7 +73,13 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL, path = "~/.netrc") {
       }
     } else
     {
-      cat("'",nrc,"' without Earthdata login credentials found! Please add them now...\n",sep="")
+      if (is.null(usr) || is.null(pwd)) {
+        cat(
+          "File '", nrc, "' without Earthdata login credentials found.\n"
+          , "Please add them now...\n"
+          , sep = ""
+        )
+      }
       insert <- 'y'
     }
   }

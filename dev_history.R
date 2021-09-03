@@ -113,3 +113,23 @@ jnk = sf::gdal_utils(
   util = "info"
   , source = x
 )
+
+
+## 2021-09-03 ====
+
+MODISoptions()
+
+hdfs = getHdf(
+  "MOD11A1"
+  , tileH = 21
+  , tileV = 9
+  , begin = "2021-08-01"
+  , end = "2021-08-05"
+  , MODISserverOrder = c("LAADS", "LPDAAC")
+)
+
+## nsidc collection retrieval
+getCollection(
+  "MOD10A1"
+  , forceCheck = TRUE
+)

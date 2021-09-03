@@ -52,3 +52,7 @@ getStruc():
 getTile():
 - if interactive and `mode = "draw"`, handle errors for incomplete shapes
 - if non-interactive, display aoi
+
+Standardize 'Earthdata Login' spelling
+
+Enable Roxygen w/Markdown

@@ -133,3 +133,16 @@ getCollection(
   "MOD10A1"
   , forceCheck = TRUE
 )
+
+
+## 2021-09-08 ====
+
+if (!dir.exists("exec")) {
+  dir.create(
+    "exec"
+  )
+}
+
+file.edit(
+  "exec/exec-modis_laads_dl.R"
+)

@@ -1,6 +1,8 @@
 ## MODIS 1.2.3.9002 (2021-09-03)
 
-tbc.
+Changes:
+
+  * Introduces further checks for valid Earthdata Login credentials (#111, #114)
 
 
 ## MODIS 1.2.3

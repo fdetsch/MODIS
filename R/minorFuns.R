@@ -285,21 +285,14 @@ filesUrl <- function(url)
   )
   
   ## laads, nsidc require login
-  if (grepl("nsidc|ladsweb", url)) {
-    crd = credentials()
-    usr = crd$login; pwd = crd$password
-    
-    if (any(is.null(c(usr, pwd)))) {
-      crd = EarthdataLogin()
-      usr = crd$login; pwd = crd$password
-    }
-    
-    curl::handle_setopt(
-      handle = h,
-      httpauth = 1,
-      userpwd = paste0(usr, ":", pwd)
-    )
-  }
+  crd = credentials()
+  usr = crd$login; pwd = crd$password
+  
+  curl::handle_setopt(
+    handle = h,
+    httpauth = 1,
+    userpwd = paste0(usr, ":", pwd)
+  )
   
   ## establish connection
   is_laads = grepl("ladsweb", url)
@@ -431,6 +424,12 @@ ModisFileDownloader <- function(x, ...)
               }
             } else {
               method <- opts$dlmethod
+            }
+            
+            # LAADS + `wget` --> download failure
+            # <-> use `curl` instead
+            if (server == "LAADS" && method == "wget") {
+              method = "curl"
             }
             
             # cookies

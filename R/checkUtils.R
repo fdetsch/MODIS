@@ -1,32 +1,26 @@
-checkEarthdataLogin = function() {
+checkEarthdataLogin = function(
+  method = NULL
+) {
   
   ## credentials
   crd = credentials()
   usr = crd$login; pwd = crd$password
   
-  
-  ### . curl_download() ----
-
-  # h = curl::new_handle(CONNECTTIMEOUT = 60L)
-  # curl::handle_setopt(
-  #   handle = h,
-  #   httpauth = 1,
-  #   userpwd = paste0(usr, ":", pwd)
-  # )
-  # 
-  # con = try(
-  #   curl::curl_download(
-  #     "https://e4ftl01.cr.usgs.gov/MOTA/MCD64A1.006/2019.12.01/MCD64A1.A2019335.h32v11.006.2020036042913.hdf"
-  #     , tempfile(fileext = ".hdf")
-  #     , handle = h
-  #   )
-  #   , silent = TRUE
-  # )
+  ## if not available, add entry to ~/.netrc
+  if (
+    is.null(usr) || usr == "" ||
+    is.null(pwd) || pwd == ""
+  ) {
+    crd = EarthdataLogin()
+    usr = crd$login; pwd = crd$password
+  }
   
   
-  ### . download.file() ----
+  ### `download.file()` ----
   
-  method = getOption("MODIS_dlmethod")
+  if (is.null(method)) {
+    method = "auto"
+  }
   
   if (!method %in% c("wget", "curl")) {
     
@@ -84,11 +78,10 @@ checkEarthdataLogin = function() {
   options(warn = wrn)  
   
   ## return if download succeeded
-  if (inherits(con, "try-error") && 
-      any(grepl("HTTP error 401|401 Unauthorized", txt))) {
+  if (inherits(con, "try-error")) {
     warning(
       "Authentication failed, please check your Earthdata credentials in "
-      , "~/.netrc or re-enter via EarthdataLogin()."
+      , "~/.netrc or re-enter via `EarthdataLogin()`."
     )
     FALSE
   } else {

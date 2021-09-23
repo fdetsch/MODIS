@@ -1,8 +1,9 @@
-## MODIS 1.2.3.9003 (2021-08-27)
+## MODIS 1.2.3.9003 (2021-09-23)
 
 Changes:
 
   * Set `sf::sf_use_s2(FALSE)` for spherical geometry (#110)
+  * Introduces further checks for valid Earthdata Login credentials (#111, #114)
 
 
 ## MODIS 1.2.3

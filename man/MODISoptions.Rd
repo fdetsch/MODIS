@@ -22,7 +22,8 @@ MODISoptions(
   save = TRUE,
   checkTools = TRUE,
   checkWriteDrivers = TRUE,
-  ask = TRUE
+  ask = TRUE,
+  check_earthdata_login = TRUE
 )
 }
 \arguments{
@@ -99,6 +100,10 @@ drivers supported by \strong{sf} GDAL installation.}
 
 \item{ask}{\code{logical}. If \code{TRUE} (default) and permanent settings 
 file does not exist (see Details), the user is asked whether to create it.}
+
+\item{check_earthdata_login}{\code{logical}. If \code{TRUE} (default), look 
+for Earthdata Login credentials in \code{~/.netrc} and try to download a 
+small sample \code{.hdf} file.}
 }
 \value{
 An invisible \code{list} of \strong{MODIS} options. In addition, the most 

@@ -57,3 +57,7 @@ separate issues
 * decide fate of `arcStats()`
 * feed non-existing collection in `list` format to `getCollection()` and handle 
   'Error in cat([...])'
+
+Standardize 'Earthdata Login' spelling
+
+Enable Roxygen w/Markdown

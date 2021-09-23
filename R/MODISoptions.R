@@ -60,6 +60,9 @@
 #' drivers supported by \strong{sf} GDAL installation.
 #' @param ask \code{logical}. If \code{TRUE} (default) and permanent settings 
 #' file does not exist (see Details), the user is asked whether to create it.
+#' @param check_earthdata_login \code{logical}. If \code{TRUE} (default), look 
+#' for Earthdata Login credentials in \code{~/.netrc} and try to download a 
+#' small sample \code{.hdf} file.
 #' 
 #' @return 
 #' An invisible \code{list} of \strong{MODIS} options. In addition, the most 
@@ -127,7 +130,8 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
                          resamplingType, dataFormat, gdalPath, MODISserverOrder, 
                          dlmethod, stubbornness, wait, quiet, cellchunk,
                          systemwide = FALSE, save = TRUE, checkTools = TRUE,
-                         checkWriteDrivers = TRUE, ask = TRUE)
+                         checkWriteDrivers = TRUE, ask = TRUE, 
+                         check_earthdata_login = TRUE)
 {
   # This function collects the package options from up to 3 files and creates 
   # the .MODIS_Opts.R file (location depending on systemwide=T/F, see below):
@@ -298,6 +302,18 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   }
   opt$gdalPath <- correctPath(opt$gdalPath)
 
+  if (
+    (
+      is.null(opt$EarthdataLogin) || # check never performed
+      isFALSE(opt$EarthdataLogin)    # check performed, but failed
+    ) && 
+    check_earthdata_login
+  ) {
+    opt$EarthdataLogin = checkEarthdataLogin(
+      opt$dlmethod
+    )
+  }
+  
   if(is.null(opt$MODISserverOrder))
   {
     opt$MODISserverOrder <- c("LPDAAC", "LAADS")
@@ -422,6 +438,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     write('# consult \'?MODISoptions\' for more details', filename)
     write('  ', filename)
     
+    write(paste0('EarthdataLogin   <- ', ifelse(is.null(opt$EarthdataLogin), FALSE, opt$EarthdataLogin)), filename)
     if(length(opt$MODISserverOrder)==2)
     {
       write(paste0('MODISserverOrder <- c(\'',paste(opt$MODISserverOrder,collapse="', '"),'\')' ), filename)
@@ -482,6 +499,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   
   cat('DOWNLOAD:\n')
   cat('_______________\n')
+  cat('EarthdataLogin   :', opt$EarthdataLogin, "\n")
   cat('MODISserverOrder :', paste(opt$MODISserverOrder,collapse=", "),'\n')
   cat('dlmethod         :', opt$dlmethod,'\n')
   cat('stubbornness     :', opt$stubbornness,'\n')

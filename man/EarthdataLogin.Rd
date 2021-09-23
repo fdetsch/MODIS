@@ -4,11 +4,14 @@
 \alias{EarthdataLogin}
 \title{Create File with Earthdata Login Credentials}
 \usage{
-EarthdataLogin(usr = NULL, pwd = NULL)
+EarthdataLogin(usr = NULL, pwd = NULL, path = "~/.netrc")
 }
 \arguments{
 \item{usr, pwd}{Login credentials as \code{character}. If \code{NULL}, 
 username and password are read from the terminal.}
+
+\item{path}{Path to hidden \code{.netrc} file as \code{character}. The 
+default should not be changed unless for a good reason.}
 }
 \value{
 The \code{\link{invisible}} Earthdata login credentials as \code{list}.

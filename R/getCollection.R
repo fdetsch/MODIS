@@ -55,6 +55,14 @@ getCollection <- function(product, collection = NULL, newest = TRUE
 {
   opts <- combineOptions(...)
   
+  if (is.null(opts$EarthdataLogin) || !opts$EarthdataLogin) {
+    stop(
+      "Earthdata Login credentials could not be verified.\nPlease run "
+      , "`MODISoptions(check_earthdata_login = TRUE)` (default) and re-try."
+    )
+  }
+  
+  
   ####
   # checks for product
   if (missing(product))
@@ -96,7 +104,7 @@ getCollection <- function(product, collection = NULL, newest = TRUE
   if (forceCheck | sum(!productN@PRODUCT %in% colnames(MODIScollection))>0) 
   {
     
-    # Earthdata login credentials in ~/.netrc are mandatory for LP DAAC and 
+    # Earthdata login credentials in ~/.netrc are mandatory for LP DAAC and
     # NSIDC, hence if missing, create them to avoid authentication failures
     crd = credentials()
     usr = crd$login; pwd = crd$password
@@ -161,7 +169,7 @@ getCollection <- function(product, collection = NULL, newest = TRUE
               crd = EarthdataLogin()
               usr = crd$login; pwd = crd$password
             }
-            
+
             curl::handle_setopt(
               handle = h,
               httpauth = 1,

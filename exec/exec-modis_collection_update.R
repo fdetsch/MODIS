@@ -129,3 +129,73 @@ laads = Map(
 laads = laads |> 
   rbindlist()
 
+
+### nsidc ----
+
+h = curl::new_handle(
+  connecttimeout = 10L
+)
+
+crd = MODIS:::credentials()
+usr = crd$login; pwd = crd$password
+
+curl::handle_setopt(
+  handle = h,
+  httpauth = 1,
+  userpwd = paste0(usr, ":", pwd)
+)
+
+nsidc = Map(
+  \(platform, prefix) {
+    con = curl::curl(
+      file.path(
+        "https://n5eil01u.ecs.nsidc.org"
+        , platform
+      )
+      , open = "r"
+      , handle = h
+    )
+    on.exit(
+      close(con)
+    )
+    
+    lns = readLines(
+      con
+    )
+    
+    data.table(
+      server = "NSIDC"
+      , platform = platform
+      , product = regmatches(
+        lns
+        , regexpr(
+          paste0(prefix, "[0-9A-Z\\._]+")
+          , lns
+        )
+      )
+    )
+  }
+  , c("MOST", "MOSA")
+  , c("MOD", "MYD")
+)
+
+## split product into product name, collection
+nsidc = nsidc |> 
+  rbindlist() |> 
+  transform(
+    collection = regmatches(
+      product
+      , regexpr(
+        "\\d{3}$"
+        , product
+      )
+    )
+    , product = gsub(
+      "\\.\\d{3}$"
+      , ""
+      , product
+    )
+  )
+
+# TODO:
+# * omit ntsg from `MODIS:::MODIS_FTPinfo`

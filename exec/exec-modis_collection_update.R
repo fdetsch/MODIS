@@ -18,13 +18,13 @@ MODISoptions(
 
 ### global objects ----
 
-## product, collection
-product = "MOD11A1"
-collection = getCollection(
-  product
-  , forceCheck = TRUE
-)
-
+# ## product, collection
+# product = "MOD11A1"
+# collection = getCollection(
+#   product
+#   , forceCheck = TRUE
+# )
+# 
 # ## server base urls
 # MODIS:::genString(
 #   product
@@ -36,6 +36,10 @@ collection = getCollection(
 
 ### lpdaac ----
 
+h = curl::new_handle(
+  connecttimeout = 10L
+)
+
 lpdaac = Map(
   \(platform, prefix) {
     con = curl::curl(
@@ -44,6 +48,7 @@ lpdaac = Map(
         , platform
       )
       , open = "r"
+      , handle = h
     )
     on.exit(
       close(con)
@@ -132,10 +137,6 @@ laads = laads |>
 
 ### nsidc ----
 
-h = curl::new_handle(
-  connecttimeout = 10L
-)
-
 crd = MODIS:::credentials()
 usr = crd$login; pwd = crd$password
 
@@ -197,5 +198,62 @@ nsidc = nsidc |>
     )
   )
 
+
+### collections update ----
+
+clc = do.call(
+  rbind
+  , list(
+    lpdaac
+    , laads
+    , nsidc
+  )
+)
+
+## split by product
+tmp = clc[
+  order(
+    product
+    , collection
+  )
+  , unique(.SD)
+  , .SD = c("product", "collection")
+] |> 
+  transform(
+    collection = as.integer(
+      collection
+    )
+  ) |> 
+  (
+    \(x) {
+      split(
+        as.integer(x$collection)
+        , f = x$product
+      )
+    }
+  )() 
+
+## write per-product collections to matrix
+lns = lengths(tmp)
+collections = matrix(
+  ncol = length(tmp)
+  , nrow = max(lns)
+  , dimnames = list(NULL, names(tmp))
+)
+
+for (i in 1:length(tmp)) {
+  collections[1:lns[i], i] = tmp[[i]]
+}
+
+data.frame(
+  collections
+)
+
+
+## PRODUCTS ====
+
+MODIS:::MODIS_Products
+
 # TODO:
+# * omit sensor, pf3 from `MODIS:::MODIS_Products`
 # * omit ntsg from `MODIS:::MODIS_FTPinfo`

@@ -210,14 +210,15 @@ clc = do.call(
     , laads
     , nsidc
   )
-)
-
-## split by product
-tmp = clc[
+)[
   order(
     product
     , collection
   )
+]
+
+## split by product
+tmp = clc[
   , unique(.SD)
   , .SD = c("product", "collection")
 ] |> 
@@ -254,7 +255,68 @@ data.frame(
 
 ## PRODUCTS ====
 
-MODIS:::MODIS_Products
+## template
+products = vector(
+  "list"
+  , length = length(MODIS:::MODIS_Products)
+) |> 
+  stats::setNames(
+    names(MODIS:::MODIS_Products)
+  )
+
+## sensor
+products$SENSOR = rep(
+  "MODIS"
+  , ncol(collections)
+)
+
+## product
+products$PRODUCT = colnames(
+  collections
+)
+
+## platform
+platforms = clc[
+  , unique(.SD)
+  , .SD = c("platform", "product")
+]$platform
+
+products$PLATFORM = sapply(
+  platforms
+  , \(platform) {
+    switch(
+      platform
+      , "MOTA" = "Combined"
+      , "MOLT" =
+        , "MOST" = "Terra"
+      , "MOLA" =
+        , "MOSA" = "Aqua"
+    )
+  }
+  , USE.NAMES = FALSE
+)
+
+## server path extensions
+svs = c("LPDAAC", "LAADS", "NSIDC")
+pfs = paste0("PF", c(1:2, 4))
+
+for (i in 1:3) {
+  sbs = clc[
+    server == svs[i]
+    , unique(.SD)
+    , .SD = c("platform", "product")
+  ]
+  
+  products[[pfs[i]]] = sbs$platform[
+    match(
+      colnames(collections)
+      , sbs$product
+    )
+  ]
+}
+
+## topic
+MODIS:::MODIS_Products$TOPIC
 
 # TODO:
 # * omit sensor, pf3, possibly internalseparator from `MODIS:::MODIS_Products`

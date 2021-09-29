@@ -37,7 +37,7 @@ MODISoptions(
 ### lpdaac ----
 
 h = curl::new_handle(
-  connecttimeout = 10L
+  connecttimeout = 60L
 )
 
 lpdaac = Map(
@@ -160,8 +160,10 @@ nsidc = Map(
       close(con)
     )
     
-    lns = readLines(
-      con
+    lns = suppressWarnings(
+      readLines(
+        con
+      )
     )
     
     data.table(
@@ -255,5 +257,6 @@ data.frame(
 MODIS:::MODIS_Products
 
 # TODO:
-# * omit sensor, pf3 from `MODIS:::MODIS_Products`
+# * omit sensor, pf3, possibly internalseparator from `MODIS:::MODIS_Products`
 # * omit ntsg from `MODIS:::MODIS_FTPinfo`
+# * investigate "500.1 m" entry in `MODIS:::MODIS_Products$RES`

@@ -198,6 +198,13 @@ nsidc = nsidc |>
       , ""
       , product
     )
+  ) |> 
+  subset(
+    !product %in% c(
+      "NSIDC-0321"
+      , "NSIDC-0447"
+      , "MODGRNLD"
+    )
   )
 
 
@@ -215,7 +222,10 @@ clc = do.call(
     product
     , collection
   )
-]
+] |> 
+  subset(
+    !grepl("M(O|Y)D28", product)
+  )
 
 ## split by product
 tmp = clc[

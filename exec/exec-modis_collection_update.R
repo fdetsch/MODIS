@@ -316,7 +316,84 @@ for (i in 1:3) {
 }
 
 ## topic
-MODIS:::MODIS_Products$TOPIC
+ods_fl = "inst/external/products.ods"
+
+sheets = readODS::list_ods_sheets(
+  ods_fl
+)
+
+ods = lapply(
+  sheets
+  , \(sheet) {
+    readODS::read_ods(
+      ods_fl
+      , sheet = sheet
+    )
+  }
+) |> 
+  rbindlist()
+
+ods = ods[
+  , c("Short Name", "Collection") := tstrsplit(
+    `Short Name`
+    , "."
+    , fixed = TRUE
+  )
+][
+  , -"Collection"
+] |> 
+  unique()
+
+if (any(!colnames(collections) %in% ods$`Short Name`)) {
+  stop("Unmatched products encountered.")
+}
+
+products$TOPIC = merge(
+  data.table(
+    "Short Name" = colnames(
+      collections
+    )
+  )
+  , ods[
+    , c("Short Name", "Keyword")
+  ]
+  , sort = FALSE
+)$Keyword
+
+## type
+MODIS:::MODIS_Products$TYPE
+
+## res
+unique(ods$`Spatial Resolution`)
+
+## temp_res
+
+## internalseparator
+products$INTERNALSEPARATOR = rep(
+  "\\."
+  , ncol(collections)
+)
+
+## source
+products$SOURCE = clc[
+  , unique(.SD)
+  , .SDcols = c("product", "server")
+] |> 
+  (\(x) split(x, x$product))() |> 
+  unname() |> 
+  lapply(
+    "[["
+    , "server"
+  )
+
+## pos1, pos2
+pos = paste0("POS", 1:2)
+dfs = c(3L, 9L)
+
+for (i in 1:2) {
+  products[[pos[i]]] = nchar(products$PRODUCT) + dfs[i]
+}
+
 
 # TODO:
 # * omit sensor, pf3, possibly internalseparator from `MODIS:::MODIS_Products`

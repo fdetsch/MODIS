@@ -326,6 +326,11 @@ for (i in 1:3) {
 }
 
 ## topic
+
+# * nsidc: https://nsidc.org/data/modis/data_summaries
+# * lpdaac: https://lpdaac.usgs.gov/product_search/?collections=Combined+MODIS&\
+#           collections=Terra+MODIS&collections=Aqua+MODIS&view=list
+
 ods_fl = "inst/external/products.ods"
 
 sheets = readODS::list_ods_sheets(

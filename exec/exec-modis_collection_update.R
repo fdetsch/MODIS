@@ -382,7 +382,23 @@ products$TOPIC = merge(
 )$Keyword
 
 ## type
-MODIS:::MODIS_Products$TYPE
+products$TYPE = ifelse(
+  grepl(
+    "C([1-4]|MG)$"
+    , colnames(
+      collections
+    )
+  )
+  , "CMG"
+  , "Tile"
+)
+
+# TODO:
+# * MCD43D01-48 --> CMG (?)
+# * MCD43GF --> CMG
+# * _L2 --> Swath (?)
+# * MOD10CM (and others) --> CMG
+# * MOD14 (and others) --> Swath
 
 ## res
 unique(ods$`Spatial Resolution`)

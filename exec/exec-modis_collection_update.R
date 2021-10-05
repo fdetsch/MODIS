@@ -355,9 +355,15 @@ ods = ods[
     , fixed = TRUE
   )
 ][
+  order(Collection)
+  , list(
+    Collection = Collection[.N]
+    , Keyword = Keyword[.N]
+  )
+  , by = `Short Name`
+][
   , -"Collection"
-] |> 
-  unique()
+]
 
 if (any(!colnames(collections) %in% ods$`Short Name`)) {
   stop("Unmatched products encountered.")

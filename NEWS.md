@@ -1,5 +1,9 @@
 ## MODIS 1.2.3.9005 (2021-09-24)
 
+New features:
+
+  * Extended list of supported MODIS products and collections (#118)
+
 Changes:
 
   * Set `sf::sf_use_s2(FALSE)` for spherical geometry (#110)

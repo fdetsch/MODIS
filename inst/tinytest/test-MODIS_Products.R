@@ -19,6 +19,19 @@ expect_identical(
   , info = "built-in products list has expected names"
 )
 
+expect_equivalent(
+  sapply(
+    prd
+    , class
+  )
+  , c(
+    rep("character", 12)
+    , "list"
+    , rep("integer", 2)
+  )
+  , info = "built-in products list has expected classes"
+)
+
 ## `lengths()`
 expect_true(
   all(lengths(prd) == nrow(MODIS::getProduct()))
@@ -32,21 +45,38 @@ expect_true(
 )
 
 expect_true(
-  all(prd$PF1 %in% c("MOTA", "MOLT", "MOLA"))
-  , info = "available lpdaac server path extensions are molt, mola, and mota"
+  all(prd$PF1 %in% c("MOTA", "MOLT", "MOLA") | is.na(prd$PF1))
+  , info = "available lpdaac/laads path features are molt, mola, and mota"
 )
 
 expect_true(
   all(prd$PF2 %in% c("MCD", "MOD", "MYD"))
-  , info = "available laads server path extensions are mod, myd, and mcd"
+  , info = "available product-specific path features are mod, myd, and mcd"
 )
 
 expect_true(
   all(is.na(prd$PF4) | prd$PF4 %in% c("MOST", "MOSA"))
-  , info = "available nsidc server path extensions are most, mosa, or na"
+  , info = "available nsidc path features are most, mosa, or na"
+)
+
+expect_identical(
+  is.na(prd$PF4)
+  , !is.na(prd$PF1)
+  , info = "path features are empty for nsidc where available for lpdaac/laads"
+)
+
+expect_identical(
+  is.na(prd$PF1)
+  , !is.na(prd$PF4)
+  , info = "path features are empty for lpdaac/laads where available for nsidc"
 )
 
 expect_true(
-  all(prd$TYPE %in% c("Tile", "CMG"))
-  , info = "available image types are tile and climate modeling grid (cmg)"
+  all(prd$TYPE %in% c("Tile", "CMG", "Swath"))
+  , info = "available image types are tile, cmg, and swath"
+)
+
+expect_true(
+  all(prd$POS2 - prd$POS1 == 6)
+  , info = "date string in file name is always 6 characters long"
 )

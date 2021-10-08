@@ -6,6 +6,11 @@ library(MODIS)
 library(data.table)
 
 
+### funs ----
+
+source("exec/exec-utils.R")
+
+
 ### `MODISoptions()` ----
 
 ## local arc path
@@ -36,176 +41,33 @@ MODISoptions(
 
 ### lpdaac ----
 
-h = curl::new_handle(
-  connecttimeout = 60L
-)
-
-lpdaac = Map(
-  \(platform, prefix) {
-    con = curl::curl(
-      file.path(
-        "https://e4ftl01.cr.usgs.gov"
-        , platform
-      )
-      , open = "r"
-      , handle = h
-    )
-    on.exit(
-      close(con)
-    )
-    
-    lns = readLines(
-      con
-    )
-    
-    data.table(
-      server = "LPDAAC"
-      , platform = platform
-      , product = regmatches(
-        lns
-        , regexpr(
-          paste0(prefix, "[0-9A-Z\\._]+")
-          , lns
-        )
-      )
-    )
-  }
-  , c("MOLT", "MOLA", "MOTA")
-  , c("MOD", "MYD", "MCD")
-)
-
-## split product into product name, collection
-lpdaac = lpdaac |> 
-  rbindlist() |> 
-  transform(
-    collection = regmatches(
-      product
-      , regexpr(
-        "\\d{3}$"
-        , product
-      )
-    )
-    , product = gsub(
-      "\\.\\d{3}$"
-      , ""
-      , product
-    )
-  )
+lpdaac = listLPDAACProducts()
 
 
 ### laads ----
 
-laads = Map(
-  \(clc) {
-    lns = fread(
-      sprintf(
-        "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/%s.csv"
-        , as.integer(clc)
-      )
-    )
-    
-    mrg = merge(
-      lns
-      , lpdaac[
-        collection == clc
-      ]
-      , by.x = "name"
-      , by.y = "product"
-      , sort = FALSE
-    )
-    
-    data.table(
-      server = "LAADS"
-      , mrg[
-        , c("platform", "name", "collection")
-      ]
-    ) |> 
-      setnames(
-        old = "name"
-        , new = "product"
-      )
-  }
-  , lpdaac[
-    , collection |> 
-      unique()
+laads = listLAADSProducts(
+  collections = lpdaac[
+    , unique(collection)
   ]
 )
 
-laads = laads |> 
-  rbindlist()
+## append platform info
+laads = merge(
+  lpdaac[
+    , !"server"
+  ]
+  , laads
+  , by = c("product", "collection")
+  , all.x = TRUE
+  , sort = FALSE
+) |> 
+  na.omit()
 
 
 ### nsidc ----
 
-crd = MODIS:::credentials()
-usr = crd$login; pwd = crd$password
-
-curl::handle_setopt(
-  handle = h,
-  httpauth = 1,
-  userpwd = paste0(usr, ":", pwd)
-)
-
-nsidc = Map(
-  \(platform, prefix) {
-    con = curl::curl(
-      file.path(
-        "https://n5eil01u.ecs.nsidc.org"
-        , platform
-      )
-      , open = "r"
-      , handle = h
-    )
-    on.exit(
-      close(con)
-    )
-    
-    lns = suppressWarnings(
-      readLines(
-        con
-      )
-    )
-    
-    data.table(
-      server = "NSIDC"
-      , platform = platform
-      , product = regmatches(
-        lns
-        , regexpr(
-          paste0(prefix, "[0-9A-Z\\._]+")
-          , lns
-        )
-      )
-    )
-  }
-  , c("MOST", "MOSA")
-  , c("MOD", "MYD")
-)
-
-## split product into product name, collection
-nsidc = nsidc |> 
-  rbindlist() |> 
-  transform(
-    collection = regmatches(
-      product
-      , regexpr(
-        "\\d{3}$"
-        , product
-      )
-    )
-    , product = gsub(
-      "\\.\\d{3}$"
-      , ""
-      , product
-    )
-  ) |> 
-  subset(
-    !product %in% c(
-      "NSIDC-0321"
-      , "NSIDC-0447"
-      , "MODGRNLD"
-    )
-  )
+nsidc = listNSIDCProducts()
 
 
 ### collections update ----

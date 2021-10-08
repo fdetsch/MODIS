@@ -1,8 +1,18 @@
 ## ENVIRONMENT ====
 
+rm(list = ls(all = TRUE))
+
+
+### sysdata ----
+load(
+  "R/sysdata.rda"
+)
+
+sysdata = ls()
+
+
 ### pkgs ----
 
-library(MODIS)
 library(data.table)
 
 
@@ -11,33 +21,7 @@ library(data.table)
 source("exec/exec-utils.R")
 
 
-### `MODISoptions()` ----
-
-## local arc path
-lap = "~/Documents/data/MODIS_ARC"
-MODISoptions(
-  localArcPath = lap
-  , outDirPath = file.path(lap, "PROCESSED")
-)
-
-
-### global objects ----
-
-# ## product, collection
-# product = "MOD11A1"
-# collection = getCollection(
-#   product
-#   , forceCheck = TRUE
-# )
-# 
-# ## server base urls
-# MODIS:::genString(
-#   product
-#   , collection = collection
-# )
-
-
-## COLLECTIONS ====
+## WEB SCRAPING ====
 
 ### lpdaac ----
 
@@ -69,9 +53,7 @@ laads = merge(
 
 nsidc = listNSIDCProducts()
 
-
-### `MODIScollection` ----
-
+## rbind
 clc = do.call(
   rbind
   , list(
@@ -88,6 +70,11 @@ clc = do.call(
   subset(
     !grepl("M(O|Y)D28", product)
   )
+
+
+## BUILT-IN DATA ====
+
+### `MODIScollection` ----
 
 ## split by product
 tmp = clc[
@@ -110,41 +97,44 @@ tmp = clc[
 
 ## write per-product collections to matrix
 lns = lengths(tmp)
-collections = matrix(
-  ncol = length(tmp)
-  , nrow = max(lns)
-  , dimnames = list(NULL, names(tmp))
+MODIScollection = data.frame(
+  matrix(
+    ncol = length(tmp)
+    , nrow = max(lns)
+    , dimnames = list(NULL, names(tmp))
+  )
 )
 
 for (i in 1:length(tmp)) {
-  collections[1:lns[i], i] = tmp[[i]]
+  MODIScollection[1:lns[i], i] = tmp[[i]]
 }
-
-data.frame(
-  collections
-)
 
 
 ### `MODIS_Products` ====
 
 ## template
-products = vector(
+MODIS_Products = vector(
   "list"
-  , length = length(MODIS:::MODIS_Products)
+  , length = 15
 ) |> 
   stats::setNames(
-    names(MODIS:::MODIS_Products)
+    c(
+      "SENSOR", "PRODUCT", "PLATFORM"
+      , "PF1", "PF2", "PF3", "PF4"
+      , "TOPIC", "TYPE", "RES", "TEMP_RES"
+      , "INTERNALSEPARATOR", "SOURCE", "POS1", "POS2"
+    )
   )
 
 ## sensor
-products$SENSOR = rep(
+MODIS_Products$SENSOR = rep(
   "MODIS"
-  , ncol(collections)
+  , ncol(MODIScollection)
 )
 
 ## product
-products$PRODUCT = colnames(
-  collections
+MODIS_Products$PRODUCT = colnames(
+  MODIScollection
 )
 
 ## platform
@@ -153,7 +143,7 @@ platforms = clc[
   , .SD = c("platform", "product")
 ]$platform
 
-products$PLATFORM = sapply(
+MODIS_Products$PLATFORM = sapply(
   platforms
   , \(platform) {
     switch(
@@ -168,24 +158,37 @@ products$PLATFORM = sapply(
   , USE.NAMES = FALSE
 )
 
-## server path extensions
-svs = c("LPDAAC", "LAADS", "NSIDC")
-pfs = paste0("PF", c(1:2, 4))
+## server path features
+svs = c("LPDAAC", "NSIDC")
+pfs = paste0("PF", c(1, 4))
 
-for (i in 1:3) {
+for (i in 1:2) {
   sbs = clc[
     server == svs[i]
     , unique(.SD)
     , .SD = c("platform", "product")
   ]
   
-  products[[pfs[i]]] = sbs$platform[
+  MODIS_Products[[pfs[i]]] = sbs$platform[
     match(
-      colnames(collections)
+      colnames(MODIScollection)
       , sbs$product
     )
   ]
 }
+
+MODIS_Products$PF2 = regmatches(
+  MODIS_Products$PRODUCT
+  , regexpr(
+    "^(MOD|MYD|MCD)"
+    , MODIS_Products$PRODUCT
+  )
+)
+
+MODIS_Products$PF3 = rep(
+  NA_character_
+  , ncol(MODIScollection)
+)
 
 ## topic
 
@@ -229,14 +232,14 @@ ods = ods[
   , -"Collection"
 ]
 
-if (any(!colnames(collections) %in% ods$`Short Name`)) {
+if (any(!colnames(MODIScollection) %in% ods$`Short Name`)) {
   stop("Unmatched products encountered.")
 }
 
-products$TOPIC = merge(
+MODIS_Products$TOPIC = merge(
   data.table(
     "Short Name" = colnames(
-      collections
+      MODIScollection
     )
   )
   , ods[
@@ -271,9 +274,9 @@ types = rbind(
   , nsidc_types[, c("product", "type")]
 )
 
-products$TYPE = merge(
+MODIS_Products$TYPE = merge(
   data.table::data.table(
-    product = products$PRODUCT
+    product = MODIS_Products$PRODUCT
   )
   , types
   , by = "product"
@@ -281,10 +284,10 @@ products$TYPE = merge(
 )$type
 
 ## res
-products$RES = merge(
+MODIS_Products$RES = merge(
   data.table(
     "Short Name" = colnames(
-      collections
+      MODIScollection
     )
   )
   , ods[
@@ -294,10 +297,10 @@ products$RES = merge(
 )$`Spatial Resolution`
 
 ## temp_res
-products$TEMP_RES = merge(
+MODIS_Products$TEMP_RES = merge(
   data.table(
     "Short Name" = colnames(
-      collections
+      MODIScollection
     )
   )
   , ods[
@@ -307,13 +310,13 @@ products$TEMP_RES = merge(
 )$`Temporal Resolution`
 
 ## internalseparator
-products$INTERNALSEPARATOR = rep(
+MODIS_Products$INTERNALSEPARATOR = rep(
   "\\."
-  , ncol(collections)
+  , ncol(MODIScollection)
 )
 
 ## source
-products$SOURCE = clc[
+MODIS_Products$SOURCE = clc[
   , unique(.SD)
   , .SDcols = c("product", "server")
 ] |> 
@@ -329,11 +332,22 @@ pos = paste0("POS", 1:2)
 dfs = c(3L, 9L)
 
 for (i in 1:2) {
-  products[[pos[i]]] = nchar(products$PRODUCT) + dfs[i]
+  MODIS_Products[[pos[i]]] = nchar(MODIS_Products$PRODUCT) + dfs[i]
 }
 
-listviewer::jsonedit(
-  products
+
+### sysdata ----
+
+do.call(
+  usethis::use_data
+  , c(
+    lapply(
+      sysdata
+      , as.name
+    )
+    , internal = TRUE
+    , overwrite = TRUE
+  )
 )
 
 # TODO:

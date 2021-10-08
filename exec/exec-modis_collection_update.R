@@ -221,6 +221,8 @@ ods = ods[
   , list(
     Collection = Collection[.N]
     , Keyword = Keyword[.N]
+    , `Spatial Resolution` = `Spatial Resolution`[.N]
+    , `Temporal Resolution` = `Temporal Resolution`[.N]
   )
   , by = `Short Name`
 ][
@@ -279,9 +281,30 @@ products$TYPE = merge(
 )$type
 
 ## res
-unique(ods$`Spatial Resolution`)
+products$RES = merge(
+  data.table(
+    "Short Name" = colnames(
+      collections
+    )
+  )
+  , ods[
+    , c("Short Name", "Spatial Resolution")
+  ]
+  , sort = FALSE
+)$`Spatial Resolution`
 
 ## temp_res
+products$TEMP_RES = merge(
+  data.table(
+    "Short Name" = colnames(
+      collections
+    )
+  )
+  , ods[
+    , c("Short Name", "Temporal Resolution")
+  ]
+  , sort = FALSE
+)$`Temporal Resolution`
 
 ## internalseparator
 products$INTERNALSEPARATOR = rep(
@@ -309,8 +332,10 @@ for (i in 1:2) {
   products[[pos[i]]] = nchar(products$PRODUCT) + dfs[i]
 }
 
+listviewer::jsonedit(
+  products
+)
 
 # TODO:
 # * omit sensor, pf3, possibly internalseparator from `MODIS:::MODIS_Products`
 # * omit ntsg from `MODIS:::MODIS_FTPinfo`
-# * investigate "500.1 m" entry in `MODIS:::MODIS_Products$RES`

@@ -321,7 +321,7 @@ listNSIDCProducts = function(
   )
   
   ## cycle through platforms, prefixes
-  nsidc = clusterMap(
+  nsidc = parallel::clusterMap(
     cl
     , \(platform, prefix) {
       
@@ -427,7 +427,7 @@ getNSIDCProductTypes = function(
     , "Spatial Resolution"
     , "Temporal Resolution"
   )
-  clusterExport(
+  parallel::clusterExport(
     cl
     , "flds"
     , envir = environment()

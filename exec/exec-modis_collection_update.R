@@ -70,7 +70,7 @@ laads = merge(
 nsidc = listNSIDCProducts()
 
 
-### collections update ----
+### `MODIScollection` ----
 
 clc = do.call(
   rbind
@@ -125,7 +125,7 @@ data.frame(
 )
 
 
-## PRODUCTS ====
+### `MODIS_Products` ====
 
 ## template
 products = vector(
@@ -244,23 +244,39 @@ products$TOPIC = merge(
 )$Keyword
 
 ## type
-products$TYPE = ifelse(
-  grepl(
-    "C([1-4]|MG)$"
-    , colnames(
-      collections
+lpdaac_types = getLPDAACProductTypes(
+  clc[
+    server == "LPDAAC"
+    , list(
+      collection = collection[.N]
     )
-  )
-  , "CMG"
-  , "Tile"
+    , by = product
+  ]
 )
 
-# TODO:
-# * MCD43D01-48 --> CMG (?)
-# * MCD43GF --> CMG
-# * _L2 --> Swath (?)
-# * MOD10CM (and others) --> CMG
-# * MOD14 (and others) --> Swath
+nsidc_types = getNSIDCProductTypes(
+  clc[
+    server == "NSIDC"
+    , list(
+      collection = collection[.N]
+    )
+    , by = product
+  ]
+)
+
+types = rbind(
+  lpdaac_types[, c("product", "type")]
+  , nsidc_types[, c("product", "type")]
+)
+
+products$TYPE = merge(
+  data.table::data.table(
+    product = products$PRODUCT
+  )
+  , types
+  , by = "product"
+  , sort = FALSE
+)$type
 
 ## res
 unique(ods$`Spatial Resolution`)

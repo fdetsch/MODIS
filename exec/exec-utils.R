@@ -1,3 +1,5 @@
+## LPDAAC ====
+
 #' @param connecttimeout Connection timeout passed to [curl::new_handle].
 #' @param names # of cores passed to [parallel:makePSOCKcluster].
 
@@ -86,6 +88,157 @@ listLPDAACProducts = function(
 }
 
 
+#' @param x A 2-column `data.table` with product and corresponding collection.
+
+getLPDAACProductTypes = function(
+  x
+  , names = min(
+    nrow(x)
+    , parallel::detectCores() - 1L
+  )
+) {
+  
+  ## initialize parallel backend
+  cl = parallel::makePSOCKcluster(
+    names
+  )
+  on.exit(
+    parallel::stopCluster(
+      cl
+    )
+  )
+  
+  ## construct server path suffixes
+  sfxs = x |> 
+    data.table::DT(
+      , paste(
+        tolower(product)
+        , collection
+        , sep = "v"
+      )
+    )
+  
+  ## define relevant metadata fields
+  flds = c(
+    "Coordinate System"
+    , "Columns/Rows"
+    , "Pixel Size"
+  )
+  
+  parallel::clusterExport(
+    cl
+    , "flds"
+    , envir = environment()
+  )
+  
+  ## cycle through suffixes
+  lst = parallel::clusterMap(
+    cl
+    , \(sfx) {
+      
+      # initialize curl connection
+      con = curl::curl(
+        file.path(
+          "https://lpdaac.usgs.gov/products"
+          , sfx
+        )
+      )
+      on.exit(
+        close(con)
+      )
+      
+      # scrape web content
+      lns = readLines(con)
+      
+      out = vector(
+        "list"
+        , length = length(flds)
+      )
+      
+      for (i in 1:length(flds)) {
+        cnt = grep(
+          flds[i]
+          , lns
+          , value = TRUE
+        )
+        
+        tmp = strsplit(
+          gsub(
+            "^\\s*"
+            , ""
+            , cnt
+          )
+          , "</*td>|</*tr>"
+        )[[1]]
+        
+        out[[i]] = tmp[
+          nzchar(tmp)
+        ]
+      }
+      
+      do.call(
+        rbind
+        , out
+      ) |> 
+        data.frame()
+    }
+    , sfxs
+  )
+  
+  ## long --> wide
+  dat = data.table::rbindlist(
+    lst
+    , idcol = "product"
+  ) |> 
+    setnames(
+      old = c("X1", "X2")
+      , new = c("variable", "value")
+    ) |> 
+    data.table::dcast(
+      product ~ variable
+    )
+  
+  ## append type
+  dat[
+    , `:=`(
+      product = strsplit(
+        product
+        , "v"
+      ) |> 
+        sapply(
+          "[["
+          , 1
+        ) |> 
+        toupper()
+      , type = data.table::fcase(
+        # cmg
+        (
+          grepl("7200", `Columns/Rows`) & 
+            `Pixel Size` == "5600 m"
+        ) | (
+          grepl("43200", `Columns/Rows`) & 
+            grepl("~?1000 m", `Pixel Size`)
+        )
+        , "CMG"
+        # swath
+        , grepl("Swath", `Coordinate System`)
+        , "Swath"
+        , default = "Tile"
+      )
+    )
+  ]
+  
+  merge(
+    x
+    , dat
+    , by = "product"
+    , sort = FALSE
+  )
+}
+
+
+## LAADS ====
+
 #' @param collections Collections to be processed, typically obtained through 
 #'   `listLPDAACProducts()[, unique(collection)]`.
 
@@ -137,6 +290,8 @@ listLAADSProducts = function(
     )
 }
 
+
+## NSIDC ====
 
 listNSIDCProducts = function(
   connecttimeout = 60L
@@ -239,3 +394,161 @@ listNSIDCProducts = function(
       )
     )
 }
+
+
+getNSIDCProductTypes = function(
+  x
+  , names = min(
+    nrow(x)
+    , names = parallel::detectCores() - 1L
+  )
+) {
+  
+  ## initialize parallel backend
+  cl = parallel::makePSOCKcluster(
+    names
+  )
+  on.exit(
+    parallel::stopCluster(
+      cl
+    )
+  )
+  
+  ## construct server path suffixes
+  sfxs = x[
+    , tolower(
+      product
+    )
+  ]
+  
+  ## define relevant metadata fields
+  flds = c(
+    "Spatial Coverage"
+    , "Spatial Resolution"
+    , "Temporal Resolution"
+  )
+  clusterExport(
+    cl
+    , "flds"
+    , envir = environment()
+  )
+  
+  ## cycle through suffixes
+  lst = parallel::clusterMap(
+    cl
+    , \(sfx) {
+      
+      # initialize curl connection
+      con = curl::curl(
+        file.path(
+          "https://nsidc.org/data"
+          , sfx
+        )
+      )
+      on.exit(
+        close(con)
+      )
+      
+      # scrape web content
+      lns = readLines(con)
+      
+      # extract required information
+      out = vector(
+        "list"
+        , length = length(flds)
+      )
+      
+      for (i in 1:length(flds)) {
+        # coverage
+        if (i == 1) {
+          id = grep(
+            flds[i]
+            , lns
+          )
+          
+          cnt = lns[id:(id + 3)]
+        }
+        
+        # resolution
+        if (i %in% 2:3) {
+          cnt = grep(
+            flds[i]
+            , lns
+            , value = TRUE
+          )
+        }
+        
+        xtr = stringr::str_extract_all(
+          cnt
+          , ">[A-z0-9 :\\.-]+<?"
+        ) |> 
+          unlist() |> 
+          (
+            \(x) gsub(">|:?<", "", x)
+          )()
+        
+        out[[i]] = c(
+          xtr[1]
+          , if (i == 3) {
+            xtr[2]
+          } else {
+            paste(
+              xtr[2:length(xtr)]
+              , collapse = ", "
+            )
+          }
+        )
+      }
+      
+      do.call(
+        rbind
+        , out
+      ) |> 
+        data.frame()
+    }
+    , sfxs
+  )
+  
+  ## long --> wide
+  dat = rbindlist(
+    lst
+    , idcol = "product"
+  ) |> 
+    setnames(
+      old = c("X1", "X2")
+      , new = c("variable", "value")
+    ) |> 
+    data.table::dcast(
+      product ~ variable
+    )
+  
+  ## append type
+  dat[
+    , `:=`(
+      product = toupper(
+        product
+      )
+      , type = data.table::fcase(
+        # cmg
+        grepl(
+          "0.05 deg"
+          , `Spatial Resolution`
+          , ignore.case = TRUE
+        )
+        , "CMG"
+        # swath
+        , `Temporal Resolution` == "5 minute"
+        , "Swath"
+        , default = "Tile"
+      )
+    )
+  ]
+  
+  merge(
+    x
+    , dat
+    , by = "product"
+    , sort = FALSE
+  )
+}
+

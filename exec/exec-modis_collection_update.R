@@ -27,6 +27,16 @@ source("exec/exec-utils.R")
 
 lpdaac = listLPDAACProducts()
 
+## get product metadata
+lpdaac_nfo = getLPDAACProductTypes(
+  lpdaac[
+    , list(
+      collection = collection[.N]
+    )
+    , by = product
+  ]
+)
+
 
 ### laads ----
 
@@ -53,6 +63,16 @@ laads = merge(
 
 nsidc = listNSIDCProducts()
 
+## get product metadata
+nsidc_nfo = getNSIDCProductTypes(
+  nsidc[
+    , list(
+      collection = collection[.N]
+    )
+    , by = product
+  ]
+)
+
 ## rbind
 clc = do.call(
   rbind
@@ -70,6 +90,23 @@ clc = do.call(
   subset(
     !grepl("M(O|Y)D28", product)
   )
+
+
+### swath discard ----
+
+nfo = rbind(
+  lpdaac_nfo[, c("product", "type")]
+  , nsidc_nfo[, c("product", "type")]
+)
+
+swaths = nfo[
+  type == "Swath"
+  , product
+]
+
+clc = clc[
+  !product %in% swaths
+]
 
 
 ## BUILT-IN DATA ====
@@ -249,36 +286,11 @@ MODIS_Products$TOPIC = merge(
 )$Keyword
 
 ## type
-lpdaac_types = getLPDAACProductTypes(
-  clc[
-    server == "LPDAAC"
-    , list(
-      collection = collection[.N]
-    )
-    , by = product
-  ]
-)
-
-nsidc_types = getNSIDCProductTypes(
-  clc[
-    server == "NSIDC"
-    , list(
-      collection = collection[.N]
-    )
-    , by = product
-  ]
-)
-
-types = rbind(
-  lpdaac_types[, c("product", "type")]
-  , nsidc_types[, c("product", "type")]
-)
-
 MODIS_Products$TYPE = merge(
   data.table::data.table(
     product = MODIS_Products$PRODUCT
   )
-  , types
+  , nfo
   , by = "product"
   , sort = FALSE
 )$type

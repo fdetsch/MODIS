@@ -1,4 +1,8 @@
-MODIS 1.2.3.9004 (2021-09-24)
+MODIS 1.2.3.9007 (2021-10-18)
+
+New features:
+
+  * Extended list of supported MODIS products and collections (#118)
 
 Changes:
 

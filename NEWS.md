@@ -10,28 +10,28 @@ Changes:
   * Introduces further checks for valid Earthdata Login credentials (#111, #114)
 
 
-## MODIS 1.2.3
+# MODIS 1.2.3
 
 Bugfixes:
 
   * Explicitly format sf::st_drivers() name columns as 'character', which caused problems on systems running R < 4.0.0.
 
 
-## MODIS 1.2.2
+# MODIS 1.2.2
 
 Changes:
 
   * .Rbuildignore test-runGdal().
 
 
-## MODIS 1.2.1
+# MODIS 1.2.1
 
 Changes:
 
   * Migrated unit tests to tinytest.
 
 
-## MODIS 1.2.0
+# MODIS 1.2.0
 
 Changes:
 
@@ -42,14 +42,14 @@ Changes:
   * In runGdal(), 'maskValue' is currently ignored until a suitable workaround for multiple nodata values per raster band is found.
 
 
-## MODIS 1.1.7
+# MODIS 1.1.7
 
 Changes:
 
   * Re-enabled LAADS data retrieval.
 
 
-## MODIS 1.1.6
+# MODIS 1.1.6
 
 New features:
 
@@ -63,7 +63,7 @@ Changes:
   * Fixed broken weblinks.
 
 
-## MODIS 1.1.5
+# MODIS 1.1.5
 
 Changes:
 
@@ -75,7 +75,7 @@ Bugfixes:
   * Duplicate server issue when passing multiple products on to runGdal().
 
 
-## MODIS 1.1.4
+# MODIS 1.1.4
 
 New features:
 
@@ -91,7 +91,7 @@ Changes:
   * Functions checkIntegrity(), OutProj(), PixelSize(), ResamplingType(), BlockSize(), OutputCompression(), QuietOutput(), genString(), checkTools(), ModisFileDownloader(), and doCheckIntegrity() no longer have an 'opts' argument.
 
 
-## MODIS 1.1.3
+# MODIS 1.1.3
 
 New features:
 
@@ -114,7 +114,7 @@ Changes:
   * Replaced 'XML' package dependency through regular expression matching.
 
 
-## MODIS 1.1.2
+# MODIS 1.1.2
 
 New features:
 
@@ -136,7 +136,7 @@ Changes:
   * The MODIS package is now licensed under the MIT license (<https://www.r-project.org/Licenses/MIT>).
 
 
-## MODIS 1.1.0
+# MODIS 1.1.0
 
 New features:
 
@@ -161,6 +161,6 @@ Changes:
   * aggInterval() does no longer take 'numeric' input (ie years).
 
 
-## MODIS 1.0.0
+# MODIS 1.0.0
 
 * Initial release

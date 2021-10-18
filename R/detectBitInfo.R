@@ -16,11 +16,13 @@
 #' @author 
 #' Matteo Mattiuzzi
 #' 
-#' @examples 
+#' @examples
+#' \dontrun{
 #' detectBitInfo("MOD13Q1")
 #' detectBitInfo("MOD13Q1", "VI usefulness")
 #' 
 #' detectBitInfo("MYD17A2")
+#' }
 #' 
 #' @export detectBitInfo
 #' @name detectBitInfo

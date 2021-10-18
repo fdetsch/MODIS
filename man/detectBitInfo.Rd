@@ -23,8 +23,10 @@ This function returns MODIS QA information for a specific product. It gets
 the information from an internal database and not all products are available.
 }
 \examples{
+\dontrun{
 detectBitInfo("MOD13Q1")
 detectBitInfo("MOD13Q1", "VI usefulness")
+}
 
 detectBitInfo("MYD17A2")
 

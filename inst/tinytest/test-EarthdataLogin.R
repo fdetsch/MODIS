@@ -4,7 +4,6 @@ nrc = file.path(tempdir(), ".netrc")
 avl = file.exists(nrc)
 if (avl) {
   jnk = file.rename(nrc, paste0(nrc, ".backup"))
-  jnk = file.remove(nrc)
 }
 
 

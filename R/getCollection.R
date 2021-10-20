@@ -93,11 +93,12 @@ getCollection <- function(product, collection = NULL, newest = TRUE
   
   fls_col <- file.path(dir_aux, "collections.RData")
   
-  if (!file.exists(fls_col))
-    invisible(
-      file.copy(system.file("external", "collections.RData", package = "MODIS"), 
-                fls_col)
+  if (!file.exists(fls_col)) {
+    save(
+      MODIScollection
+      , file = fls_col
     )
+  }
   
   load(fls_col)
   

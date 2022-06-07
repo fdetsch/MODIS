@@ -180,7 +180,13 @@ combineOptions <- function(checkTools = TRUE, ...)
     #           , "Run MODISoptions() to make settings permanent!")
     # }
     requireNamespace("MODIS", quietly = TRUE)
-    jnk = capture.output(MODISoptions(save=FALSE, checkTools = checkTools))
+    jnk = capture.output(
+      MODISoptions(
+        save = FALSE
+        , checkTools = checkTools
+        , check_earthdata_login = FALSE
+      )
+    )
     opts <- options() # collects all options
     opts <- opts[grep(names(opts),pattern="^MODIS_*.")] # isolate MODIS_opts
   }

@@ -26,9 +26,9 @@ the information from an internal database and not all products are available.
 \dontrun{
 detectBitInfo("MOD13Q1")
 detectBitInfo("MOD13Q1", "VI usefulness")
-}
 
 detectBitInfo("MYD17A2")
+}
 
 }
 \author{

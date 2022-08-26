@@ -55,12 +55,12 @@ getCollection <- function(product, collection = NULL, newest = TRUE
 {
   opts <- combineOptions(...)
   
-  if (is.null(opts$EarthdataLogin) || !opts$EarthdataLogin) {
-    stop(
-      "Earthdata Login credentials could not be verified.\nPlease run "
-      , "`MODISoptions(check_earthdata_login = TRUE)` (default) and re-try."
-    )
-  }
+  # if (is.null(opts$EarthdataLogin) || !opts$EarthdataLogin) {
+  #   stop(
+  #     "Earthdata Login credentials could not be verified.\nPlease run "
+  #     , "`MODISoptions(check_earthdata_login = TRUE)` (default) and re-try."
+  #   )
+  # }
   
   
   ####
@@ -93,11 +93,12 @@ getCollection <- function(product, collection = NULL, newest = TRUE
   
   fls_col <- file.path(dir_aux, "collections.RData")
   
-  if (!file.exists(fls_col))
-    invisible(
-      file.copy(system.file("external", "collections.RData", package = "MODIS"), 
-                fls_col)
+  if (!file.exists(fls_col)) {
+    save(
+      MODIScollection
+      , file = fls_col
     )
+  }
   
   load(fls_col)
   

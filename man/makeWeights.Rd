@@ -82,11 +82,11 @@ weighting information in functions like \code{\link{whittaker.raster}} or
 }
 \section{Functions}{
 \itemize{
-\item \code{extractBits}: Extract bit-encoded information from \code{Raster*} file
+\item \code{extractBits()}: Extract bit-encoded information from \code{Raster*} file
 
-\item \code{maskWater}: Masks water (additional information required)
+\item \code{maskWater()}: Masks water (additional information required)
+
 }}
-
 \note{
 \code{\link{makeWeights}} and \code{\link{extractBits}} are identical with 
 the only difference that \code{\link{makeWeights}} does additionally convert 

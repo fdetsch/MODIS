@@ -38,7 +38,9 @@ expect_error(
 )
 
 ## raster with valid crs
-raster::projection(rst) = "+init=epsg:28992"
+suppressWarnings(
+  raster::projection(rst) <- "+init=epsg:28992"
+)
 trgt = getTile(rst)@target
 
 expect_true(

@@ -141,10 +141,6 @@ Elassal AA (1989) General Cartographic Transformation Package (GCTP), Version
 II. NOAA Technical Report NOS124 CGS9. NOAA: Rockville, MD, USA. Available 
 online \href{https://www.cmascenter.org/ioapi/documentation/all_versions/html/GCTP.pdf}{here}
 (2018-09-13).
-
-Land Processes DAAC, USGS Earth Resources Observation and Science Center 
-(2011) MODIS Reprojection Tool User's Manual. Release 4.1, April 2011. 
-Available online \href{http://www2.fct.unesp.br/docentes/carto/enner/Processamento\%20MODIS/MRT_usermanual.pdf}{here}.
 }
 \seealso{
 \code{\link[MODIS]{MODISoptions}}, \code{\link[MODIS]{runGdal}}.

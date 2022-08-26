@@ -26,9 +26,9 @@ Compendium of minor \strong{MODIS} package-related functions.
 }
 \section{Functions}{
 \itemize{
-\item \code{search4map}: Simplifies search for \strong{mapdata}-based extents
-}}
+\item \code{search4map()}: Simplifies search for \strong{mapdata}-based extents
 
+}}
 \examples{
 \donttest{
 search4map()

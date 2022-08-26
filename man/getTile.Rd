@@ -51,7 +51,7 @@ Details.}
 
 \item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
 vertical tile number(s) of the 
-\href{https://nsidc.org/data/docs/daac/mod10_modis_snow/landgrid.html}{MODIS Sinusoidal grid}
+\href{https://modis-land.gsfc.nasa.gov/MODLAND_grid.html}{MODIS Sinusoidal grid}
 (e.g., \code{tileH = 1:5}). Cropping is disabled here and full tiles (if more 
 than one then also mosaicked) are processed instead. Ignored if \code{x} is 
 specified.}

@@ -38,5 +38,5 @@ Imports:
     utils
 ByteCompile: TRUE
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Suggests: tinytest

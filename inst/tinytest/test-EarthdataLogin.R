@@ -147,3 +147,20 @@ expect_identical(
 if (avl) {
   jnk = file.rename(paste0(nrc, ".backup"), nrc)
 }
+
+
+### checkEarthdataLogin() ----
+
+expect_true(
+  MODIS:::checkEarthdataLogin(
+    server = "LAADS"
+  )
+  , info = "LAADS login check succeeds (i.e. file exists, login correct)"
+)
+
+expect_true(
+  MODIS:::checkEarthdataLogin(
+    server = "LPDAAC"
+  )
+  , info = "LPDAAC login check succeeds (i.e. file exists, login correct)"
+)

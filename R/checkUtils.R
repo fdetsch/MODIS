@@ -1,6 +1,11 @@
 checkEarthdataLogin = function(
   method = NULL
+  , server = c("LPDAAC", "LAADS")
 ) {
+  
+  server = match.arg(
+    server
+  )
   
   ## credentials
   crd = credentials()
@@ -61,10 +66,23 @@ checkEarthdataLogin = function(
   wrn = getOption("warn")
   options(warn = 1)
   
+  remote_urls = genString(
+    "MCD64A1"
+    , collection = "061"
+    , date = "2019-12-01"
+  )$remotePath
+  
   txt = utils::capture.output(
     con <- try(
-      download.file(
-        url = "https://e4ftl01.cr.usgs.gov/MOTA/MCD64A1.006/2019.12.01/MCD64A1.A2019335.h32v11.006.2020036042913.hdf"
+      utils::download.file(
+        url = sprintf(
+          "%s/MCD64A1.A2019335.h32v11.061.2021309110404.hdf"
+          , switch(
+            server
+            , "LAADS" = remote_urls$LAADS
+            , "LPDAAC" = remote_urls$LPDAAC
+          )
+        )
         , destfile = tempfile(fileext = ".hdf")
         , mode = 'wb'
         , method = method

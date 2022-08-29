@@ -2,6 +2,9 @@
 
 #### ✨ features and improvements
 
+  * Enables the verification of Earthdata login credentials against multiple 
+    servers, e.g. if one is not reachable (#124)
+
 #### 🐛 bug fixes
 
 #### 💬 documentation etc

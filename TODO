@@ -31,7 +31,7 @@ whittaker.raster()
 - output file names not in agreement with MODIS naming convention (i.e., timestamps start/end at the 5th/11th position rather than 15th/21st)
 
 getHdf():
-- download is not possible for Swath products, see eg. https://github.com/MatMatt/MODIS/issues/18
+- download is not possible for Swath products, see eg. https://github.com/fdetsch/MODIS/issues/18
 
 getGranule():
 - tileH,tileV

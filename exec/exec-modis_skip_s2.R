@@ -30,7 +30,7 @@ job = sprintf(
 ## background:
 ## in `getTile,sf-method`, `sf::st_filter(sr, x)` would fail due to invalid 
 ## geometries in the input file and built-in `MODIS:::sr` data set (see also 
-## https://github.com/MatMatt/MODIS/issues/110). with `sf::sf_use_s2` 
+## https://github.com/fdetsch/MODIS/issues/110). with `sf::sf_use_s2` 
 ## deactivated, this operation succeeds.
 
 ## aoi
@@ -72,7 +72,7 @@ tfs1 = runGdal(
 ## background:
 ## in `getTile,Raster-method`, `sf::st_crop(sr, x)` would fail due to invalid 
 ## geometries in the built-in `MODIS:::sr` data set (see also
-## https://github.com/MatMatt/MODIS/issues/110). with `sf::sf_use_s2` 
+## https://github.com/fdetsch/MODIS/issues/110). with `sf::sf_use_s2` 
 ## deactivated, this operation succeeds.
 
 ## aoi

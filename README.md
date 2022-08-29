@@ -21,15 +21,8 @@ This month      | In total
 **MODIS** can be installed via 
 
 
-```S
-install.packages("MODIS")
-```
-
-
-To install the latest development version, first install **[devtools](https://cran.r-project.org/package=devtools)** and subsequently run
-
-```S
-devtools::install_github("MatMatt/MODIS", ref = "develop")
+```r
+remotes::install_github("fdetsch/MODIS")
 ```
 
 
@@ -45,4 +38,4 @@ devtools::install_github("MatMatt/MODIS", ref = "develop")
 
 ### Contact
 
-Please file bug reports and feature requests at https://github.com/MatMatt/MODIS/issues.
+Please file bug reports and feature requests at https://github.com/fdetsch/MODIS/issues.

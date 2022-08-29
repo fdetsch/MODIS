@@ -101,7 +101,7 @@ Bugfixes:
 
   * Curl-based download from LP DAAC.
   * "Error: object 'tid' not found" from climate modeling grids (CMG) not being identified as such, but treated as tiled products.
-  * Wrong dimension and resolution of images created by runGdal() when working with whole tiles instead of spatial subsets (i.e. 'tileH,tileV' specified; see <https://github.com/MatMatt/MODIS/issues/46>).
+  * Wrong dimension and resolution of images created by runGdal() when working with whole tiles instead of spatial subsets (i.e. 'tileH,tileV' specified; see <https://github.com/fdetsch/MODIS/issues/46>).
 
 Changes:
 
@@ -109,7 +109,7 @@ Changes:
   * EarthdataLogin() now allows multiple entries in a .netrc file in case users have other servers not related to Earthdata.
   * Disabled retrieval of MOD16 products from NTSG server, which is no longer updated.
   * When 'extent' is a country name, 'outProj' is taken from MODISoptions() rather than hard-coded EPSG:4326.
-  * If 'begin' falls in between two composite release dates, it is set back to start date of preceding release (see <https://github.com/MatMatt/MODIS/issues/43>).
+  * If 'begin' falls in between two composite release dates, it is set back to start date of preceding release (see <https://github.com/fdetsch/MODIS/issues/43>).
   * When working with Extent (raster) or bbox objects (sf) and 'outProj' and 'pixelSize' are "asIn", the output grid and resolution is aligned with the original MODIS Sinusoidal grid.
   * Replaced 'XML' package dependency through regular expression matching.
 
@@ -132,7 +132,7 @@ Changes:
 
   * Disabled use of EPSV (see <https://curl.haxx.se/libcurl/c/CURLOPT_FTP_USE_EPSV.html>) when downloading structure from LP DAAC, LAADS. The latter didn't work anymore with EPSV enabled.
   * getProduct() and getCollection() are now compatible with more than one input 'product' provided using eg. c().
-  * At the same time, pattern matching for a distinct set of products (see <https://github.com/MatMatt/MODIS/issues/22>) is switched off as long as a proper regular expression is omitted.
+  * At the same time, pattern matching for a distinct set of products (see <https://github.com/fdetsch/MODIS/issues/22>) is switched off as long as a proper regular expression is omitted.
   * The MODIS package is now licensed under the MIT license (<https://www.r-project.org/Licenses/MIT>).
 
 

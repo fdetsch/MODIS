@@ -742,7 +742,7 @@ fixOrphanedHoles = function(x) {
   sp::SpatialPolygons(fixed, proj4string = sp::CRS(sp::proj4string(x)))
 }
 
-## skip unwanted products, see https://github.com/MatMatt/MODIS/issues/22
+## skip unwanted products, see https://github.com/fdetsch/MODIS/issues/22
 skipDuplicateProducts = function(x, quiet = FALSE) {
   
   products = as.character(getProduct()[, 1])
@@ -764,7 +764,7 @@ skipDuplicateProducts = function(x, quiet = FALSE) {
 }
 
 ## if required, reset 'begin' of composite product to corresponding release 
-## date, see https://github.com/MatMatt/MODIS/issues/43
+## date, see https://github.com/fdetsch/MODIS/issues/43
 correctStartDate = function(begin, avDates, product, quiet = FALSE) {
   
   ## check if any older files exist  
@@ -798,7 +798,7 @@ correctStartDate = function(begin, avDates, product, quiet = FALSE) {
 
 ### s2 ----
 
-## see also https://github.com/MatMatt/MODIS/issues/110
+## see also https://github.com/fdetsch/MODIS/issues/110
 
 modis_skip_s2 = function() {
   

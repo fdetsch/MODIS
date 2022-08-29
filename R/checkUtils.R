@@ -1,14 +1,16 @@
 checkEarthdataLogin = function(
   method = NULL
   , server = c("LPDAAC", "LAADS")
+  , path = "~/.netrc"
 ) {
   
   server = match.arg(
     server
+    , several.ok = TRUE
   )
   
   ## credentials
-  crd = credentials()
+  crd = credentials(path = path)
   usr = crd$login; pwd = crd$password
   
   ## if not available, add entry to ~/.netrc
@@ -16,7 +18,7 @@ checkEarthdataLogin = function(
     is.null(usr) || usr == "" ||
     is.null(pwd) || pwd == ""
   ) {
-    crd = EarthdataLogin()
+    crd = EarthdataLogin(path = path)
     usr = crd$login; pwd = crd$password
   }
   
@@ -72,26 +74,54 @@ checkEarthdataLogin = function(
     , date = "2019-12-01"
   )$remotePath
   
-  txt = utils::capture.output(
-    con <- try(
-      utils::download.file(
-        url = sprintf(
-          "%s/MCD64A1.A2019335.h32v11.061.2021309110404.hdf"
-          , switch(
-            server
-            , "LAADS" = remote_urls$LAADS
-            , "LPDAAC" = remote_urls$LPDAAC
-          )
-        )
-        , destfile = tempfile(fileext = ".hdf")
-        , mode = 'wb'
-        , method = method
-        , quiet = TRUE
-        , extra = extra)
-      , silent = TRUE
-    )
-    , type = "message"
+  con = try(
+    log("e")
+    , silent = TRUE
   )
+  
+  for (remote_url in remote_urls) {
+    txt = utils::capture.output(
+      con <- try(
+        utils::download.file(
+          url = file.path(
+            remote_url
+            , "MCD64A1.A2019335.h32v11.061.2021309110404.hdf"
+          )
+          , destfile = tempfile(fileext = ".hdf")
+          , mode = 'wb'
+          , method = method
+          , quiet = TRUE
+          , extra = extra)
+        , silent = TRUE
+      )
+      , type = "message"
+    )
+    
+    if (!inherits(con, "try-error")) {
+      break
+    }
+  }
+  
+  # txt = utils::capture.output(
+  #   con <- try(
+  #     utils::download.file(
+  #       url = sprintf(
+  #         "%s/MCD64A1.A2019335.h32v11.061.2021309110404.hdf"
+  #         , switch(
+  #           server
+  #           , "LAADS" = remote_urls$LAADS
+  #           , "LPDAAC" = remote_urls$LPDAAC
+  #         )
+  #       )
+  #       , destfile = tempfile(fileext = ".hdf")
+  #       , mode = 'wb'
+  #       , method = method
+  #       , quiet = TRUE
+  #       , extra = extra)
+  #     , silent = TRUE
+  #   )
+  #   , type = "message"
+  # )
   
   options(warn = wrn)  
   

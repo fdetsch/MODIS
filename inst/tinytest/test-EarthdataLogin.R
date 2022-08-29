@@ -151,16 +151,16 @@ if (avl) {
 
 ### checkEarthdataLogin() ----
 
-expect_true(
+expect_error(
   MODIS:::checkEarthdataLogin(
-    server = "LAADS"
+    server = "LADS"
   )
-  , info = "LAADS login check succeeds (i.e. file exists, login correct)"
+  , pattern = "'arg' should be one of .*LPDAAC.*LAADS"
 )
 
 expect_true(
   MODIS:::checkEarthdataLogin(
-    server = "LPDAAC"
+    path = nrc
   )
-  , info = "LPDAAC login check succeeds (i.e. file exists, login correct)"
+  , info = "If LP DAAC fails, LAADS will still succeed unless file is missing"
 )

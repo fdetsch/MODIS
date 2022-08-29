@@ -61,3 +61,5 @@ separate issues
 Standardize 'Earthdata Login' spelling
 
 Enable Roxygen w/Markdown
+
+Assertion on `MODISoptions()`, e.g. valid entries for 'MODISserverOrder'

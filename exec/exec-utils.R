@@ -109,14 +109,13 @@ getLPDAACProductTypes = function(
   )
   
   ## construct server path suffixes
-  sfxs = x |> 
-    data.table::DT(
-      , paste(
-        tolower(product)
-        , collection
-        , sep = "v"
-      )
+  sfxs = x[
+    , paste(
+      tolower(product)
+      , collection
+      , sep = "v"
     )
+  ]
   
   ## define relevant metadata fields
   flds = c(
@@ -190,7 +189,7 @@ getLPDAACProductTypes = function(
     lst
     , idcol = "product"
   ) |> 
-    setnames(
+    data.table::setnames(
       old = c("X1", "X2")
       , new = c("variable", "value")
     ) |> 
@@ -285,7 +284,7 @@ listLAADSProducts = function(
   
   ## append collection info
   laads |> 
-    rbindlist(
+    data.table::rbindlist(
       idcol = "collection"
     )
 }
@@ -510,11 +509,11 @@ getNSIDCProductTypes = function(
   )
   
   ## long --> wide
-  dat = rbindlist(
+  dat = data.table::rbindlist(
     lst
     , idcol = "product"
   ) |> 
-    setnames(
+    data.table::setnames(
       old = c("X1", "X2")
       , new = c("variable", "value")
     ) |> 
@@ -532,7 +531,7 @@ getNSIDCProductTypes = function(
         # cmg
         grepl(
           "0.05 deg"
-          , `Spatial Resolution`
+          , `Spatial Coverage`
           , ignore.case = TRUE
         )
         , "CMG"

@@ -302,18 +302,6 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   }
   opt$gdalPath <- correctPath(opt$gdalPath)
 
-  if (
-    (
-      is.null(opt$EarthdataLogin) || # check never performed
-      isFALSE(opt$EarthdataLogin)    # check performed, but failed
-    ) && 
-    check_earthdata_login
-  ) {
-    opt$EarthdataLogin = checkEarthdataLogin(
-      opt$dlmethod
-    )
-  }
-  
   if(is.null(opt$MODISserverOrder))
   {
     opt$MODISserverOrder <- c("LPDAAC", "LAADS")
@@ -338,6 +326,19 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
       stop("Provide valid 'MODISserverOrder' see '?MODISoptions'") 
     }
   }  
+  
+  if (
+    (
+      is.null(opt$EarthdataLogin) || # check never performed
+      isFALSE(opt$EarthdataLogin)    # check performed, but failed
+    ) && 
+    check_earthdata_login
+  ) {
+    opt$EarthdataLogin = checkEarthdataLogin(
+      opt$dlmethod
+      , opt$MODISserverOrder
+    )
+  }
   
   # checks if the pointed GDAL exists and supports 'HDF4Image' driver.
   if(checkTools)

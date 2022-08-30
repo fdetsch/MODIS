@@ -1,15 +1,9 @@
-# MODIS 1.2.5.9001 (2022-08-29)
+# MODIS 1.2.6 (2022-08-30)
 
 #### ✨ features and improvements
 
-  * Enables the verification of Earthdata login credentials against multiple 
+  * Enables the verification of Earthdata login credentials against multiple
     servers, e.g. if one is not reachable (#124)
-
-#### 🐛 bug fixes
-
-#### 💬 documentation etc
-
-#### 🍬 miscellaneous
 
 
 # MODIS 1.2.5 (2022-08-26)

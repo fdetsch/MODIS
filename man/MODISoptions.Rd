@@ -60,12 +60,11 @@ non-standard formats.}
 server is selected, all efforts to download data from the second server 
 are inhibited.}
 
-\item{dlmethod}{\code{character}, defaults to \code{auto}. See 'method' in 
-\code{\link{download.file}}. On Unix (also Mac?), it is suggested to use 
-\code{"wget"} or, if installed, \code{"aria2"} (supports multi source download).
-Be aware that in order to download files from any server, either wget (default) 
-or curl must be installed and made available through the system's PATH 
-environmental variable.}
+\item{dlmethod}{\code{character}, defaults to \code{"auto"}. See 'method' in 
+\code{\link[utils]{download.file}} for available options. If installed, you 
+can also leverage \code{"aria2"} for multi-source download. Note that in any 
+case, either curl or wget must be installed and made available through the 
+system's PATH environment variable to validate Earthdata Login credentials.}
 
 \item{stubbornness}{\code{numeric}. The number of retries after the target 
 server has refused a connection. Higher values increase the chance of getting 

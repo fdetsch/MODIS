@@ -1,4 +1,4 @@
-# MODIS 1.2.6.9000 (2022-08-31)
+# MODIS 1.2.6.9001 (2022-08-31)
 
 #### ✨ features and improvements
 

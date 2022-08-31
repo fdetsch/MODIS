@@ -4,6 +4,10 @@
 
 #### 🐛 bug fixes
 
+  * Respects metacharacters in Earthdata Login passwords (#105), but does not 
+    allow for single quotes (i.e. `'`) when download method is other than curl 
+    to prevent from "sh: 1: Syntax error: Unterminated quoted string" errors
+
 #### 💬 documentation etc
 
 #### 🍬 miscellaneous

@@ -63,3 +63,9 @@ Standardize 'Earthdata Login' spelling
 Enable Roxygen w/Markdown
 
 Assertion on `MODISoptions()`, e.g. valid entries for 'MODISserverOrder'
+
+curl installed with {curl} package? 
+<-> would render `system('curl -h')` calls and testing for wget obsolete
+--> test in docker environment
+
+find appropriate place for `EarthdataLogin()` if usr and/or pwd is missing

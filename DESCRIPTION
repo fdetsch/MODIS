@@ -9,7 +9,7 @@ Authors@R: c(
 Description: Download and processing functionalities for the Moderate Resolution
     Imaging Spectroradiometer (MODIS). The package provides automated access to the
     global online data archives LP DAAC (<https://lpdaac.usgs.gov/>), LAADS 
-    (<https://ladsweb.modaps.eosdis.nasa.gov/>) and NSIDC (<https://nsidc.org/>) 
+    (<https://ladsweb.modaps.eosdis.nasa.gov/>) and NSIDC (<https://nsidc.org/home>) 
     as well as processing capabilities such as file conversion, mosaicking, 
     subsetting and time series filtering.
 License: MIT + file LICENSE

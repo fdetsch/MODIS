@@ -162,7 +162,7 @@ expect_warning(
   out2.0 <- MODIS:::checkEarthdataLogin(
     path = nrc
   )
-  , pattern = "Authentication failed.*Please check your Earthdata credentials"
+  , pattern = "Authentication failed with\n> HTTP error 400"
 )
 
 expect_false(

@@ -1,4 +1,4 @@
-MODIS 1.2.6.9001 (2022-08-31)
+MODIS 1.2.6.9002 (2022-09-01)
 
 features and improvements
 
@@ -23,11 +23,11 @@ features and improvements
 
 MODIS 1.2.5 (2022-08-26)
 
-New features:
+features and improvements
 
   * Extended list of supported MODIS products and collections (#118)
 
-Changes:
+miscellaneous
 
   * Set sf::sf_use_s2(FALSE) for spherical geometry (#110)
   * Introduces further checks for valid Earthdata Login credentials (#111, #114)
@@ -35,17 +35,17 @@ Changes:
 
 MODIS 1.2.3
 
-Bugfixes:
+bug fixes
 
   * Explicitly format sf::st_drivers() name columns as 'character', which caused problems on systems running R ).
 
-Bugfixes:
+bug fixes
 
   * Curl-based download from LP DAAC.
   * "Error: object 'tid' not found" from climate modeling grids (CMG) not being identified as such, but treated as tiled products.
   * Wrong dimension and resolution of images created by runGdal() when working with whole tiles instead of spatial subsets (i.e. 'tileH,tileV' specified; see ).
 
-Changes:
+miscellaneous
 
   * Code adjustments related to LAADS transition from FTP to HTTPS. In this context, lpdaacLogin() is now deprecated and has been replaced with EarthdataLogin() since both LP DAAC and LAADS require the specification of Earthdata login credentials.
   * EarthdataLogin() now allows multiple entries in a .netrc file in case users have other servers not related to Earthdata.
@@ -58,19 +58,19 @@ Changes:
 
 MODIS 1.1.2
 
-New features:
+features and improvements
 
   * Added remaining products from the LP DAAC MODIS Products Table ().
   * Explicit specification of 'pos1','pos2' arguments passed to extractDate() and orgTime() is no longer required when dealing with standard MODIS file names.
 
-Bugfixes:
+bug fixes
 
   * 'unable to find an inherited method for function 'extent' for signature '"MODISextent"'' from getHdf() when 'extent' was a Spatial* object.
   * 'Error in rgdal::rawTransform(projfrom, projto, nrow(xy), xy[, 1], xy[, : no arguments in initialization list' due to insufficient strsplit() on Windows
   * Orphaned hole and self-intersection errors from getTile() due to some non-valid geometries in map("worldHires", ...) (eg. "Philippines", "Spain").
   * 'DATE' subfolder was created in getOption("MODIS_localArcPath") when running MODIS:::genString() with no particular date specified.
 
-Changes:
+miscellaneous
 
   * Disabled use of EPSV (see ) when downloading structure from LP DAAC, LAADS. The latter didn't work anymore with EPSV enabled.
   * getProduct() and getCollection() are now compatible with more than one input 'product' provided using eg. c().
@@ -80,20 +80,20 @@ Changes:
 
 MODIS 1.1.0
 
-New features:
+features and improvements
 
   * getTile() now supports interactive tile selection from the MODIS Sinusoidal grid powered by mapedit ().
   * Creation of yearly composite layers has been made available through temporalComposite() and aggInterval().
   * Meaning of 'quiet' argument in MODISoptions() has changed and now determines whether getHdf() (or runGdal()) print download information to the console.
 
-Bugfixes:
+bug fixes
 
   * 'condition has length > 1' warning message from transDate() when specifying multiple 'begin' or 'end' dates.
   * 'no non-missing arguments to min (max); returning Inf' warning message from getTile() when 'x' was missing and 'tileH' or 'tileV' were specified as numeric.
   * ''begin' and 'end' dates seem to be confused, reordering dates...' warning message from aggInterval() when actual end date (ie end of current fortnightly/monthly time interval) lies in the future.
   * 'length of 'dimnames' [2] not equal to array extent' error in temporalComposite() when only one layer is available for a particular aggregation period.
 
-Changes:
+miscellaneous
 
   * transDate() is now also compatible with true 'Date' objects.
   * Argument 'buffer' is no longer available for getTile(). As a result, rgeos could be removed from package imports.
@@ -104,5 +104,3 @@ Changes:
 
 
 MODIS 1.0.0
-
-* Initial release

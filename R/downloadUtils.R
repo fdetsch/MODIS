@@ -138,15 +138,22 @@ downloadFileCurl = function(
   ## set up curl handle
   h = curl::new_handle()
   
-  curl::handle_setopt(
+  args = list(
     handle = h
     , userpwd = paste0(usr, ":", pwd)
-    , httpauth = as.integer(
-      srv == "LAADS"
-    )
+    , httpauth = 1L
     , cookiefile = cookies # read
     , cookiejar = cookies # write
     , connecttimeout = 60L
+  )
+  
+  if (srv != "LAADS") {
+    args$httpauth = NULL
+  }
+  
+  do.call(
+    curl::handle_setopt
+    , args = args
   )
   
   ## download

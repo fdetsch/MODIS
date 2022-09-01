@@ -313,28 +313,26 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
 
   if(is.null(opt$MODISserverOrder))
   {
-    opt$MODISserverOrder <- c("LPDAAC", "LAADS")
+    opt$MODISserverOrder <- c("LPDAAC", "LAADS", "NSIDC")
   }
-  if (!missing(MODISserverOrder))
-  {
-    MODISserverOrder <- toupper(MODISserverOrder)
-    if(length(MODISserverOrder)==1)
-    {
-      if("LPDAAC" %in% MODISserverOrder | "LAADS" %in% MODISserverOrder)
-      {
-        opt$MODISserverOrder <- MODISserverOrder   
-      }
-    } else if(length(MODISserverOrder)==2)
-    {
-      if("LPDAAC" %in% MODISserverOrder & "LAADS" %in% MODISserverOrder)
-      {
-        opt$MODISserverOrder <- MODISserverOrder   
-      }
-    } else
-    {
-      stop("Provide valid 'MODISserverOrder' see '?MODISoptions'") 
+  if (!missing(MODISserverOrder)) {
+    
+    MODISserverOrder = intersect(
+      toupper(
+        MODISserverOrder
+      )
+      , c("LPDAAC", "LAADS", "NSIDC")
+    )
+    
+    if (length(MODISserverOrder) == 0L) {
+      stop(
+        "Provide valid 'MODISserverOrder', see `?MODISoptions()`."
+        , call. = FALSE
+      ) 
     }
-  }  
+    
+    opt$MODISserverOrder = MODISserverOrder
+  }
   
   if (
     (

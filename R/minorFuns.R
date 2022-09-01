@@ -346,13 +346,9 @@ makeRandomString <- function(n=1, length=12)
 ModisFileDownloader <- function(x, ...)
 {
     x <- basename(x)
-
-    # earthdata login credentials (here for simplicity)
-    usr = credentials()$login
-    pwd = credentials()$password
     
     opts <- combineOptions(...)
-
+    
     opts$stubbornness <- stubborn(opts$stubbornness)
     opts$quiet <- as.logical(opts$quiet)
     
@@ -401,81 +397,20 @@ ModisFileDownloader <- function(x, ...)
             }
               
             server <- names(path$remotePath)
-            if (length(server) > 1)
+            if (length(server) > 1) {
               server <- server[which(server %in% opts$MODISserverOrder[hv[g]])]
+            }
               
             infile <- paste(path$remotePath[id_remotepath], x[a], sep = "/", 
                             collapse = "")
             
-            ## adapt 'dlmethod' and 'extra' if server == "LPDAAC"
-            if (!opts$dlmethod %in% c("wget", "curl")) {
-              
-              cmd = try(system("wget -h", intern = TRUE), silent = TRUE)
-              method = "wget"
-              
-              if (inherits(cmd, "try-error")) {
-                cmd = try(system("curl -h", intern = TRUE), silent = TRUE)
-                method = "curl"
-              }
-              
-              if (inherits(cmd, "try-error")) {
-                stop("Make sure either 'wget' or 'curl' is available in "
-                     , "order to download data.")
-              }
-            } else {
-              method <- opts$dlmethod
-            }
-            
-            # LAADS + `wget` --> download failure
-            # <-> use `curl` instead
-            if (server == "LAADS" && method == "wget") {
-              method = "curl"
-            }
-            
-            # cookies
-            ofl = file.path(tempdir(), ".cookies.txt")
-            if (!file.exists(ofl))
-              jnk = file.create(ofl)
-            on.exit(file.remove(ofl))
-            
-            # wget extras
-            extra <- if (method == "wget") {
-              paste("--user", usr, "--password", pwd
-                    , "--load-cookies", ofl
-                    , "--save-cookies", ofl
-                    , "--keep-session-cookie --no-check-certificate")
-              
-              # curl extras  
-            } else {
-              paste('--user', paste(usr, pwd, sep = ":")
-                    , '-k -L -c', ofl, '-b', ofl)
-            }
-            
-            
-            # curl download
-            out[a] = if (method == "curl") {
-              h = curl::new_handle(CONNECTTIMEOUT = 60L)
-              curl::handle_setopt(
-                handle = h,
-                httpauth = 1,
-                userpwd = paste0(usr, ":",pwd)
-              )
-              
-              tmp = try(curl::curl_download(infile, destfile, quiet = opts$quiet
-                                            , handle = h), silent = TRUE)
-              
-              # imitate download.file() (ie. 0 = success, non-zero = failure)
-              ifelse(inherits(tmp, "character"), 0, 1)
-              
-            # LAADS or non-curl download  
-            } else {
-              
-              try(
-              download.file(url = infile, destfile = destfile, mode = 'wb', 
-                            method = method, quiet = opts$quiet, 
-                            cacheOK = TRUE, extra = extra),
-                          silent = TRUE)
-            }
+            # download
+            out[a] = downloadFile(
+              url = infile
+              , destfile = destfile
+              , method = opts$dlmethod
+              , quiet = opts$quiet
+            )
           }
           if (is.na(out[a])) {cat("File not found!\n"); unlink(destfile); break} # if NA then the url name is wrong!
           if (out[a]!=0 & !opts$quiet) {cat("Remote connection failed! Re-try:",g,"\r")} 

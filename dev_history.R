@@ -146,3 +146,27 @@ if (!dir.exists("exec")) {
 file.edit(
   "exec/exec-modis_laads_dl.R"
 )
+
+
+## 2022-09-01 ====
+
+library(MODIS)
+
+product = "MCD12Q1"
+
+clc = getCollection(
+  product
+  , forceCheck = TRUE
+)
+
+(
+  hdfs = getHdf(
+    product
+    , collection = clc
+    , begin = "2000.01.01"
+    , end = "2003.12.31"
+    , tileH = 21L
+    , tileV = 9L
+    , MODISserverOrder = c("LPDAAC", "LAADS")
+  )
+)

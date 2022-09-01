@@ -223,15 +223,17 @@ runGdal <- function(product, collection=NULL,
         
         n = 1L
         for (i in server[idx]) {
-          struc = try(
-            getStruc(
-              product = prodname
-              , collection = coll
-              , begin = tLimits$begin
-              , end = tLimits$end
-              , server = i
+          jnk = utils::capture.output(
+            struc <- try(
+              getStruc(
+                product = prodname
+                , collection = coll
+                , begin = tLimits$begin
+                , end = tLimits$end
+                , server = i
+              )
+              , silent = TRUE
             )
-            , silent = TRUE
           )
           
           if (!inherits(struc, "try-error")) {

@@ -281,7 +281,7 @@ filesUrl <- function(url)
   on.exit(options(warn = iw))
   
   h <- curl::new_handle(
-    connecttimeout = 10L
+    connecttimeout = 60L
   )
   
   ## laads, nsidc require login

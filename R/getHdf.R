@@ -187,16 +187,18 @@ setMethod("getHdf",
         
         n = 1L
         for (i in server[idx]) {
-          onlineInfo = try(
-            getStruc(
-              product = prodname
-              , collection = coll
-              , begin = tLimits$begin
-              , end = tLimits$end
-              , server = i
-              , sturheit = "low"
+          jnk = utils::capture.output(
+            onlineInfo <- try(
+              getStruc(
+                product = prodname
+                , collection = coll
+                , begin = tLimits$begin
+                , end = tLimits$end
+                , server = i
+                , wait = wait
+              )
+              , silent = TRUE
             )
-            , silent = TRUE
           )
           
           if (!inherits(onlineInfo, "try-error")) {

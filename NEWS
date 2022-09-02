@@ -1,6 +1,10 @@
-MODIS 1.2.6.9002 (2022-09-01)
+MODIS 1.2.6.9003 (2022-09-02)
 
 features and improvements
+
+  * Implements major changes to the download routines, including separate HTTP
+    server authentication for LAADS only (i.e. httpauth = 1) to prevent empty
+    file download from other servers (#123)
 
 bug fixes
 

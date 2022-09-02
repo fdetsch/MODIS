@@ -354,6 +354,16 @@ for (i in 1:2) {
 
 ### sysdata ----
 
+# waldo::compare(
+#   MODIS:::MODIS_Products # old
+#   , MODIS_Products # new
+# )
+# 
+# waldo::compare(
+#   MODIS:::MODIScollection
+#   , MODIScollectiony
+# )
+
 do.call(
   usethis::use_data
   , c(

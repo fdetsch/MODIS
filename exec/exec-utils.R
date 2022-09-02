@@ -460,6 +460,12 @@ getNSIDCProductTypes = function(
     , "flds"
     , envir = environment()
   )
+  jnk = parallel::clusterEvalQ(
+    cl
+    , {
+      source("exec/exec-utils.R")
+    }
+  )
   
   ## cycle through suffixes
   lst = parallel::clusterMap(
@@ -480,6 +486,16 @@ getNSIDCProductTypes = function(
       # scrape web content
       lns = readLines(con)
       
+      ids_fl = grep(
+        "field__label"
+        , lns
+      )
+      
+      ids_fi = grep(
+        "field__item"
+        , lns
+      )
+      
       # extract required information
       out = vector(
         "list"
@@ -487,45 +503,22 @@ getNSIDCProductTypes = function(
       )
       
       for (i in 1:length(flds)) {
-        # coverage
-        if (i == 1) {
-          id = grep(
-            flds[i]
-            , lns
+        out[[i]] = if (flds[i] == "Spatial Coverage") {
+          getNSIDCProductSpatialCoverage(
+            lns
+            , field_labels = ids_fl
+            , field_items = ids_fi
           )
-          
-          cnt = lns[id:(id + 3)]
-        }
-        
-        # resolution
-        if (i %in% 2:3) {
-          cnt = grep(
-            flds[i]
-            , lns
-            , value = TRUE
+        } else if (flds[i] == "Spatial Resolution") {
+          getNSIDCProductSpatialResolution(
+            lns
+            , field_items = ids_fi
+          )
+        } else if (flds[i] == "Temporal Resolution") {
+          getNSIDCProductTemporalResolution(
+            lns
           )
         }
-        
-        xtr = stringr::str_extract_all(
-          cnt
-          , ">[A-z0-9 :\\.-]+<?"
-        ) |> 
-          unlist() |> 
-          (
-            \(x) gsub(">|:?<", "", x)
-          )()
-        
-        out[[i]] = c(
-          xtr[1]
-          , if (i == 3) {
-            xtr[2]
-          } else {
-            paste(
-              xtr[2:length(xtr)]
-              , collapse = ", "
-            )
-          }
-        )
       }
       
       do.call(
@@ -560,7 +553,7 @@ getNSIDCProductTypes = function(
         # cmg
         grepl(
           "0.05 deg"
-          , `Spatial Coverage`
+          , `Spatial Resolution`
           , ignore.case = TRUE
         )
         , "CMG"
@@ -580,3 +573,140 @@ getNSIDCProductTypes = function(
   )
 }
 
+
+getNSIDCProductSpatialCoverage = function(
+  x
+  , field_labels
+  , field_items
+) {
+  
+  id = grep(
+    "Spatial Coverage"
+    , x
+  )
+  
+  ## find relevant field labels (i.e. N, S, E, W)
+  ids_fl1 = field_labels[
+    field_labels > id
+  ][
+    1:4
+  ]
+  
+  ## find relevant field items (i.e. coordinates)
+  ids_fi1 = field_items[
+    field_items > id
+  ][
+    1:4
+  ]
+  
+  ids = c(
+    ids_fl1
+    , ids_fi1
+  ) |> 
+    sort()
+  
+  ## extract values
+  cnt = x[
+    ids
+  ]
+  
+  xtr = regmatches(
+    cnt
+    , m = regexpr(
+      pattern = ">[NSEW0-9:\\.-]+<?"
+      , text = cnt
+    )
+  ) |> 
+    (
+      \(x) gsub(">|:?<", "", x)
+    )()
+  
+  ## create output
+  args = c(
+    list(
+      "%s %s, %s %s, %s %s, %s %s"
+    )
+    , as.list(xtr)
+  )
+  
+  c(
+    "Spatial Coverage"
+    , do.call(
+      sprintf
+      , args = args
+    )
+  )
+}
+
+
+getNSIDCProductSpatialResolution = function(
+  x
+  , field_items
+) {
+  
+  id = grep(
+    "Spatial Resolution"
+    , x
+  )
+  
+  ## find relevant field items (i.e. coordinates)
+  ids = field_items[
+    field_items > id
+  ][
+    1:2
+  ]
+  
+  ## extract values
+  cnt = x[
+    ids
+  ]
+  
+  xtr = regmatches(
+    cnt
+    , m = regexpr(
+      pattern = ">[A-z0-9\\. ]+<?"
+      , text = cnt
+    )
+  ) |> 
+    (
+      \(x) gsub(">|<", "", x)
+    )() |> 
+    tolower()
+  
+  c(
+    "Spatial Resolution"
+    , paste(
+      xtr
+      , collapse = ", "
+    )
+  )
+}
+
+
+getNSIDCProductTemporalResolution = function(
+  x
+) {
+  
+  ## extract values
+  cnt = grep(
+    "Temporal Resolution"
+    , x
+    , value = TRUE
+  )
+  
+  xtr = regmatches(
+    cnt
+    , m = regexpr(
+      pattern = ">[0-9]{1}[A-z0-9 ]+<"
+      , text = cnt
+    )
+  ) |> 
+    (
+      \(x) gsub(">|<", "", x)
+    )()
+  
+  c(
+    "Temporal Resolution"
+    , xtr
+  )
+}

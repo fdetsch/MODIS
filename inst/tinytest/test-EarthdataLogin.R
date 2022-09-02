@@ -107,11 +107,6 @@ expect_identical(
   , info = "credentials are extracted correctly in the presence of 2+ entries"
 )
 
-## delete temporary .netrc file
-jnk = file.remove(
-  nrc
-)
-
 
 ## `EarthdataLogin()` ====
 
@@ -143,11 +138,6 @@ expect_identical(
   , info = "other credentials remain untouched when updating .netrc"
 )
 
-## if applicable, restore previous .netrc file
-if (avl) {
-  jnk = file.rename(paste0(nrc, ".backup"), nrc)
-}
-
 
 ### checkEarthdataLogin() ----
 
@@ -162,7 +152,7 @@ expect_warning(
   out2.0 <- MODIS:::checkEarthdataLogin(
     path = nrc
   )
-  , pattern = "Authentication failed with\n> HTTP error 400"
+  , pattern = "Authentication failed with\n> HTTP error 401"
 )
 
 expect_false(
@@ -198,3 +188,13 @@ expect_warning(
 expect_false(
   out2.1
 )
+
+## delete temporary .netrc file
+jnk = file.remove(
+  nrc
+)
+
+## if applicable, restore previous .netrc file
+if (avl) {
+  jnk = file.rename(paste0(nrc, ".backup"), nrc)
+}

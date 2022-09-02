@@ -1,4 +1,4 @@
-# MODIS 1.2.7 (2022-09-02)
+# MODIS 1.2.6.9003 (2022-09-02)
 
 #### ✨ features and improvements
 
@@ -11,6 +11,12 @@
   * Respects metacharacters in Earthdata Login passwords (#105), but does not
     allow for single quotes (i.e. `'`) when download method is other than curl
     to prevent from "sh: 1: Syntax error: Unterminated quoted string" errors
+
+#### 🍬 miscellaneous
+
+  * Updates built-in product data:
+    - removes NSIDC swath products MOD/MYD10_L2 and MOD/MYD29 from products list
+    - discards LAADS products with empty folders (discussed in #123)
 
 
 # MODIS 1.2.6 (2022-08-30)

@@ -290,6 +290,35 @@ listLAADSProducts = function(
 }
 
 
+rejectLAADSEmptyProducts = function(
+  x
+) {
+  
+  ## cycle through collection-product combos
+  inputs = sprintf(
+    "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/%s/%s.csv"
+    , as.integer(x$collection)
+    , x$product
+  )
+  
+  idx = sapply(
+    inputs
+    , \(input) {
+      
+      # scrape web content
+      data.table::fread(
+        input
+      ) |> 
+        nrow()
+    }
+  ) >= 1L
+  
+  x[
+    idx
+  ]
+}
+
+
 ## NSIDC ====
 
 listNSIDCProducts = function(

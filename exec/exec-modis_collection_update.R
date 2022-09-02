@@ -58,6 +58,10 @@ laads = merge(
 ) |> 
   na.omit()
 
+laads = rejectLAADSEmptyProducts(
+  laads
+)
+
 
 ### nsidc ----
 

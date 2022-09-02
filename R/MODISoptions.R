@@ -29,12 +29,11 @@
 #' (default) and \code{"LAADS"} (see 'dlmethod' and 'Details'). If only one 
 #' server is selected, all efforts to download data from the second server 
 #' are inhibited.
-#' @param dlmethod \code{character}, defaults to \code{auto}. See 'method' in 
-#' \code{\link{download.file}}. On Unix (also Mac?), it is suggested to use 
-#' \code{"wget"} or, if installed, \code{"aria2"} (supports multi source download).
-#' Be aware that in order to download files from any server, either wget (default) 
-#' or curl must be installed and made available through the system's PATH 
-#' environmental variable.
+#' @param dlmethod \code{character}, defaults to \code{"auto"}. See 'method' in 
+#' \code{\link[utils]{download.file}} for available options. If installed, you 
+#' can also leverage \code{"aria2"} for multi-source download. Note that in any 
+#' case, either curl or wget must be installed and made available through the 
+#' system's PATH environment variable to validate Earthdata Login credentials.
 #' @param stubbornness \code{numeric}. The number of retries after the target 
 #' server has refused a connection. Higher values increase the chance of getting 
 #' the file, but also lead to hanging functions if the server is down.
@@ -268,7 +267,17 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   if(!missing(dlmethod))
   {
     dlmethod <- tolower(dlmethod)
-    stopifnot(dlmethod %in% c("auto","internal","wget","curl","lynx","aria2"))
+    stopifnot(
+      dlmethod %in% c(
+        "internal"
+        , if (Sys.info()[["sysname"]] == "Windows") "wininet"
+        , "libcurl"
+        , "wget"
+        , "curl"
+        , "auto"
+        , "aria2"
+      )
+    )
     opt$dlmethod <- dlmethod
   }
   
@@ -304,28 +313,26 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
 
   if(is.null(opt$MODISserverOrder))
   {
-    opt$MODISserverOrder <- c("LPDAAC", "LAADS")
+    opt$MODISserverOrder <- c("LPDAAC", "LAADS", "NSIDC")
   }
-  if (!missing(MODISserverOrder))
-  {
-    MODISserverOrder <- toupper(MODISserverOrder)
-    if(length(MODISserverOrder)==1)
-    {
-      if("LPDAAC" %in% MODISserverOrder | "LAADS" %in% MODISserverOrder)
-      {
-        opt$MODISserverOrder <- MODISserverOrder   
-      }
-    } else if(length(MODISserverOrder)==2)
-    {
-      if("LPDAAC" %in% MODISserverOrder & "LAADS" %in% MODISserverOrder)
-      {
-        opt$MODISserverOrder <- MODISserverOrder   
-      }
-    } else
-    {
-      stop("Provide valid 'MODISserverOrder' see '?MODISoptions'") 
+  if (!missing(MODISserverOrder)) {
+    
+    MODISserverOrder = intersect(
+      toupper(
+        MODISserverOrder
+      )
+      , c("LPDAAC", "LAADS", "NSIDC")
+    )
+    
+    if (length(MODISserverOrder) == 0L) {
+      stop(
+        "Provide valid 'MODISserverOrder', see `?MODISoptions()`."
+        , call. = FALSE
+      ) 
     }
-  }  
+    
+    opt$MODISserverOrder = MODISserverOrder
+  }
   
   if (
     (

@@ -40,7 +40,7 @@ if ( !isGeneric("getHdf") ) {
 #' \itemize{
 #' \item{NASA Land Processes Distributed Active Archive Center (\href{https://lpdaac.usgs.gov/}{LP DAAC})},
 #' \item{Level-1 and Atmosphere Archive & Distribution System (\href{https://ladsweb.modaps.eosdis.nasa.gov/}{LAADS})}, and
-#' \item{National Snow & Ice Data Center (\href{https://nsidc.org/}{NSIDC})}.
+#' \item{National Snow & Ice Data Center (\href{https://nsidc.org/home}{NSIDC})}.
 #' }
 #' 
 #' @author 
@@ -167,62 +167,64 @@ setMethod("getHdf",
         ## ensure compatibility with servers other than those specified in 
         ## `opts$MODISserverOrder`, e.g. when downloading 'MOD16A2' from NTSG
         server <- product@SOURCE[[z]]
-
-        if (!any(server == "NSIDC")) {
-          
-          ## if product is not available from desired server, throw error        
-          if (!any(opts$MODISserverOrder %in% server)) {
-            stop(paste(product@PRODUCT[z], product@CCC[[z]], sep = ".")
-                 , " is available from "
-                 , paste(server, collapse = " and ")
-                 , " only, please adjust 'MODISoptions(MODISserverOrder = ...)' accordingly.")
-          }
-          
-          ## align with servers specified in 'MODISserverOrder' -> idenfify 
-          ## priority and, if applicable, alternative download server
-          server = unlist(sapply(opts$MODISserverOrder, function(i) {
-            grep(i, server, value = TRUE)
-          }))
-          
-        }
         
-        server_alt = ifelse(length(server) > 1, server[2], NA)
-        server = server[1]
+        jnk = strsplit(todo[u],"\\.")[[1]]
+        prodname = jnk[1] 
+        coll     = jnk[2]
         
-        opts$MODISserverOrder = as.character(na.omit(c(server, server_alt)))
-
-        ## this time, suppress console output from `getStruc`
-        jnk <- capture.output(
-          onlineInfo <- suppressWarnings(
-            getStruc(product = product@PRODUCT[z], server = server, 
-                     collection = product@CCC[[z]], begin = tLimits$begin, 
-                     end = tLimits$end, wait = wait)
+        # cycle through available servers
+        idx = stats::na.omit(
+          match(
+            opts$MODISserverOrder
+            , server
           )
         )
         
-        if(!is.na(onlineInfo$online))
-        {
-          if (!onlineInfo$online & !is.na(server_alt) & 
-              server %in% c("LPDAAC", "LAADS"))
-          {
-            cat(server," seems not online, trying on '",server_alt,"':\n",sep="")
-            jnk = capture.output(
-              onlineInfo <- getStruc(product = product@PRODUCT[z], collection = product@CCC[[z]],
-                                     begin = tLimits$begin, end = tLimits$end, 
-                                     wait = wait, server = server_alt)
+        onlineInfo = try(
+          log("e")
+          , silent = TRUE
+        )
+        
+        n = 1L
+        for (i in server[idx]) {
+          jnk = utils::capture.output(
+            onlineInfo <- try(
+              getStruc(
+                product = prodname
+                , collection = coll
+                , begin = tLimits$begin
+                , end = tLimits$end
+                , server = i
+                , wait = wait
+              )
+              , silent = TRUE
             )
+          )
+          
+          if (!inherits(onlineInfo, "try-error")) {
+            opts$MODISserverOrder = server[idx][n:length(idx)]
+            break
           }
-          if(is.null(onlineInfo$dates))
-          {
-            stop("Could not connect to server(s), and no data is available offline!\n")
-          }
-          if(!is.na(onlineInfo$online))
-          {
-            if(!onlineInfo$online & !forceDownload)
-            {
-              cat("Could not connect to server(s), data download disabled! Try to set 'forceDownload = TRUE' in order to enable online file download...\n")
-            }
-          }
+          
+          n = n + 1L
+        }
+        
+        if (inherits(onlineInfo, "try-error")) {
+          stop(
+            sprintf(
+              paste0(
+                "'%s.%s' is not available on %s or the server is currently not "
+                , "reachable. If applicable, try another server or collection."
+              )
+              , prodname
+              , coll
+              , paste(
+                opts$MODISserverOrder
+                , collapse = ", "
+              )
+            )
+            , call. = FALSE
+          )
         }
         
         datedirs <- as.Date(onlineInfo$dates)

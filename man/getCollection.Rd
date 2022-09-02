@@ -23,7 +23,7 @@ collection number formatted based on the \code{as} parameter or \code{FALSE}
 if it doesn't exists. The check is performed on 
 \href{https://lpdaac.usgs.gov/}{LP DAAC} as the exclusive source for several 
 products or, for snow cover (MOD/MYD10) and sea ice extent (MOD/MYD29), 
-\href{https://nsidc.org/}{NSIDC}.}
+\href{https://nsidc.org/home}{NSIDC}.}
 
 \item{newest}{\code{logical}. If \code{TRUE} (default), return only the 
 newest collection, else return all available collections.}

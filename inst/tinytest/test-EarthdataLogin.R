@@ -158,9 +158,43 @@ expect_error(
   , pattern = "'arg' should be one of .*LPDAAC.*LAADS"
 )
 
-expect_true(
-  MODIS:::checkEarthdataLogin(
+expect_warning(
+  out2.0 <- MODIS:::checkEarthdataLogin(
     path = nrc
   )
-  , info = "If LP DAAC fails, LAADS will still succeed unless file is missing"
+  , pattern = "Authentication failed with\n> HTTP error 400"
+)
+
+expect_false(
+  out2.0
+)
+
+## early exit: single quotes in password
+lns2 = readLines(
+  nrc
+)
+
+write(
+  gsub("557", "5'7", lns2)
+  , file = nrc
+)
+
+expect_error(
+  MODIS:::downloadFile(
+    method = "wget"
+    , path = nrc
+  )
+  , pattern = "Earthdata passwords .* must not contain single quotes"
+)
+
+expect_warning(
+  out2.1 <- MODIS:::checkEarthdataLogin(
+    method = "wget"
+    , path = nrc
+  )
+  , pattern = "Authentication failed.*must not contain single quotes"
+)
+
+expect_false(
+  out2.1
 )

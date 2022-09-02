@@ -97,7 +97,7 @@ MODIS data is currently available from the online data pools at
 \itemize{
 \item{NASA Land Processes Distributed Active Archive Center (\href{https://lpdaac.usgs.gov/}{LP DAAC})},
 \item{Level-1 and Atmosphere Archive & Distribution System (\href{https://ladsweb.modaps.eosdis.nasa.gov/}{LAADS})}, and
-\item{National Snow & Ice Data Center (\href{https://nsidc.org/}{NSIDC})}.
+\item{National Snow & Ice Data Center (\href{https://nsidc.org/home}{NSIDC})}.
 }
 }
 \author{

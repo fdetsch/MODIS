@@ -203,17 +203,68 @@ runGdal <- function(product, collection=NULL,
         ftpdirs      <- list()
         
         server = product@SOURCE[[z]]
-        if (length(server) > 1) {
-          server = server[which(server == opts$MODISserverOrder[1])]
-        } 
-          
-        ftpdirs[[1]] <- as.Date(getStruc(product = strsplit(todo[u], "\\.")[[1]][1],
-                                         collection = strsplit(todo[u], "\\.")[[1]][2],
-                                         begin = tLimits$begin, end = tLimits$end,
-                                         server = server)$dates)
         
-        prodname <- strsplit(todo[u],"\\.")[[1]][1] 
-        coll     <- strsplit(todo[u],"\\.")[[1]][2]
+        jnk = strsplit(todo[u],"\\.")[[1]]
+        prodname = jnk[1] 
+        coll     = jnk[2]
+        
+        # cycle through available servers
+        idx = stats::na.omit(
+          match(
+            opts$MODISserverOrder
+            , server
+          )
+        )
+        
+        struc = try(
+          log("e")
+          , silent = TRUE
+        )
+        
+        n = 1L
+        for (i in server[idx]) {
+          jnk = utils::capture.output(
+            struc <- try(
+              getStruc(
+                product = prodname
+                , collection = coll
+                , begin = tLimits$begin
+                , end = tLimits$end
+                , server = i
+              )
+              , silent = TRUE
+            )
+          )
+          
+          if (!inherits(struc, "try-error")) {
+            opts$MODISserverOrder = server[idx][n:length(idx)]
+            break
+          }
+          
+          n = n + 1L
+        }
+        
+        if (inherits(struc, "try-error")) {
+          stop(
+            sprintf(
+              paste0(
+                "'%s.%s' is not available on %s or the server is currently not "
+                , "reachable. If applicable, try another server or collection."
+              )
+              , prodname
+              , coll
+              , paste(
+                opts$MODISserverOrder
+                , collapse = ", "
+              )
+            )
+            , call. = FALSE
+          )
+        }
+        
+        ftpdirs[[1]] = as.Date(
+          struc$dates
+        )
         
         avDates <- ftpdirs[[1]]
         avDates <- avDates[avDates!=FALSE]

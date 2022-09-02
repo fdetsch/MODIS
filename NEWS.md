@@ -2,6 +2,10 @@
 
 #### ✨ features and improvements
 
+  * Implements major changes to the download routines, including separate HTTP 
+    server authentication for LAADS only (i.e. `httpauth = 1`) to prevent empty 
+    file download from other servers (#123)
+
 #### 🐛 bug fixes
 
   * Respects metacharacters in Earthdata Login passwords (#105), but does not 

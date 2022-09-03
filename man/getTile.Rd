@@ -18,6 +18,8 @@
 \alias{getTile,Spatial-method}
 \alias{getTile,sf,ANY,ANY-method}
 \alias{getTile,sf-method}
+\alias{getTile,sfc,ANY,ANY-method}
+\alias{getTile,sfc-method}
 \title{Get MODIS Tile ID(s)}
 \usage{
 \S4method{getTile}{missing,missing,missing}(mode = c("click", "draw"), ...)
@@ -37,6 +39,8 @@
 \S4method{getTile}{Spatial,ANY,ANY}(x, tileH, tileV, ...)
 
 \S4method{getTile}{sf,ANY,ANY}(x, tileH, tileV, ...)
+
+\S4method{getTile}{sfc,ANY,ANY}(x, tileH, tileV, ...)
 }
 \arguments{
 \item{mode}{Interactive selection mode as \code{character}. Available options 

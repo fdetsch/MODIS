@@ -627,3 +627,27 @@ methods::setMethod(
     )
   }
 )
+
+
+### 5.3 sfc ----
+
+#' @aliases getTile,sfc-method
+#' @rdname getTile
+methods::setMethod(
+  "getTile"
+  , methods::signature(
+    x = "sfc"
+  )
+  , function(
+    x
+    , ...
+  ) {
+    
+    getTile(
+      sf::st_as_sf(
+        x
+      )
+      , ...
+    )
+  }
+)

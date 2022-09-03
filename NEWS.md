@@ -2,6 +2,8 @@
 
 #### ✨ features and improvements
 
+  * Implements a method for function `getTile()` for signature `"sfc"` (#127)
+
 #### 🐛 bug fixes
 
 #### 💬 documentation etc

@@ -753,7 +753,7 @@ modis_use_s2 = function(
 ) {
   
   ## omit console output from `sf::sf_use_s2()`
-  jnk = utils::capture.output(
+  jnk = suppressMessages(
     sf::sf_use_s2(
       use_s2
     )

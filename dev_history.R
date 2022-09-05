@@ -170,3 +170,30 @@ clc = getCollection(
     , MODISserverOrder = c("LPDAAC", "LAADS")
   )
 )
+
+
+## 2022-09-05 ====
+
+### cstack usage ----
+
+sf::gdal_utils(
+  util = "warp"
+  , source = gdalSDS
+  , destination = ofile
+  , options = c(
+    params
+    , "-overwrite"
+    , "-multi"
+  )
+  , quiet = !is.null(opts$quiet) && opts$quiet
+)
+
+# gdalwarp \
+#     -of GTiff \
+#     -co "compress=lwz" \
+#     -co "predictor=2" \
+#     -r near \
+#     -overwrite \
+#     -multi \
+#     HDF4_EOS:EOS_GRID:"/tmp/RtmpRXIfJv/MODIS/MODIS/MOD13A1.061/2021.02.18/MOD13A1.A2021049.h21v09.061.2021068101316.hdf":MODIS_Grid_16DAY_500m_VI:"500m 16 days NDVI" \
+#     /tmp/RtmpRXIfJv/MODIS/PROCESSED/mod13a1_kili/MOD13A1.A2021049.500m_16_days_NDVI.tif

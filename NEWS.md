@@ -6,6 +6,9 @@
 
 #### 🐛 bug fixes
 
+  * `MODISoptions()` remembers length-2+ 'MODISserverOrder' correctly if 
+    `save = TRUE` (default)
+
 #### 💬 documentation etc
 
 #### 🍬 miscellaneous

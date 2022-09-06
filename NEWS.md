@@ -8,6 +8,9 @@
 
   * `MODISoptions()` remembers length-2+ 'MODISserverOrder' correctly if 
     `save = TRUE` (default)
+  * Disables gdalwarp "-multi" option to prevent C stack usage errors when 
+    running `sf::gdal_utils("warp", ..., quiet = FALSE)` (see
+    https://github.com/r-spatial/sf/issues/1994)
 
 #### 💬 documentation etc
 

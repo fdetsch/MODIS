@@ -358,7 +358,7 @@ runGdal <- function(product, collection=NULL,
                       , options = c(
                         params
                         , "-overwrite"
-                        , "-multi"
+                        # , "-multi"
                       )
                       , quiet = !is.null(opts$quiet) && opts$quiet
                     )
@@ -463,7 +463,7 @@ runGdal <- function(product, collection=NULL,
                     , options = c(
                       params
                       , "-overwrite"
-                      , "-multi"
+                      # , "-multi"
                     )
                     , quiet = !is.null(opts$quiet) && opts$quiet
                   )

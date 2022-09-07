@@ -347,6 +347,8 @@ runGdal <- function(product, collection=NULL,
                     params = c(params, names(lst)[j], lst[[j]])
                   }
                   
+                  qt = !is.null(opts$quiet) && opts$quiet
+                  
                   ## if required, adjust pixel size and/or target extent
                   if (is.null(tr) | (!is.null(extent@target) & t_srs == s_srs)) {
                     
@@ -358,9 +360,11 @@ runGdal <- function(product, collection=NULL,
                       , options = c(
                         params
                         , "-overwrite"
-                        # , "-multi"
+                        , if (qt) {
+                          "-multi"
+                        }
                       )
-                      , quiet = !is.null(opts$quiet) && opts$quiet
+                      , quiet = qt
                     )
                     
                     # if '-ts' is missing, convert 'asIn' to actual pixel size
@@ -463,9 +467,11 @@ runGdal <- function(product, collection=NULL,
                     , options = c(
                       params
                       , "-overwrite"
-                      # , "-multi"
+                      , if (qt) {
+                        "-multi"
+                      }
                     )
-                    , quiet = !is.null(opts$quiet) && opts$quiet
+                    , quiet = qt
                   )
                   
                   # ## if required, remove temporary file

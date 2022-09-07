@@ -1,4 +1,4 @@
-# MODIS 1.2.7.9004 (2022-09-07)
+# MODIS 1.2.8 (2022-09-07)
 
 #### ✨ features and improvements
 
@@ -6,15 +6,11 @@
 
 #### 🐛 bug fixes
 
-  * `MODISoptions()` remembers length-2+ 'MODISserverOrder' correctly if 
+  * `MODISoptions()` remembers length-2+ 'MODISserverOrder' correctly if
     `save = TRUE` (default)
-  * Disables gdalwarp "-multi" option to prevent C stack usage errors when 
+  * Disables gdalwarp "-multi" option to prevent C stack usage errors when
     running `sf::gdal_utils("warp", ...)` in verbose mode (see
     https://github.com/r-spatial/sf/issues/1994)
-
-#### 💬 documentation etc
-
-#### 🍬 miscellaneous
 
 
 # MODIS 1.2.7 (2022-09-02)

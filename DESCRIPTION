@@ -1,6 +1,6 @@
 Package: MODIS
 Title: Acquisition and Processing of MODIS Products
-Version: 1.2.7.9003
+Version: 1.2.7.9004
 URL: https://github.com/fdetsch/MODIS
 BugReports: https://github.com/fdetsch/MODIS/issues
 Authors@R: c(

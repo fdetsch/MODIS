@@ -72,3 +72,5 @@ find appropriate place for `EarthdataLogin()` if usr and/or pwd is missing
 
 streamline `getStruc()`
 <-> currently run in `runGdal()` and, under the hood, `getHdf()`
+
+leverage `gdalwarp` -wo functionality (https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-wo)

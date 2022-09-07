@@ -170,3 +170,154 @@ clc = getCollection(
     , MODISserverOrder = c("LPDAAC", "LAADS")
   )
 )
+
+
+## 2022-09-05 ====
+
+library(MODIS)
+
+lap = "~/Documents/data/MODIS_ARC"
+
+MODISoptions(
+  localArcPath = lap
+  , outDirPath = file.path(
+    lap
+    , "PROCESSED"
+  )
+)
+
+hdfs = getHdf(
+  "MOD10A1F"
+  , begin = "2006.01.23"
+  , end = "2006.01.23"
+  , tileH = 17
+  , tileV = 4
+)
+
+
+### cstack usage ----
+
+gdalSDS = sprintf(
+  "HDF4_EOS:EOS_GRID:\"%s\":MOD_Grid_Snow_500m:CGF_NDSI_Snow_Cover"
+  , unlist(hdfs)
+)
+
+ofile = file.path(
+  tempdir()
+  , "MOD10A1F.A2006023.CGF_NDSI_Snow_Cover.tif"
+)
+
+options = c(
+  "-of", "GTiff"
+  , "-co", "compress=lzw"
+  , "-co", "predictor=2"
+  , "-r", "near"
+  , "-srcnodata", "255"
+  , "-dstnodata", "255"
+  , "-overwrite"
+  # , "-wo", "NUM_THREADS=4"
+  # , "-multi" # raises c stack usage error if enabled and `quiet = FALSE`
+)
+
+sf::gdal_utils(
+  util = "warp"
+  , source = gdalSDS
+  , destination = ofile
+  , options = options
+  , quiet = TRUE
+)
+
+# gdalwarp \
+#     -of GTiff \
+#     -co "compress=lwz" \
+#     -co "predictor=2" \
+#     -r near \
+#     -overwrite \
+#     -multi \
+#     HDF4_EOS:EOS_GRID:"/tmp/RtmpRXIfJv/MODIS/MODIS/MOD13A1.061/2021.02.18/MOD13A1.A2021049.h21v09.061.2021068101316.hdf":MODIS_Grid_16DAY_500m_VI:"500m 16 days NDVI" \
+#     /tmp/RtmpRXIfJv/MODIS/PROCESSED/mod13a1_kili/MOD13A1.A2021049.500m_16_days_NDVI.tif
+
+## benchmarking
+library(microbenchmark)
+
+microbenchmark(
+  single = {
+    sf::gdal_utils(
+      "warp"
+      , source = src
+      , destination = dst
+      , options = c(
+        "-of", "GTiff"
+        , "-co", "compress=lzw"
+        , "-co", "predictor=2"
+        , "-r", "near"
+        , "-srcnodata", "255"
+        , "-dstnodata", "255"
+        , "-overwrite"
+      )
+      , quiet = TRUE
+    )
+  }
+  , multi = {
+    sf::gdal_utils(
+      "warp"
+      , source = src
+      , destination = dst
+      , options = c(
+        "-of", "GTiff"
+        , "-co", "compress=lzw"
+        , "-co", "predictor=2"
+        , "-r", "near"
+        , "-srcnodata", "255"
+        , "-dstnodata", "255"
+        , "-overwrite"
+        , "-multi"
+      )
+      , quiet = TRUE
+    )
+  }
+  , wo = {
+    sf::gdal_utils(
+      "warp"
+      , source = src
+      , destination = dst
+      , options = c(
+        "-of", "GTiff"
+        , "-co", "compress=lzw"
+        , "-co", "predictor=2"
+        , "-r", "near"
+        , "-srcnodata", "255"
+        , "-dstnodata", "255"
+        , "-overwrite"
+        , "-wo", "NUM_THREADS=4"
+      )
+      , quiet = TRUE
+    )
+  }
+  , wo_multi = {
+    sf::gdal_utils(
+      "warp"
+      , source = src
+      , destination = dst
+      , options = c(
+        "-of", "GTiff"
+        , "-co", "compress=lzw"
+        , "-co", "predictor=2"
+        , "-r", "near"
+        , "-srcnodata", "255"
+        , "-dstnodata", "255"
+        , "-overwrite"
+        , "-wo", "NUM_THREADS=4"
+        , "-multi"
+      )
+      , quiet = TRUE
+    )
+  }
+)
+
+# Unit: milliseconds
+#     expr      min       lq     mean   median       uq      max neval cld
+#   single 2.928669 4.398420 4.954476 5.216608 5.597803 7.084650   100   a
+#    multi 3.077062 4.039075 4.867191 5.157830 5.614667 6.685348   100   a
+#       wo 3.005221 4.065321 4.840850 5.202567 5.597503 6.773891   100   a
+# wo_multi 3.100692 4.045811 4.934897 5.165353 5.696735 6.849002   100   a

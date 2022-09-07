@@ -1,3 +1,22 @@
+# MODIS 1.2.7.9004 (2022-09-07)
+
+#### ✨ features and improvements
+
+  * Implements a method for function `getTile()` for signature `"sfc"` (#127)
+
+#### 🐛 bug fixes
+
+  * `MODISoptions()` remembers length-2+ 'MODISserverOrder' correctly if 
+    `save = TRUE` (default)
+  * Disables gdalwarp "-multi" option to prevent C stack usage errors when 
+    running `sf::gdal_utils("warp", ...)` in verbose mode (see
+    https://github.com/r-spatial/sf/issues/1994)
+
+#### 💬 documentation etc
+
+#### 🍬 miscellaneous
+
+
 # MODIS 1.2.7 (2022-09-02)
 
 #### ✨ features and improvements

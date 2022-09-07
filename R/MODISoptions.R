@@ -447,7 +447,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
     write('  ', filename)
     
     write(paste0('EarthdataLogin   <- ', ifelse(is.null(opt$EarthdataLogin), FALSE, opt$EarthdataLogin)), filename)
-    if(length(opt$MODISserverOrder)==2)
+    if(length(opt$MODISserverOrder)>=2)
     {
       write(paste0('MODISserverOrder <- c(\'',paste(opt$MODISserverOrder,collapse="', '"),'\')' ), filename)
     } else

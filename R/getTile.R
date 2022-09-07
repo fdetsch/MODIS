@@ -584,9 +584,6 @@ methods::setMethod(
     
     # single-point feature -> take full tile extent
     pts_1 = grepl("POINT", sf::st_geometry_type(x))[1] && nrow(x) == 1L
-    if (pts_1) {
-      # TODO: invoke tile method for single-point features
-    }
     
     target = list(
       outProj = sf::st_crs(x)
@@ -624,6 +621,30 @@ methods::setMethod(
       , extent = raster::extent(x)
       , system = "MODIS"
       , target = target
+    )
+  }
+)
+
+
+### 5.3 sfc ----
+
+#' @aliases getTile,sfc-method
+#' @rdname getTile
+methods::setMethod(
+  "getTile"
+  , methods::signature(
+    x = "sfc"
+  )
+  , function(
+    x
+    , ...
+  ) {
+    
+    getTile(
+      sf::st_as_sf(
+        x
+      )
+      , ...
     )
   }
 )

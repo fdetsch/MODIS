@@ -3,8 +3,10 @@
 data(meuse, package = "sp")
 pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
 
+tls_pt = getTile(pts[1, ])
+
 expect_null(
-  getTile(pts[1, ])@target$extent
+  tls_pt@target$extent
   , info = "target extent defaults to full tile for single point feature"
 )
 
@@ -102,4 +104,30 @@ expect_inherits(
   getTile(Up)
   , class = "MODISextent"
   , info = "not using s2 for geometries with ellipsoidal coordinates succeeds"
+)
+
+
+### 'sfc' ----
+
+expect_identical(
+  getTile(
+    sf::st_as_sfc(
+      pts
+    )[1]
+  )
+  , target = tls_pt
+  , info = "inputs with 'sfc' signature create same output as 'sf' analogs"
+)
+
+expect_inherits(
+  getTile(
+    sf::st_as_sfc(
+      subset(
+        MODIS:::sr
+        , h == 21L & v == 9L
+      )
+    )
+  )
+  , class = "MODISextent"
+  , info = "also works with 'sfc_POLYGON' input"
 )

@@ -4,33 +4,31 @@
 #' The creation of custom temporal aggregation levels (e.g., half-monthly,
 #' monthly) from native 16-day MODIS composites usually requires the definition
 #' of date sequences based on which the "composite_day_of_the_year" SDS is
-#' further processed. Complementing \code{\link{transDate}}, which returns the
-#' respective start and end date only, this function creates full-year
-#' (half-)monthly or annual composite periods from a user-defined temporal range.
+#' further processed. Complementing [transDate()], which returns the respective 
+#' start and end date only, this function creates full-year (half-)monthly or 
+#' annual composite periods from a user-defined temporal range.
 #'
-#' @param x \code{Date} object, see eg default value of 'timeInfo' in 
-#' \code{\link{temporalComposite}}.
-#' @param interval \code{character}. Time period for aggregation. Currently
-#' available options are "month" (default), "year" and "fortnight" (i.e., every 
-#' 1st and 15th day of the month).
+#' @param x `Date` object, see e.g. default value of 'timeInfo' in 
+#' `temporalComposite`.
+#' @param interval `character`. Time period for aggregation. Currently
+#' available options are `"month"` (default), `"year"` and `"fortnight"` (i.e., 
+#' every 1st and 15th day of the month).
 #'
 #' @return
-#' A \code{list} with the following slots:
+#' A `list` with the following slots:
 #'
-#' \itemize{
-#' \item{\code{$begin}: The start date(s) of each (half-)monthly timestep as
-#' \code{Date} object.}
-#' \item{\code{$end}: Same for end date(s).}
-#' \item{\code{$beginDOY}: Similar to \code{$begin}, but with \code{character}
-#' objects in MODIS-style date format (i.e., "\%Y\%j"; see \code{\link{strptime}}).}
-#' \item{\code{$endDOY}: Same for end date(s).}
-#' }
-#'
+#' * `$begin`: The start date(s) of each (half-)monthly timestep as
+#'   `Date` object.
+#' * `$end`: Same for end date(s).
+#' * `$beginDOY`: Similar to `$begin`, but with `character` objects in 
+#'   MODIS-style date format (i.e., `"%Y%j"`; see [strptime()]).
+#' * `$endDOY`: Same for end date(s).
+#' 
 #' @author
 #' Florian Detsch
 #'
 #' @seealso
-#' \code{\link{transDate}}.
+#' [transDate()].
 #'
 #' @examples
 #' dates <- do.call("c", lapply(2015:2016, function(i) {

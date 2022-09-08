@@ -37,5 +37,6 @@ Imports:
     utils
 ByteCompile: TRUE
 Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Suggests: tinytest

@@ -43,22 +43,19 @@
 \S4method{getTile}{sfc,ANY,ANY}(x, tileH, tileV, ...)
 }
 \arguments{
-\item{mode}{Interactive selection mode as \code{character}. Available options 
-are \code{"click"} (default) and \code{"draw"} that trigger interactive MODIS 
-tile selection and free feature drawing, respectively. Triggered only if 'x' 
-and tile IDs are omitted.}
+\item{mode}{Interactive selection mode as \code{character}. Available options are
+\code{"click"} (default) and \code{"draw"} that trigger interactive MODIS tile
+selection and free feature drawing, respectively. Triggered only if 'x' and
+tile IDs are omitted.}
 
-\item{...}{Additional arguments passed to \code{\link{MODISoptions}}, see
-Details.}
+\item{...}{Additional arguments passed to \code{\link[=MODISoptions]{MODISoptions()}}, see Details.}
 
 \item{x}{Extent information, see Details.}
 
-\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
-vertical tile number(s) of the 
-\href{https://modis-land.gsfc.nasa.gov/MODLAND_grid.html}{MODIS Sinusoidal grid}
-(e.g., \code{tileH = 1:5}). Cropping is disabled here and full tiles (if more 
-than one then also mosaicked) are processed instead. Ignored if \code{x} is 
-specified.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and vertical tile
+number(s) of the \href{https://modis-land.gsfc.nasa.gov/MODLAND_grid.html}{MODIS Sinusoidal grid}
+(e.g., \code{tileH = 1:5}). Cropping is disabled here and full tiles (if more than
+one then also mosaicked) are processed instead. Ignored if 'x' is specified.}
 }
 \value{
 A \code{MODISextent} object.
@@ -67,46 +64,45 @@ A \code{MODISextent} object.
 Get MODIS tile ID(s) for a specific geographic area.
 }
 \details{
-Unless stated otherwise in the following, target 'outProj' and 'pixelSize' 
-are carried over from \code{\link[MODIS]{MODISoptions}}.
+Unless stated otherwise in the following, target 'outProj' and 'pixelSize'
+are carried over from \code{\link[=MODISoptions]{MODISoptions()}}.
 
 If 'x' is of class (see Examples for use cases)
 \tabular{ll}{
-  \code{missing}:\cr
-  \tab If tile IDs (see Arguments) are also missing, a viewer window 
-  pops up that allows for interactive tile selection from the global MODIS 
-  Sinusoidal grid or, if \code{mode = "draw"}, free feature drawing.\cr
-  \cr 
-  \code{character}:\cr
-  \tab The country name of a \code{map} object (see \code{\link{map}}) with 
-  pattern matching via regular expressions enabled. Alternatively, a valid 
-  file path to a single ESRI shapefile (.shp) or an image readable by 
-  \code{\link[raster]{raster}}.\cr
-  \cr
-  \code{Raster*}:\cr
-  \tab Spatial extent, resolution, and projection of the specified 
-  \code{Raster*} are determined automatically. This information is used by 
-  \code{\link{runGdal}} to create perfectly matching files. If the 
-  \code{Raster*} comes with no valid CRS, 
-  \href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
-  \cr
-  \code{Extent}, \code{bbox}:\cr
-  \tab Boundary coordinates from \code{Extent} objects are generally assumed 
-  to be in \href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as 
-  such objects have no projection information attached. The same applies for 
-  'bbox' objects lacking CRS information.\cr
-  \cr
-  \code{sf}, \code{Spatial}:\cr
-  \tab Except for resolution, same as for \code{Raster*}.\cr
-  \cr
-  Other:\cr
-  \tab A \code{map} object.
+\code{missing}:\cr
+\tab If tile IDs (see Arguments) are also missing, a viewer window
+pops up that allows for interactive tile selection from the global MODIS
+Sinusoidal grid or, if \code{mode = "draw"}, free feature drawing.\cr
+\cr
+\code{character}:\cr
+\tab The country name of a \code{map} object (see \code{\link[maps:map]{maps::map()}}) with pattern
+matching via regular expressions enabled. Alternatively, a valid file path
+to a single ESRI shapefile (.shp) or an image readable by
+\code{\link[raster:raster]{raster::raster()}}.\cr
+\cr
+\verb{Raster*}:\cr
+\tab Spatial extent, resolution, and projection of the specified \verb{Raster*}
+are determined automatically. This information is used by \code{\link[=runGdal]{runGdal()}} to
+create perfectly matching files. If the \verb{Raster*} comes with no valid CRS,
+\href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
+\cr
+\code{Extent}, \code{bbox}:\cr
+\tab Boundary coordinates from \code{Extent} objects are generally assumed to be
+in \href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as such
+objects have no projection information attached. The same applies for
+\code{bbox} objects lacking CRS information.\cr
+\cr
+\code{sf}, \code{sfc}, \code{Spatial}:\cr
+\tab Except for resolution, same as for \verb{Raster*}.\cr
+\cr
+Other:\cr
+\tab A \code{map} object.
 }
 }
 \note{
-\strong{MODIS} does no longer support the tile identification and automated 
-download of MERIS and SRTM data. At least as far as the latter is concerned, 
-easy data access is granted through \code{\link{getData}}.
+\strong{MODIS} does no longer support the tile identification and automated
+download of MERIS and SRTM data. At least as far as the latter is concerned,
+easy data access is granted through \code{\link[raster:getData]{raster::getData()}}.
 }
 \examples{
 \dontrun{
@@ -158,8 +154,7 @@ getTile(m2)
 
 }
 \seealso{
-\code{\link{extent}}, \code{\link[sf]{st_bbox}}, \code{\link{map}}, 
-\code{\link{search4map}}.
+\code{\link[raster:extent]{raster::extent()}}, \code{\link[sf:st_bbox]{sf::st_bbox()}}, \code{\link[maps:map]{maps::map()}}, \code{\link[=search4map]{search4map()}}.
 }
 \author{
 Matteo Mattiuzzi, Florian Detsch

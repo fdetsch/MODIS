@@ -23,43 +23,42 @@
 \S4method{getHdf}{missing}(HdfName, checkIntegrity = TRUE, ...)
 }
 \arguments{
-\item{product}{\code{character}. MODIS grid product to be downloaded, see 
-\code{\link{getProduct}}. Use dot notation to address Terra and Aqua products 
-(e.g. \code{M.D13Q1}).}
+\item{product}{\code{character}. MODIS grid product to be downloaded, see
+\code{\link[=getProduct]{getProduct()}}.}
 
-\item{HdfName}{\code{character} vector or \code{list}. Full HDF file name(s) 
-to download a small set of files. If specified, other file-related parameters 
-(i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored.}
+\item{HdfName}{\code{character} vector or \code{list}. Full HDF file name(s) to
+download a small set of files. If specified, other file-related parameters
+(e.g., 'begin', 'end', 'collection', etc.) are ignored.}
 
-\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
-time series, see \code{\link{transDate}}.}
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS time
+series, see \code{\link[=transDate]{transDate()}}.}
 
-\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
-vertical tile number, see \code{\link{getTile}}.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and vertical tile
+number, see \code{\link[=getTile]{getTile()}}.}
 
-\item{extent}{See Details in \code{\link{getTile}}.}
+\item{extent}{See Details in \code{\link[=getTile]{getTile()}}.}
 
-\item{collection}{Desired MODIS product collection as \code{character}, 
-\code{integer}, or \code{list} as returned by \code{\link{getCollection}}.}
+\item{collection}{Desired MODIS product collection as \code{character}, \code{integer},
+or \code{list} as returned by \code{\link[=getCollection]{getCollection()}}.}
 
-\item{checkIntegrity}{\code{logical}. If \code{TRUE} (default), the size of 
-each downloaded file is checked. In case of inconsistencies, the function 
-tries to re-download broken files.}
+\item{checkIntegrity}{\code{logical}. If \code{TRUE} (default), the size of each
+downloaded file is checked. In case of inconsistencies, the function tries
+to re-download broken files.}
 
-\item{forceDownload}{\code{logical}. If \code{TRUE} (default), try to 
-download data irrespective of whether online information could be retrieved 
-via \code{MODIS:::getStruc} or not.}
+\item{forceDownload}{\code{logical}. If \code{TRUE} (default), try to download data
+irrespective of whether online information could be retrieved via
+\code{MODIS:::getStruc} or not.}
 
-\item{...}{Further arguments passed to \code{\link{MODISoptions}}, eg 'wait'.}
+\item{...}{Further arguments passed to \code{\link[=MODISoptions]{MODISoptions()}}, e.g. 'wait'.}
 }
 \value{
 An invisible vector of downloaded data and paths.
 }
 \description{
-Create or update a local user-defined subset of the global MODIS grid data 
-archive. Based on user-specific parameters the function checks in the local 
-archive for available data and downloads missing data from the online MODIS 
-data pool. When run in a schedule job, the function manage the continuous 
+Create or update a local user-defined subset of the global MODIS grid data
+archive. Based on user-specific parameters the function checks in the local
+archive for available data and downloads missing data from the online MODIS
+data pool. When run in a schedule job, the function manage the continuous
 update of the local MODIS data archive.
 }
 \examples{
@@ -93,11 +92,13 @@ d
 
 }
 \references{
-MODIS data is currently available from the online data pools at 
+MODIS data is currently available from the online data pools at
 \itemize{
-\item{NASA Land Processes Distributed Active Archive Center (\href{https://lpdaac.usgs.gov/}{LP DAAC})},
-\item{Level-1 and Atmosphere Archive & Distribution System (\href{https://ladsweb.modaps.eosdis.nasa.gov/}{LAADS})}, and
-\item{National Snow & Ice Data Center (\href{https://nsidc.org/home}{NSIDC})}.
+\item NASA Land Processes Distributed Active Archive Center
+(\href{https://lpdaac.usgs.gov/}{LP DAAC}),
+\item Level-1 and Atmosphere Archive & Distribution System
+(\href{https://ladsweb.modaps.eosdis.nasa.gov/}{LAADS}), and
+\item National Snow & Ice Data Center (\href{https://nsidc.org/home}{NSIDC}).
 }
 }
 \author{

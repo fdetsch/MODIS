@@ -3,25 +3,22 @@
 #' @description 
 #' Create a hidden .netrc file with Earthdata login credentials in your home 
 #' directory. If your priority server for MODIS file download is LP DAAC (see 
-#' also \code{\link{MODISoptions}}), these are subsequently used to 
-#' automatically login to \url{https://urs.earthdata.nasa.gov/} and download 
-#' required files.
+#' also [MODISoptions()]), these are subsequently used to automatically login to
+#' \url{https://urs.earthdata.nasa.gov/} and download required files.
 #' 
-#' @param server \code{character}. MODIS file server, defaults to 
-#' \code{"LPDAAC"} which is currently the only option available.
+#' @param server `character`. MODIS file server, defaults to `"LPDAAC"` which is
+#'   currently the only option available.
 #' 
 #' @return 
-#' \code{invisible()}.
+#' Invisible.
 #' 
 #' @author 
 #' Matteo Mattiuzzi and Florian Detsch
 #' 
-#' @seealso 
-#' \itemize{
-#' \item{\url{https://docs.opendap.org/index.php/DAP_Clients_-_Authentication#LDAP} 
-#' (section 2.2)}
-#' \item{\url{https://github.com/fdetsch/MODIS/issues/10}}
-#' }
+#' @seealso
+#' * <https://docs.opendap.org/index.php/DAP_Clients_-_Authentication#LDAP>
+#'   (section 2.2)
+#' * <https://github.com/fdetsch/MODIS/issues/10>
 #' 
 #' @examples 
 #' \dontrun{

@@ -1,15 +1,16 @@
 #' Get Size of File(s)
 #' 
 #' @description 
-#' Function for getting size of any files.
+#' Get the size of any file.
 #' 
-#' @param file \code{character} vector of file(s) with path.
-#' @param units \code{character}, defaults to "B". Currently available options 
-#' are "B", "KB", "MB", "GB" or "TB" for bites, kilo-, mega-, giga- and terabytes.
+#' @param file `character` vector of file(s) with path.
+#' @param units `character`, defaults to `"B"`. Currently available options 
+#'   are `c("B", "KB", "MB", "GB", "TB")` for bites, kilo-, mega-, giga- and 
+#'   terabytes.
 #' 
 #' @return 
-#' \code{numeric} vector of the same length as \code{file} (in \code{units}). 
-#' Note that directories are excluded.
+#' A `numeric` vector of the same length as 'file' (in 'units'). Note that 
+#' directories are excluded.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
@@ -21,7 +22,14 @@
 #' 
 #' @export fileSize
 #' @name fileSize
-fileSize <- function(file,units = "B") {
+fileSize <- function(
+  file
+  , units = c("B", "KB", "MB", "GB", "TB")
+) {
+  
+  units = match.arg(
+    units
+  )
   
   units <- toupper(units)
   unit <- c(1,1024,1048576,1073741824,1073741824*1024) 

@@ -4,30 +4,30 @@
 #' Get the UTM zone for a geographic area. Zones are identified based on the 
 #' centroid coordinate pair of the specified input.
 #' 
-#' @param x Extent information, see \code{\link[MODIS]{getTile}} and 'Details' 
-#' therein.
+#' @param x Extent information, see [getTile()] and Details therein.
 #' 
 #' @return 
-#' A \code{sf data.frame} in \href{http://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326}
-#' with relevant output UTM zone information.
+#' A `c("sf", "data.frame")` in 
+#' [EPSG:4326](http://spatialreference.org/ref/epsg/wgs-84/) with relevant 
+#' output UTM zone information.
 #' 
 #' @author 
 #' Florian Detsch
 #' 
 #' @references 
 #' NGA Geomatics (2018) Coordinate Systems. Available online 
-#' \href{http://earth-info.nga.mil/GandG/update/index.php?dir=coordsys&action=coordsys#tab_utm}{here} 
-#' (2018-09-17).
+#' [here](http://earth-info.nga.mil/GandG/update/index.php?dir=coordsys&action=coordsys#tab_utm)
+#' (2022-09-13).
 #' 
 #' @seealso 
-#' \code{\link[MODIS]{getTile}}, \code{\link[rgeos]{gCentroid}}.
+#' [getTile()], [rgeos::gCentroid()].
 #' 
 #' @examples 
-#' getUTMZone("tanzania")
+#' MODIS:::getUTMZone("tanzania")
 #' 
 #' data(meuse)
 #' pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
-#' getUTMZone(pts)
+#' MODIS:::getUTMZone(pts)
 #' 
 #' @export getUTMZone
 #' @name getUTMZone

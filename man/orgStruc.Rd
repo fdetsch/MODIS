@@ -2,41 +2,41 @@
 % Please edit documentation in R/orgStruc.R
 \name{orgStruc}
 \alias{orgStruc}
-\title{Reorganise MODIS Files in Local Data Archive}
+\title{Reorganize MODIS Files in Local Data Archive}
 \usage{
 orgStruc(from, to, structure, pattern, move = FALSE, quiet = FALSE)
 }
 \arguments{
-\item{from}{\code{character}. Local path to look for MODIS files, defaults to 
-\code{options("MODIS_localArcPath")} (see \code{\link{MODISoptions}}).}
+\item{from}{\code{character}. Local path to look for MODIS files, defaults to
+\code{options("MODIS_localArcPath")} (see \code{\link[=MODISoptions]{MODISoptions()}}).}
 
-\item{to}{\code{character}. Target folder to move (or copy) MODIS files to, 
+\item{to}{\code{character}. Target folder to move (or copy) MODIS files to,
 defaults to \code{options("MODIS_localArcPath")}.}
 
-\item{structure}{\code{character}. Storage structure, defaults to 
+\item{structure}{\code{character}. Storage structure, defaults to
 \code{options("MODIS_arcStructure")} (see Examples).}
 
-\item{pattern}{Regular expression passed to \code{\link{list.files}}. Insert 
-a pattern if you want to extract specific files from your archiv.}
+\item{pattern}{Regular expression passed to \code{\link[=list.files]{list.files()}}. Insert a pattern
+if you want to extract specific files from your archive.}
 
-\item{move}{\code{logical}. If \code{TRUE}, files are moved and duplicated 
-files are deleted. If \code{FALSE} (default), files are just copied and thus 
-remain in the origin folder. Note that the copying process performs rather 
-slowly when dealing with large files, e.g. 250-m 'MOD13Q1'.}
+\item{move}{\code{logical}. If \code{TRUE}, files are moved and duplicated files are
+deleted. If \code{FALSE} (default), files are just copied and thus remain in the
+origin folder. Note that the copying process performs rather slowly when
+dealing with large files, e.g. 250-m \code{"MOD13Q1"}.}
 
 \item{quiet}{\code{logical}, defaults to \code{FALSE}.}
 }
 \value{
-If \code{quiet = FALSE}, information on how many files have been moved (or 
-copied) and deleted is printed to the console.
+If \code{quiet = FALSE} (default), information on how many files have been moved
+(or copied) and deleted is printed to the console.
 }
 \description{
-Re-organise the storage structure of your MODIS archive according to the 
-settings in \code{options("MODIS_arcStructure")}. Depending on the specified 
-\code{'source'} , you can also use this function to gather all MODIS grid 
-files on you computer and reorganise them. The main purpose is to organise 
-the archive, but it is also possible to copy a subset of files to a 
-desidered location!
+Reorganize the storage structure of your MODIS archive according to the
+settings in \code{options("MODIS_arcStructure")}. Depending on the specified
+'source', you can also use this function to gather all MODIS grid files on
+your machine and reorganize them. The main purpose is to organize the
+archive, but it is also possible to copy a subset of files to a desired
+location!
 }
 \examples{
 \dontrun{

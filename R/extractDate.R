@@ -3,23 +3,21 @@
 #' @description 
 #' This function helps to extract dates from a vector of files.
 #' 
-#' @param files A \code{character} vector of filenames from which to extract 
-#' dates. Alternatively, a \code{Raster*} with date information in its layer 
-#' \code{\link[raster]{names}}.
-#' @param pos1,pos2 Start and end of date string in \code{files} as 
-#' \code{integer}. If missing, positions are tried to be retrieved from a 
-#' look-up table provided that 'files' comply with the MODIS standard naming 
-#' convention.
-#' @param asDate \code{logical}. If \code{TRUE}, the result is converted to a 
-#' \code{Date} object.
-#' @param format \code{character}, date format. Used only if \code{asDate = TRUE}. 
-#' Defaults to MODIS date style (i.e., \code{"\%Y\%j"} for year and julian day). 
-#' See \code{\link{strptime}} for modifications.
+#' @param files A `character` vector of filenames from which to extract dates. 
+#'   Alternatively, a `Raster*` with date information in its [raster::names()].
+#' @param pos1,pos2 Start and end of date string in 'files' as `integer`. If 
+#'   missing, attempts to retrieve positions from a look-up table provided that 
+#'   'files' comply with the MODIS standard naming convention.
+#' @param asDate `logical`. If `TRUE`, the result is converted to a `Date` 
+#'   object.
+#' @param format `character`, date format. Used only if `asDate = TRUE`. 
+#'   Defaults to MODIS date style (i.e., `"\%Y\%j"` for year and Julian day). 
+#'   See [strptime()] for modifications.
 #' 
 #' @return 
-#' A \code{list} with the following entries: 'inputLayerDates', 'pos1', 'pos2', 
-#' 'asDate' and, optionally, 'format'. If \code{asDate = FALSE}, 
-#' 'inputLayerDates' are represented as \code{character}, else as \code{Date}.
+#' A `list` with the following entries: 'inputLayerDates', 'pos1', 'pos2', 
+#' 'asDate' and, optionally, 'format'. If `asDate = FALSE` (default), 
+#' 'inputLayerDates' are represented as `character`, else as `Date`.
 #' 
 #' @author 
 #' Matteo Mattiuzzi

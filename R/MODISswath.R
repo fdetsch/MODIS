@@ -11,7 +11,7 @@
 #' @param end End date of time series. Default is \code{\link{Sys.Date}}.
 #' See \code{\link[MODIS]{transDate}} for more details. 
 #' @param collection integer or character, valid values are collection 5 or 6
-#' @param DayNightFlag A \code{character} vector of allowed day/night flags.
+#' @param DayNightFlag A `character` vector of allowed day/night flags.
 #' This can be an arbitrary combination of \code{"D"} (day), \code{"N"} (night), 
 #' \code{"B"} (both), \code{"X"} (not designated). By default, all flags are 
 #' accepted.
@@ -29,7 +29,7 @@
 #' As this function uses caching once files are downloaded if becomes prety fast.
 #' 
 #' @return 
-#' Identified granules as \code{character}.
+#' Identified granules as `character`.
 #' 
 #' @author Florian Detsch and Matteo Mattiuzzi
 #' 

@@ -7,25 +7,23 @@
 extractDate(files, pos1, pos2, asDate = FALSE, format = "\%Y\%j")
 }
 \arguments{
-\item{files}{A \code{character} vector of filenames from which to extract 
-dates. Alternatively, a \code{Raster*} with date information in its layer 
-\code{\link[raster]{names}}.}
+\item{files}{A \code{character} vector of filenames from which to extract dates.
+Alternatively, a \verb{Raster*} with date information in its \code{\link[raster:names]{raster::names()}}.}
 
-\item{pos1, pos2}{Start and end of date string in \code{files} as 
-\code{integer}. If missing, positions are tried to be retrieved from a 
-look-up table provided that 'files' comply with the MODIS standard naming 
-convention.}
+\item{pos1, pos2}{Start and end of date string in 'files' as \code{integer}. If
+missing, attempts to retrieve positions from a look-up table provided that
+'files' comply with the MODIS standard naming convention.}
 
-\item{asDate}{\code{logical}. If \code{TRUE}, the result is converted to a 
-\code{Date} object.}
+\item{asDate}{\code{logical}. If \code{TRUE}, the result is converted to a \code{Date}
+object.}
 
-\item{format}{\code{character}, date format. Used only if \code{asDate = TRUE}. 
-Defaults to MODIS date style (i.e., \code{"\%Y\%j"} for year and julian day). 
-See \code{\link{strptime}} for modifications.}
+\item{format}{\code{character}, date format. Used only if \code{asDate = TRUE}.
+Defaults to MODIS date style (i.e., \code{"\\\%Y\\\%j"} for year and Julian day).
+See \code{\link[=strptime]{strptime()}} for modifications.}
 }
 \value{
-A \code{list} with the following entries: 'inputLayerDates', 'pos1', 'pos2', 
-'asDate' and, optionally, 'format'. If \code{asDate = FALSE}, 
+A \code{list} with the following entries: 'inputLayerDates', 'pos1', 'pos2',
+'asDate' and, optionally, 'format'. If \code{asDate = FALSE} (default),
 'inputLayerDates' are represented as \code{character}, else as \code{Date}.
 }
 \description{

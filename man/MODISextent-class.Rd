@@ -4,8 +4,7 @@
 \alias{MODISextent-class}
 \title{Class MODISextent}
 \description{
-An object of class \code{MODISextent}, typically created through 
-\code{\link{getTile}}.
+An object of class \code{MODISextent}, typically created through \code{\link[=getTile]{getTile()}}.
 }
 \section{Slots}{
 
@@ -16,8 +15,8 @@ An object of class \code{MODISextent}, typically created through
 
 \item{\code{tileV}}{MODIS vertical tile ID as \code{integer}.}
 
-\item{\code{extent}}{\code{Extent} information in 
-\href{https://epsg.io/4326}{EPSG:4326}, see \code{\link{getTile}}.}
+\item{\code{extent}}{\code{Extent} information in \href{https://epsg.io/4326}{EPSG:4326}, see
+\code{\link[=getTile]{getTile()}}.}
 
 \item{\code{system}}{Sensor system as \code{character}.}
 

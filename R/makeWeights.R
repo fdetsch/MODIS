@@ -1,44 +1,42 @@
 #' Extract Bit-Encoded Information and create Weights Raster
 #' 
 #' @description 
-#' This function applies \code{\link{bitAnd}} and \code{\link{bitShiftR}} 
-#' from \strong{bitops} to convert bit-encoded information. It is also possible 
-#' to convert this information to a scale from 0 to 1 in order to use it as 
-#' weighting information in functions like \code{\link{whittaker.raster}} or 
-#' \code{\link{smooth.spline.raster}}.
+#' This function applies [bitops::bitAnd()] and [bitops::bitShiftR()] to convert
+#' bit-encoded information. It is also possible to convert this information to a
+#' scale from 0 to 1 in order to use it as weighting information in functions 
+#' like [whittaker.raster()] or [smooth.spline.raster()].
 #' 
-#' @param x \code{matrix}, vector or \code{Raster*} object.
-#' @param X \code{Raster*} object.
-#' @param bitShift \code{integer}. Bit starting point, see examples and 
-#' \code{\link{detectBitInfo}}. 
-#' @param bitMask \code{integer}. Bit mask size, see examples and 
-#' \code{\link{detectBitInfo}}.
-#' @param threshold \code{integer}. Threshold for valid quality.
-#' @param filename \code{character} passed to \code{\link{writeRaster}}. If not 
-#' specified, output is written to a temporary file.
-#' @param decodeOnly \code{logical}. If \code{FALSE} (default), convert bits to 
-#' weights from 0 (not used) to 1 (best quality). If \code{TRUE}, only extract 
-#' selected bits and convert to decimal system.
-#' @param keep If \code{NULL} (default), bits are only encoded, else an 
-#' \code{integer} vector of values you want to keep (becomes \code{TRUE}), the 
-#' rest becomes \code{NA}. See examples.
-#' @param datatype \code{character}. Default \code{INT1U} used for \code{x} = Raster* object.. Output datatype, see 
-#' \code{\link{writeRaster}}.
-#' @param NAflag \code{integer}. Default \code{255} used for \code{x} = Raster* object. Set specific NA value, see 
-#' \code{\link{writeRaster}}.
-#' @param ... Other arguments passed to \code{\link{writeRaster}}. 
+#' @param x `matrix`, vector or `Raster*` object.
+#' @param X `Raster*` object.
+#' @param bitShift `integer`. Bit starting point, see examples and 
+#'   [detectBitInfo()].
+#' @param bitMask `integer`. Bit mask size, see examples and [detectBitInfo()].
+#' @param threshold `integer`. Threshold for valid quality.
+#' @param filename `character` passed to [raster::writeRaster()]. If not 
+#'   specified, output is written to a temporary file.
+#' @param decodeOnly `logical`. If `FALSE` (default), convert bits to weights 
+#'   from 0 (not used) to 1 (best quality). If `TRUE`, only extract selected 
+#'   bits and convert to decimal system.
+#' @param keep If `NULL` (default), bits are only encoded, else an `integer` 
+#'   vector of values you want to keep (becomes `TRUE`), the rest becomes `NA`. 
+#'   See examples.
+#' @param datatype `character`. Default `"INT1U"` used for `Raster*` object. 
+#'   Output datatype, see [raster::writeRaster()].
+#' @param NAflag `integer`. Default `255` used for `Raster*` object. Set 
+#'   specific NA value, see [raster::writeRaster()].
+#' @param ... Other arguments passed to [raster::writeRaster()]. 
 #'    
 #' 
 #' @return 
-#' A \code{Raster*} object.
+#' A `Raster*` object.
 #' 
 #' @note 
-#' \code{\link{makeWeights}} and \code{\link{extractBits}} are identical with 
-#' the only difference that \code{\link{makeWeights}} does additionally convert 
-#' the data into weighting information.
+#' [makeWeights()] and [extractBits()] are identical with the only difference 
+#' that [makeWeights()] does additionally convert the data into weighting 
+#' information.
 #' 
 #' @seealso 
-#' \code{\link{detectBitInfo}}.
+#' [detectBitInfo()].
 #' 
 #' @author 
 #' Matteo Mattiuzzi
@@ -134,7 +132,7 @@
 #' }
 #' }
 #' 
-#' @describeIn makeWeights Extract bit-encoded information from \code{Raster*} file
+#' @describeIn makeWeights Extract bit-encoded information from `Raster*` file
 #' @aliases extractBits
 #' @export extractBits
 extractBits <- function(x, bitShift=2, bitMask=15, filename='', datatype='INT1U', NAflag=255,...)
@@ -320,10 +318,3 @@ maskWater <- function(X, bitShift=NULL, bitMask = NULL, keep = NULL, datatype="I
     }
 return(result)
 }
-
-
-
-
-
-
-

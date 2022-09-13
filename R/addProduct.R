@@ -6,7 +6,7 @@
 #' \code{MODIS:::MODIS_Products}).
 #' 
 #' @param product Character. Name of the product that should be added to the 
-#' inventory, see \code{\link{getProduct}}.
+#' inventory, see [getProduct()].
 #' @param platform Character. Satellite platform on which MODIS 
 #' is mounted, defaults to "Terra".
 #' @param pf1,pf2 Character. Online server paths.
@@ -21,7 +21,7 @@
 #' @param path_ext Character. Path to folder containing file 
 #' 'MODIS_Products.RData'. When working with RStudio projects (.Rproj), this 
 #' usually defaults to 'inst/external'.
-#' @param overwrite Logical. If \code{TRUE}, the initial '.RData' file located 
+#' @param overwrite Logical. If `TRUE`, the initial '.RData' file located 
 #' in 'path_ext' will be overwritten.
 #' @param ... Currently not used.
 #' 
@@ -32,7 +32,7 @@
 #' Florian Detsch
 #' 
 #' @seealso 
-#' \code{MODIS:::MODIS_Products}, \code{\link{getProduct}}.
+#' \code{MODIS:::MODIS_Products}, [getProduct()].
 #' 
 #' @examples 
 #' \dontrun{

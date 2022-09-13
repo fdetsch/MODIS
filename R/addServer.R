@@ -14,7 +14,7 @@
 #' @param path_ext Character. Path to folder containing file 
 #' 'MODIS_FTPinfo.RData'. When working with RStudio projects (.Rproj), this 
 #' usually defaults to 'inst/external'.
-#' @param overwrite Logical. If \code{TRUE}, the initial '.RData' file located 
+#' @param overwrite Logical. If `TRUE`, the initial '.RData' file located 
 #' in 'path_ext' will be overwritten.
 #' @param ... Currently not used.
 #' 

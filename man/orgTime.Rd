@@ -32,26 +32,26 @@
 )
 }
 \arguments{
-\item{files}{A \code{character}, \code{Date}, or \code{Raster*} object. 
-Typically MODIS filenames created e.g. from \code{\link{runGdal}} or 
-\code{\link{runMrt}}, but any other filenames holding date information are 
-supported as well. If a \code{Raster*} object is supplied, make sure to 
-adjust 'pos1', 'pos2', and 'format' according to its layer 
+\item{files}{A \code{character}, \code{Date}, or \verb{Raster*} object.
+Typically MODIS filenames created e.g. from \code{\link{runGdal}} or
+\code{\link{runMrt}}, but any other filenames holding date information are
+supported as well. If a \verb{Raster*} object is supplied, make sure to
+adjust 'pos1', 'pos2', and 'format' according to its layer
 \code{\link[raster]{names}}.}
 
-\item{nDays}{Time interval for output layers. Defaults to \code{"asIn"} that 
-includes the exact input dates within the period selected using \code{begin} 
-and \code{end}. Can also be \code{nDays = "1 month"} or \code{"1 week"}, see 
+\item{nDays}{Time interval for output layers. Defaults to \code{"asIn"} that
+includes the exact input dates within the period selected using \code{begin}
+and \code{end}. Can also be \code{nDays = "1 month"} or \code{"1 week"}, see
 \code{\link{seq.Date}} and Examples.}
 
-\item{begin}{\code{character}. Output begin date, defaults to the earliest 
+\item{begin}{\code{character}. Output begin date, defaults to the earliest
 input dataset.}
 
-\item{end}{\code{character}. Output end date, defaults to the latest input 
-dataset. Note that the exact \code{end} date depends on \code{begin} and 
+\item{end}{\code{character}. Output end date, defaults to the latest input
+dataset. Note that the exact \code{end} date depends on \code{begin} and
 \code{nDays}.}
 
-\item{pillow}{\code{integer}. Number of days added to the beginning and end 
+\item{pillow}{\code{integer}. Number of days added to the beginning and end
 of a time series.}
 
 \item{pos1, pos2, format}{Arguments passed to \code{\link{extractDate}}.}
@@ -69,7 +69,7 @@ A \code{list} with the following slots (to be completed):
 }
 }
 \description{
-This function lets you define the period to be filtered, the output temporal 
+This function lets you define the period to be filtered, the output temporal
 resolution, and select the required data from your input 'files'.
 }
 \examples{

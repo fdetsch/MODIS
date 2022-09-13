@@ -4,19 +4,17 @@
 #' Get MODIS swath granules for a specific geographic area, time period and 
 #' (optionally) time of day.
 #' 
-#' @param product,collection,begin,end,tileH,tileV,extent,... See 
-#' \code{\link[MODIS]{getHdf}}.
-#' @param DayNightFlag A \code{character} vector of allowed day/night flags.
-#' This can be an arbitrary combination of \code{"D"} (day), \code{"N"} (night), 
-#' \code{"B"} (both), \code{"X"} (not designated). By default, all flags are 
-#' accepted.
+#' @param product,collection,begin,end,tileH,tileV,extent,... See [getHdf()].
+#' @param DayNightFlag A `character` vector of allowed day/night flags. This can
+#'   be an arbitrary combination of `"D"` (day), `"N"` (night), `"B"` (both), 
+#'   `"X"` (not designated). By default, all flags are accepted.
 #'   
 #' @return 
-#' Identified granules as \code{character}.
+#' Identified granules as `character`.
 #' 
 #' @author Florian Detsch
 #' 
-#' @seealso \code{\link[MODIS]{getHdf}}, \code{\link[MODIS]{getTile}}.
+#' @seealso [getHdf()], [getTile()].
 #' 
 #' @examples 
 #' \dontrun{

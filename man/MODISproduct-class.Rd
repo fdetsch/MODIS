@@ -4,22 +4,21 @@
 \alias{MODISproduct-class}
 \title{Class MODISproduct}
 \description{
-An object of class \code{MODISproduct}, typically created through
-\code{\link[MODIS]{getProduct}} when the 'x' input is a MODIS product or 
-regular expression.
+An object of class \code{MODISproduct}, typically created through \code{\link[=getProduct]{getProduct()}}
+when the 'x' input is a MODIS product or regular expression.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{request}}{User request as \code{character}.}
 
-\item{\code{PF1,PF2,PF3,PF4}}{Platform specific path feature for LP DAAC, LAADS, NTSG 
+\item{\code{PF1,PF2,PF3,PF4}}{Platform specific path feature for LP DAAC, LAADS, NTSG
 and NSIDC as \code{character}.}
 
-\item{\code{PD}}{Product specific code number following the platform specifier, e.g. 
+\item{\code{PD}}{Product specific code number following the platform specifier, e.g.
 \code{"13A1"} for MOD13A1.}
 
-\item{\code{PLATFORM}}{Satellite platform on which MODIS sensor is mounted; one of 
+\item{\code{PLATFORM}}{Satellite platform on which MODIS sensor is mounted; one of
 \code{c("Terra", "Aqua")}.}
 
 \item{\code{TYPE}}{Product type; one of \code{c("Tile", "CMG", "Swath")}.}
@@ -30,7 +29,7 @@ and NSIDC as \code{character}.}
 
 \item{\code{SOURCE}}{Product specific MODIS download server(s) as named \code{list}.}
 
-\item{\code{CCC}}{Product specific MODIS data collection(s) stored as 3-digit 
+\item{\code{CCC}}{Product specific MODIS data collection(s) stored as 3-digit
 \code{character} objects in a named \code{list}.}
 }}
 

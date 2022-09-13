@@ -8,14 +8,13 @@
 MODIS Acquisition and Processing
 }
 \details{
-Download and processing functionalities for the Moderate Resolution Imaging 
-Spectroradiometer (MODIS). The package provides automated access to the 
-global online data archives (LP DAAC and LAADS) and processing capabilities 
+Download and processing functionality for the Moderate Resolution Imaging
+Spectroradiometer (MODIS). The package provides automated access to the
+global online data archives (LP DAAC and LAADS) and processing capabilities
 such as file conversion, mosaicking, subsetting and time series filtering.
 }
 \author{
-Matteo Mattiuzzi, Jan Verbesselt, Tomislav Hengl, Anja Klisch, 
-Forrest Stevens, Steven Mosher, Bradley Evans, Agustin Lobo, Florian Detsch 
+Matteo Mattiuzzi, Florian Detsch
 \cr
 \cr
 \emph{Maintainer:} Florian Detsch \email{fdetsch@web.de}

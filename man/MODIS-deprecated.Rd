@@ -3,19 +3,17 @@
 \name{MODIS-deprecated}
 \alias{MODIS-deprecated}
 \alias{lpdaacLogin}
-\title{Deprecated functions in \pkg{MODIS}}
+\title{Deprecated Functions in \pkg{MODIS}}
 \usage{
 lpdaacLogin(server = "LPDAAC")
 }
 \description{
-The functions listed below are deprecated and will be defunct in the near 
-future. If applicable, alternative functions with similar or even identical 
-functionality are mentioned. Help pages for deprecated functions are 
+The functions listed below are deprecated and will be defunct in the near
+future. If applicable, alternative functions with similar or even identical
+functionality are mentioned. Help pages for deprecated functions are
 available at \code{help("MODIS-deprecated")}.
-
 \itemize{
-  \item \code{\link[MODIS]{lpdaacLogin-deprecated}}: use 
-  \code{\link{EarthdataLogin}} instead.
+\item \code{\link[=lpdaacLogin-deprecated]{lpdaacLogin-deprecated()}}: use \link{EarthdataLogin} instead.
 }
 }
 \section{\code{lpdaacLogin}}{

@@ -1,20 +1,21 @@
 #' Check and Create Product-Related Information
 #' 
 #' @description 
-#' On user side, it is a funtion to find the desidered product. On package site, 
-#' it generates central internal information to hande files.  
+#' On user side, it is a function to find the desired product. On package site,
+#' it generates central internal information to handle files.
 #' 
-#' @param x \code{character}. MODIS filename, product name, regular expression 
-#' passed to \code{pattern} in \code{\link{grep}}, or missing.
-#' @param quiet \code{logical}, defaults to \code{FALSE}.
-#' @param ... Additional arguments passed to \code{\link[MODIS]{getCollection}}.
+#' @param x `character`. MODIS file name, product name, regular expression 
+#'   passed as pattern to [grep()], or missing. Use dot notation to address 
+#'   Terra and Aqua products at the same time, e.g. `"M.D13Q1"`. 
+#' @param quiet `logical`, defaults to `FALSE`.
+#' @param ... Additional arguments passed to [getCollection()].
 #' 
 #' @return 
-#' If 'x' is missing, a \code{data.frame} with information about all MODIS 
-#' products available. In case of \code{character} input, an invisible 
-#' \code{\link{MODISproduct-class}} or \code{\link{MODISfile-class}} object 
-#' depending on the type of input (product/regular expression or filename); the 
-#' object holds information usable by other functions. 
+#' If 'x' is missing, a `data.frame` with information about all MODIS products 
+#' available. In case of `character` input, an invisible [MODISproduct-class] or
+#' [MODISfile-class] object depending on the type of input (product, regular 
+#' expression or file name); the object holds information usable by other 
+#' functions. 
 #' 
 #' @author 
 #' Matteo Mattiuzzi and Florian Detsch
@@ -150,6 +151,3 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
     names(out@SOURCE) = out@PRODUCT
     return(invisible(out))
 }
-
-
-

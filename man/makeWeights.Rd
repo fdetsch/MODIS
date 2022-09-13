@@ -39,58 +39,56 @@ maskWater(
 )
 }
 \arguments{
-\item{x}{\code{matrix}, vector or \code{Raster*} object.}
+\item{x}{\code{matrix}, vector or \verb{Raster*} object.}
 
-\item{bitShift}{\code{integer}. Bit starting point, see examples and 
-\code{\link{detectBitInfo}}.}
+\item{bitShift}{\code{integer}. Bit starting point, see examples and
+\code{\link[=detectBitInfo]{detectBitInfo()}}.}
 
-\item{bitMask}{\code{integer}. Bit mask size, see examples and 
-\code{\link{detectBitInfo}}.}
+\item{bitMask}{\code{integer}. Bit mask size, see examples and \code{\link[=detectBitInfo]{detectBitInfo()}}.}
 
-\item{filename}{\code{character} passed to \code{\link{writeRaster}}. If not 
+\item{filename}{\code{character} passed to \code{\link[raster:writeRaster]{raster::writeRaster()}}. If not
 specified, output is written to a temporary file.}
 
-\item{datatype}{\code{character}. Default \code{INT1U} used for \code{x} = Raster* object.. Output datatype, see 
-\code{\link{writeRaster}}.}
+\item{datatype}{\code{character}. Default \code{"INT1U"} used for \verb{Raster*} object.
+Output datatype, see \code{\link[raster:writeRaster]{raster::writeRaster()}}.}
 
-\item{NAflag}{\code{integer}. Default \code{255} used for \code{x} = Raster* object. Set specific NA value, see 
-\code{\link{writeRaster}}.}
+\item{NAflag}{\code{integer}. Default \code{255} used for \verb{Raster*} object. Set
+specific NA value, see \code{\link[raster:writeRaster]{raster::writeRaster()}}.}
 
-\item{...}{Other arguments passed to \code{\link{writeRaster}}.}
+\item{...}{Other arguments passed to \code{\link[raster:writeRaster]{raster::writeRaster()}}.}
 
 \item{threshold}{\code{integer}. Threshold for valid quality.}
 
-\item{decodeOnly}{\code{logical}. If \code{FALSE} (default), convert bits to 
-weights from 0 (not used) to 1 (best quality). If \code{TRUE}, only extract 
-selected bits and convert to decimal system.}
+\item{decodeOnly}{\code{logical}. If \code{FALSE} (default), convert bits to weights
+from 0 (not used) to 1 (best quality). If \code{TRUE}, only extract selected
+bits and convert to decimal system.}
 
-\item{X}{\code{Raster*} object.}
+\item{X}{\verb{Raster*} object.}
 
-\item{keep}{If \code{NULL} (default), bits are only encoded, else an 
-\code{integer} vector of values you want to keep (becomes \code{TRUE}), the 
-rest becomes \code{NA}. See examples.}
+\item{keep}{If \code{NULL} (default), bits are only encoded, else an \code{integer}
+vector of values you want to keep (becomes \code{TRUE}), the rest becomes \code{NA}.
+See examples.}
 }
 \value{
-A \code{Raster*} object.
+A \verb{Raster*} object.
 }
 \description{
-This function applies \code{\link{bitAnd}} and \code{\link{bitShiftR}} 
-from \strong{bitops} to convert bit-encoded information. It is also possible 
-to convert this information to a scale from 0 to 1 in order to use it as 
-weighting information in functions like \code{\link{whittaker.raster}} or 
-\code{\link{smooth.spline.raster}}.
+This function applies \code{\link[bitops:bitAnd]{bitops::bitAnd()}} and \code{\link[bitops:bitShiftL]{bitops::bitShiftR()}} to convert
+bit-encoded information. It is also possible to convert this information to a
+scale from 0 to 1 in order to use it as weighting information in functions
+like \code{\link[=whittaker.raster]{whittaker.raster()}} or \code{\link[=smooth.spline.raster]{smooth.spline.raster()}}.
 }
 \section{Functions}{
 \itemize{
-\item \code{extractBits()}: Extract bit-encoded information from \code{Raster*} file
+\item \code{extractBits()}: Extract bit-encoded information from \verb{Raster*} file
 
 \item \code{maskWater()}: Masks water (additional information required)
 
 }}
 \note{
-\code{\link{makeWeights}} and \code{\link{extractBits}} are identical with 
-the only difference that \code{\link{makeWeights}} does additionally convert 
-the data into weighting information.
+\code{\link[=makeWeights]{makeWeights()}} and \code{\link[=extractBits]{extractBits()}} are identical with the only difference
+that \code{\link[=makeWeights]{makeWeights()}} does additionally convert the data into weighting
+information.
 }
 \examples{
 \dontrun{
@@ -185,7 +183,7 @@ if(.Platform$OS.type=="unix")
 
 }
 \seealso{
-\code{\link{detectBitInfo}}.
+\code{\link[=detectBitInfo]{detectBitInfo()}}.
 }
 \author{
 Matteo Mattiuzzi

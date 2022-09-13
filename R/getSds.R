@@ -1,28 +1,37 @@
-#' List SDS Layers in an \code{.HDF} File
+#' List SDS Layers in an HDF File
 #' 
 #' @description 
-#' List the names of all scientific datasets (SDS) contained in a specified 
+#' List the names of all scientific data sets (SDS) contained in a specified 
 #' MODIS grid HDF file.
 #' 
-#' @param HdfName \code{character}. (Absolute) filename from which to extract 
-#' SDS names. Non-existing files are being looked up recursively in 
-#' \code{getOption("MODIS_localArcPath")}.
-#' @param SDSstring An optional \code{character} string of 1s and 0s, see Value.
+#' @param HdfName `character`. (Absolute) file name from which to extract SDS 
+#'   names. Non-existing files are being looked up recursively in 
+#'   `getOption("MODIS_localArcPath")`.
+#' @param SDSstring An optional `character` string of 1s and 0s, see Value.
 #' @param ... Currently not used.
 #' 
 #' @return 
-#' A \code{list}. If \code{SDSstring} is provided, the function reports matching 
-#' SDS and a formatted 'SDSstring' (e.g., "1 1 1 0 1"). If omitted, the names of 
-#' all SDS in 'HdfName' are returned. 
+#' A `list`. If 'SDSstring' is provided, the function reports matching SDS and a
+#' formatted 'SDSstring' (e.g., "1 1 1 0 1"). If omitted, the names of all SDS 
+#' in 'HdfName' are returned. 
 #' 
 #' @author 
 #' Matteo Mattiuzzi, Florian Detsch
 #' 
-#' @examples 
-#' \dontrun{
-#' getSds(HdfName="/path/XXX.hdf")
-#' # example w/'SDSstring' 
-#' }
+#' @examples
+#' hdf = system.file(
+#'   "external/MOD13A2.A2016145.h18v04.006.2016166145124.hdf"
+#'   , package = "MODIS"
+#' )
+#' 
+#' getSds(
+#'   hdf
+#' )
+#' 
+#' getSds(
+#'   hdf
+#'   , SDSstring = 1
+#' )
 #' 
 #' @export getSds
 #' @name getSds

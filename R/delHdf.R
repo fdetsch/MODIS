@@ -3,19 +3,16 @@
 #' @description 
 #' Delete MODIS grid files to reduce the local storage.
 #' 
-#' @param product \code{character}, see \code{\link{getProduct}}.
-#' @param collection \code{character} or \code{integer}, see 
-#' \code{\link{getCollection}}.
-#' @param extent Extent information, defaults to \code{'global'}. See
-#' \code{\link{getTile}}.
-#' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
-#' vertical tile number, see \code{\link{getTile}}.
-#' @param begin,end \code{Date} or \code{character}. Begin and end date of MODIS 
-#' time series, see \code{\link{transDate}}.
-#' @param ask \code{logical}. If \code{TRUE} (default), the user is being asked 
-#' for deletion after checking.
-#' @param ... Arguments passed to \code{\link{MODISoptions}}, particularly 
-#' \code{localArcPath}.
+#' @param product `character`, see [getProduct()].
+#' @param collection `character` or `integer`, see [getCollection()].
+#' @param extent Extent information, defaults to `"global"`. See [getTile()].
+#' @param tileH,tileV `numeric` or `character`. Horizontal and vertical tile 
+#'   number, see [getTile()].
+#' @param begin,end `Date` or `character`. Begin and end date of MODIS time 
+#'   series, see [transDate()].
+#' @param ask `logical`. If `TRUE` (default), the user is being asked for 
+#'   deletion after checking.
+#' @param ... Arguments passed to [MODISoptions()], particularly 'localArcPath'.
 #' 
 #' @author 
 #' Matteo Mattiuzzi

@@ -1,30 +1,30 @@
-#' Reorganise MODIS Files in Local Data Archive
+#' Reorganize MODIS Files in Local Data Archive
 #' 
 #' @description 
-#' Re-organise the storage structure of your MODIS archive according to the 
-#' settings in \code{options("MODIS_arcStructure")}. Depending on the specified 
-#' \code{'source'} , you can also use this function to gather all MODIS grid 
-#' files on you computer and reorganise them. The main purpose is to organise 
-#' the archive, but it is also possible to copy a subset of files to a 
-#' desidered location!
+#' Reorganize the storage structure of your MODIS archive according to the 
+#' settings in `options("MODIS_arcStructure")`. Depending on the specified 
+#' 'source', you can also use this function to gather all MODIS grid files on 
+#' your machine and reorganize them. The main purpose is to organize the 
+#' archive, but it is also possible to copy a subset of files to a desired 
+#' location!
 #' 
-#' @param from \code{character}. Local path to look for MODIS files, defaults to 
-#' \code{options("MODIS_localArcPath")} (see \code{\link{MODISoptions}}).
-#' @param to \code{character}. Target folder to move (or copy) MODIS files to, 
-#' defaults to \code{options("MODIS_localArcPath")}.
-#' @param structure \code{character}. Storage structure, defaults to 
-#' \code{options("MODIS_arcStructure")} (see Examples).
-#' @param pattern Regular expression passed to \code{\link{list.files}}. Insert 
-#' a pattern if you want to extract specific files from your archiv.
-#' @param move \code{logical}. If \code{TRUE}, files are moved and duplicated 
-#' files are deleted. If \code{FALSE} (default), files are just copied and thus 
-#' remain in the origin folder. Note that the copying process performs rather 
-#' slowly when dealing with large files, e.g. 250-m 'MOD13Q1'.
-#' @param quiet \code{logical}, defaults to \code{FALSE}.
+#' @param from `character`. Local path to look for MODIS files, defaults to 
+#'   `options("MODIS_localArcPath")` (see [MODISoptions()]).
+#' @param to `character`. Target folder to move (or copy) MODIS files to, 
+#'   defaults to `options("MODIS_localArcPath")`.
+#' @param structure `character`. Storage structure, defaults to 
+#'   `options("MODIS_arcStructure")` (see Examples).
+#' @param pattern Regular expression passed to [list.files()]. Insert a pattern 
+#'   if you want to extract specific files from your archive.
+#' @param move `logical`. If `TRUE`, files are moved and duplicated files are 
+#'   deleted. If `FALSE` (default), files are just copied and thus remain in the
+#'   origin folder. Note that the copying process performs rather slowly when 
+#'   dealing with large files, e.g. 250-m `"MOD13Q1"`.
+#' @param quiet `logical`, defaults to `FALSE`.
 #' 
 #' @return 
-#' If \code{quiet = FALSE}, information on how many files have been moved (or 
-#' copied) and deleted is printed to the console.
+#' If `quiet = FALSE` (default), information on how many files have been moved 
+#' (or copied) and deleted is printed to the console.
 #' 
 #' @author 
 #' Matteo Mattiuzzi

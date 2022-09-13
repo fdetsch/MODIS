@@ -1,25 +1,24 @@
 #' Generate Global Tiling System
 #' 
 #' @description 
-#' This function generates a matrix with bounding box information for a 
-#' global tiling system (based on Lat/Lon). 
+#' This function generates a matrix with bounding box information for a global 
+#' tiling system (based on Lat/Lon). 
 #' 
-#' @param tileSize \code{numeric}, size of a single tile in degrees (EPSG:4326).
-#' @param offset \code{numeric}, shifts the tiling system in upper-left 
-#' direction.
-#' @param StartNameFrom \code{numeric}. \code{c(Lat-Direction,Lon-Direction)} 
-#' start number in the naming of the tiles.
-#' @param extent \code{list}. Tile system extent information, basically the 
-#' coverage of the data on server.
+#' @param tileSize `numeric`, size of a single tile in degrees (EPSG:4326).
+#' @param offset `numeric`, shifts the tiling system in upper-left direction.
+#' @param StartNameFrom `numeric`. `c(Lat-Direction,Lon-Direction)` start number
+#'   in the naming of the tiles.
+#' @param extent `list`. Tile system extent information, basically the coverage 
+#'   of the data on server.
 #' 
 #' @return 
-#' A \code{matrix}.
+#' A `matrix`.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
 #' 
 #' @seealso 
-#' \code{\link{getTile}}.
+#' [getTile()].
 #' 
 #' @examples 
 #' # 1x1 degree tiling system

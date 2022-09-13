@@ -4,21 +4,21 @@
 #' \code{addCollection} is a non-exported helper function to add a new product 
 #' column to the product collections managed by \strong{MODIS} (see 
 #' \code{MODIS:::collections}). Once added, the specified product will be 
-#' tracked and, if required, kept up-to-date by \code{\link{getCollection}}.
+#' tracked and, if required, kept up-to-date by [getCollection()].
 #' 
 #' @param product Character. Name of the product that should be added to the 
-#' 'collections' dataset, see \code{\link{getCollection}}. 
+#' 'collections' dataset, see [getCollection()]. 
 #' @param collection Numeric. Optional information about available collections. 
 #' If not supplied, this defaults to 'NA' and the user is required to manually 
 #' retrieve information about available collections via 
 #' \code{getCollection(..., forceCheck = TRUE)}. Note that the latter operation 
 #' requires the previous execution of \code{MODIS:::addProduct} and 
 #' \code{MODIS:::addServer} to make the newly added product available to 
-#' \code{\link{getCollection}}.
+#' [getCollection()].
 #' @param path_ext Character. Path to folder containing file 
 #' 'MODIS_Products.RData'. When working with RStudio projects (.Rproj), this 
 #' usually defaults to 'inst/external'.
-#' @param overwrite Logical. If \code{TRUE}, the initial '.RData' file located 
+#' @param overwrite Logical. If `TRUE`, the initial '.RData' file located 
 #' in 'path_ext' will be overwritten.
 #' @param ... Currently not used.
 #' 

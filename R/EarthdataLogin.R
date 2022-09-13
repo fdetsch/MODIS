@@ -1,31 +1,29 @@
 #' Create File with Earthdata Login Credentials
 #' 
 #' @description 
-#' Create a hidden \code{.netrc} file with Earthdata login credentials in your 
-#' home directory. The information included therein is used to login to 
-#' \url{https://urs.earthdata.nasa.gov/} which is a mandatory requirement in 
-#' order to download MODIS data from LP DAAC, LAADS and NSIDC (see also 
-#' \code{\link{MODISoptions}}). If the \code{.netrc} file already exist, the 
-#' function can be used to re-enter credentials.
+#' Create a hidden `.netrc` file with Earthdata login credentials in your home 
+#' directory. The information included therein is used to login to 
+#' <https://urs.earthdata.nasa.gov/> which is a mandatory requirement in order 
+#' to download MODIS data from LP DAAC, LAADS and NSIDC (see also 
+#' [MODISoptions()]). If the `.netrc` file already exist, the function can be 
+#' used to re-enter credentials.
 #' 
-#' @param usr,pwd Login credentials as \code{character}. If \code{NULL}, 
-#' username and password are read from the terminal.
-#' @param path Path to hidden \code{.netrc} file as \code{character}. The 
-#' default should not be changed unless for a good reason.
+#' @param usr,pwd Login credentials as `character`. If `NULL`, username and 
+#'   password are read from the terminal.
+#' @param path Path to hidden `.netrc` file as `character`. The default should 
+#'   not be changed unless for a good reason.
 #' 
 #' @return 
-#' The \code{\link{invisible}} Earthdata login credentials as \code{list}.
+#' The Earthdata login credentials as invisible `list`.
 #' 
 #' @author 
 #' Matteo Mattiuzzi and Florian Detsch
 #' 
 #' @seealso 
-#' \itemize{
-#' \item{\url{https://docs.opendap.org/index.php/DAP_Clients_-_Authentication#LDAP} 
-#' (section 2.2)}
-#' \item{\url{https://github.com/fdetsch/MODIS/issues/10}}
-#' \item{\url{https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+cURL+And+Wget}}
-#' }
+#' * <https://docs.opendap.org/index.php/DAP_Clients_-_Authentication#LDAP>
+#'   (section 2.2)
+#' * <https://github.com/fdetsch/MODIS/issues/10>
+#' * <https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+cURL+And+Wget>
 #' 
 #' @examples 
 #' \dontrun{

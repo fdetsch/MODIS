@@ -7,23 +7,24 @@
 getProduct(x = NULL, quiet = FALSE, ...)
 }
 \arguments{
-\item{x}{\code{character}. MODIS filename, product name, regular expression 
-passed to \code{pattern} in \code{\link{grep}}, or missing.}
+\item{x}{\code{character}. MODIS file name, product name, regular expression
+passed as pattern to \code{\link[=grep]{grep()}}, or missing. Use dot notation to address
+Terra and Aqua products at the same time, e.g. \code{"M.D13Q1"}.}
 
 \item{quiet}{\code{logical}, defaults to \code{FALSE}.}
 
-\item{...}{Additional arguments passed to \code{\link[MODIS]{getCollection}}.}
+\item{...}{Additional arguments passed to \code{\link[=getCollection]{getCollection()}}.}
 }
 \value{
-If 'x' is missing, a \code{data.frame} with information about all MODIS 
-products available. In case of \code{character} input, an invisible 
-\code{\link{MODISproduct-class}} or \code{\link{MODISfile-class}} object 
-depending on the type of input (product/regular expression or filename); the 
-object holds information usable by other functions.
+If 'x' is missing, a \code{data.frame} with information about all MODIS products
+available. In case of \code{character} input, an invisible \linkS4class{MODISproduct} or
+\linkS4class{MODISfile} object depending on the type of input (product, regular
+expression or file name); the object holds information usable by other
+functions.
 }
 \description{
-On user side, it is a funtion to find the desidered product. On package site, 
-it generates central internal information to hande files.
+On user side, it is a function to find the desired product. On package site,
+it generates central internal information to handle files.
 }
 \examples{
 getProduct() # list available products

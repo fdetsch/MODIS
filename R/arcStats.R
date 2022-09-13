@@ -1,65 +1,68 @@
 #' Get Summary of Local MODIS Data
 #' 
 #' @description 
-#' In the same manner as \code{\link{getHdf}}, this function quantifies the 
-#' availability of local MODIS hdf data and gives you an overview (plot or/and 
-#' table) of locally available MODIS grid hdf files. 
+#' In the same manner as [getHdf()], this function quantifies the availability 
+#' of local MODIS `.hdf` data and gives you a visual and/or tabular overview. 
 #' 
-#' @param product \code{character}, see \code{\link{getProduct}}. MODIS grid 
-#' product to be checked.
-#' @param collection \code{character} or \code{integer}, see 
-#' \code{\link{getCollection}}. MODIS product version. 
-#' @param extent Extent information, defaults to \code{'global'}. See
-#' \code{\link{getTile}}.
-#' @param begin \code{character}. Begin date of MODIS time series, see 
-#' \code{\link{transDate}}.
-#' @param end \code{character}. End date, defaults to \code{'Today'} expressed in 
-#' a function. 
-#' @param asMap Controls output type. Possible options are \code{TRUE} (png), 
-#' \code{FALSE} (csv) or \code{'both'}.
-#' @param outName \code{character}. Name of output file, defaults to 
-#' 'product.collection.YYYYMMDDHHMMSS.png' (or *.csv) of the function call or, 
-#' if applicable, 'product.collection.extent.YYYYMMDDHHMMSS.png' (or *.csv).
-#' @param ... Arguments passed to \code{\link{MODISoptions}}, most importantly 
-#' \code{outProj} and \code{outDirPath}.
+#' @param product `character`, see [getProduct()]. MODIS grid product to be 
+#'   checked.
+#' @param collection `character` or `integer`, see [getCollection()]. MODIS 
+#'   product version. 
+#' @param extent Extent information, defaults to `"global"`. See [getTile()].
+#' @param begin `character`. Begin date of MODIS time series, see [transDate()].
+#' @param end `character`. End date, defaults to [Sys.Date()]. 
+#' @param asMap Controls output type. Possible options are `TRUE` (`.png`), 
+#'   `FALSE` (`.csv`) or `"both"`.
+#' @param outName `character`. Name of output file, defaults to 
+#'   `"product.collection.YYYYMMDDHHMMSS.png"` (or `.csv`) of the function call 
+#'   or, if applicable, `"product.collection.extent.YYYYMMDDHHMMSS.png"` (or 
+#'   `.csv`).
+#' @param ... Arguments passed to [MODISoptions()], most importantly 'outProj' 
+#'   and 'outDirPath'.
 #' 
 #' @return 
-#' An invisible \code{NULL} (provably this will change to a matrix-like object 
-#' similar to the '*.csv' output). If \code{asMap= TRUE}, a 'table.csv' and a 
-#' 'image.png' file(s) in \code{outDirPath}.
+#' An invisible `NULL` (probably this will change to a matrix-like object 
+#' similar to the `.csv` output). If `asMap = TRUE`, a `"table.csv"` and a 
+#' `"image.png"` file in 'outDirPath'.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
 #' 
 #' @examples 
 #' \dontrun{
-#' # The following examples are expecting that you have some data stored locally!
+#' # The following examples expect that you have some data stored locally!
 #' ########################################################### 
-#' # generates 2 png's and 2 csv's one for TERRA one for AQUA
+#' # generates 2 png's and 2 csv's, one for TERRA one for AQUA
 #' arcStats(product="M.D13Q1")
 #' 
-#' # generates 2 png's and 2 csv's one for TERRA one for AQUA with the specified countries.
+#' # -"- with the specified countries
 #' arcStats(product="M.D13Q1",extent=c("austria","germany","italy"))
 #' 
-#' # generates 1 png and 1 csv for AQUA.
+#' # generates 1 png and 1 csv for AQUA
 #' arcStats(product="MYD13Q1",begin="2005001",outName="MyDataStart2005")
 #' 
-#' # generates 1 png for AQUA for the selected area and plots it in 'Sinusoidal'.
+#' # generates 1 png for AQUA for the selected area and plots it in 'Sinusoidal'
 #' arcStats(product="MYD13Q1",begin="2005001",asMap=TRUE, outName="InteractiveSelection2005",
 #'          extent=getTile(), outProj="asIn")
 #' 
-#' # generates 1 png for AQUA for the selected area and plots it in 'Geographic' Coordinates.
+#' # -"- and plots it in 'Geographic' Coordinates.
 #' arcStats(product="MYD13Q1",begin="2005001",asMap=TRUE, outName="InteractiveSelection2005",
 #'          extent=getTile(), outProj="GEOGRAPHIC")
 #' }
 #' 
 #' @export arcStats
 #' @name arcStats
-arcStats <- function(product, collection=NULL, extent="global", begin="2000.01.01", end=format(Sys.time(), "%Y.%m.%d"), asMap=TRUE, outName=NULL,...)
-{  
-# product="MYD17A2"; collection="005"; extent=list(xmin=-20,xmax=40,ymin=10, ymax=20); begin="2000.08.01"; end="2000.08.21"; asMap="both"; outName=NULL;u=1;z=1
-# product="MOD13Q1"; collection="005"; extent='global'; begin="2000.08.01"; end="2004.08.21"; asMap="both"; outName=NULL;u=1;z=1
- 
+arcStats <- function(
+  product
+  , collection = NULL
+  , extent = "global"
+  , begin = "2000.01.01"
+  , end = format(Sys.Date(), "%Y.%m.%d")
+  , asMap = TRUE
+  , outName = NULL
+  , ...
+) {
+    
     date4name <- format(Sys.time(), "%Y%m%d%H%M%S") 
           
     if(is.null(outName))

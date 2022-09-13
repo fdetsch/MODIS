@@ -3,41 +3,38 @@
 #' @description 
 #' Checks and retrieves available MODIS collection(s) for a given product.
 #' 
-#' @param product \code{character}. MODIS grid product to check for existing 
-#' collections, see \code{\link{getProduct}}.
-#' @param collection \code{character} or \code{integer}. If provided, the 
-#' function only checks if the specified collection exists and returns the 
-#' collection number formatted based on the \code{as} parameter or \code{FALSE} 
-#' if it doesn't exists. The check is performed on 
-#' \href{https://lpdaac.usgs.gov/}{LP DAAC} as the exclusive source for several 
-#' products or, for snow cover (MOD/MYD10) and sea ice extent (MOD/MYD29), 
-#' \href{https://nsidc.org/home}{NSIDC}.
-#' @param newest \code{logical}. If \code{TRUE} (default), return only the 
-#' newest collection, else return all available collections.
-#' @param forceCheck \code{logical}, defaults to \code{FALSE}. If \code{TRUE}, 
-#' connect to the 'LP DAAC' or 'NSIDC' server and get available collections, of 
-#' which an updated version is permanently stored in 
-#' \code{MODIS:::combineOptions()$auxPath}.
-#' @param as \code{character}, defaults to \code{'character'} which returns the 
-#' typical 3-digit collection number (i.e., \code{"005"}). \code{as = 'numeric'} 
-#' returns the result as \code{numeric} (i.e., \code{5}).
-#' @param ... Additional arguments passed to \code{\link{MODISoptions}}.
-#' Permanent settings for these arguments are temporarily overridden.
+#' @param product `character`. MODIS grid product to check for existing 
+#'   collections, see [getProduct()].
+#' @param collection `character` or `integer`. If provided, the function only 
+#'   checks if the specified collection exists and returns the collection number
+#'   formatted based on the 'as' parameter or `FALSE` if it doesn't exists. The 
+#'   check is performed on [LP DAAC](https://lpdaac.usgs.gov/) as the exclusive 
+#'   source for several products or, for snow cover (MOD/MYD10) and sea ice 
+#'   extent (MOD/MYD29), [NSIDC](https://nsidc.org/home).
+#' @param newest `logical`. If `TRUE` (default), return only the newest 
+#'   collection, else return all available collections.
+#' @param forceCheck `logical`, defaults to `FALSE`. If `TRUE`, connect to the 
+#'   LP DAAC or NSIDC server and get available collections, of which an updated 
+#'   version is permanently stored in `MODIS:::combineOptions()$auxPath`.
+#' @param as `character`, defaults to `"character"` which returns the typical 
+#'   3-digit collection number (i.e., `"061"`). `as = "numeric"` returns the 
+#'   result as `numeric` (i.e., `61`).
+#' @param ... Additional arguments passed to [MODISoptions()]. Permanent 
+#'   settings for these arguments are temporarily overridden.
 #' 
 #' @return 
-#' A 3-digit \code{character} or \code{numeric} object (depending on 'as') or, 
-#' if \code{length(product) > 1}, a \code{list} of such objects with each slot 
-#' corresponding to the collection available for a certain product. 
-#' Additionally, a text file in a hidden folder located in 
-#' \code{getOption("MODIS_localArcPath")} as database for future calls. If 
-#' 'collection' is provided, only the (formatted) collection (or \code{FALSE} if 
-#' it could not be found) is returned.
+#' A 3-digit `character` or `numeric` object (depending on 'as') or, if 
+#' `length(product) > 1`, a `list` of such objects with each slot corresponding 
+#' to the collection available for a certain product. Additionally, a text file 
+#' in a hidden folder located in `getOption("MODIS_localArcPath")` as database 
+#' for future calls. If 'collection' is provided, only the (formatted) 
+#' collection (or `FALSE` if it could not be found) is returned.
 #' 
 #' @author 
 #' Matteo Mattiuzzi, Florian Detsch
 #' 
 #' @seealso 
-#' \code{\link{getProduct}}.
+#' [getProduct()].
 #' 
 #' @examples 
 #' \dontrun{

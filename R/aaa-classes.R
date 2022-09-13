@@ -1,16 +1,15 @@
 #' Class MODISextent
 #' 
 #' @description 
-#' An object of class \code{MODISextent}, typically created through 
-#' \code{\link{getTile}}.
+#' An object of class `MODISextent`, typically created through [getTile()].
 #'  
-#' @slot tile MODIS tile ID as \code{character}.
-#' @slot tileH MODIS horizontal tile ID as \code{integer}.
-#' @slot tileV MODIS vertical tile ID as \code{integer}.
-#' @slot extent \code{Extent} information in 
-#' \href{https://epsg.io/4326}{EPSG:4326}, see \code{\link{getTile}}.
-#' @slot system Sensor system as \code{character}.
-#' @slot target If applicable, a \code{list} with additional target information.
+#' @slot tile MODIS tile ID as `character`.
+#' @slot tileH MODIS horizontal tile ID as `integer`.
+#' @slot tileV MODIS vertical tile ID as `integer`.
+#' @slot extent `Extent` information in [EPSG:4326](https://epsg.io/4326), see 
+#'   [getTile()].
+#' @slot system Sensor system as `character`.
+#' @slot target If applicable, a `list` with additional target information.
 #' 
 #' @exportClass MODISextent
 #' @name MODISextent-class
@@ -31,23 +30,23 @@ NULL
 
 #' Class MODISproduct
 #'
-#' @description An object of class \code{MODISproduct}, typically created through
-#' \code{\link[MODIS]{getProduct}} when the 'x' input is a MODIS product or 
-#' regular expression.
+#' @description
+#' An object of class `MODISproduct`, typically created through [getProduct()] 
+#' when the 'x' input is a MODIS product or regular expression.
 #'
-#' @slot request User request as \code{character}.
+#' @slot request User request as `character`.
 #' @slot PF1,PF2,PF3,PF4 Platform specific path feature for LP DAAC, LAADS, NTSG 
-#' and NSIDC as \code{character}.
+#'   and NSIDC as `character`.
 #' @slot PD Product specific code number following the platform specifier, e.g. 
-#' \code{"13A1"} for MOD13A1.
+#'   `"13A1"` for MOD13A1.
 #' @slot PLATFORM Satellite platform on which MODIS sensor is mounted; one of 
-#' \code{c("Terra", "Aqua")}.
-#' @slot TYPE Product type; one of \code{c("Tile", "CMG", "Swath")}.
-#' @slot PRODUCT MODIS product identified from 'request' as \code{character}.
-#' @slot SENSOR Statically set to \code{"MODIS"}.
-#' @slot SOURCE Product specific MODIS download server(s) as named \code{list}.
+#'   `c("Terra", "Aqua")`.
+#' @slot TYPE Product type; one of `c("Tile", "CMG", "Swath")`.
+#' @slot PRODUCT MODIS product identified from 'request' as `character`.
+#' @slot SENSOR Statically set to `"MODIS"`.
+#' @slot SOURCE Product specific MODIS download server(s) as named `list`.
 #' @slot CCC Product specific MODIS data collection(s) stored as 3-digit 
-#' \code{character} objects in a named \code{list}.
+#'   `character` objects in a named `list`.
 #'
 #' @exportClass MODISproduct
 #' @name MODISproduct-class
@@ -72,29 +71,29 @@ NULL
 
 #' Class MODISfile
 #'
-#' @description An object of class \code{MODISfile}, typically created through 
-#' \code{\link[MODIS]{getProduct}} when the 'x' input is a MODIS filename.
+#' @description
+#' An object of class `MODISfile`, typically created through [getProduct()] when
+#' the 'x' input is a MODIS filename.
 #'
-#' @slot request User request as \code{character}.
-#' @slot PRODUCT MODIS product identified from 'request' as \code{character}.
-#' @slot DATE Acquisition date string in the form \code{"A\%Y\%j"} (see 
-#' \code{\link{strptime}} and 
-#' \href{https://modis-images.gsfc.nasa.gov/MOD07_L2/filename.html}{HDF filename convention}).
-#' @slot TILE Tile string in the form \code{"hXXvXX"}.
-#' @slot CCC MODIS data collection as 3-digit \code{character}.
-#' @slot PROCESSINGDATE Processing date string in the form \code{"\%Y\%j\%H\%M\%S"} 
-#' (see \code{\link{strptime}}).
-#' @slot FORMAT File format as \code{character}.
-#' @slot SENSOR Statically set to \code{"MODIS"}.
+#' @slot request User request as `character`.
+#' @slot PRODUCT MODIS product identified from 'request' as `character`.
+#' @slot DATE Acquisition date string in the form `"A\%Y\%j"` (see [strptime()] 
+#'   and [HDF filename convention](https://modis-images.gsfc.nasa.gov/MOD07_L2/filename.html).
+#' @slot TILE Tile string in the form `"hXXvXX"`.
+#' @slot CCC MODIS data collection as 3-digit `character`.
+#' @slot PROCESSINGDATE Processing date string in the form `"\%Y\%j\%H\%M\%S"` 
+#'   (see [strptime()]).
+#' @slot FORMAT File format as `character`.
+#' @slot SENSOR Statically set to `"MODIS"`.
 #' @slot PLATFORM Satellite platform on which MODIS sensor is mounted; one of 
-#' \code{c("Terra", "Aqua")}.
+#'   `c("Terra", "Aqua")`.
 #' @slot PF1,PF2,PF3,PF4 Platform specific path feature for LP DAAC, LAADS, NTSG 
-#' and NSIDC as \code{character}.
-#' @slot TOPIC Product topic as \code{character}.
-#' @slot TYPE Product type; one of \code{c("Tile", "CMG", "Swath")}.
-#' @slot SOURCE Product specific MODIS download server(s) as named \code{list}.
+#'   and NSIDC as `character`.
+#' @slot TOPIC Product topic as `character`.
+#' @slot TYPE Product type; one of `c("Tile", "CMG", "Swath")`.
+#' @slot SOURCE Product specific MODIS download server(s) as named `list`.
 #' @slot POS1,POS2 Default start and end index of date string in MODIS filename, 
-#' usually \code{c("10", "16")}.
+#'   usually `c("10", "16")`.
 #'
 #' @exportClass MODISfile
 #' @name MODISfile-class

@@ -17,25 +17,22 @@ delHdf(
 )
 }
 \arguments{
-\item{product}{\code{character}, see \code{\link{getProduct}}.}
+\item{product}{\code{character}, see \code{\link[=getProduct]{getProduct()}}.}
 
-\item{collection}{\code{character} or \code{integer}, see 
-\code{\link{getCollection}}.}
+\item{collection}{\code{character} or \code{integer}, see \code{\link[=getCollection]{getCollection()}}.}
 
-\item{extent}{Extent information, defaults to \code{'global'}. See
-\code{\link{getTile}}.}
+\item{extent}{Extent information, defaults to \code{"global"}. See \code{\link[=getTile]{getTile()}}.}
 
-\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
-vertical tile number, see \code{\link{getTile}}.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and vertical tile
+number, see \code{\link[=getTile]{getTile()}}.}
 
-\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
-time series, see \code{\link{transDate}}.}
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS time
+series, see \code{\link[=transDate]{transDate()}}.}
 
-\item{ask}{\code{logical}. If \code{TRUE} (default), the user is being asked 
-for deletion after checking.}
+\item{ask}{\code{logical}. If \code{TRUE} (default), the user is being asked for
+deletion after checking.}
 
-\item{...}{Arguments passed to \code{\link{MODISoptions}}, particularly 
-\code{localArcPath}.}
+\item{...}{Arguments passed to \code{\link[=MODISoptions]{MODISoptions()}}, particularly 'localArcPath'.}
 }
 \description{
 Delete MODIS grid files to reduce the local storage.

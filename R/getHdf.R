@@ -11,37 +11,36 @@ if ( !isGeneric("getHdf") ) {
 #' data pool. When run in a schedule job, the function manage the continuous 
 #' update of the local MODIS data archive.
 #' 
-#' @param product \code{character}. MODIS grid product to be downloaded, see 
-#' \code{\link{getProduct}}. Use dot notation to address Terra and Aqua products 
-#' (e.g. \code{M.D13Q1}). 
-#' @param begin,end \code{Date} or \code{character}. Begin and end date of MODIS 
-#' time series, see \code{\link{transDate}}. 
-#' @param tileH,tileV \code{numeric} or \code{character}. Horizontal and 
-#' vertical tile number, see \code{\link{getTile}}.
-#' @param extent See Details in \code{\link{getTile}}.
-#' @param collection Desired MODIS product collection as \code{character}, 
-#' \code{integer}, or \code{list} as returned by \code{\link{getCollection}}.
-#' @param HdfName \code{character} vector or \code{list}. Full HDF file name(s) 
-#' to download a small set of files. If specified, other file-related parameters 
-#' (i.e., \code{begin}, \code{end}, \code{collection}, etc.) are ignored. 
-#' @param checkIntegrity \code{logical}. If \code{TRUE} (default), the size of 
-#' each downloaded file is checked. In case of inconsistencies, the function 
-#' tries to re-download broken files. 
-#' @param forceDownload \code{logical}. If \code{TRUE} (default), try to 
-#' download data irrespective of whether online information could be retrieved 
-#' via \code{MODIS:::getStruc} or not.
-#' @param ... Further arguments passed to \code{\link{MODISoptions}}, eg 'wait'.
+#' @param product `character`. MODIS grid product to be downloaded, see 
+#'   [getProduct()].
+#' @param begin,end `Date` or `character`. Begin and end date of MODIS time 
+#'   series, see [transDate()]. 
+#' @param tileH,tileV `numeric` or `character`. Horizontal and vertical tile 
+#'   number, see [getTile()].
+#' @param extent See Details in [getTile()].
+#' @param collection Desired MODIS product collection as `character`, `integer`,
+#'   or `list` as returned by [getCollection()].
+#' @param HdfName `character` vector or `list`. Full HDF file name(s) to 
+#'   download a small set of files. If specified, other file-related parameters 
+#'   (e.g., 'begin', 'end', 'collection', etc.) are ignored.
+#' @param checkIntegrity `logical`. If `TRUE` (default), the size of each 
+#'   downloaded file is checked. In case of inconsistencies, the function tries 
+#'   to re-download broken files.
+#' @param forceDownload `logical`. If `TRUE` (default), try to download data 
+#'   irrespective of whether online information could be retrieved via 
+#'   `MODIS:::getStruc` or not.
+#' @param ... Further arguments passed to [MODISoptions()], e.g. 'wait'.
 #' 
 #' @return 
 #' An invisible vector of downloaded data and paths.
 #' 
 #' @references 
-#' MODIS data is currently available from the online data pools at 
-#' \itemize{
-#' \item{NASA Land Processes Distributed Active Archive Center (\href{https://lpdaac.usgs.gov/}{LP DAAC})},
-#' \item{Level-1 and Atmosphere Archive & Distribution System (\href{https://ladsweb.modaps.eosdis.nasa.gov/}{LAADS})}, and
-#' \item{National Snow & Ice Data Center (\href{https://nsidc.org/home}{NSIDC})}.
-#' }
+#' MODIS data is currently available from the online data pools at
+#' * NASA Land Processes Distributed Active Archive Center 
+#'   ([LP DAAC](https://lpdaac.usgs.gov/)),
+#' * Level-1 and Atmosphere Archive & Distribution System 
+#'   ([LAADS](https://ladsweb.modaps.eosdis.nasa.gov/)), and
+#' * National Snow & Ice Data Center ([NSIDC](https://nsidc.org/home)).
 #' 
 #' @author 
 #' Matteo Mattiuzzi

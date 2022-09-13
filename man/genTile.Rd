@@ -14,21 +14,20 @@ genTile(
 \arguments{
 \item{tileSize}{\code{numeric}, size of a single tile in degrees (EPSG:4326).}
 
-\item{offset}{\code{numeric}, shifts the tiling system in upper-left 
-direction.}
+\item{offset}{\code{numeric}, shifts the tiling system in upper-left direction.}
 
-\item{StartNameFrom}{\code{numeric}. \code{c(Lat-Direction,Lon-Direction)} 
-start number in the naming of the tiles.}
+\item{StartNameFrom}{\code{numeric}. \code{c(Lat-Direction,Lon-Direction)} start number
+in the naming of the tiles.}
 
-\item{extent}{\code{list}. Tile system extent information, basically the 
-coverage of the data on server.}
+\item{extent}{\code{list}. Tile system extent information, basically the coverage
+of the data on server.}
 }
 \value{
 A \code{matrix}.
 }
 \description{
-This function generates a matrix with bounding box information for a 
-global tiling system (based on Lat/Lon).
+This function generates a matrix with bounding box information for a global
+tiling system (based on Lat/Lon).
 }
 \examples{
 # 1x1 degree tiling system
@@ -46,7 +45,7 @@ head(e3)
 
 }
 \seealso{
-\code{\link{getTile}}.
+\code{\link[=getTile]{getTile()}}.
 }
 \author{
 Matteo Mattiuzzi

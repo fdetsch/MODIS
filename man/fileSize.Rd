@@ -4,20 +4,21 @@
 \alias{fileSize}
 \title{Get Size of File(s)}
 \usage{
-fileSize(file, units = "B")
+fileSize(file, units = c("B", "KB", "MB", "GB", "TB"))
 }
 \arguments{
 \item{file}{\code{character} vector of file(s) with path.}
 
-\item{units}{\code{character}, defaults to "B". Currently available options 
-are "B", "KB", "MB", "GB" or "TB" for bites, kilo-, mega-, giga- and terabytes.}
+\item{units}{\code{character}, defaults to \code{"B"}. Currently available options
+are \code{c("B", "KB", "MB", "GB", "TB")} for bites, kilo-, mega-, giga- and
+terabytes.}
 }
 \value{
-\code{numeric} vector of the same length as \code{file} (in \code{units}). 
-Note that directories are excluded.
+A \code{numeric} vector of the same length as 'file' (in 'units'). Note that
+directories are excluded.
 }
 \description{
-Function for getting size of any files.
+Get the size of any file.
 }
 \examples{
 \dontrun{

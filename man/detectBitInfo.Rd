@@ -7,19 +7,19 @@
 detectBitInfo(product, what = "all", warn = TRUE)
 }
 \arguments{
-\item{product}{\code{character}, see \code{\link{getProduct}}.}
+\item{product}{\code{character}, see \code{\link[=getProduct]{getProduct()}}.}
 
-\item{what}{\code{character}. Parameter name, e.g. 'VI Quality' for all MOD13
-products (see \href{https://lpdaac.usgs.gov/documents/103/MOD13_User_Guide_V6.pdf}{MODIS Vegetation Index User's Guide}, 
-Table 5, column 'Parameter Name').}
+\item{what}{\code{character}. Parameter name, e.g. \code{"VI Quality"} for all MOD13
+products (see \href{https://lpdaac.usgs.gov/documents/103/MOD13_User_Guide_V6.pdf}{MODIS Vegetation Index User's Guide},
+Table 5, column "Parameter Name").}
 
 \item{warn}{\code{logical}, whether or not to throw warning messages.}
 }
 \value{
-If \code{what = "all"} a \code{data.frame}, else a \code{list}.
+If \code{what = "all"} (default) a \code{data.frame}, else a \code{list}.
 }
 \description{
-This function returns MODIS QA information for a specific product. It gets 
+This function returns MODIS QA information for a specific product. It gets
 the information from an internal database and not all products are available.
 }
 \examples{

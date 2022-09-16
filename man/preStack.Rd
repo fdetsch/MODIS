@@ -2,28 +2,27 @@
 % Please edit documentation in R/preStack.R
 \name{preStack}
 \alias{preStack}
-\title{Organise (MODIS) Files in Preparation for Stacking}
+\title{Organize (MODIS) Files in Preparation for Stacking}
 \usage{
 preStack(pattern = "*", path = "./", files = NULL, timeInfo = NULL)
 }
 \arguments{
-\item{pattern}{Regular expression passed to \code{\link{list.files}}}
+\item{pattern}{Regular expression passed to \code{\link[=list.files]{list.files()}}}
 
 \item{path}{\code{character}. Location of MODIS files to stack.}
 
-\item{files}{\code{character} vector of filenames. If provided, arguments 
-\code{pattern} and \code{path} are ignored.}
+\item{files}{\code{character} vector of file names. If provided, arguments
+'pattern' and 'path' are ignored.}
 
-\item{timeInfo}{Ouput from \code{\link{orgTime}}.}
+\item{timeInfo}{Output from \code{\link[=orgTime]{orgTime()}}.}
 }
 \value{
-A \code{character} vector of filenames within the query. If \code{timeInfo} 
-is provided, filenames are sorted and subsetted by date.
+A \code{character} vector of file names within the query. If 'timeInfo' is
+provided, file names are sorted and subsetted by date.
 }
 \description{
-This function lets you sort a vector of filenames according to date. It is 
-thought to be used on results from \code{\link{runGdal}} or 
-\code{\link{runMrt}}.
+This function lets you sort a vector of file names according to date. It is
+thought to be used on results from \code{\link[=runGdal]{runGdal()}} or \code{\link[=runMrt]{runMrt()}}.
 }
 \examples{
 # see Examples in ?smooth.spline.raster

@@ -4,8 +4,8 @@
 #' Compendium of minor **MODIS** package-related functions.
 #' 
 #' @param pattern Regular expression passed to [grep()].
-#' @param database `character`. Defaults to `"worldHires"`, see [map::map()] for
-#'   available options.
+#' @param database `character`. Defaults to `"worldHires"`, see [maps::map()] 
+#'   for available options.
 #' @param plot `logical`, defaults to `FALSE`. If `TRUE`, search results are 
 #'   displayed.
 #' 
@@ -18,7 +18,7 @@
 #' Matteo Mattiuzzi
 #' 
 #' @seealso 
-#' [getTile()], [map::map()], [grep()].
+#' [getTile()], [maps::map()], [grep()].
 #' 
 #' @examples 
 #' \donttest{

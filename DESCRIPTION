@@ -6,7 +6,7 @@ BugReports: https://github.com/fdetsch/MODIS/issues
 Authors@R: c(
 	person("Matteo", "Mattiuzzi", role = "aut", email = "matteo@mattiuzzi.com"),
 	person("Florian", "Detsch", role = c("cre", "aut"), email = "fdetsch@web.de"))
-Description: Download and processing functionalities for the Moderate Resolution
+Description: Download and processing functionality for the Moderate Resolution
     Imaging Spectroradiometer (MODIS). The package provides automated access to the
     global online data archives LP DAAC (<https://lpdaac.usgs.gov/>), LAADS 
     (<https://ladsweb.modaps.eosdis.nasa.gov/>) and NSIDC (<https://nsidc.org/home>) 

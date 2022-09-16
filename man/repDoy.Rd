@@ -7,28 +7,26 @@
 repDoy(pixX, layerDate = NULL, bias = 0)
 }
 \arguments{
-\item{pixX}{\code{matrix} of values, usually derived from 
-\code{\link{as.matrix}}.}
+\item{pixX}{\code{matrix} of values, usually derived from \code{\link[raster:as.matrix]{raster::as.matrix()}}.}
 
-\item{layerDate}{If \code{NULL} (default), try to autodetect layer dates. If 
-you want to be sure, use the result from \code{\link{extractDate}} or 
-\code{\link{orgTime}}.}
+\item{layerDate}{If \code{NULL} (default), try to autodetect layer dates. If you
+want to be sure, use the result from \code{\link[=extractDate]{extractDate()}} or \code{\link[=orgTime]{orgTime()}}.}
 
-\item{bias}{\code{integer}. Bias applied to all values in \code{pixX}.}
+\item{bias}{\code{integer}. Bias applied to all values in 'pixX'.}
 }
 \value{
 A \code{matrix} with sequential Julian dates.
 }
 \description{
-Currently works only for MODIS 16 days composites! In MODIS composites, the 
-Julian dates inside the 'composite_day_of_the_year' SDS are referring always 
-to the year they are effectively in. The problem is that the layer/SDS name 
-from the last files from Terra and Aqua within a year can include dates from 
-the following year and so starting again with 1. The problem occurs if you 
-want to sort values of a time series by date (e.g. for precise time series 
-functions). This function generates a sequential vector beginning always 
-with the earliest SDS/layer date and ending with the total sum of days of 
-the time serie length.
+Currently works only for MODIS 16 days composites! In MODIS composites, the
+Julian dates inside the 'composite_day_of_the_year' SDS are referring always
+to the year they are effectively in. The problem is that the layer/SDS name
+from the last files from Terra and Aqua within a year can include dates from
+the following year and so starting again with 1. The problem occurs if you
+want to sort values of a time series by date (e.g. for precise time series
+functions). This function generates a sequential vector beginning always
+with the earliest SDS/layer date and ending with the total sum of days of the
+time serie length.
 }
 \examples{
 \dontrun{

@@ -4,8 +4,8 @@
 \alias{runMrt}
 \title{Run MODIS Reprojection Tool}
 \source{
-The MRT software has been \href{https://lpdaac.usgs.gov/news/downloadable-modis-reprojection-tool-mrt-and-mrtswath-tool-have-been-retired}{retired}, 
-and is hence no longer officialy available for download through LP DAAC.
+The MRT software has been \href{https://lpdaac.usgs.gov/news/downloadable-modis-reprojection-tool-mrt-and-mrtswath-tool-have-been-retired}{retired},
+and is hence no longer officially available for download through LP DAAC.
 }
 \usage{
 runMrt(
@@ -27,97 +27,92 @@ runMrt(
 )
 }
 \arguments{
-\item{product, collection, begin, end, extent, tileH, tileV, SDSstring, job}{See \code{\link[MODIS]{runGdal}}
-and functions linked therein.}
+\item{product, collection, begin, end, extent, tileH, tileV, SDSstring, job}{See
+\code{\link[=runGdal]{runGdal()}} and functions linked therein.}
 
-\item{datum}{The output datum used for datum conversion as \code{character}, 
-defaults to \code{"NODATUM"}. Supported datums are \code{"NAD27"}, 
-\code{"NAD83"}, \code{"WGS66"}, \code{"WGS72"} and \code{"WGS84"}, see 
-MRT User's Manual, p. 7-8.}
+\item{datum}{The output datum used for datum conversion as \code{character},
+defaults to \code{"NODATUM"}. Supported datums are \code{"NAD27"}, \code{"NAD83"},
+\code{"WGS66"}, \code{"WGS72"} and \code{"WGS84"}, see MRT User's Manual, p. 7-8.}
 
-\item{zone}{Output zone number as \code{integer}, relevant only for 
-UTM projections (i.e., \code{outProj = "UTM"}. Valid values are \code{–60} to 
-\code{+60}.}
+\item{zone}{Output zone number as \code{integer}, relevant only for UTM
+projections (i.e., \code{outProj = "UTM"}). Valid values are \code{-60} to \code{+60}.}
 
-\item{projPara}{Output projection parameters as \code{character} string, see 
-'Details'. Ignored if \code{outProj \%in\% c("SIN", "GEO")}. If not specified 
-and using another target projection, the default settings for \code{"GEO"} 
-are assumed.}
+\item{projPara}{Output projection parameters as \code{character} string, see
+Details. Ignored if \verb{outProj \\\%in\\\% c("SIN", "GEO")}. If not specified and
+using another target projection, the default settings for \code{"GEO"} are
+assumed.}
 
-\item{mosaic}{A \code{logical} that toggles mosaicking on (default) or off. 
-One example where \code{mosaic = FALSE} makes sense is for large spatial 
-extents because maximum supported HDF4 filesize is 2GB; if crossed, 
-mosaicking will fail.}
+\item{mosaic}{A \code{logical} that toggles mosaicking on (default) or off. One
+example where \code{mosaic = FALSE} makes sense is for large spatial extents
+because maximum supported HDF4 file size is 2GB. If crossed, mosaicking
+will fail.}
 
-\item{anonym}{A \code{logical}, defaults to \code{TRUE}. If \code{FALSE}, the 
-job name is appended to the root filename.}
+\item{anonym}{A \code{logical}, defaults to \code{TRUE}. If \code{FALSE}, the job name is
+appended to the root filename.}
 
-\item{...}{Additional arguments passed to \code{\link[MODIS]{MODISoptions}}, 
-see also 'Details' for some MRT specific settings.}
+\item{...}{Additional arguments passed to \code{\link[=MODISoptions]{MODISoptions()}}, see also Details
+for some MRT specific settings.}
 }
 \value{
-A \code{list} of output filenames summarized by product and date, see also 
-Value in \code{link[MODIS]{runGdal}}.
+A \code{list} of output file names summarized by product and date, see also Value
+in \code{\link[=runGdal]{runGdal()}}.
 }
 \description{
-Specifying input parameters, this function gets MODIS grid data from the 
-archive (HTTP or local) and processes it with the MODIS Reprojection Tool 
-(MRT). At any point, you are highly encouraged to consult the
-MRT User's Manual (see References) for further information.
+Specifying input parameters, this function gets MODIS grid data from the
+archive (HTTP or local) and processes it with the MODIS Reprojection Tool
+(MRT). At any point, you are highly encouraged to consult the MRT User's
+Manual for further information.
 }
 \details{
-Please note that in contrast to \code{\link[MODIS]{runGdal}}, MRT's 
-\code{resample} function does not offer an 'overwrite' option, and hence, 
-existing files will be overwritten (see also MRT User's Manual, p. 59).
-Further arguments that require particular attention when operating MRT are 
+Please note that in contrast to \code{\link[=runGdal]{runGdal()}}, MRT's \code{resample} function does
+not offer an 'overwrite' option, meaning that existing files will be
+overwritten (see also MRT User's Manual, p. 59).
+Further arguments that require particular attention when operating MRT are
 summarized in the following list:
- 
-\strong{\code{dataFormat}}:\cr\cr
-Output file formats include:
 
+\strong{dataFormat}:
+Output file formats include:
 \itemize{
-\item{\code{"raw binary"} (\code{.hdr} and \code{.dat})}
-\item{\code{"HDF-EOS"} (\code{.hdf})}
-\item{\code{"GeoTiff"} (\code{.tif}; default)}
+\item \code{"raw binary"}: \code{.hdr} and \code{.dat}
+\item \code{"HDF-EOS"}: \code{.hdf}
+\item \code{"GeoTiff"}: \code{.tif} (default)
 }
 
-Any other format specified through \code{\link[MODIS]{MODISoptions}} or 
-'dataFormat' is ignored and set to \code{"GeoTiff"}.
+Any other format specified through \code{\link[=MODISoptions]{MODISoptions()}} or 'dataFormat' is
+ignored and set to \code{"GeoTiff"}.
 
-\strong{\code{outProj}}:\cr\cr
-MRT uses calls to the General Cartographic Transformation Package (GCTP) and as such allows projection to the following mapping 
-grids:
-
+\strong{outProj}:
+MRT uses calls to the General Cartographic Transformation Package (GCTP) and
+as such allows projection to the following mapping grids:
 \itemize{
-\item{Albers Equal Area (\code{"AEA"})}
-\item{Equirectangular (\code{"ER"})}
-\item{Geographic (\code{"GEO"})}
-\item{Hammer (\code{"HAM"})}
-\item{Integerized Sinusoidal (\code{"ISIN"})}
-\item{Interrupted Goode Homolosine (\code{"IGH"})}
-\item{Lambert Azimuthal (\code{"LA"})}
-\item{Lambert Conformal Conic (\code{"LCC"})}
-\item{Mercator (\code{"MERCAT"})}
-\item{Molleweide (\code{"MOL"})}
-\item{Polar Stereographic (\code{"PS"})}
-\item{Sinusoidal (\code{"SIN"})}
-\item{Transverse Mercator (\code{"TM"})}
-\item{Universal Transverse Mercator (\code{"UTM"})}
+\item Albers Equal Area (\code{"AEA"})
+\item Equirectangular (\code{"ER"})
+\item Geographic (\code{"GEO"})
+\item Hammer (\code{"HAM"})
+\item Integerized Sinusoidal (\code{"ISIN"})
+\item Interrupted Goode Homolosine (\code{"IGH"})
+\item Lambert Azimuthal (\code{"LA"})
+\item Lambert Conformal Conic (\code{"LCC"})
+\item Mercator (\code{"MERCAT"})
+\item Molleweide (\code{"MOL"})
+\item Polar Stereographic (\code{"PS"})
+\item Sinusoidal (\code{"SIN"})
+\item Transverse Mercator (\code{"TM"})
+\item Universal Transverse Mercator (\code{"UTM"})
 }
 
 See also 'References' and MRT User's Manual, pp. 6 and 29.
 
-\strong{\code{projPara}}:\cr\cr
-Output projection parameters are autodetected for 
-\code{outProj \%in\% c("SIN", "GEO")}:
-
+\strong{projPara}:
+Output projection parameters are autodetected for
+\verb{outProj \\\%in\\\% c("SIN", "GEO")}:
 \itemize{
-\item{\code{"SIN"}: \code{"6371007.18 0.00 0.00 0.00 0.00 0.00 0.00 0.00 86400.00 0.00 0.00 0.00 0.00 0.00 0.00"}}
-\item{\code{"GEO"}: \code{"0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"}}
+\item \code{"SIN"}: \code{"6371007.18 0.00 0.00 0.00 0.00 0.00 0.00 0.00 86400.00 0.00 0.00 0.00 0.00 0.00 0.00"}
+\item \code{"GEO"}: \code{"0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"}
 }
 
-For detailed information on defining paramters for other target projections, 
-please refer to 'Appendix C: Projection Parameters' in the MRT User's Manual, 
+For detailed information on defining parameters for other target projections,
+please refer to 'Appendix C: Projection Parameters' in the MRT User's Manual,
 p. 65-66.
 }
 \examples{
@@ -133,17 +128,17 @@ utm = runMrt(product="MOD11A1", extent="austria", begin="2010001", end="2010002"
 }
 \references{
 Dwyer J, Schmidt G (2006) The MODIS Reprojection Tool, 162-177,
-\doi{10.1007/978-3-540-37294-3_9}. In: Qu JJ, Gao W, Kafatos M, Murphy RE, 
-Salomonson VV (eds) Earth Science Satellite Remote Sensing. Springer: Berlin, 
+\doi{10.1007/978-3-540-37294-3_9}. In: Qu JJ, Gao W, Kafatos M, Murphy RE,
+Salomonson VV (eds) Earth Science Satellite Remote Sensing. Springer: Berlin,
 Heidelberg.
 
-Elassal AA (1989) General Cartographic Transformation Package (GCTP), Version 
-II. NOAA Technical Report NOS124 CGS9. NOAA: Rockville, MD, USA. Available 
+Elassal AA (1989) General Cartographic Transformation Package (GCTP), Version
+II. NOAA Technical Report NOS124 CGS9. NOAA: Rockville, MD, USA. Available
 online \href{https://www.cmascenter.org/ioapi/documentation/all_versions/html/GCTP.pdf}{here}
 (2018-09-13).
 }
 \seealso{
-\code{\link[MODIS]{MODISoptions}}, \code{\link[MODIS]{runGdal}}.
+\code{\link[=MODISoptions]{MODISoptions()}}, \code{\link[=runGdal]{runGdal()}}.
 }
 \author{
 Matteo Mattiuzzi, Forrest Stevens and Florian Detsch

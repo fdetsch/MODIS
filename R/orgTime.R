@@ -6,41 +6,37 @@ if ( !isGeneric("orgTime") ) {
 #' 
 #' @description 
 #' This function lets you define the period to be filtered, the output temporal 
-#' resolution, and select the required data from your input 'files'.
+#' resolution, and select the required data from your input files.
 #' 
-#' @param files A \code{character}, \code{Date}, or \code{Raster*} object. 
-#' Typically MODIS filenames created e.g. from \code{\link{runGdal}} or 
-#' \code{\link{runMrt}}, but any other filenames holding date information are 
-#' supported as well. If a \code{Raster*} object is supplied, make sure to 
-#' adjust 'pos1', 'pos2', and 'format' according to its layer 
-#' \code{\link[raster]{names}}. 
-#' @param nDays Time interval for output layers. Defaults to \code{"asIn"} that 
-#' includes the exact input dates within the period selected using \code{begin} 
-#' and \code{end}. Can also be \code{nDays = "1 month"} or \code{"1 week"}, see 
-#' \code{\link{seq.Date}} and Examples.
-#' @param begin \code{character}. Output begin date, defaults to the earliest 
-#' input dataset.
-#' @param end \code{character}. Output end date, defaults to the latest input 
-#' dataset. Note that the exact \code{end} date depends on \code{begin} and 
-#' \code{nDays}.
-#' @param pillow \code{integer}. Number of days added to the beginning and end 
-#' of a time series.
-#' @param pos1,pos2,format Arguments passed to \code{\link{extractDate}}.
+#' @param files A `character`, `Date`, or `Raster*` object. Typically MODIS file
+#'   names created e.g. from [runGdal()] or [runMrt()], but any other file names
+#'   holding date information are supported as well. If a `Raster*` object is 
+#'   supplied, make sure to adjust 'pos1', 'pos2', and 'format' according to its
+#'   layer [raster::names()].
+#' @param nDays Time interval for output layers. Defaults to `"asIn"` that 
+#'   includes the exact input dates within the period selected using 'begin' and
+#'   'end'. Can also be `"1 month"` or `"1 week"`, see [seq.Date()] and 
+#'   Examples.
+#' @param begin `character`. Output begin date, defaults to the earliest input 
+#'   data set.
+#' @param end `character`. Output end date, defaults to the latest input data 
+#'   set. Note that the exact end date depends on 'begin' and 'nDays'.
+#' @param pillow `integer`. Number of days added to the beginning and end of a 
+#'   time series.
+#' @param pos1,pos2,format Arguments passed to [extractDate()].
 #' 
 #' @return 
-#' A \code{list} with the following slots (to be completed):
+#' A `list` with the following slots (to be completed):
 #' 
-#' \itemize{
-#' \item{\code{$inSeq}}
-#' \item{\code{$outSeq}}
-#' \item{\code{$inDoys}}
-#' \item{\code{$inputLayerDates}}
-#' \item{\code{$outputLayerDates}}
-#' \item{\code{$call}}
-#' }
+#' * $inSeq
+#' * $outSeq
+#' * $inDoys
+#' * $inputLayerDates
+#' * $outputLayerDates
+#' * $call
 #' 
 #' @seealso 
-#' \code{\link{seq.Date}}.
+#' [seq.Date()].
 #' 
 #' @author 
 #' Matteo Mattiuzzi, Florian Detsch

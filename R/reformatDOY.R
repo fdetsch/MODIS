@@ -5,22 +5,22 @@
 #' monthly) from native 16-day MODIS composites, a convenient representation of 
 #' the pixel-wise acquisition date is urgently required. Since the MODIS 
 #' "composite_day_of_the_year" SDS merely includes the day of the year (DOY), 
-#' but not the year itself, this function creates complete date information from 
-#' both the respective MODIS layer name and the pixel-wise DOY information. 
+#' but not the year itself, this function creates complete date information from
+#' both the respective MODIS layer name and the pixel-wise DOY information.
 #' 
-#' @param x \code{character} or \code{Raster*}. MODIS 
-#' "composite_day_of_the_year" layer(s).
-#' @param cores \code{integer}. Number of cores for parallel processing.
-#' @param ... Additional arguments passed to \code{\link{extractDate}}.
+#' @param x `character` or `Raster*`. MODIS "composite_day_of_the_year" 
+#'   layer(s).
+#' @param cores `integer`. Number of cores for parallel processing.
+#' @param ... Additional arguments passed to [extractDate()].
 #' 
 #' @return 
-#' A \code{Raster*} object.
+#' A `Raster*` object.
 #' 
 #' @author 
 #' Florian Detsch
 #' 
 #' @seealso 
-#' \code{\link{repDoy}}.
+#' [repDoy()].
 #' 
 #' @examples 
 #' \dontrun{

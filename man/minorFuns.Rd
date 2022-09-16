@@ -10,8 +10,8 @@ search4map(pattern = "", database = "worldHires", plot = FALSE)
 \arguments{
 \item{pattern}{Regular expression passed to \code{\link[=grep]{grep()}}.}
 
-\item{database}{\code{character}. Defaults to \code{"worldHires"}, see \code{\link[map:map]{map::map()}} for
-available options.}
+\item{database}{\code{character}. Defaults to \code{"worldHires"}, see \code{\link[maps:map]{maps::map()}}
+for available options.}
 
 \item{plot}{\code{logical}, defaults to \code{FALSE}. If \code{TRUE}, search results are
 displayed.}
@@ -43,7 +43,7 @@ search4map(pattern="Sicily",plot=TRUE)
 
 }
 \seealso{
-\code{\link[=getTile]{getTile()}}, \code{\link[map:map]{map::map()}}, \code{\link[=grep]{grep()}}.
+\code{\link[=getTile]{getTile()}}, \code{\link[maps:map]{maps::map()}}, \code{\link[=grep]{grep()}}.
 }
 \author{
 Matteo Mattiuzzi

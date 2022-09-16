@@ -22,74 +22,65 @@ runGdal(
 )
 }
 \arguments{
-\item{product}{\code{character}, see \code{\link{getProduct}}.}
+\item{product}{\code{character}, see \code{\link[=getProduct]{getProduct()}}.}
 
-\item{collection}{\code{character} or \code{integer}, see 
-\code{\link{getCollection}}.}
+\item{collection}{\code{character} or \code{integer}, see \code{\link[=getCollection]{getCollection()}}.}
 
-\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
-time series, see \code{\link{transDate}}.}
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS time
+series, see \code{\link[=transDate]{transDate()}}.}
 
-\item{extent}{Extent information, defaults to \code{'global'}. See
-\code{\link{getTile}}.}
+\item{extent}{Extent information, defaults to 'global'. See \code{\link[=getTile]{getTile()}}.}
 
-\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and 
-vertical tile number, see \code{\link{getTile}}.}
+\item{tileH, tileV}{\code{numeric} or \code{character}. Horizontal and vertical tile
+number, see \code{\link[=getTile]{getTile()}}.}
 
-\item{SDSstring}{\code{character}, see \code{\link{getSds}}.}
+\item{SDSstring}{\code{character}, see \code{\link[=getSds]{getSds()}}.}
 
-\item{job}{\code{character}. Name of the current job for the creation of the 
-output folder. If not specified, it is created in 'PRODUCT.COLLECTION_DATETIME'.}
+\item{job}{\code{character}. Name of the current job for the creation of the
+output folder. If not specified, it is created in
+'PRODUCT.COLLECTION_DATETIME'.}
 
-\item{checkIntegrity}{\code{logical}, see \code{\link{getHdf}}.}
+\item{checkIntegrity, forceDownload}{\code{logical}, see \code{\link[=getHdf]{getHdf()}}.}
 
-\item{forceDownload}{\code{logical}, see \code{\link{getHdf}}.}
-
-\item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines 
-whether or not to overwrite existing SDS output files.}
+\item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines whether or not to
+overwrite existing SDS output files.}
 
 \item{maskValue}{Currently ignored.}
 
-\item{...}{Additional arguments passed to \code{\link{MODISoptions}}, e.g. 
-'wait'. Permanent settings for these arguments are temporarily overridden.}
+\item{...}{Additional arguments passed to \code{\link[=MODISoptions]{MODISoptions()}}, e.g. 'wait'.
+Permanent settings for these arguments are temporarily overridden.}
 }
 \value{
-A \code{list} of the same length as 'product'. Each product slot either holds 
-a sub-\code{list} of processed dates which, for each time step, include the 
-corresponding output files as \code{character} objects or, if no files could 
-be found for the specified time period, a single \code{NA}.
+A \code{list} of the same length as 'product'. Each product slot either holds a
+sub-\code{list} of processed dates which, for each time step, includes the
+corresponding output files as \code{character} objects or, if no files could be
+found for the specified time period, a single \code{NA}.
 }
 \description{
-Downloads MODIS grid data from archive (HTTP or local) and processes the 
-files.
+Downloads MODIS grid files from archive (HTTP or local) and processes them.
 }
 \details{
-\describe{
-\tabular{rll}{
-  \tab \code{outProj}\tab CRS/ prj4 or EPSG code of output, any format supported by gdal see examples.\cr \tab \tab Default is 'asIn' (no warping). See \code{?MODISoptions}.\cr
-  \tab \code{pixelSize}\tab Numeric single value. Output pixel size in target reference system unit.\cr \tab \tab Default is 'asIn'. See \code{?MODISoptions}.\cr
-  \tab \code{resamplingType}\tab Character. Default is 'near', can be one of: 'bilinear', 'cubic', 'cubicspline', 'lanczos'.\cr \tab \tab See \code{?MODISoptions}.\cr
-  \tab \code{blockSize}\tab integer. Default \code{NULL} that means the stripe size is set by GDAL.\cr \tab \tab Basically it is the "-co BLOCKYSIZE=" parameter. See \url{https://gdal.org/frmt_gtiff.html}.\cr
-  \tab \code{compression}\tab logical. Default is \code{TRUE}, compress data with the lossless LZW compression with "predictor=2".\cr \tab \tab See \url{https://gdal.org/frmt_gtiff.html}.\cr
-  \tab \code{dataFormat}\tab Data output format, see \code{getOption("MODIS_gdalOutDriver")} column 'name'.\cr
-  \tab \code{localArcPath}\tab Character.  See \code{?MODISoptions}. Local path to look for and/or to download MODIS files.\cr
-  \tab \code{outDirPath}\tab Character.  See \code{?MODISoptions}. Root directory where to write \code{job} folder.\cr
-}
+\itemize{
+\item \verb{outProj, pixelSize, resamplingType, dataFormat, localArcPath, outDirPath}:
+See \code{\link[=MODISoptions]{MODISoptions()}}.
+\item \code{blockSize}: integer. If \code{NULL} (default), the stripe size is set by GDAL.
+Basically it is the \verb{-co BLOCKYSIZE=} parameter. See
+\url{https://gdal.org/frmt_gtiff.html}.
+\item \code{compression} logical. If \code{TRUE} (default), compress data with the lossless
+LZW compression with \code{predictor=2}. See \url{https://gdal.org/frmt_gtiff.html}.
 }
 
-\code{\link{runGdal}} uses numerous \strong{MODIS} functions under the hood, 
-see the linked functions in 'Arguments' for details and inputs.\cr
+\code{\link[=runGdal]{runGdal()}} uses numerous \strong{MODIS} functions under the hood, see the linked
+functions in Arguments for details and inputs.
 
-If \code{extent} is a \code{Raster*} object, the output has exactly the same 
-extent, pixel size, and projection.\cr
-If \code{extent} is a \strong{sp} or \strong{sf} object, the 
-output has exactly the same extent and projection except for point geometries 
-with \emph{length = 1} (ie. a single point) where only the projection is 
-inherited.\cr
-If \code{tileH} and \code{tileV} are used (instead of \code{extent}) to 
-define the area of interest, and \code{outProj} and \code{pixelSize} are 
-\code{'asIn'}, the result is only converted from multilayer-HDF to 
-\code{dataFormat}, default "GeoTiff" (\code{\link{MODISoptions}}).\cr
+If 'extent' is a \verb{Raster*} object, the output has exactly the same extent,
+pixel size, and projection.
+If 'extent' is a \strong{sp} or \strong{sf} object, the output has exactly the same
+extent and projection except for point geometries with length 1 (i.e. a
+single point) where only the projection is inherited.
+If 'tileH' and 'tileV' are used (instead of 'extent') to define the area of
+interest, and 'outProj' and 'pixelSize' are \code{"asIn"}, the result is only
+converted from multi-layer HDF to 'dataFormat', default \code{"GTiff"}.
 }
 \examples{
 \dontrun{
@@ -125,7 +116,7 @@ runGdal( job="LSTaustria", product="MOD11A1", tileH=18:19,tileV=4, begin="201000
 
 }
 \seealso{
-\code{\link{getHdf}}, \code{\link{runMrt}}.
+\code{\link[=getHdf]{getHdf()}}, \code{\link[=runMrt]{runMrt()}}.
 }
 \author{
 Matteo Mattiuzzi, Florian Detsch

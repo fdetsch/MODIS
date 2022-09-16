@@ -32,45 +32,42 @@
 )
 }
 \arguments{
-\item{files}{A \code{character}, \code{Date}, or \verb{Raster*} object.
-Typically MODIS filenames created e.g. from \code{\link{runGdal}} or
-\code{\link{runMrt}}, but any other filenames holding date information are
-supported as well. If a \verb{Raster*} object is supplied, make sure to
-adjust 'pos1', 'pos2', and 'format' according to its layer
-\code{\link[raster]{names}}.}
+\item{files}{A \code{character}, \code{Date}, or \verb{Raster*} object. Typically MODIS file
+names created e.g. from \code{\link[=runGdal]{runGdal()}} or \code{\link[=runMrt]{runMrt()}}, but any other file names
+holding date information are supported as well. If a \verb{Raster*} object is
+supplied, make sure to adjust 'pos1', 'pos2', and 'format' according to its
+layer \code{\link[raster:names]{raster::names()}}.}
 
 \item{nDays}{Time interval for output layers. Defaults to \code{"asIn"} that
-includes the exact input dates within the period selected using \code{begin}
-and \code{end}. Can also be \code{nDays = "1 month"} or \code{"1 week"}, see
-\code{\link{seq.Date}} and Examples.}
+includes the exact input dates within the period selected using 'begin' and
+'end'. Can also be \code{"1 month"} or \code{"1 week"}, see \code{\link[=seq.Date]{seq.Date()}} and
+Examples.}
 
-\item{begin}{\code{character}. Output begin date, defaults to the earliest
-input dataset.}
+\item{begin}{\code{character}. Output begin date, defaults to the earliest input
+data set.}
 
-\item{end}{\code{character}. Output end date, defaults to the latest input
-dataset. Note that the exact \code{end} date depends on \code{begin} and
-\code{nDays}.}
+\item{end}{\code{character}. Output end date, defaults to the latest input data
+set. Note that the exact end date depends on 'begin' and 'nDays'.}
 
-\item{pillow}{\code{integer}. Number of days added to the beginning and end
-of a time series.}
+\item{pillow}{\code{integer}. Number of days added to the beginning and end of a
+time series.}
 
-\item{pos1, pos2, format}{Arguments passed to \code{\link{extractDate}}.}
+\item{pos1, pos2, format}{Arguments passed to \code{\link[=extractDate]{extractDate()}}.}
 }
 \value{
 A \code{list} with the following slots (to be completed):
-
 \itemize{
-\item{\code{$inSeq}}
-\item{\code{$outSeq}}
-\item{\code{$inDoys}}
-\item{\code{$inputLayerDates}}
-\item{\code{$outputLayerDates}}
-\item{\code{$call}}
+\item $inSeq
+\item $outSeq
+\item $inDoys
+\item $inputLayerDates
+\item $outputLayerDates
+\item $call
 }
 }
 \description{
 This function lets you define the period to be filtered, the output temporal
-resolution, and select the required data from your input 'files'.
+resolution, and select the required data from your input files.
 }
 \examples{
 # Using MODIS files
@@ -95,7 +92,7 @@ orgTime(dates.v1)
 
 }
 \seealso{
-\code{\link{seq.Date}}.
+\code{\link[=seq.Date]{seq.Date()}}.
 }
 \author{
 Matteo Mattiuzzi, Florian Detsch

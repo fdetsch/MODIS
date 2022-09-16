@@ -8,18 +8,16 @@
 #' the following year and so starting again with 1. The problem occurs if you 
 #' want to sort values of a time series by date (e.g. for precise time series 
 #' functions). This function generates a sequential vector beginning always 
-#' with the earliest SDS/layer date and ending with the total sum of days of 
-#' the time serie length. 
+#' with the earliest SDS/layer date and ending with the total sum of days of the
+#' time serie length.
 #'  
-#' @param pixX \code{matrix} of values, usually derived from 
-#' \code{\link{as.matrix}}.
-#' @param layerDate If \code{NULL} (default), try to autodetect layer dates. If 
-#' you want to be sure, use the result from \code{\link{extractDate}} or 
-#' \code{\link{orgTime}}.
-#' @param bias \code{integer}. Bias applied to all values in \code{pixX}.
+#' @param pixX `matrix` of values, usually derived from [raster::as.matrix()].
+#' @param layerDate If `NULL` (default), try to autodetect layer dates. If you 
+#'   want to be sure, use the result from [extractDate()] or [orgTime()].
+#' @param bias `integer`. Bias applied to all values in 'pixX'.
 #'  
 #' @return 
-#' A \code{matrix} with sequential Julian dates.
+#' A `matrix` with sequential Julian dates.
 #'  
 #' @author 
 #' Matteo Mattiuzzi

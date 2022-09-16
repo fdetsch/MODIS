@@ -1,19 +1,18 @@
-#' Organise (MODIS) Files in Preparation for Stacking
+#' Organize (MODIS) Files in Preparation for Stacking
 #' 
 #' @description 
-#' This function lets you sort a vector of filenames according to date. It is 
-#' thought to be used on results from \code{\link{runGdal}} or 
-#' \code{\link{runMrt}}.
+#' This function lets you sort a vector of file names according to date. It is 
+#' thought to be used on results from [runGdal()] or [runMrt()].
 #' 
-#' @param pattern Regular expression passed to \code{\link{list.files}}
-#' @param path \code{character}. Location of MODIS files to stack.
-#' @param files \code{character} vector of filenames. If provided, arguments 
-#' \code{pattern} and \code{path} are ignored.
-#' @param timeInfo Ouput from \code{\link{orgTime}}.
+#' @param pattern Regular expression passed to [list.files()]
+#' @param path `character`. Location of MODIS files to stack.
+#' @param files `character` vector of file names. If provided, arguments 
+#'   'pattern' and 'path' are ignored.
+#' @param timeInfo Output from [orgTime()].
 #' 
 #' @return 
-#' A \code{character} vector of filenames within the query. If \code{timeInfo} 
-#' is provided, filenames are sorted and subsetted by date.
+#' A `character` vector of file names within the query. If 'timeInfo' is 
+#'   provided, file names are sorted and subsetted by date.
 #' 
 #' @author 
 #' Matteo Mattiuzzi
@@ -53,8 +52,3 @@ preStack <- function(pattern = "*", path = "./", files = NULL, timeInfo = NULL)
     
     return(fnames)
 }
-
-
-
-
-

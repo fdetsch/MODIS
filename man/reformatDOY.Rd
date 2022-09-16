@@ -7,22 +7,22 @@
 reformatDOY(x, cores = 1L, ...)
 }
 \arguments{
-\item{x}{\code{character} or \code{Raster*}. MODIS 
-"composite_day_of_the_year" layer(s).}
+\item{x}{\code{character} or \verb{Raster*}. MODIS "composite_day_of_the_year"
+layer(s).}
 
 \item{cores}{\code{integer}. Number of cores for parallel processing.}
 
-\item{...}{Additional arguments passed to \code{\link{extractDate}}.}
+\item{...}{Additional arguments passed to \code{\link[=extractDate]{extractDate()}}.}
 }
 \value{
-A \code{Raster*} object.
+A \verb{Raster*} object.
 }
 \description{
-In order to create custom temporal aggregation levels (e.g., half-monthly, 
-monthly) from native 16-day MODIS composites, a convenient representation of 
-the pixel-wise acquisition date is urgently required. Since the MODIS 
-"composite_day_of_the_year" SDS merely includes the day of the year (DOY), 
-but not the year itself, this function creates complete date information from 
+In order to create custom temporal aggregation levels (e.g., half-monthly,
+monthly) from native 16-day MODIS composites, a convenient representation of
+the pixel-wise acquisition date is urgently required. Since the MODIS
+"composite_day_of_the_year" SDS merely includes the day of the year (DOY),
+but not the year itself, this function creates complete date information from
 both the respective MODIS layer name and the pixel-wise DOY information.
 }
 \examples{
@@ -42,7 +42,7 @@ unique(rfm[])
 
 }
 \seealso{
-\code{\link{repDoy}}.
+\code{\link[=repDoy]{repDoy()}}.
 }
 \author{
 Florian Detsch

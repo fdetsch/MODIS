@@ -74,3 +74,9 @@ streamline `getStruc()`
 <-> currently run in `runGdal()` and, under the hood, `getHdf()`
 
 leverage `gdalwarp` -wo functionality (https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-wo)
+
+put deprecated functions on defunct
+
+`getUTMZone()` throws warnings when running examples
+
+Examples, Details, etc.

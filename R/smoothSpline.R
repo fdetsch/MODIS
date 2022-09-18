@@ -1,55 +1,54 @@
 #' Filter Time Series Imagery with a Cubic Spline
 #' 
 #' @description 
-#' This function uses the \code{\link{smooth.spline}} function to filter a 
-#' vegetation index time serie of satellite data.
+#' This function uses the [stats::smooth.spline()] function to filter a 
+#' vegetation index time series of satellite data.
 #' 
-#' @param x \code{RasterBrick} (or \code{RasterStack}) or \code{character} vector 
-#' of filenames, sorted 'Vegetation index'.
-#' @param w \code{RasterBrick} (or \code{RasterStack}) with weighting 
-#' information, e.g. derived from \code{\link{makeWeights}}.
+#' @param x `RasterBrick` (or `RasterStack`) or `character` vector of file 
+#'   names, sorted 'Vegetation index'.
+#' @param w `RasterBrick` (or `RasterStack`) with weighting information, e.g. 
+#'   derived from [makeWeights()].
 #' @param t In case of MODIS composite, the corresponding 
-#' 'composite_day_of_the_year' \code{RasterBrick} (or \code{RasterStack}).
-#' @param groupYears \code{logical}. If \code{TRUE}, output files are grouped by 
-#' years. 
-#' @param timeInfo Result from \code{\link{orgTime}}.
-#' @param df \code{numeric}, yearly degree of freedom value passed to 
-#' \code{\link{smooth.spline}}. If set as \code{character} (i.e., \code{df = "6"}), 
-#' it is not adapted to the time serie length but used as a fixed value (see 
-#' Details).
+#'   'composite_day_of_the_year' `RasterBrick` (or `RasterStack`).
+#' @param groupYears `logical`. If `TRUE` (default), output files are grouped by
+#'   years. 
+#' @param timeInfo Result from [orgTime()].
+#' @param df `numeric`, yearly degree of freedom value passed to 
+#'   [stats::smooth.spline()]. If set as `character` (i.e., `df = "6"`), it is 
+#'   not adapted to the time series length but used as a fixed value (see 
+#'   Details).
 #' @param outDirPath Output path, defaults to the current working directory.
-#' @param ... Arguments passed to \code{\link{writeRaster}}. Note that 
-#' \code{filename} is created automatically.
+#' @param ... Arguments passed to [raster::writeRaster()]. Note that 'filename' 
+#'   is created automatically.
 #' 
 #' @return 
 #' The filtered data and a text file with the dates of the output layers.
 #'
 #' @details 
-#' \code{numeric} values of \code{df} (e.g., \code{df = 6)} are treated as 
-#' yearly degrees of freedom. Here, the length of the input time series is not 
-#' relevant since \code{df} is adapted to it with: 
-#' \code{df*('length of _input_ timeserie in days'/365)}. The input length can 
-#' differ from the output because of the \code{pillow} argument in 
-#' \code{orgTime}. 
+#' `numeric` values of 'df' (e.g., `df = 6`) are treated as yearly degrees of 
+#' freedom. Here, the length of the input time series is not relevant since `df`
+#' is adapted to it with: `df * ('length of _input_ timeserie in days' / 365)`. 
+#' The input length can differ from the output because of the 'pillow' argument 
+#' in [orgTime()].
 #' 
-#' \code{character} values of \code{df} (e.g., \code{df = "6"}), on the other 
-#' hand, are not adopted to the length of the input time series.  
+#' `character` values of 'df' (e.g., `df = "6"`), on the other hand, are not 
+#' adopted to the length of the input time series.
 #'
 #' @details 
-#' Currently tested on MODIS and Landsat data. Using M*D13 data, it is also 
+#' Currently tested on MODIS and Landsat data. With M*D13 data, it is also 
 #' possible to use the 'composite_day_of_the_year' layer and the 'VI_Quality' 
-#' layer. This function is currently under heavy development and a lot of 
-#' changes are expected to come soon.
+#' layer.
 #' 
 #' @seealso 
-#' \code{\link{whittaker.raster}}, \code{\link{raster}}.
+#' [whittaker.raster()], [raster::raster()].
 #' 
 #' @author 
 #' Matteo Mattiuzzi
 #' 
 #' @examples 
 #' \dontrun{
-#' # The full capacity of the following functions is currently avaliable only with M*D13 data.
+#' # The full capacity of the following functions is currently available only 
+#' # with M*D13 data.
 #' # !! The function is very new, double check the result!!
 #' 
 #' # You need to extract the: 'vegetation index', 'VI_Quality layer', 
@@ -59,27 +58,29 @@
 #' # Afterward extract it to: 
 #' options("MODIS_outDirPath")
 #' 
-#' # the only obligatory dataset is "x" (vegetatino index), get the 'vi' data on the source directory: 
+#' # the only obligatory dataset is "x" (vegetatino index), get the 'vi' data on
+#' # the source directory: 
 #' path <- paste0(options("MODIS_outDirPath"),"/fullCapa")
 #' vi <- preStack(path=path, pattern="*_NDVI.tif$")
 #' 
-#' # "orgTime" detects timing information of the input data and generates based on the arguments
-#' # the output date information. For spline functions (in general) the beginning and
-#' # the end of the time series is always problematic. 
+#' # `orgTime()` detects timing information of the input data and generates 
+#' # based on the arguments the output date information. For spline functions 
+#' # (in general) the start and end of the time series is always problematic. 
 #' # So there is the argument "pillow" (default 75 days) that adds
 #' # (if available) some more layers on the two endings.
 #' 
 #' timeInfo <- orgTime(vi,nDays=16,begin="2005001",end="2005365",pillow=40)
 #' 
-#' # now re-run "preStack" with two diferences, 'files' (output of the first 'preStack' call)
-#' # and the 'timeInfo'.
-#' # Here only the data needed for the filtering is extractet:
+#' # now re-run "preStack" with two differences, 'files' (output of the first 
+#' # `preStack()` call) and the 'timeInfo'.
+#' # Here only the data needed for the filtering is extracted:
 #' vi <- preStack(files=vi,timeInfo=timeInfo)
 #' 
 #' smooth.spline.raster(x=vi,timeInfo=timeInfo)
 #' 
 #' # Filter with weighting and time information:
-#' # if the files are M*D13 you can use also Quality layers and the composite day of the year:
+#' # if the files are M*D13 you can use also use quality layers and the 
+#' # composite day of the year:
 #' w <- stack(preStack(path=path, pattern="*_VI_Quality.tif$", timeInfo=timeInfo))
 #' w <- makeWeights(w,bitShift=2,bitMask=15,threshold=6)
 #' # you can also pass only the names

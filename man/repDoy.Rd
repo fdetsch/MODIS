@@ -26,7 +26,7 @@ the following year and so starting again with 1. The problem occurs if you
 want to sort values of a time series by date (e.g. for precise time series
 functions). This function generates a sequential vector beginning always
 with the earliest SDS/layer date and ending with the total sum of days of the
-time serie length.
+time series length.
 }
 \examples{
 \dontrun{

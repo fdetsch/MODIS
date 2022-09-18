@@ -9,7 +9,7 @@
 #' want to sort values of a time series by date (e.g. for precise time series 
 #' functions). This function generates a sequential vector beginning always 
 #' with the earliest SDS/layer date and ending with the total sum of days of the
-#' time serie length.
+#' time series length.
 #'  
 #' @param pixX `matrix` of values, usually derived from [raster::as.matrix()].
 #' @param layerDate If `NULL` (default), try to autodetect layer dates. If you 

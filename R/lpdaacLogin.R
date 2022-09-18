@@ -4,7 +4,7 @@
 #' Create a hidden .netrc file with Earthdata login credentials in your home 
 #' directory. If your priority server for MODIS file download is LP DAAC (see 
 #' also [MODISoptions()]), these are subsequently used to automatically login to
-#' \url{https://urs.earthdata.nasa.gov/} and download required files.
+#' <https://urs.earthdata.nasa.gov/> and download required files.
 #' 
 #' @param server `character`. MODIS file server, defaults to `"LPDAAC"` which is
 #'   currently the only option available.
@@ -27,13 +27,13 @@
 #' 
 #' @name lpdaacLogin-deprecated
 #' @usage lpdaacLogin(server = "LPDAAC")     
-#' @seealso \code{\link{MODIS-deprecated}}  
+#' @seealso [MODIS-deprecated]
 #' @keywords internal
 NULL
 
 #' @rdname MODIS-deprecated
-#' @section \code{lpdaacLogin}:
-#' For \code{lpdaacLogin}, use \code{\link{EarthdataLogin}} instead.
+#' @section `lpdaacLogin`:
+#' For [lpdaacLogin()], use [EarthdataLogin()] instead.
 #' 
 #' @export 
 lpdaacLogin <- function(server = "LPDAAC") {

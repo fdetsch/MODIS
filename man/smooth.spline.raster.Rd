@@ -16,56 +16,55 @@ smooth.spline.raster(
 )
 }
 \arguments{
-\item{x}{\code{RasterBrick} (or \code{RasterStack}) or \code{character} vector 
-of filenames, sorted 'Vegetation index'.}
+\item{x}{\code{RasterBrick} (or \code{RasterStack}) or \code{character} vector of file
+names, sorted 'Vegetation index'.}
 
-\item{w}{\code{RasterBrick} (or \code{RasterStack}) with weighting 
-information, e.g. derived from \code{\link{makeWeights}}.}
+\item{w}{\code{RasterBrick} (or \code{RasterStack}) with weighting information, e.g.
+derived from \code{\link[=makeWeights]{makeWeights()}}.}
 
-\item{t}{In case of MODIS composite, the corresponding 
+\item{t}{In case of MODIS composite, the corresponding
 'composite_day_of_the_year' \code{RasterBrick} (or \code{RasterStack}).}
 
-\item{groupYears}{\code{logical}. If \code{TRUE}, output files are grouped by 
+\item{groupYears}{\code{logical}. If \code{TRUE} (default), output files are grouped by
 years.}
 
-\item{timeInfo}{Result from \code{\link{orgTime}}.}
+\item{timeInfo}{Result from \code{\link[=orgTime]{orgTime()}}.}
 
-\item{df}{\code{numeric}, yearly degree of freedom value passed to 
-\code{\link{smooth.spline}}. If set as \code{character} (i.e., \code{df = "6"}), 
-it is not adapted to the time serie length but used as a fixed value (see 
+\item{df}{\code{numeric}, yearly degree of freedom value passed to
+\code{\link[stats:smooth.spline]{stats::smooth.spline()}}. If set as \code{character} (i.e., \code{df = "6"}), it is
+not adapted to the time series length but used as a fixed value (see
 Details).}
 
 \item{outDirPath}{Output path, defaults to the current working directory.}
 
-\item{...}{Arguments passed to \code{\link{writeRaster}}. Note that 
-\code{filename} is created automatically.}
+\item{...}{Arguments passed to \code{\link[raster:writeRaster]{raster::writeRaster()}}. Note that 'filename'
+is created automatically.}
 }
 \value{
 The filtered data and a text file with the dates of the output layers.
 }
 \description{
-This function uses the \code{\link{smooth.spline}} function to filter a 
-vegetation index time serie of satellite data.
+This function uses the \code{\link[stats:smooth.spline]{stats::smooth.spline()}} function to filter a
+vegetation index time series of satellite data.
 }
 \details{
-\code{numeric} values of \code{df} (e.g., \code{df = 6)} are treated as 
-yearly degrees of freedom. Here, the length of the input time series is not 
-relevant since \code{df} is adapted to it with: 
-\code{df*('length of _input_ timeserie in days'/365)}. The input length can 
-differ from the output because of the \code{pillow} argument in 
-\code{orgTime}. 
+\code{numeric} values of 'df' (e.g., \code{df = 6}) are treated as yearly degrees of
+freedom. Here, the length of the input time series is not relevant since \code{df}
+is adapted to it with: \code{df * ('length of _input_ timeserie in days' / 365)}.
+The input length can differ from the output because of the 'pillow' argument
+in \code{\link[=orgTime]{orgTime()}}.
 
-\code{character} values of \code{df} (e.g., \code{df = "6"}), on the other 
-hand, are not adopted to the length of the input time series.
+\code{character} values of 'df' (e.g., \code{df = "6"}), on the other hand, are not
+adopted to the length of the input time series.
 
-Currently tested on MODIS and Landsat data. Using M*D13 data, it is also 
-possible to use the 'composite_day_of_the_year' layer and the 'VI_Quality' 
-layer. This function is currently under heavy development and a lot of 
-changes are expected to come soon.
+Currently tested on MODIS and Landsat data. With M*D13 data, it is also
+possible to use the 'composite_day_of_the_year' layer and the 'VI_Quality'
+layer.
 }
 \examples{
 \dontrun{
-# The full capacity of the following functions is currently avaliable only with M*D13 data.
+# The full capacity of the following functions is currently available only 
+# with M*D13 data.
 # !! The function is very new, double check the result!!
 
 # You need to extract the: 'vegetation index', 'VI_Quality layer', 
@@ -75,27 +74,29 @@ changes are expected to come soon.
 # Afterward extract it to: 
 options("MODIS_outDirPath")
 
-# the only obligatory dataset is "x" (vegetatino index), get the 'vi' data on the source directory: 
+# the only obligatory dataset is "x" (vegetatino index), get the 'vi' data on
+# the source directory: 
 path <- paste0(options("MODIS_outDirPath"),"/fullCapa")
 vi <- preStack(path=path, pattern="*_NDVI.tif$")
 
-# "orgTime" detects timing information of the input data and generates based on the arguments
-# the output date information. For spline functions (in general) the beginning and
-# the end of the time series is always problematic. 
+# `orgTime()` detects timing information of the input data and generates 
+# based on the arguments the output date information. For spline functions 
+# (in general) the start and end of the time series is always problematic. 
 # So there is the argument "pillow" (default 75 days) that adds
 # (if available) some more layers on the two endings.
 
 timeInfo <- orgTime(vi,nDays=16,begin="2005001",end="2005365",pillow=40)
 
-# now re-run "preStack" with two diferences, 'files' (output of the first 'preStack' call)
-# and the 'timeInfo'.
-# Here only the data needed for the filtering is extractet:
+# now re-run "preStack" with two differences, 'files' (output of the first 
+# `preStack()` call) and the 'timeInfo'.
+# Here only the data needed for the filtering is extracted:
 vi <- preStack(files=vi,timeInfo=timeInfo)
 
 smooth.spline.raster(x=vi,timeInfo=timeInfo)
 
 # Filter with weighting and time information:
-# if the files are M*D13 you can use also Quality layers and the composite day of the year:
+# if the files are M*D13 you can use also use quality layers and the 
+# composite day of the year:
 w <- stack(preStack(path=path, pattern="*_VI_Quality.tif$", timeInfo=timeInfo))
 w <- makeWeights(w,bitShift=2,bitMask=15,threshold=6)
 # you can also pass only the names
@@ -106,7 +107,7 @@ smooth.spline.raster(x=vi,w=w,t=t,timeInfo=timeInfo)
 
 }
 \seealso{
-\code{\link{whittaker.raster}}, \code{\link{raster}}.
+\code{\link[=whittaker.raster]{whittaker.raster()}}, \code{\link[raster:raster]{raster::raster()}}.
 }
 \author{
 Matteo Mattiuzzi

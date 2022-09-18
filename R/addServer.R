@@ -1,28 +1,27 @@
 #' Add New Remote Server to MODIS Inventory
 #' 
 #' @description 
-#' \code{addServer} is a non-exported helper function to add a new entry to the 
-#' list of online (HTTP) servers featured by \strong{MODIS} (see 
-#' \code{MODIS:::MODIS_FTPinfo}).
+#' `addServer()` is a non-exported helper function to add a new entry to the 
+#' list of online servers featured by **MODIS** (see `MODIS:::MODIS_FTPinfo`).
 #' 
-#' @param name Character. Name of the remote server that should be added to the 
-#' inventory. 
-#' @param sensor Character. Sensor type, defaults to 'MODIS'.
-#' @param basepath Character. Absolute online server path.
-#' @param varpath Character. Pattern of organizational structure on server.
-#' @param content Character. Content type, defaults to "images".
-#' @param path_ext Character. Path to folder containing file 
-#' 'MODIS_FTPinfo.RData'. When working with RStudio projects (.Rproj), this 
-#' usually defaults to 'inst/external'.
-#' @param overwrite Logical. If `TRUE`, the initial '.RData' file located 
-#' in 'path_ext' will be overwritten.
+#' @param name `character` Name of the remote server that should be added to the
+#'   inventory.
+#' @param sensor `character` Sensor type, defaults to 'MODIS'.
+#' @param basepath `character` Absolute online server path.
+#' @param varpath `character` Pattern of organizational structure on server.
+#' @param content `character` Content type, defaults to `"images"`.
+#' @param path_ext `character` Path to folder containing file 
+#'   'MODIS_FTPinfo.RData'. When working with RStudio projects (.Rproj), this 
+#'   usually defaults to 'inst/external'.
+#' @param overwrite `logical`. If `TRUE`, the initial '.RData' file located in 
+#'   'path_ext' will be overwritten.
 #' @param ... Currently not used.
 #' 
 #' @return 
-#' A 'list' holding the updated contents of 'MODIS_FTPinfo.RData'.
+#' A `list` holding the updated contents of 'MODIS_FTPinfo.RData'.
 #' 
 #' @seealso 
-#' \code{MODIS:::MODIS_FTPinfo}.
+#' `MODIS:::MODIS_FTPinfo`.
 #' 
 #' @author 
 #' Florian Detsch

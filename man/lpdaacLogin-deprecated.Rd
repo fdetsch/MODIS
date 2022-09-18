@@ -32,7 +32,7 @@ lpdaacLogin()
 \item \url{https://github.com/fdetsch/MODIS/issues/10}
 }
 
-\code{\link{MODIS-deprecated}}
+\link{MODIS-deprecated}
 }
 \author{
 Matteo Mattiuzzi and Florian Detsch

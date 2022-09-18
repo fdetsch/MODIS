@@ -4,35 +4,31 @@
 #' Get MODIS swath granules for a specific geographic area, time period and 
 #' (optionally) time of day.
 #' 
-#' @param extent \code{\link[sf]{sf}} oject defining the aoi (other will follow).
-#' @param platform \code{Character} of length 1, either MODIS "terra" or "aqua"
-#' @param begin Start date of time series. Default NULL which means start with 
-#' the first existing image, see \code{\link[MODIS]{transDate}} for mor details.
-#' @param end End date of time series. Default is \code{\link{Sys.Date}}.
-#' See \code{\link[MODIS]{transDate}} for more details. 
-#' @param collection integer or character, valid values are collection 5 or 6
-#' @param DayNightFlag A `character` vector of allowed day/night flags.
-#' This can be an arbitrary combination of \code{"D"} (day), \code{"N"} (night), 
-#' \code{"B"} (both), \code{"X"} (not designated). By default, all flags are 
-#' accepted.
-#' @param removeDatecrossers Default TRUE, remove granules that cross the 
-#' dateline as current solution warps polygons accross the globe (any solutions
-#' on how to solve this issue are welcome!)
-#' @param ... currently only works for the MODIS outDirPath root directory.
+#' @param extent 'sf' oject defining the area of interest.
+#' @param platform `character` of length 1, either MODIS "terra" or "aqua".
+#' @param begin Start date of time series. Default `NULL` which means start with
+#'   the first existing image, see [transDate()] for more details.
+#' @param end End date of time series. Default is [Sys.Date()]. See 
+#'   [transDate()] for more details.
+#' @param collection `integer` or `character`.
+#' @param DayNightFlag A `character` vector of allowed day/night flags. This can
+#'   be an arbitrary combination of `"D"` (day), `"N"` (night), `"B"` (both), 
+#'   `"X"` (not designated). By default, all flags are accepted.
+#' @param removeDatecrossers If `TRUE` (default), remove granules that cross the
+#'   dateline as current solution warps polygons across the globe.
+#' @param ... Currently only works for the MODIS 'outDirPath' root directory.
 #'   
-#' @details The retriveval of Spath data follows a three step approach: 
+#' @details The retrieval of Swath data follows a three step approach: 
 #' 1) download and store CSV summary files. These yearly summary files contain 
-#' the filenames of each geometa: MYD03 or MOD03file.
-#' 2) base in hte CSV summary file download and store selected geometa files
-#' 3) Extract Swath footprint geometries from Geometafiles and intersect it 
-#' with the extent.
-#' As this function uses caching once files are downloaded if becomes prety fast.
+#'   the file names of each geometa: MYD03 or MOD03 file.
+#' 2) base in the CSV summary file download and store selected geometa files
+#' 3) Extract Swath footprint geometries from geometa files and intersect it 
+#'   with the extent.
 #' 
 #' @return 
 #' Identified granules as `character`.
 #' 
 #' @author Florian Detsch and Matteo Mattiuzzi
-#' 
 #' 
 #' @examples 
 #' \dontrun{

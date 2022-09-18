@@ -15,8 +15,6 @@ such as file conversion, mosaicking, subsetting and time series filtering.
 }
 \author{
 Matteo Mattiuzzi, Florian Detsch
-\cr
-\cr
 \emph{Maintainer:} Florian Detsch \email{fdetsch@web.de}
 }
 \keyword{package}

@@ -4,22 +4,21 @@
 #' This function converts a sequence of input dates to 'YYYY-MM-DD' and 
 #' 'YYYYDDD'.
 #' 
-#' @param begin,end \code{Date} or \code{character}. Begin and end date of MODIS 
-#' time series, see Note. If not provided, this defaults to \code{"1972-01-01"} 
-#' (\code{Sys.Date()}).
+#' @param begin,end `Date` or `character`. Begin and end date of MODIS time 
+#'   series, see Note. If not provided, this defaults to `"1972-01-01"` and 
+#'   [Sys.Date()], respectively.
 #' 
 #' @return 
-#' A \code{list} of begin and end dates formatted according to 'YYYY-MM-DD' 
-#' (first two slots; class \code{Date}) and 'YYYYDDD' (second two slots; class 
-#' \code{character}).
+#' A `list` of begin and end dates formatted according to 'YYYY-MM-DD' (first 
+#' two slots; class `Date`) and 'YYYYDDD' (second two slots; class `character`).
 #' 
 #' @note 
-#' If input dates are supplied as \code{character}, this function either expects 
-#' 7-digit strings in the MODIS intrinsic form \code{'\%Y\%j'} or, alternatively, 
-#' 10-digit strings in the form \code{'\%Y-\%m-\%d'} where the two field separators 
+#' If input dates are supplied as `character`, this function either expects 
+#' 7-digit strings in the MODIS intrinsic form `'\%Y\%j'` or, alternatively, 
+#' 10-digit strings in the form `'\%Y-\%m-\%d'` where the two field separators 
 #' need to be uniform (see Examples).
 #' 
-#' @seealso \code{\link{strptime}}. 
+#' @seealso [strptime()]. 
 #' 
 #' @author 
 #' Matteo Mattiuzzi, Florian Detsch

@@ -8,9 +8,7 @@
 #' @name MODIS-package
 #' @docType package
 #' @title MODIS Acquisition and Processing
-#' @author Matteo Mattiuzzi, Florian Detsch 
-#' \cr
-#' \cr
+#' @author Matteo Mattiuzzi, Florian Detsch
 #' \emph{Maintainer:} Florian Detsch \email{fdetsch@@web.de}
 #'
 #' @import bitops mapdata parallel ptw raster rgdal sf sp

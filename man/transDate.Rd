@@ -7,23 +7,22 @@
 transDate(begin = NULL, end = NULL)
 }
 \arguments{
-\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS 
-time series, see Note. If not provided, this defaults to \code{"1972-01-01"} 
-(\code{Sys.Date()}).}
+\item{begin, end}{\code{Date} or \code{character}. Begin and end date of MODIS time
+series, see Note. If not provided, this defaults to \code{"1972-01-01"} and
+\code{\link[=Sys.Date]{Sys.Date()}}, respectively.}
 }
 \value{
-A \code{list} of begin and end dates formatted according to 'YYYY-MM-DD' 
-(first two slots; class \code{Date}) and 'YYYYDDD' (second two slots; class 
-\code{character}).
+A \code{list} of begin and end dates formatted according to 'YYYY-MM-DD' (first
+two slots; class \code{Date}) and 'YYYYDDD' (second two slots; class \code{character}).
 }
 \description{
-This function converts a sequence of input dates to 'YYYY-MM-DD' and 
+This function converts a sequence of input dates to 'YYYY-MM-DD' and
 'YYYYDDD'.
 }
 \note{
-If input dates are supplied as \code{character}, this function either expects 
-7-digit strings in the MODIS intrinsic form \code{'\%Y\%j'} or, alternatively, 
-10-digit strings in the form \code{'\%Y-\%m-\%d'} where the two field separators 
+If input dates are supplied as \code{character}, this function either expects
+7-digit strings in the MODIS intrinsic form \code{'\\\%Y\\\%j'} or, alternatively,
+10-digit strings in the form \code{'\\\%Y-\\\%m-\\\%d'} where the two field separators
 need to be uniform (see Examples).
 }
 \examples{
@@ -34,7 +33,7 @@ transDate(begin = c("2009-01-01", "2010-01-01"), end = "2011.03.16")
                
 }
 \seealso{
-\code{\link{strptime}}.
+\code{\link[=strptime]{strptime()}}.
 }
 \author{
 Matteo Mattiuzzi, Florian Detsch

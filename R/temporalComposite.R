@@ -1,32 +1,31 @@
 #' Calculate MODIS Composite Images
 #'
 #' @description
-#' Based on a user-defined function, e.g. \code{max} for maximum value
-#' composites (MVC), aggregate native 16-day MODIS datasets to custom temporal
-#' composites.
+#' Based on a user-defined function, e.g. [max()] for maximum value composites 
+#' (MVC), aggregate native 16-day MODIS data sets to custom temporal composites.
 #'
-#' @param x \code{Raster*} or \code{character}. MODIS composite dataset with an 
-#' associated "composite_day_of_the_year" SDS, e.g. all vegetation indices 
-#' products (MOD13).
-#' @param y \code{Raster*} or \code{character}. MODIS
-#' "composite_day_of_the_year" SDS associated with 'x'.
-#' @param timeInfo \code{Date} vector corresponding to all input layers. If not 
-#' further specified, this is tried to be created through invoking 
-#' \code{\link{extractDate}} upon 'x', assuming standard MODIS file names.
-#' @param interval \code{character}. Time period for aggregation, see
-#' \code{\link{aggInterval}}.
-#' @param fun,na.rm \code{function}. See \code{\link{overlay}}.
-#' @param cores \code{integer}. Number of cores for parallel processing.
-#' @param filename \code{character}. Optional output filename.
-#' @param ... Additional arguments passed to \code{\link{writeRaster}}.
+#' @param x `Raster*` or `character`. MODIS composite data set with an 
+#'   associated "composite_day_of_the_year" SDS, e.g. all vegetation indices 
+#'   products (MOD13).
+#' @param y `Raster*` or `character`. MODIS "composite_day_of_the_year" SDS 
+#'   associated with 'x'.
+#' @param timeInfo `Date` vector corresponding to all input layers. If not 
+#'   further specified, this is tried to be created through invoking 
+#'   [extractDate()] upon 'x', assuming standard MODIS file names.
+#' @param interval `character`. Time period for aggregation, see 
+#'   [aggInterval()].
+#' @param fun,na.rm `function`. See [raster::overlay()].
+#' @param cores `integer`. Number of cores for parallel processing.
+#' @param filename `character`. Optional output file name.
+#' @param ... Additional arguments passed to [raster::writeRaster()].
 #'
-#' @return A \code{Raster*} object.
+#' @return A `Raster*` object.
 #'
 #' @author
 #' Florian Detsch
 #'
 #' @seealso
-#' \code{\link{aggInterval}}, \code{\link{calc}}, \code{\link{writeRaster}}.
+#' [aggInterval()], [raster::calc()], [raster::writeRaster()].
 #'
 #' @examples
 #' \dontrun{
@@ -102,5 +101,3 @@ temporalComposite <- function(x, y,
 
   return(rst_seq)
 }
-
-

@@ -124,7 +124,7 @@ setMethod("orgTime",
       {
         if (as.numeric(minHAVE - minIN) <= pillow)
         {
-          warning("'begin'-date - 'pillow' is earlier by, ",as.numeric(minHAVE - minIN) ," days, than the available input dates!\nPillow at the start of the time serie is reduced to ",pillow - as.numeric(minHAVE - minIN)," days!")
+          warning("'begin'-date - 'pillow' is earlier by, ",as.numeric(minHAVE - minIN) ," days, than the available input dates!\nPillow at the start of the time series is reduced to ",pillow - as.numeric(minHAVE - minIN)," days!")
         } else if (minOUT == minHAVE)
         {      
           warning("Is is not possible to use the pillow at the begin of the time series since there is no data available before 'begin'-date!")

@@ -22,7 +22,7 @@
 #' @param dataFormat `character`, defaults to `"GTiff"`. See
 #'   `sf::st_drivers(what = "raster")` for available options.
 #' @param gdalPath `character`. Path to GDAL binary executable, used to relate 
-#'   writable \code{sf::st_drivers("raster")} to file extensions in case of 
+#'   writable `sf::st_drivers("raster")` to file extensions in case of 
 #'   non-standard formats.
 #' @param MODISserverOrder `character`. Possible options are `"LPDAAC"` 
 #'   (default), `"LAADS"` (see 'dlmethod' and Details). If only one server is 

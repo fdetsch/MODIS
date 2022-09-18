@@ -18,7 +18,7 @@ available at \code{help("MODIS-deprecated")}.
 }
 \section{\code{lpdaacLogin}}{
 
-For \code{lpdaacLogin}, use \code{\link{EarthdataLogin}} instead.
+For \code{\link[=lpdaacLogin]{lpdaacLogin()}}, use \code{\link[=EarthdataLogin]{EarthdataLogin()}} instead.
 }
 
 \keyword{internal}

@@ -1,38 +1,38 @@
 #' Add New Product to MODIS Inventory
 #' 
 #' @description 
-#' \code{addProduct} is a non-exported helper function to add a new entry to the 
-#' list of satellite products featured by \strong{MODIS} (see 
-#' \code{MODIS:::MODIS_Products}).
+#' `addProduct()` is a non-exported helper function to add a new entry to the 
+#' list of satellite products featured by **MODIS** (see 
+#' `MODIS:::MODIS_Products`).
 #' 
-#' @param product Character. Name of the product that should be added to the 
-#' inventory, see [getProduct()].
-#' @param platform Character. Satellite platform on which MODIS 
-#' is mounted, defaults to "Terra".
-#' @param pf1,pf2 Character. Online server paths.
-#' @param topic Character. The official name of 'product'.
-#' @param type Character. Product type, defaults to 'Tile'.
-#' @param res Character. Spatial resolution of 'product', e.g. "1000m".
-#' @param temp_res Character. Temporal resolution of 'product', e.g. "8 Day".
-#' @param internalseparator Character. Separator string matching the product's 
-#' naming convention, defaults to '\\.' for MODIS products.
-#' @param server Character. Server to download the data from (more than one 
-#' entry is possible).
-#' @param path_ext Character. Path to folder containing file 
-#' 'MODIS_Products.RData'. When working with RStudio projects (.Rproj), this 
-#' usually defaults to 'inst/external'.
-#' @param overwrite Logical. If `TRUE`, the initial '.RData' file located 
-#' in 'path_ext' will be overwritten.
+#' @param product `character`. Name of the product that should be added to the 
+#'   inventory, see [getProduct()].
+#' @param platform `character`. Satellite platform on which MODIS is mounted, 
+#'   defaults to "Terra".
+#' @param pf1,pf2 `character`. Online server paths.
+#' @param topic `character`. The official name of 'product'.
+#' @param type `character`. Product type, defaults to `"Tile"`.
+#' @param res `character`. Spatial resolution of 'product', e.g. `"1000m"`.
+#' @param temp_res `character`. Temporal resolution of 'product', e.g. "8 Day".
+#' @param internalseparator `character`. Separator string matching the product's
+#'   naming convention, defaults to `"\\."` for MODIS products.
+#' @param server `character`. Server to download the data from (more than one 
+#'   entry is possible).
+#' @param path_ext `character`. Path to folder containing file 
+#'   'MODIS_Products.RData'. When working with RStudio projects (.Rproj), this 
+#'   usually defaults to 'inst/external'.
+#' @param overwrite `logical`. If `TRUE`, the initial '.RData' file located in 
+#'   'path_ext' will be overwritten.
 #' @param ... Currently not used.
 #' 
 #' @return 
-#' A 'list' holding the updated contents of file 'MODIS_Products.RData'.
+#' A `list` holding the updated contents of file 'MODIS_Products.RData'.
 #' 
 #' @author 
 #' Florian Detsch
 #' 
 #' @seealso 
-#' \code{MODIS:::MODIS_Products}, [getProduct()].
+#' `MODIS:::MODIS_Products`, [getProduct()].
 #' 
 #' @examples 
 #' \dontrun{
@@ -53,7 +53,7 @@ addProduct <- function(product, platform = c("Terra", "Aqua"),
   ## load list of current products
   load(paste0(path_ext, "/MODIS_Products.RData"))
   
-  ## factor to character conversion
+  ## factor to `character` conversion
   log_was_factor <- logical(length = length(MODIS_Products))
   for (i in seq(MODIS_Products)) {
     if (is.factor(MODIS_Products[[i]])) {
@@ -79,7 +79,7 @@ addProduct <- function(product, platform = c("Terra", "Aqua"),
   MODIS_Products$INTERNALSEPARATOR[int_id_new] <- internalseparator
   MODIS_Products$SOURCE <- append(MODIS_Products$SOURCE, list(server))
   
-  ## character to factor conversion
+  ## `character` to factor conversion
   for (i in seq(MODIS_Products)) {
     if (log_was_factor[i]) {
       MODIS_Products[[i]] <- as.factor(MODIS_Products[[i]])

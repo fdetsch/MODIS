@@ -2,68 +2,63 @@
 #' 
 #' @description 
 #' Use a modified Whittaker filter function (see References) from package 
-#' \strong{ptw} to filter a vegetation index (VI) time serie of satellite data.
+#' **ptw** to filter a vegetation index (VI) time series of satellite data.
 #' 
-#' @param vi \code{Raster*} or \code{character} filenames, sorted VI. Use 
-#' \code{\link{preStack}} functionality to ensure the right input.
-#' @param w \code{Raster*} or \code{character} filenames. In case of MODIS 
-#' composite, the sorted 'VI_Quality' layers.
-#' @param t \code{Raster*} or \code{character} filenames. In case of MODIS 
-#' composite, the sorted 'composite_day_of_the_year' layers. If missing, the 
-#' date is determined using \code{timeInfo}.
-#' @param timeInfo Output from \code{\link{orgTime}}.
-#' @param lambda \code{character} or \code{integer}. Yearly lambda value passed 
-#' to \code{\link{whit2}}. If set as \code{character} (i.e., 
-#' \code{lambda = "600"}), it is not adapted to the time serie length, but used 
-#' as a fixed value (see Details). High values = stiff/rigid spline.
-#' @param nIter \code{integer}. Number of iteration for the upper envelope 
-#' fitting.
-#' @param outputAs \code{character}, organisation of output files. 
-#' \code{"single"} (default) means each date one \code{RasterLayer}; 
-#' \code{"yearly"} a \code{RasterBrick} for each year, and \code{"one"} one 
-#' \code{RasterBrick} for the entire time series.
-#' @param collapse \code{logical}. Collapse input data of multiple years into 
-#' one single year before filtering.
-#' @param prefixSuffix \code{character}, file naming. Names are composed 
-#' dot-separated: \code{paste0(prefixSuffix[1], "YYYDDD", lambda, 
-#' refixSuffix[2], ".defaultFileExtension")}.
-#' @param outDirPath \code{character}, output path. Defaults to the current 
-#' working directory.
-#' @param outlierThreshold \code{numeric} in the same unit as \code{vi}, used 
-#' for outlier removal (see Details).
-#' @param mergeDoyFun Especially when using \code{collapse = TRUE}, multiple 
-#' measurements for one day can be present. Here you can choose how those values 
-#' are merged to one single value: \code{"max"} uses the highest value, 
-#' \code{"mean"} or \code{"weighted.mean"} use the \code{\link{mean}} if no 
-#' weighting \code{"w"} is available, and \code{\link{weighted.mean}} if it is.
-#' @param ... Arguments passed to \code{\link{writeRaster}} (except for 
-#' \code{filename}).
+#' @param vi `Raster*` or `character` file names, sorted VI. Use [preStack()] 
+#'   functionality to ensure the right input.
+#' @param w `Raster*` or `character` file names. In case of MODIS composite, the
+#'   sorted 'VI_Quality' layers.
+#' @param t `Raster*` or `character` file names. In case of MODIS composite, the
+#'   sorted 'composite_day_of_the_year' layers. If missing, the date is 
+#'   determined using 'timeInfo'.
+#' @param timeInfo Output from [orgTime()].
+#' @param lambda `character` or `integer`. Yearly lambda value passed to 
+#'   [ptw::whit2()]. If set as `character` (i.e., `lambda = "600"`), it is not 
+#'   adapted to the time series length, but used as a fixed value (see Details).
+#'   High values = stiff/rigid spline.
+#' @param nIter `integer`. Number of iterations for the upper envelope fitting.
+#' @param outputAs `character`, organization of output files. `"single"` 
+#'   (default) means each date one `RasterLayer`; `"yearly"` a `RasterBrick` for
+#'   each year, and `"one"` one `RasterBrick` for the entire time series.
+#' @param collapse `logical`. Collapse input data of multiple years into one 
+#'   single year before filtering.
+#' @param prefixSuffix `character`, file naming. Names are dot-separated: 
+#'   `paste0(prefixSuffix[1], "YYYDDD", lambda, prefixSuffix[2], ".defaultFileExtension")`.
+#' @param outDirPath `character`, output path. Defaults to the current working 
+#'   directory.
+#' @param outlierThreshold `numeric` in the same unit as 'vi', used for outlier 
+#'   removal (see Details).
+#' @param mergeDoyFun Especially when using `collapse = TRUE`, multiple 
+#'   measurements for one day can be present. Here you can choose how those 
+#'   values are merged to one single value: `"max"` uses the highest value, 
+#'   `"mean"` or `"weighted.mean"` use [mean()] or [stats::weighted.mean()].
+#' @param ... Arguments passed to [raster::writeRaster()] (except for 
+#'   'filename').
 #' 
 #' @return 
-#' A Whittaker-smoothened \code{RasterStack}.
+#' A Whittaker-smoothed `RasterStack`.
 #' 
 #' @details 
-#' The argument \code{lambda} is passed to \code{MODIS:::miwhitatzb1}. You can 
-#' set it as yearly \code{lambda}, which means that it doesn't matter how long 
-#' the input time serie is because \code{lambda} is adapted to it with: 
-#' \code{lambda*('length of input timeserie in days'/365)}. The input length can 
-#' differ from the output because of the \code{pillow} argument in 
-#' \code{orgTime}. But it can also be set as \code{character} (i.e., 
-#' \code{lambda = "1000"}). In this case, the adaption to the time series length 
-#' is not performed.\cr
+#' The argument 'lambda' is passed to `MODIS:::miwhitatzb1`. You can set it as 
+#' yearly 'lambda', which means that it doesn't matter how long the input time 
+#' series is because 'lambda' is adapted to it with: 
+#' `lambda * ('length of input time series in days' / 365)`. The input length 
+#' can differ from the output because of the 'pillow' argument in [orgTime()]. 
+#' But it can also be set as `character` (i.e., `lambda = "1000"`). In this 
+#' case, the adaption to the time series length is not performed.
 #' 
 #' @references 
 #' Modified Whittaker smoother, according to Atzberger & Eilers 2011 
-#' International Journal of Digital Earth 4(5):365-386.\cr
+#' International Journal of Digital Earth 4(5):365-386, 
+#' \doi{10.1080/17538947.2010.505664}.
 #' Implementation in R: Agustin Lobo 2012
 #' 
 #' @note 
 #' Currently tested on MODIS and Landsat data. Using M*D13, it is also possible 
-#' to use the 'composite_day_of_the_year' and the 'VI_Quality' layers. Note that 
-#' this function is currently under heavy development.
+#' to use the 'composite_day_of_the_year' and the 'VI_Quality' layers.
 #' 
 #' @seealso 
-#' \code{\link{smooth.spline.raster}}, \code{\link{raster}}.
+#' [smooth.spline.raster()], [raster::raster()].
 #' 
 #' @author 
 #' Matteo Mattiuzzi and Agustin Lobo

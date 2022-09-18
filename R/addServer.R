@@ -1,8 +1,9 @@
 #' Add New Remote Server to MODIS Inventory
 #' 
 #' @description 
-#' `addServer()` is a non-exported helper function to add a new entry to the 
-#' list of online servers featured by **MODIS** (see `MODIS:::MODIS_FTPinfo`).
+#' `addServer()` is a non-exported helper function for internal use only. It 
+#' adds a new entry to the list of online servers featured by **MODIS** (see 
+#' `MODIS:::MODIS_FTPinfo`).
 #' 
 #' @param name `character` Name of the remote server that should be added to the
 #'   inventory.
@@ -11,11 +12,10 @@
 #' @param varpath `character` Pattern of organizational structure on server.
 #' @param content `character` Content type, defaults to `"images"`.
 #' @param path_ext `character` Path to folder containing file 
-#'   'MODIS_FTPinfo.RData'. When working with RStudio projects (.Rproj), this 
+#'   'MODIS_FTPinfo.RData'. When working with RStudio projects (`.Rproj`), this 
 #'   usually defaults to 'inst/external'.
-#' @param overwrite `logical`. If `TRUE`, the initial '.RData' file located in 
-#'   'path_ext' will be overwritten.
-#' @param ... Currently not used.
+#' @param overwrite `logical`, defaults to `FALSE`. If `TRUE`, the initial 
+#'   `.RData` file located in 'path_ext' will be overwritten.
 #' 
 #' @return 
 #' A `list` holding the updated contents of 'MODIS_FTPinfo.RData'.
@@ -29,16 +29,24 @@
 #' @examples 
 #' \dontrun{
 #' ## E.g., add server of MODIS evapotranspiration product
-#' MODIS:::addServer(name = "NTSG", sensor = "MODIS",
-#'                   basepath = "ftp://ftp.ntsg.umt.edu/pub/MODIS/NTSG_Products/MOD16/",
-#'                   varpath = "PRODUCT.CCC/YYYY/DDD/")
-#' }                   
-#'     
-# #' @export addServer                 
-#' @name addServer
-addServer <- function(name, sensor = "MODIS", basepath, varpath, 
-                      content = "images", path_ext = "inst/external", 
-                      overwrite = FALSE, ...) {
+#' MODIS:::addServer(
+#'   name = "NTSG"
+#'   , sensor = "MODIS"
+#'   , basepath = "ftp://ftp.ntsg.umt.edu/pub/MODIS/NTSG_Products/MOD16/"
+#'   , varpath = "PRODUCT.CCC/YYYY/DDD/"
+#' )
+#' }
+#' 
+#' @noRd
+addServer = function(
+  name
+  , sensor = "MODIS"
+  , basepath
+  , varpath
+  , content = "images"
+  , path_ext = "inst/external"
+  , overwrite = FALSE
+) {
   
   ## load list of current products
   load(paste0(path_ext, "/MODIS_FTPinfo.RData"))

@@ -378,69 +378,6 @@ runGdal <- function(product, collection=NULL,
                     rm(tmp)
                   }
                   
-                  
-                  # ### 'maskValue' ----
-                  # 
-                  # ## dummy file
-                  # dmy = tempfile("val_repl", tmpdir = normalizePath(raster::tmpDir()), fileext = xtn)
-                  # 
-                  # if (!is.null(maskValue)) {
-                  #   
-                  #   # check numeric
-                  #   if (is.character(maskValue)) {
-                  #     maskValue = as.numeric(maskValue)
-                  #   } else if (!is.numeric(maskValue)) {
-                  #     stop("'maskValue' needs to be numeric.")
-                  #   }
-                  #   
-                  #   # if required, remove No Data Value from 'maskValue'
-                  #   if (any(maskValue == nodataValue)) {
-                  #     maskValue = maskValue[maskValue != nodataValue]
-                  #   }
-                  #   
-                  #   ifile <- paste0(gdalSDS,collapse='" "')
-                  #
-                  #   # if No Data Value is not already defined 
-                  #   if (is.null(srcnodata)) {
-                  #     nodataValue = maskValue[1]
-                  #     
-                  #     if (length(maskValue) > 1) {
-                  #       
-                  #       for (w in 2:length(maskValue)) {
-                  #         shell(paste(rpl
-                  #                     , "-innd", maskValue[w]
-                  #                     , "-outnd", nodataValue
-                  #                     , of
-                  #                     , ifelse(w == 2, ifile, ofile)
-                  #                     , dmy))
-                  #         
-                  #         jnk = file.copy(dmy, ofile, overwrite = TRUE)
-                  #       }
-                  #     }
-                  #     
-                  #     srcnodata <- paste0(" -srcnodata ", nodataValue)
-                  #     dstnodata <- paste0(" -dstnodata ", nodataValue)
-                  #     
-                  #   # if No Data Value is already defined  
-                  #   } else {
-                  #     
-                  #     for (w in 1:length(maskValue)) {
-                  #       shell(paste(rpl
-                  #                   , "-innd", maskValue[w]
-                  #                   , "-outnd", nodataValue
-                  #                   , of
-                  #                   , ifelse(w == 1, ifile, ofile)
-                  #                   , dmy))
-                  #       
-                  #       jnk = file.copy(dmy, ofile, overwrite = TRUE)
-                  #     }
-                  #   }
-                  #   
-                  #   masked = file.exists(dmy)
-                  # } else {
-                  #   masked = FALSE
-                  # }
-                  
                   ## extract layers
                   lst = c(lst, list("-t_srs" = if (t_srs != s_srs) t_srs, "-te" = te, "-tr" = tr))
                   lst = Filter(Negate(is.null), lst)

@@ -8,6 +8,8 @@
 
 #### 🍬 miscellaneous
 
+  * Removes obsolete Python code initially used for value masking
+
 
 # MODIS 1.2.8 (2022-09-07)
 

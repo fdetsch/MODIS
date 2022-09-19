@@ -321,3 +321,68 @@ microbenchmark(
 #    multi 3.077062 4.039075 4.867191 5.157830 5.614667 6.685348   100   a
 #       wo 3.005221 4.065321 4.840850 5.202567 5.597503 6.773891   100   a
 # wo_multi 3.100692 4.045811 4.934897 5.165353 5.696735 6.849002   100   a
+
+
+## 2022-09-18 ====
+
+### mask values doesn't work for multiple tiles and "average" resampling #70
+
+library(MODIS)
+
+lap = "~/Documents/data/MODIS_ARC"
+
+MODISoptions(
+  localArcPath = lap
+  , outDirPath = file.path(
+    lap
+    , "PROCESSED"
+  )
+  , resamplingType = "average"
+)
+
+product = "MCD15A2H"
+
+clc = getCollection(
+  product
+  , forceCheck = TRUE
+)
+
+
+### one tile ----
+
+# run only one tile
+fpar1 = runGdal(
+  product
+  , collection = clc
+  , tileH = 21
+  , tileV = 8
+  , begin = "2003001"
+  , end = "2003008"
+  , SDSstring = "1"
+  , job = "mcd15a2h-test_onetile"
+  , maskValue = 249:255
+  , overwrite = TRUE
+)
+
+rst1 = raster(unlist(fpar1))
+(tbl1 = table(rst1[]))[order(as.numeric(names(tbl1)), decreasing = TRUE)][1:10]
+print(plot(rst1))
+
+
+### two tiles ----
+
+fpar2 = runGdal(
+  product
+  , collection = clc
+  , tileH = 21
+  , tileV = c(7, 8)
+  , begin = "2003001"
+  , end = "2003008"
+  , SDSstring = "1"
+  , job = "mcd15a2h-test_twotile"
+  , maskValue = 249:255
+  , overwrite = TRUE
+)
+
+rst2 = raster(unlist(fpar2))
+(tbl2 <- table(rst2[]))[order(as.numeric(names(tbl2)), decreasing = TRUE)][1:10]

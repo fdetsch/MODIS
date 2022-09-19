@@ -386,3 +386,56 @@ fpar2 = runGdal(
 
 rst2 = raster(unlist(fpar2))
 (tbl2 <- table(rst2[]))[order(as.numeric(names(tbl2)), decreasing = TRUE)][1:10]
+
+
+### workaround ----
+
+fpar2 = runGdal(
+  product
+  , collection = clc
+  , tileH = 21
+  , tileV = c(7, 8)
+  , begin = "2003001"
+  , end = "2003031"
+  , SDSstring = "1"
+  , job = "mcd15a2h-test_twotile"
+  , overwrite = TRUE
+  , resamplingType = "near"
+)
+
+# ## list unique values per layer
+# lst2 = lapply(
+#   fpar2$MCD15A2H.061
+#   , raster
+# )
+# 
+# lapply(
+#   lst2
+#   , raster::unique
+# )
+
+library(terra)
+
+rst2 = rast(
+  unlist(
+    fpar2
+  )
+)
+
+msk2 = mask(
+  rst2
+  , mask = rst2 > 100 # TRUE = 1L, FALSE = 0L
+  , maskvalue = 1L
+)
+
+plot(
+  msk2
+  , zlim = c(0, 100)
+  , main = basename(
+    sources(
+      rst2
+    )
+  )
+)
+
+## --> resample/reproject afterwards

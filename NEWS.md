@@ -1,14 +1,10 @@
-# MODIS 1.2.8.9001 (2022-09-20)
+# MODIS 1.2.9 (2022-09-20)
 
 #### ✨ features and improvements
 
-  * Aligns `runGdal()` 'maskValue' with `gdalwarp` '-srcnodata' option, thereby 
+  * Aligns `runGdal()` 'maskValue' with `gdalwarp` '-srcnodata' option, thereby
     allowing to specify band-specific masking values or ignore intrinsic no-data
     settings altogether (#70)
-
-#### 🐛 bug fixes
-
-#### 💬 documentation etc
 
 #### 🍬 miscellaneous
 

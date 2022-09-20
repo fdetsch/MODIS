@@ -376,7 +376,13 @@ ModisFileDownloader <- function(x, ...)
               cat("\nMultisocket connection to:",paste(names(path$remotePath), collapse = ' and '),"\n############################\n")
             } else
             {
-              cat("\nGetting file from:",opts$MODISserverOrder[hv[g]],"\n############################\n")
+              cat(
+                sprintf(
+                  "\nGetting file %s from: %s\n############################\n"
+                  , x
+                  , opts$MODISserverOrder[hv[g]]
+                )
+              )
             }
           }
           

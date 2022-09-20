@@ -80,3 +80,9 @@ put deprecated functions on defunct
 `getUTMZone()` throws warnings when running examples
 
 Examples, Details, etc.
+
+runGdal():
+* [x] file name in 'Getting file from: LPDAAC'
+* [x] optionally turn off 'maskValue', i.e. "None" in `gdalwarp` 
+      (https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata)
+* [x] check if '-dstnodata' is required

@@ -45,7 +45,13 @@ output folder. If not specified, it is created in
 \item{overwrite}{\code{logical}, defaults to \code{FALSE}. Determines whether or not to
 overwrite existing SDS output files.}
 
-\item{maskValue}{Currently ignored.}
+\item{maskValue}{If \code{NULL} (default), i.e. not explicitly set, the per-band
+\verb{NoData Value} is taken into account. If not \code{NULL}, a vector of masking
+values with each value corresponding to a single band in 'SDSstring'. This
+can include \code{"None"} to ignore intrinsic no-data settings on the source
+data set. See also
+\url{https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata} for
+details.}
 
 \item{...}{Additional arguments passed to \code{\link[=MODISoptions]{MODISoptions()}}, e.g. 'wait'.
 Permanent settings for these arguments are temporarily overridden.}

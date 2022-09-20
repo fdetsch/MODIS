@@ -17,7 +17,13 @@
 #' @param checkIntegrity,forceDownload `logical`, see [getHdf()].
 #' @param overwrite `logical`, defaults to `FALSE`. Determines whether or not to
 #'   overwrite existing SDS output files.
-#' @param maskValue Currently ignored.
+#' @param maskValue If `NULL` (default), i.e. not explicitly set, the per-band
+#'   `NoData Value` is taken into account. If not `NULL`, a vector of masking 
+#'   values with each value corresponding to a single band in 'SDSstring'. This 
+#'   can include `"None"` to ignore intrinsic no-data settings on the source
+#'   data set. See also
+#'   <https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata> for 
+#'   details.
 #' @param ... Additional arguments passed to [MODISoptions()], e.g. 'wait'. 
 #'   Permanent settings for these arguments are temporarily overridden.
 #' 
@@ -289,15 +295,34 @@ runGdal <- function(product, collection=NULL,
             {
               SDS = lapply(
                 files
-                , function(y) {
-                  getSds(
-                    HdfName = y
-                    , SDSstring = SDSstring
-                  )
-                }
+                , getSds
+                , SDSstring = SDSstring
               )
 
               NAS <- getNa(SDS[[1]]$SDS4gdal)
+              
+              if (!is.null(maskValue)) {
+                if ((l1 <- length(maskValue)) == 1L & (l2 <- length(NAS)) > 1L) {
+                  maskValue = rep(
+                    maskValue
+                    , l2
+                  )
+                }
+                
+                if (!l1 %in% c(1L, l2)) {
+                  stop(
+                    sprintf(
+                      paste(
+                        "'maskValue' length needs to be 1 or match 'SDSstring'"
+                        , "(i.e. %s), got %s."
+                      )
+                      , l2
+                      , l1
+                    )
+                    , call. = FALSE
+                  )
+                }
+              }
 
               ## loop over sds
               ofiles <- character(length(SDS[[1]]$SDSnames))
@@ -316,7 +341,11 @@ runGdal <- function(product, collection=NULL,
                 gdalSDS <- sapply(SDS,function(x){x$SDS4gdal[i]}) # get names of layer 'o' of all files (SDS)
                 
                 naID <- which(SDS[[1]]$SDSnames[i] == names(NAS))
-                nodataValue = srcnodata = dstnodata = if (length(naID) > 0) NAS[[naID]]
+                srcnodata = if (!is.null(maskValue)) {
+                  maskValue[i]
+                } else if (length(naID) > 0) {
+                  NAS[[naID]]
+                }
 
                 if (!file.exists(ofile) || overwrite) {
                   
@@ -325,10 +354,10 @@ runGdal <- function(product, collection=NULL,
                   }
                   
                   ## create first set of gdal options required by subsequent step
-                  lst = list(dataFormat, co, rt, srcnodata, dstnodata)
+                  lst = list(dataFormat, co, rt, srcnodata)
                   names(lst) = paste0(
                     "-"
-                    , c("of", "co", "r", "srcnodata", "dstnodata")
+                    , c("of", "co", "r", "srcnodata")
                   )
                   lst = Filter(Negate(is.null), lst)
                   
@@ -377,69 +406,6 @@ runGdal <- function(product, collection=NULL,
                     
                     rm(tmp)
                   }
-                  
-                  
-                  # ### 'maskValue' ----
-                  # 
-                  # ## dummy file
-                  # dmy = tempfile("val_repl", tmpdir = normalizePath(raster::tmpDir()), fileext = xtn)
-                  # 
-                  # if (!is.null(maskValue)) {
-                  #   
-                  #   # check numeric
-                  #   if (is.character(maskValue)) {
-                  #     maskValue = as.numeric(maskValue)
-                  #   } else if (!is.numeric(maskValue)) {
-                  #     stop("'maskValue' needs to be numeric.")
-                  #   }
-                  #   
-                  #   # if required, remove No Data Value from 'maskValue'
-                  #   if (any(maskValue == nodataValue)) {
-                  #     maskValue = maskValue[maskValue != nodataValue]
-                  #   }
-                  #   
-                  #   ifile <- paste0(gdalSDS,collapse='" "')
-                  #
-                  #   # if No Data Value is not already defined 
-                  #   if (is.null(srcnodata)) {
-                  #     nodataValue = maskValue[1]
-                  #     
-                  #     if (length(maskValue) > 1) {
-                  #       
-                  #       for (w in 2:length(maskValue)) {
-                  #         shell(paste(rpl
-                  #                     , "-innd", maskValue[w]
-                  #                     , "-outnd", nodataValue
-                  #                     , of
-                  #                     , ifelse(w == 2, ifile, ofile)
-                  #                     , dmy))
-                  #         
-                  #         jnk = file.copy(dmy, ofile, overwrite = TRUE)
-                  #       }
-                  #     }
-                  #     
-                  #     srcnodata <- paste0(" -srcnodata ", nodataValue)
-                  #     dstnodata <- paste0(" -dstnodata ", nodataValue)
-                  #     
-                  #   # if No Data Value is already defined  
-                  #   } else {
-                  #     
-                  #     for (w in 1:length(maskValue)) {
-                  #       shell(paste(rpl
-                  #                   , "-innd", maskValue[w]
-                  #                   , "-outnd", nodataValue
-                  #                   , of
-                  #                   , ifelse(w == 1, ifile, ofile)
-                  #                   , dmy))
-                  #       
-                  #       jnk = file.copy(dmy, ofile, overwrite = TRUE)
-                  #     }
-                  #   }
-                  #   
-                  #   masked = file.exists(dmy)
-                  # } else {
-                  #   masked = FALSE
-                  # }
                   
                   ## extract layers
                   lst = c(lst, list("-t_srs" = if (t_srs != s_srs) t_srs, "-te" = te, "-tr" = tr))

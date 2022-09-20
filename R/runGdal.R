@@ -316,7 +316,7 @@ runGdal <- function(product, collection=NULL,
                 gdalSDS <- sapply(SDS,function(x){x$SDS4gdal[i]}) # get names of layer 'o' of all files (SDS)
                 
                 naID <- which(SDS[[1]]$SDSnames[i] == names(NAS))
-                nodataValue = srcnodata = dstnodata = if (length(naID) > 0) NAS[[naID]]
+                srcnodata = if (length(naID) > 0) NAS[[naID]]
 
                 if (!file.exists(ofile) || overwrite) {
                   
@@ -325,10 +325,10 @@ runGdal <- function(product, collection=NULL,
                   }
                   
                   ## create first set of gdal options required by subsequent step
-                  lst = list(dataFormat, co, rt, srcnodata, dstnodata)
+                  lst = list(dataFormat, co, rt, srcnodata)
                   names(lst) = paste0(
                     "-"
-                    , c("of", "co", "r", "srcnodata", "dstnodata")
+                    , c("of", "co", "r", "srcnodata")
                   )
                   lst = Filter(Negate(is.null), lst)
                   

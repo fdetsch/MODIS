@@ -2,6 +2,10 @@
 
 #### ✨ features and improvements
 
+  * Aligns `runGdal()` 'maskValue' with `gdalwarp` '-srcnodata' option, thereby 
+    allowing to specify band-specific masking values or ignore intrinsic no-data
+    settings altogether (#70)
+
 #### 🐛 bug fixes
 
 #### 💬 documentation etc

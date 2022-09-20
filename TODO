@@ -83,6 +83,6 @@ Examples, Details, etc.
 
 runGdal():
 * [x] file name in 'Getting file from: LPDAAC'
-* [ ] optionally turn off 'maskValue', i.e. "None" in `gdalwarp` 
-     (https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata)
+* [x] optionally turn off 'maskValue', i.e. "None" in `gdalwarp` 
+      (https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata)
 * [x] check if '-dstnodata' is required

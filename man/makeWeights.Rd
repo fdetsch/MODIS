@@ -41,10 +41,10 @@ maskWater(
 \arguments{
 \item{x}{\code{matrix}, vector or \verb{Raster*} object.}
 
-\item{bitShift}{\code{integer}. Bit starting point, see examples and
+\item{bitShift}{\code{integer}. Bit starting point, see Examples and
 \code{\link[=detectBitInfo]{detectBitInfo()}}.}
 
-\item{bitMask}{\code{integer}. Bit mask size, see examples and \code{\link[=detectBitInfo]{detectBitInfo()}}.}
+\item{bitMask}{\code{integer}. Bit mask size, see Examples and \code{\link[=detectBitInfo]{detectBitInfo()}}.}
 
 \item{filename}{\code{character} passed to \code{\link[raster:writeRaster]{raster::writeRaster()}}. If not
 specified, output is written to a temporary file.}
@@ -67,7 +67,7 @@ bits and convert to decimal system.}
 
 \item{keep}{If \code{NULL} (default), bits are only encoded, else an \code{integer}
 vector of values you want to keep (becomes \code{TRUE}), the rest becomes \code{NA}.
-See examples.}
+See Examples.}
 }
 \value{
 A \verb{Raster*} object.

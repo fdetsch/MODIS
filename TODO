@@ -73,8 +73,6 @@ leverage `gdalwarp` -wo functionality (https://gdal.org/programs/gdalwarp.html#c
 
 put deprecated functions on defunct
 
-Examples, Details, etc.
-
 runGdal():
 * [x] file name in 'Getting file from: LPDAAC'
 * [x] optionally turn off 'maskValue', i.e. "None" in `gdalwarp` 

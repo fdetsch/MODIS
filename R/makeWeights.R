@@ -8,9 +8,9 @@
 #' 
 #' @param x `matrix`, vector or `Raster*` object.
 #' @param X `Raster*` object.
-#' @param bitShift `integer`. Bit starting point, see examples and 
+#' @param bitShift `integer`. Bit starting point, see Examples and 
 #'   [detectBitInfo()].
-#' @param bitMask `integer`. Bit mask size, see examples and [detectBitInfo()].
+#' @param bitMask `integer`. Bit mask size, see Examples and [detectBitInfo()].
 #' @param threshold `integer`. Threshold for valid quality.
 #' @param filename `character` passed to [raster::writeRaster()]. If not 
 #'   specified, output is written to a temporary file.
@@ -19,7 +19,7 @@
 #'   bits and convert to decimal system.
 #' @param keep If `NULL` (default), bits are only encoded, else an `integer` 
 #'   vector of values you want to keep (becomes `TRUE`), the rest becomes `NA`. 
-#'   See examples.
+#'   See Examples.
 #' @param datatype `character`. Default `"INT1U"` used for `Raster*` object. 
 #'   Output datatype, see [raster::writeRaster()].
 #' @param NAflag `integer`. Default `255` used for `Raster*` object. Set 

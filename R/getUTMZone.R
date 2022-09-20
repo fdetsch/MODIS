@@ -8,29 +8,27 @@
 #' 
 #' @return 
 #' A `c("sf", "data.frame")` in 
-#' [EPSG:4326](http://spatialreference.org/ref/epsg/wgs-84/) with relevant 
-#' output UTM zone information.
+#' [EPSG:4326](http://spatialreference.org/ref/epsg/wgs-84/) with relevant UTM 
+#' zone information.
 #' 
 #' @author 
 #' Florian Detsch
 #' 
-#' @references 
-#' NGA Geomatics (2018) Coordinate Systems. Available online 
-#' [here](http://earth-info.nga.mil/GandG/update/index.php?dir=coordsys&action=coordsys#tab_utm)
-#' (2022-09-13).
-#' 
 #' @seealso 
 #' [getTile()], [rgeos::gCentroid()].
 #' 
-#' @examples 
-#' MODIS:::getUTMZone("tanzania")
+#' @examples
+#' \dontrun{
+#' source("R/getUTMZone.R")
+#' 
+#' getUTMZone("tanzania")
 #' 
 #' data(meuse)
 #' pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
-#' MODIS:::getUTMZone(pts)
+#' getUTMZone(pts)
+#' }
 #' 
-#' @export getUTMZone
-#' @name getUTMZone
+#' @export
 getUTMZone <- function(x = NULL) {
   
   ## if 'x' is missing, select UTM tile(s) interactively

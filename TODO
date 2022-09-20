@@ -77,8 +77,6 @@ leverage `gdalwarp` -wo functionality (https://gdal.org/programs/gdalwarp.html#c
 
 put deprecated functions on defunct
 
-`getUTMZone()` throws warnings when running examples
-
 Examples, Details, etc.
 
 runGdal():

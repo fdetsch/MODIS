@@ -40,7 +40,7 @@ getGranule():
 getCollection():
 - retrieval from LAADS (ie. MOD03), particularly during LPDAAC downtime
 
-Automated wget, curl check if any("LPDAAC", "NSIDP") %in% opts$MODISserverOrder
+Automated wget, curl check if any("LPDAAC", "NSIDC") %in% opts$MODISserverOrder
 
 General solution for "//"
 
@@ -57,10 +57,6 @@ separate issues
 * decide fate of `arcStats()`
 * feed non-existing collection in `list` format to `getCollection()` and handle 
   'Error in cat([...])'
-
-Standardize 'Earthdata Login' spelling
-
-Enable Roxygen w/Markdown
 
 Assertion on `MODISoptions()`, e.g. valid entries for 'MODISserverOrder'
 

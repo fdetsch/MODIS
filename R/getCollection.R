@@ -102,7 +102,7 @@ getCollection <- function(product, collection = NULL, newest = TRUE
   if (forceCheck | sum(!productN@PRODUCT %in% colnames(MODIScollection))>0) 
   {
     
-    # Earthdata login credentials in ~/.netrc are mandatory for LP DAAC and
+    # Earthdata Login credentials in ~/.netrc are mandatory for LP DAAC and
     # NSIDC, hence if missing, create them to avoid authentication failures
     crd = credentials()
     usr = crd$login; pwd = crd$password

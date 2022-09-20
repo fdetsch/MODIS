@@ -51,7 +51,7 @@
 
 #### ✨ features and improvements
 
-  * Enables the verification of Earthdata login credentials against multiple
+  * Enables the verification of Earthdata Login credentials against multiple
     servers, e.g. if one is not reachable (#124)
 
 
@@ -144,7 +144,7 @@
 
 #### 🍬 miscellaneous
 
-  * When running getHdf() (or runGdal()) with LP DAAC or NSIDC as target download server and Earthdata login credentials in ~/.netrc are missing, the user is forced to insert the required information on the command line. This is intended to avoid repeat authentication failures.
+  * When running getHdf() (or runGdal()) with LP DAAC or NSIDC as target download server and Earthdata Login credentials in ~/.netrc are missing, the user is forced to insert the required information on the command line. This is intended to avoid repeat authentication failures.
   * Functions checkIntegrity(), OutProj(), PixelSize(), ResamplingType(), BlockSize(), OutputCompression(), QuietOutput(), genString(), checkTools(), ModisFileDownloader(), and doCheckIntegrity() no longer have an 'opts' argument.
 
 
@@ -162,7 +162,7 @@
 
 #### 🍬 miscellaneous
 
-  * Code adjustments related to LAADS transition from FTP to HTTPS. In this context, lpdaacLogin() is now deprecated and has been replaced with EarthdataLogin() since both LP DAAC and LAADS require the specification of Earthdata login credentials.
+  * Code adjustments related to LAADS transition from FTP to HTTPS. In this context, lpdaacLogin() is now deprecated and has been replaced with EarthdataLogin() since both LP DAAC and LAADS require the specification of Earthdata Login credentials.
   * EarthdataLogin() now allows multiple entries in a .netrc file in case users have other servers not related to Earthdata.
   * Disabled retrieval of MOD16 products from NTSG server, which is no longer updated.
   * When 'extent' is a country name, 'outProj' is taken from MODISoptions() rather than hard-coded EPSG:4326.

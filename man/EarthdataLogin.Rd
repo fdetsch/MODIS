@@ -14,10 +14,10 @@ password are read from the terminal.}
 not be changed unless for a good reason.}
 }
 \value{
-The Earthdata login credentials as invisible \code{list}.
+The Earthdata Login credentials as invisible \code{list}.
 }
 \description{
-Create a hidden \code{.netrc} file with Earthdata login credentials in your home
+Create a hidden \code{.netrc} file with Earthdata Login credentials in your home
 directory. The information included therein is used to login to
 \url{https://urs.earthdata.nasa.gov/} which is a mandatory requirement in order
 to download MODIS data from LP DAAC, LAADS and NSIDC (see also

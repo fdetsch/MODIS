@@ -1,7 +1,7 @@
 #' Create File with Earthdata Login Credentials
 #' 
 #' @description 
-#' Create a hidden `.netrc` file with Earthdata login credentials in your home 
+#' Create a hidden `.netrc` file with Earthdata Login credentials in your home 
 #' directory. The information included therein is used to login to 
 #' <https://urs.earthdata.nasa.gov/> which is a mandatory requirement in order 
 #' to download MODIS data from LP DAAC, LAADS and NSIDC (see also 
@@ -14,7 +14,7 @@
 #'   not be changed unless for a good reason.
 #' 
 #' @return 
-#' The Earthdata login credentials as invisible `list`.
+#' The Earthdata Login credentials as invisible `list`.
 #' 
 #' @author 
 #' Matteo Mattiuzzi and Florian Detsch
@@ -57,14 +57,14 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL, path = "~/.netrc") {
   if(!file.exists(nrc))
   {
     cat("Creating clear text file '~/", basename(nrc)
-        , "' with Earthdata login credentials...\n", sep = "")
+        , "' with Earthdata Login credentials...\n", sep = "")
     insert <- 'y'
   } else
   {
     if(sum(machine %in% server)>0)
     {
       if (any(is.null(lns[[ind]]$login), is.null(lns[[ind]]$password))) {
-        cat("'", nrc, "' with defective Earthdata login credentials found! Please correct them now...\n", sep = "")
+        cat("'", nrc, "' with defective Earthdata Login credentials found! Please correct them now...\n", sep = "")
         insert = "y"
       } else {
         insert <- tolower(readline(paste0("Earthdata credentials seem to be present, do you want to change them? (y/n) \n",sep="")))
@@ -73,7 +73,7 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL, path = "~/.netrc") {
     {
       if (is.null(usr) || is.null(pwd)) {
         cat(
-          "File '", nrc, "' without Earthdata login credentials found.\n"
+          "File '", nrc, "' without Earthdata Login credentials found.\n"
           , "Please add them now...\n"
           , sep = ""
         )
@@ -137,7 +137,7 @@ EarthdataLogin <- function(usr = NULL, pwd = NULL, path = "~/.netrc") {
   return(invisible(credentials(path = path)))
 }
 
-## Earthdata login credentials from .netrc file
+## Earthdata Login credentials from .netrc file
 readCredentials = function(path = "~/.netrc") {
   
   # .netrc file

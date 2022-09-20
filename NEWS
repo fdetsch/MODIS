@@ -51,7 +51,7 @@ MODIS 1.2.6 (2022-08-30)
 
 features and improvements
 
-  * Enables the verification of Earthdata login credentials against multiple
+  * Enables the verification of Earthdata Login credentials against multiple
     servers, e.g. if one is not reachable (#124)
 
 
@@ -81,7 +81,7 @@ bug fixes
 
 miscellaneous
 
-  * Code adjustments related to LAADS transition from FTP to HTTPS. In this context, lpdaacLogin() is now deprecated and has been replaced with EarthdataLogin() since both LP DAAC and LAADS require the specification of Earthdata login credentials.
+  * Code adjustments related to LAADS transition from FTP to HTTPS. In this context, lpdaacLogin() is now deprecated and has been replaced with EarthdataLogin() since both LP DAAC and LAADS require the specification of Earthdata Login credentials.
   * EarthdataLogin() now allows multiple entries in a .netrc file in case users have other servers not related to Earthdata.
   * Disabled retrieval of MOD16 products from NTSG server, which is no longer updated.
   * When 'extent' is a country name, 'outProj' is taken from MODISoptions() rather than hard-coded EPSG:4326.

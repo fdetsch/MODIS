@@ -18,7 +18,7 @@ runMrt(
   tileV = NULL,
   SDSstring = NULL,
   job = NULL,
-  datum = "NODATUM",
+  datum = c("NODATUM", "NAD27", "NAD83", "WGS66", "WGS72", "WGS84"),
   zone = NULL,
   projPara = NULL,
   mosaic = TRUE,
@@ -38,8 +38,8 @@ defaults to \code{"NODATUM"}. Supported datums are \code{"NAD27"}, \code{"NAD83"
 projections (i.e., \code{outProj = "UTM"}). Valid values are \code{-60} to \code{+60}.}
 
 \item{projPara}{Output projection parameters as \code{character} string, see
-Details. Ignored if \verb{outProj \\\%in\\\% c("SIN", "GEO")}. If not specified and
-using another target projection, the default settings for \code{"GEO"} are
+Details. Ignored if 'outProj' is one of \code{c("SIN", "GEO")}. If not specified
+and using another target projection, the default settings for \code{"GEO"} are
 assumed.}
 
 \item{mosaic}{A \code{logical} that toggles mosaicking on (default) or off. One

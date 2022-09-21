@@ -14,8 +14,8 @@
 #' @param zone Output zone number as `integer`, relevant only for UTM 
 #'   projections (i.e., `outProj = "UTM"`). Valid values are `-60` to `+60`.
 #' @param projPara Output projection parameters as `character` string, see 
-#'   Details. Ignored if `outProj \%in\% c("SIN", "GEO")`. If not specified and 
-#'   using another target projection, the default settings for `"GEO"` are 
+#'   Details. Ignored if 'outProj' is one of `c("SIN", "GEO")`. If not specified
+#'   and using another target projection, the default settings for `"GEO"` are 
 #'   assumed.
 #' @param mosaic A `logical` that toggles mosaicking on (default) or off. One 
 #'   example where `mosaic = FALSE` makes sense is for large spatial extents 
@@ -110,25 +110,37 @@
 #'              job="ExampleUTMdelme", outProj="UTM", zone = 33)
 #' }
 #' 
-#' @export runMrt
-#' @name runMrt
-runMrt <- function(product, collection = NULL
-                   , begin = NULL, end = NULL
-                   , extent = NULL, tileH = NULL, tileV = NULL
-                   , SDSstring = NULL, job = NULL
-                   , datum = "NODATUM", zone = NULL, projPara = NULL
-                   , mosaic = TRUE, anonym = TRUE
-                   , ...)
-{
+#' @export
+runMrt = function(
+  product
+  , collection = NULL
+  , begin = NULL
+  , end = NULL
+  , extent = NULL
+  , tileH = NULL
+  , tileV = NULL
+  , SDSstring = NULL
+  , job = NULL
+  , datum = c("NODATUM", "NAD27", "NAD83", "WGS66", "WGS72", "WGS84")
+  , zone = NULL
+  , projPara = NULL
+  , mosaic = TRUE
+  , anonym = TRUE
+  , ...
+) {
 
-    dots = list(...)
+  datum = match.arg(
+    datum
+  )
+  
+  dots = list(...)
     opts = do.call(combineOptions, dots)
 
     if (!opts$mrtOk)
     {
         stop("MRT path not set or MRT not installed on your system!")
     }
-        
+    
     product     <- getProduct(product, quiet = TRUE, collection = collection)
     tLimits          <- transDate(begin=begin,end=end)
     

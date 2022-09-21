@@ -152,8 +152,8 @@ expect_warning(
   out2.0 <- MODIS:::checkEarthdataLogin(
     path = nrc
   )
-  , pattern = "Authentication failed with\n> HTTP error 401"
-)
+  , pattern = "Authentication failed with\n> HTTP error (401|504)"
+) # 504 = Gateway Timeout, i.e. server not reachable
 
 expect_false(
   out2.0

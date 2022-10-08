@@ -1,4 +1,4 @@
-MODIS 1.2.9 (2022-09-20)
+MODIS 1.2.9 (2022-10-08)
 
 features and improvements
 
@@ -138,3 +138,5 @@ miscellaneous
 
 
 MODIS 1.0.0
+
+* Initial release

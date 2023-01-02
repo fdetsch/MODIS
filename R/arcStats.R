@@ -200,31 +200,35 @@ arcStats <- function(
           yax <- data.frame(x=rep(0,19),y=seq(90,-90,by=-10),tileID=c(0:17,""))
           
           png(paste(opts$outDirPath,todo,".",outName,".png",sep=""), width = 800, height = 600)
-                 
-          if(extent[1]=="global")
-          {
-              globe <- maps::map("world",plot=FALSE)
-          } else
-          {
-              globe <- maps::map("worldHires",plot=FALSE,xlim=xlim,ylim=ylim)
-              xax   <- xax[xax$x>=min(xlim) & xax$x<=max(xlim),]
-              yax   <- yax[yax$y>=min(ylim) & yax$y<=max(ylim),]
-          }  
+          
+          if (extent[1] == "global") {
+            globe = maps::map(
+              "world"
+              , plot = FALSE
+              , fill = TRUE
+            )
+          } else {
+            globe = maps::map(
+              "worldHires"
+              , plot = FALSE
+              , fill = TRUE
+              , xlim = xlim
+              , ylim = ylim
+            )
+            
+            xax = xax[xax$x >= min(xlim) & xax$x <= max(xlim), ]
+            yax = yax[yax$y >= min(ylim) & yax$y <= max(ylim), ]
+          }
+          
           sp::coordinates(xax) <- ~x+y
           sp::coordinates(yax) <- ~x+y 
           sp::proj4string(xax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-          sp::proj4string(yax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"                               
+          sp::proj4string(yax) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
           
           globe$x[!is.na(globe$x) & globe$x > 180] <- 180
           
-          globe <- maptools::map2SpatialLines(globe)
-
-          #invisible(set_ll_warn(TRUE)) # shouldn't be necessary becaus of the trimming
-          #iwa <- options()$warn
-          #options(warn=-1)
-          sp::proj4string(globe) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-          #options(warn=iwa)
-             
+          globe = as(sf::st_as_sf(globe), "Spatial")
+          
           if(!isLonLat(opts$outProj))
           {
               tmp <- raster(ext@extent)

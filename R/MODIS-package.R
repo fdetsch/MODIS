@@ -18,7 +18,7 @@
 #' @importFrom graphics abline box grid locator title
 #' @importFrom mapedit drawFeatures selectFeatures
 #' @importFrom maps map.axes
-#' @importFrom maptools map2SpatialLines checkPolygonsHoles
+#' @importFrom maptools checkPolygonsHoles
 #' @importFrom methods as new slot
 #' @importFrom rgeos gBuffer gIsValid
 #' @importFrom stats na.omit setNames smooth.spline

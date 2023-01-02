@@ -86,7 +86,7 @@ getUTMZone <- function(x = NULL) {
       
       # convert to polygons
       if (inherits(x, "map")) {
-        spy = x = maptools::map2SpatialPolygons(x, x$names, prj, checkHoles = TRUE)
+        spy = x = sf::st_as_sf(x)
       } else {
         if (inherits(x, "bbox")) {
           tmp = as.numeric(x)[c(1, 3, 2, 4)]

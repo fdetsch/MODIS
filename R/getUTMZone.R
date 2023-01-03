@@ -1,124 +1,119 @@
-#' Get UTM Zone
-#' 
-#' @description 
-#' Get the UTM zone for a geographic area. Zones are identified based on the 
-#' centroid coordinate pair of the specified input.
-#' 
-#' @param x Extent information, see [getTile()] and Details therein.
-#' 
-#' @return 
-#' A `c("sf", "data.frame")` in 
-#' [EPSG:4326](http://spatialreference.org/ref/epsg/wgs-84/) with relevant UTM 
-#' zone information.
-#' 
-#' @author 
-#' Florian Detsch
-#' 
-#' @seealso 
-#' [getTile()], [rgeos::gCentroid()].
-#' 
-#' @examples
-#' \dontrun{
-#' source("R/getUTMZone.R")
-#' 
-#' getUTMZone("tanzania")
-#' 
-#' data(meuse)
-#' pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
-#' getUTMZone(pts)
-#' }
-#' 
-#' @export
+# Get UTM Zone
+# 
+# @description 
+# Get the UTM zone for a geographic area. Zones are identified based on the 
+# centroid coordinate pair of the specified input.
+# 
+# @param x Extent information, see [getTile()] and Details therein.
+# 
+# @return 
+# A `c("sf", "data.frame")` in 
+# [EPSG:4326](http://spatialreference.org/ref/epsg/wgs-84/) with relevant UTM 
+# zone information.
+# 
+# @author 
+# Florian Detsch
+# 
+# @seealso 
+# [getTile()], [sf::st_centroid()].
+# 
+# @examples
+# \dontrun{
+# source("R/getUTMZone.R")
+# 
+# getUTMZone("tanzania")
+# 
+# data(meuse)
+# pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
+# getUTMZone(pts)
+# }
+# 
+# @export
 getUTMZone <- function(x = NULL) {
   
   ## if 'x' is missing, select UTM tile(s) interactively
   if (is.null(x)) {
-    out = selectUTMZone()
-
-  ## else identify zone from geographic input  
-  } else {
-    
-    prj = sp::CRS("+init=epsg:4326")
-    
-    # 'character' (file) method: read 'Spatial' or 'Raster' file
-    if (inherits(x, "character") & length(x) == 1) {
-      if (raster::extension(x) == '.shp') {
-        x <- raster::shapefile(x)
-      } else {
-        if (file.exists(x)) {
-          x <- raster::raster(x)
-        }
-      }
-    }  
-    
-    # 'character' (map) method: get 'Spatial' boundaries
-    if (inherits(x, "character")) {
-      try(testm <- maps::map("worldHires", x, plot = FALSE), silent = TRUE)
-      if (!exists("testm")) {
-        stop(paste0("Country name not valid. Check availability/spelling, i.e. try if it works with: map('worldHires,'",x, "'), or use '?search4map' function"))
-      }
-      x <- maps::map("worldHires", x, plot = FALSE, fill = TRUE)
-    }
-    
-    # 'sf' method: convert to 'Spatial'
-    if (inherits(x, "sf")) {
-      x = methods::as(x, "Spatial")
-    }
-    
-    # 'Raster,Spatial' method
-    if (inherits(x, c("Raster", "Spatial"))) {
-      
-      # if required, spTransform() extent object
-      if (!raster::compareCRS(x, prj) & !is.na(raster::projection(x))) {
-        x <- if (inherits(x, "Raster")) {
-          raster::projectExtent(x, prj)
-        } else {
-          sp::spTransform(x, prj)
-        }
-      }
-      
-      if (inherits(x, "Raster")) {
-        x = ext2spy(raster::extent(x), as_sf = FALSE)
-      }
-      
-    # 'map' | 'Extent' | 'bbox' method  
-    } else if (inherits(x, c("map", "Extent", "bbox"))) {
-      
-      # convert to polygons
-      if (inherits(x, "map")) {
-        spy = x = sf::st_as_sf(x)
-      } else {
-        if (inherits(x, "bbox")) {
-          tmp = as.numeric(x)[c(1, 3, 2, 4)]
-          x = raster::extent(tmp)
-        }
-        
-        spy = as(x, "SpatialPolygons"); sp::proj4string(spy) = prj@projargs
-      }
-    }
-    
-    ## capture errors related to orphaned holes and self-intersection
-    if (inherits(x, 'Spatial')) {
-      isValid = try(rgeos::gIsValid(x, reason = TRUE), silent = TRUE)
-      if (inherits(isValid, "try-error")) {
-        x = fixOrphanedHoles(x)
-      } else if (inherits(isValid, "character")) {
-        if (grepl("Self-intersection", isValid)) {
-          x = suppressWarnings(
-            rgeos::gBuffer(x, byid = TRUE, width = 0)
-          )
-        }
-      }
-    }
-    
-    # calculate center coordinate
-    ctr = rgeos::gCentroid(x)
-    
-    grd ="inst/external/UTM_Zone_Boundaries.rds"
-    out = sf::st_join(sf::st_as_sf(ctr), readRDS(grd))
+    return(
+      selectUTMZone()
+    )
   }
   
-  return(out)
+  # `character` file method: read as `sf` or `Raster`
+  if (inherits(x, "character") && file.exists(x[1])) {
+    
+    if (length(x) > 1L) {
+      warning(
+        sprintf(
+          "Expected length of 'x' is [1L], got [%sL]. Dumping excess elements.."
+          , length(x)
+        )
+        , call. = FALSE
+      )
+      
+      x = x[1]
+    }
+    
+    err = try(
+      sf::st_read(x)
+      , silent = TRUE
+    )
+    
+    # early exit: input is neither {sf} nor {raster} compatible
+    x = tryCatch(
+      error = \(e) {
+        stop(
+          "'x' is compatible with neither {sf} nor {raster}"
+          , call. = FALSE
+        )
+      }
+      , raster::raster(x)
+    )
+  }
+  
+  # 'character' map method: get 'sf' boundaries
+  if (inherits(x, "character")) {
+    x = maps::map(
+      "worldHires"
+      , x
+      , plot = FALSE
+      , fill = TRUE
+    )
+  }
+  
+  # `Raster` method
+  if (inherits(x, c("Raster", "Extent"))) {
+    x = sf::st_as_sfc(
+      sf::st_bbox(x)
+    )
+    
+    if (is.na(sf::st_crs(x))) {
+      warning(
+        "Input coordinate reference system is unknown, assuming EPSG:4326.."
+        , call. = FALSE
+      )
+      
+      sf::st_crs(x) = sf::st_crs(4326L)
+    }
+  }
+  
+  # `Spatial,map,bbox` method
+  if (inherits(x, c("Spatial", "map", "bbox"))) {
+    x = sf::st_as_sf(
+      x
+    )
+  }
+  
+  ## early exit: input geometry not valid
+  stopifnot(
+    "Input geometry is not valid, try to `sf::st_make_valid()` and try again." =
+      sf::st_is_valid(x)
+  )
+  
+  # merge centroid with utm boundaries
+  ctr = sf::st_centroid(x)
+  
+  grd ="inst/external/UTM_Zone_Boundaries.rds"
+  sf::st_join(sf::st_as_sf(ctr), readRDS(grd))
 }
 
 

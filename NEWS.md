@@ -2,6 +2,8 @@
 
 #### ✨ features and improvements
 
+  * Removes **rgdal**, **rgeos** and **maptools** dependencies (#130)
+
 #### 🐛 bug fixes
 
 #### 💬 documentation etc

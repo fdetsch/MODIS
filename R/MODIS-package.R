@@ -11,7 +11,7 @@
 #' @author Matteo Mattiuzzi, Florian Detsch
 #' \emph{Maintainer:} Florian Detsch \email{fdetsch@@web.de}
 #'
-#' @import bitops mapdata parallel ptw raster rgdal sf sp
+#' @import bitops mapdata parallel ptw raster sf sp
 #' @importFrom curl curl curl_download handle_setopt new_handle
 #' @importFrom devtools install_github
 #' @importFrom grDevices dev.new dev.off png

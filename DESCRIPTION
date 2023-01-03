@@ -29,7 +29,6 @@ Imports:
     methods,
     parallel,
     ptw,
-    rgdal,
     sf,
     sp,
     stats,

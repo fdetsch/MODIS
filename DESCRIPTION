@@ -30,7 +30,6 @@ Imports:
     parallel,
     ptw,
     rgdal,
-    rgeos,
     sf,
     sp,
     stats,

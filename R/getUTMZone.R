@@ -109,11 +109,26 @@ getUTMZone <- function(x = NULL) {
       sf::st_is_valid(x)
   )
   
-  # merge centroid with utm boundaries
-  ctr = sf::st_centroid(x)
+  # determine centroid coordinates
+  ctr = suppressWarnings(
+    sf::st_centroid(x)
+  )
   
-  grd ="inst/external/UTM_Zone_Boundaries.rds"
-  sf::st_join(sf::st_as_sf(ctr), readRDS(grd))
+  # if required, transform to epsg:4326
+  grd = readRDS("inst/external/UTM_Zone_Boundaries.rds")
+  
+  if (isFALSE(sf::st_crs(grd) == sf::st_crs(ctr))) {
+    ctr = sf::st_transform(
+      ctr
+      , sf::st_crs(grd)
+    )
+  }
+  
+  # return utm zone
+  sf::st_join(
+    ctr
+    , grd
+  )
 }
 
 

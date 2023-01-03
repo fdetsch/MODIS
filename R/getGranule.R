@@ -1,36 +1,35 @@
-#' Get MODIS Swath Granules
-#' 
-#' @description 
-#' Get MODIS swath granules for a specific geographic area, time period and 
-#' (optionally) time of day.
-#' 
-#' @param product,collection,begin,end,tileH,tileV,extent,... See [getHdf()].
-#' @param DayNightFlag A `character` vector of allowed day/night flags. This can
-#'   be an arbitrary combination of `"D"` (day), `"N"` (night), `"B"` (both), 
-#'   `"X"` (not designated). By default, all flags are accepted.
-#'   
-#' @return 
-#' Identified granules as `character`.
-#' 
-#' @author Florian Detsch
-#' 
-#' @seealso [getHdf()], [getTile()].
-#' 
-#' @examples 
-#' \dontrun{
-#' data(meuse)
-#' pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
-#'
-#' begin <- '2017001'
-#' end   <- '2017010'
-#'  
-#' grn = getGranule("MOD14", begin = begin, end = end
-#'                  , extent = pts, DayNightFlag = "D")
-#'                  
-#' }
-#' 
-#' @export getGranule
-#' @name getGranule
+# Get MODIS Swath Granules
+# 
+# @description 
+# Get MODIS swath granules for a specific geographic area, time period and 
+# (optionally) time of day.
+# 
+# @param product,collection,begin,end,tileH,tileV,extent,... See [getHdf()].
+# @param DayNightFlag A `character` vector of allowed day/night flags. This can
+#   be an arbitrary combination of `"D"` (day), `"N"` (night), `"B"` (both), 
+#   `"X"` (not designated). By default, all flags are accepted.
+#   
+# @return 
+# Identified granules as `character`.
+# 
+# @author Florian Detsch
+# 
+# @seealso [getHdf()], [getTile()].
+# 
+# @examples 
+# \dontrun{
+# data(meuse)
+# pts = sf::st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
+#
+# begin <- '2017001'
+# end   <- '2017010'
+#  
+# grn = getGranule("MOD14", begin = begin, end = end
+#                  , extent = pts, DayNightFlag = "D")
+#                  
+# }
+# 
+# @export
 getGranule = function(product, collection = NULL
                       , begin = NULL, end = NULL
                       , DayNightFlag = c("D", "N", "B", "X")
@@ -164,6 +163,7 @@ getGranule = function(product, collection = NULL
     }))
     
     ## find intersecting granules
+    ## TODO: rewrite to use `sf::st_intersects()` instead of {rgeos}
     sct = suppressWarnings(rgeos::gIntersects(extent, pys, byid = TRUE))
     out[[h]] = grn[apply(sct, 1, FUN = any), "GranuleID"]
   }
@@ -174,4 +174,3 @@ getGranule = function(product, collection = NULL
   names(out) = basename(mtd)
   return(out)
 }
-

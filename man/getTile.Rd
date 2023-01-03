@@ -112,9 +112,9 @@ getTile()
 getTile(mode = "draw")
 }
 
-# ex 2: Spatial (taken from ?rgdal::readOGR) ############
-dsn <- system.file("vectors/Up.tab", package = "rgdal")
-Up <- rgdal::readOGR(dsn, "Up")
+# ex 2: Spatial ############
+dsn <- system.file("ex/lux.shp", package = "terra")
+Up <- raster::shapefile(dsn, "Up")
 getTile(Up)
 
 # ex 3: sf ############

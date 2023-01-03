@@ -1,3 +1,16 @@
+# MODIS 1.2.9.9003 (2023-01-03)
+
+#### ✨ features and improvements
+
+  * Removes **rgdal**, **rgeos** and **maptools** dependencies (#130)
+
+#### 🐛 bug fixes
+
+#### 💬 documentation etc
+
+#### 🍬 miscellaneous
+
+
 # MODIS 1.2.9 (2022-10-08)
 
 #### ✨ features and improvements

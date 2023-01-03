@@ -81,13 +81,15 @@ expect_true(
 ### spherical geometry w/o s2 ----
 
 ## sample data
-dsn = system.file(
-  "vectors/Up.tab"
-  , package = "rgdal"
-)[1]
+spain = map(
+  "worldHires"
+  , "Spain"
+  , fill = TRUE
+  , plot = FALSE
+)
 
-Up = sf::st_read(
-  dsn
+Up = sf::st_as_sf(
+  spain
   , quiet = TRUE
 )
 

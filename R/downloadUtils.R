@@ -164,6 +164,42 @@ downloadFileCurl = function(
     , handle = h
   )
   
+  ## read first 10 lines to verify file <-> .html is downloaded if login fails
+  cnt = readLines(
+    jnk
+    , n = 10L
+    , warn = FALSE
+  )
+  
+  if (any(grepl("<!DOCTYPE html>", cnt))) {
+    
+    cnt1 = readLines(
+      jnk
+      , n = 500L
+      , warn = FALSE
+    )
+    
+    # early exit: downloaded file is .html requiring user to login
+    msg = if (
+      any(
+        grepl(
+          "login_please|please login"
+          , cnt1
+          , ignore.case = TRUE
+        )
+      )
+    ) {
+      "HTTP error 401."
+    } else {
+      "Unknown error."
+    }
+    
+    stop(
+      msg
+      , call. = FALSE
+    )
+  }
+  
   ## imitate download.file() return value (i.e. 0 = success, non-zero = failure)
   as.integer(
     !file.exists(

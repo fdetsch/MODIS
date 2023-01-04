@@ -2,6 +2,9 @@
 
 #### ✨ features and improvements
 
+  * Recognizes LAADS 401 authentication errors, which result in HTML instead of 
+    HDF output during `curl`/`wget` download, as such (#132)
+
 #### 🐛 bug fixes
 
 #### 💬 documentation etc

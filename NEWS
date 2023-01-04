@@ -1,6 +1,9 @@
-MODIS 1.2.10.9000 (2023-01-04)
+MODIS 1.2.10.9001 (2023-01-04)
 
 features and improvements
+
+  * Recognizes LAADS 401 authentication errors, which result in HTML instead of
+    HDF output during curl/wget download, as such (#132)
 
 bug fixes
 

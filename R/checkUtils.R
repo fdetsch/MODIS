@@ -1,13 +1,7 @@
 checkEarthdataLogin = function(
   method = "auto"
-  , server = c("LPDAAC", "LAADS")
   , path = "~/.netrc"
 ) {
-  
-  server = match.arg(
-    server
-    , several.ok = TRUE
-  )
   
   ## construct online file paths
   remote_urls = genString(

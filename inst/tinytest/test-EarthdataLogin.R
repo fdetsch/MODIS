@@ -141,13 +141,6 @@ expect_identical(
 
 ### checkEarthdataLogin() ----
 
-expect_error(
-  MODIS:::checkEarthdataLogin(
-    server = "LADS"
-  )
-  , pattern = "'arg' should be one of .*LPDAAC.*LAADS"
-)
-
 expect_warning(
   out2.0 <- MODIS:::checkEarthdataLogin(
     path = nrc

@@ -1,3 +1,17 @@
+# MODIS 1.2.10.9002 (2023-01-06)
+
+#### ✨ features and improvements
+
+  * Recognizes LAADS 401 authentication errors, which result in HTML instead of 
+    HDF output during `curl`/`wget` download, as such (#132)
+
+#### 🐛 bug fixes
+
+#### 💬 documentation etc
+
+#### 🍬 miscellaneous
+
+
 # MODIS 1.2.10 (2023-01-03)
 
 #### ✨ features and improvements

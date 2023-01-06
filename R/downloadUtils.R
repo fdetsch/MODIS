@@ -105,7 +105,7 @@ downloadFile = function(
   }
   
   ## download
-  utils::download.file(
+  jnk = utils::download.file(
     url = url
     , destfile = destfile
     , mode = 'wb'
@@ -114,6 +114,11 @@ downloadFile = function(
     , cacheOK = TRUE
     , extra = extra # `NULL` if not wget
   )
+  
+  ## early exit: .html downloaded instead of .hdf due to login failure
+  isHTML(jnk)
+  
+  return(jnk)
 }
 
 
@@ -164,10 +169,58 @@ downloadFileCurl = function(
     , handle = h
   )
   
+  ## early exit: .html downloaded instead of .hdf due to login failure
+  isHTML(jnk)
+  
   ## imitate download.file() return value (i.e. 0 = success, non-zero = failure)
   as.integer(
     !file.exists(
       jnk
     )
+  )
+}
+
+
+isHTML = function(x) {
+  
+  ## read first 10 lines to verify file
+  ## <-> .html is downloaded and written to .hdf if earthdata login fails
+  cnt = readLines(
+    x
+    , n = 10L
+    , warn = FALSE
+  )
+  
+  if (any(grepl("<!DOCTYPE html>", cnt))) {
+    
+    cnt1 = readLines(
+      x
+      , n = 500L
+      , warn = FALSE
+    )
+    
+    # early exit: downloaded file is .html requiring user to login
+    msg = if (
+      any(
+        grepl(
+          "login_please|please login"
+          , cnt1
+          , ignore.case = TRUE
+        )
+      )
+    ) {
+      "HTTP error 401."
+    } else {
+      "Unknown error."
+    }
+    
+    stop(
+      msg
+      , call. = FALSE
+    )
+  }
+  
+  return(
+    invisible()
   )
 }

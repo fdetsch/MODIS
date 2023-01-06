@@ -105,7 +105,7 @@ downloadFile = function(
   }
   
   ## download
-  utils::download.file(
+  jnk = utils::download.file(
     url = url
     , destfile = destfile
     , mode = 'wb'
@@ -114,6 +114,11 @@ downloadFile = function(
     , cacheOK = TRUE
     , extra = extra # `NULL` if not wget
   )
+  
+  ## early exit: .html downloaded instead of .hdf due to login failure
+  isHTML(jnk)
+  
+  return(jnk)
 }
 
 
@@ -164,9 +169,24 @@ downloadFileCurl = function(
     , handle = h
   )
   
-  ## read first 10 lines to verify file <-> .html is downloaded if login fails
+  ## early exit: .html downloaded instead of .hdf due to login failure
+  isHTML(jnk)
+  
+  ## imitate download.file() return value (i.e. 0 = success, non-zero = failure)
+  as.integer(
+    !file.exists(
+      jnk
+    )
+  )
+}
+
+
+isHTML = function(x) {
+  
+  ## read first 10 lines to verify file
+  ## <-> .html is downloaded and written to .hdf if earthdata login fails
   cnt = readLines(
-    jnk
+    x
     , n = 10L
     , warn = FALSE
   )
@@ -174,7 +194,7 @@ downloadFileCurl = function(
   if (any(grepl("<!DOCTYPE html>", cnt))) {
     
     cnt1 = readLines(
-      jnk
+      x
       , n = 500L
       , warn = FALSE
     )
@@ -200,10 +220,7 @@ downloadFileCurl = function(
     )
   }
   
-  ## imitate download.file() return value (i.e. 0 = success, non-zero = failure)
-  as.integer(
-    !file.exists(
-      jnk
-    )
+  return(
+    invisible()
   )
 }

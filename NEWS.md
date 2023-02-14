@@ -4,6 +4,9 @@
 
 #### 🐛 bug fixes
 
+  * `checkEarthdataLogin()` no longer takes 'MODISserverOrder' as argument when 
+    running `MODISoptions()` with missing or incorrect credentials
+
 #### 💬 documentation etc
 
 #### 🍬 miscellaneous

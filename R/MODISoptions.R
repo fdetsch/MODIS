@@ -328,7 +328,6 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   ) {
     opt$EarthdataLogin = checkEarthdataLogin(
       opt$dlmethod
-      , opt$MODISserverOrder
     )
   }
   

@@ -8,7 +8,7 @@ library(sf)
 
 lap = file.path(
   tempdir()
-  , "MODIS"
+  , "MODIS_ARC"
 )
 
 MODISoptions(
@@ -46,7 +46,7 @@ kili = st_buffer(
 #   )
 #   , col.regions = "cornflowerblue"
 #   , alpha.regions = 0.4
-#   , map.types = mapviewGetOption(
+#   , map.types = mapview::mapviewGetOption(
 #     "basemaps"
 #   )[
 #     c(4, 1:3, 5)
@@ -55,9 +55,10 @@ kili = st_buffer(
 # )
 
 
-### download ----
+## DOWNLOAD ====
 
-## lpdaac
+### lpdaac ----
+
 product = "MOD13A1"
 
 clc = getCollection(
@@ -70,7 +71,7 @@ tifs = runGdal(
   , collection = clc
   , extent = kili
   , begin = "2021-03-01"
-  , end = "2021-05-31"
+  , end = "2021-04-30"
   , SDSstring = "1"
   , job = "mod13a1_kili"
   , MODISserverOrder = "LPDAAC"
@@ -78,8 +79,8 @@ tifs = runGdal(
 )
 
 
+### laads ----
 
-## LAADS
 hdfs1 = getHdf(
   product
   , collection = clc
@@ -90,6 +91,9 @@ hdfs1 = getHdf(
   , MODISserverOrder = "LAADS"
   , quiet = FALSE
 )
+
+
+### nsidc ----
 
 product2 = "MOD10A1"
 

@@ -152,7 +152,7 @@ downloadFileCurl = function(
     , connecttimeout = 60L
   )
   
-  if (srv != "LAADS") {
+  if (srv == "LPDAAC") {
     args$httpauth = NULL
   }
   

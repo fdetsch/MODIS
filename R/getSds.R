@@ -33,8 +33,7 @@
 #'   , SDSstring = 1
 #' )
 #' 
-#' @export getSds
-#' @name getSds
+#' @export
 getSds = function(
   HdfName
   , SDSstring = NULL

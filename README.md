@@ -1,7 +1,7 @@
 ## **MODIS**: Acquisition and Processing of MODIS Products
 
 [![CRAN_version](http://www.r-pkg.org/badges/version/MODIS)](https://cran.r-project.org/package=MODIS)
-[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/license/mit/)
 [![Join the chat at https://gitter.im/r-modis/Lobby](https://badges.gitter.im/r-modis/Lobby.svg)](https://gitter.im/r-modis/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 

@@ -11,6 +11,9 @@ lap = file.path(
   , "MODIS_ARC"
 )
 
+wrn = getOption("warn")
+options(warn = 2L)
+
 MODISoptions(
   localArcPath = lap
   , outDirPath = file.path(
@@ -20,6 +23,8 @@ MODISoptions(
   , quiet = FALSE
   , save = FALSE
 )
+
+options(warn = wrn)
 
 
 ### aoi ----

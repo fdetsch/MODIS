@@ -1,3 +1,17 @@
+# MODIS 1.2.11.9000 (2023-02-14)
+
+#### ✨ features and improvements
+
+#### 🐛 bug fixes
+
+  * `checkEarthdataLogin()` no longer takes 'MODISserverOrder' as argument when 
+    running `MODISoptions()` with missing or incorrect credentials
+
+#### 💬 documentation etc
+
+#### 🍬 miscellaneous
+
+
 # MODIS 1.2.11 (2023-01-06)
 
 #### ✨ features and improvements

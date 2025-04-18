@@ -25,7 +25,6 @@ Imports:
     graphics,
     mapedit,
     maps,
-    maptools,
     methods,
     parallel,
     ptw,

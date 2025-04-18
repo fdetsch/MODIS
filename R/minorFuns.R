@@ -675,13 +675,40 @@ getInfo = function(x, product = NULL, type = c("Tile", "CMG", "Swath")) {
   return(out)
 }
 
-## taken from https://cran.r-project.org/web/packages/maptools/vignettes/combine_maptools.pdf
+## (try to) fix invalid geometries
 fixOrphanedHoles = function(x) {
-  polys <- slot(x, "polygons")
-  fixed <- lapply(polys, maptools::checkPolygonsHoles)
   
-  sp::SpatialPolygons(fixed, proj4string = sp::CRS(sp::proj4string(x)))
+  ## early exit: nothing to repair
+  if (sf::st_is_valid(x)) {
+    return(x)
+  }
+  
+  ## try to repair
+  x1 = sf::st_make_valid(x)
+  uses_s2 = sf::sf_use_s2()
+  
+  ## if object could not be repaired, try without {s2} support, i.e. on the
+  ## plane and not on the sphere (if not already the case previously; see
+  ## https://github.com/r-spatial/sf/issues/1732)
+  if (!sf::st_is_valid(x1) && uses_s2) {
+    
+    on.exit(suppressMessages(sf::sf_use_s2(TRUE)))
+    suppressMessages(sf::sf_use_s2(FALSE))
+    
+    x1 = sf::st_make_valid(x)
+  }
+  
+  ## raise an error if geometry could not be repaired
+  if (!sf::st_is_valid(x1)) {
+    stop(
+      "Invalid geometry could not be fixed automatically."
+      , call. = FALSE
+    )
+  }
+  
+  return(x1)
 }
+
 
 ## skip unwanted products, see https://github.com/fdetsch/MODIS/issues/22
 skipDuplicateProducts = function(x, quiet = FALSE) {

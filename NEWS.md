@@ -3,7 +3,7 @@
 #### ✨ features and improvements
 
   * Attempts to fix broken geometries with `sf::st_make_valid()` (both with and 
-    without {s2} 📦 support), thus eliminating {maptools} 📦 dependency (#139) 
+    without {s2} support), thus eliminating {maptools} dependency (#139) 
 
 #### 🐛 bug fixes
 

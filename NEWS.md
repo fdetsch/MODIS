@@ -1,3 +1,17 @@
+# MODIS 1.2.11.9003 (2025-05-02)
+
+#### ✨ features and improvements
+
+  * Attempts to fix broken geometries with `sf::st_make_valid()` (both with and 
+    without {s2} support), thus eliminating {maptools} dependency (#139) 
+
+#### 🐛 bug fixes
+
+#### 💬 documentation etc
+
+#### 🍬 miscellaneous
+
+
 # MODIS 1.2.11 (2023-01-06)
 
 #### ✨ features and improvements

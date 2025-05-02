@@ -1,6 +1,6 @@
 Package: MODIS
 Title: Acquisition and Processing of MODIS Products
-Version: 1.2.11
+Version: 1.2.11.9003
 URL: https://github.com/fdetsch/MODIS
 BugReports: https://github.com/fdetsch/MODIS/issues
 Authors@R: c(
@@ -25,7 +25,6 @@ Imports:
     graphics,
     mapedit,
     maps,
-    maptools,
     methods,
     parallel,
     ptw,
@@ -36,5 +35,5 @@ Imports:
 ByteCompile: TRUE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests: tinytest

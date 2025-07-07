@@ -6,7 +6,6 @@
 #' such as file conversion, mosaicking, subsetting and time series filtering.
 #'
 #' @name MODIS-package
-#' @docType package
 #' @title MODIS Acquisition and Processing
 #' @author Matteo Mattiuzzi, Florian Detsch
 #' \emph{Maintainer:} Florian Detsch \email{fdetsch@@web.de}
@@ -25,4 +24,6 @@
 #'
 #' @keywords package
 #'
+"_PACKAGE"
+
 NULL

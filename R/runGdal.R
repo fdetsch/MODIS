@@ -22,8 +22,8 @@
 #'   values with each value corresponding to a single band in 'SDSstring'. This 
 #'   can include `"None"` to ignore intrinsic no-data settings on the source
 #'   data set. See also
-#'   <https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata> for 
-#'   details.
+#'   <https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata> 
+#'   for details.
 #' @param ... Additional arguments passed to [MODISoptions()], e.g. 'wait'. 
 #'   Permanent settings for these arguments are temporarily overridden.
 #' 
@@ -38,9 +38,10 @@
 #'   See [MODISoptions()].
 #' * `blockSize`: integer. If `NULL` (default), the stripe size is set by GDAL. 
 #'   Basically it is the `-co BLOCKYSIZE=` parameter. See 
-#'   <https://gdal.org/frmt_gtiff.html>.
+#'   <https://gdal.org/en/stable/drivers/raster/gtiff.html>.
 #' * `compression` logical. If `TRUE` (default), compress data with the lossless
-#'   LZW compression with `predictor=2`. See <https://gdal.org/frmt_gtiff.html>.
+#'   LZW compression with `predictor=2`. See 
+#'   <https://gdal.org/en/stable/drivers/raster/gtiff.html>.
 #' 
 #' [runGdal()] uses numerous **MODIS** functions under the hood, see the linked 
 #' functions in Arguments for details and inputs.
@@ -165,7 +166,7 @@ runGdal <- function(product, collection=NULL,
                        outProj = t_srs)
 
     ## non-obligatory arguments (GTiff blocksize and compression, see
-    ## https://gdal.org/frmt_gtiff.html)
+    ## https://gdal.org/en/stable/drivers/raster/gtiff.html)
     bs <- do.call(BlockSize, opts)
     cp <- do.call(OutputCompression, opts)
     co <- c(cp, bs)

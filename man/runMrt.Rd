@@ -4,7 +4,8 @@
 \alias{runMrt}
 \title{Run MODIS Reprojection Tool}
 \source{
-The MRT software has been \href{https://lpdaac.usgs.gov/news/downloadable-modis-reprojection-tool-mrt-and-mrtswath-tool-have-been-retired}{retired},
+The MRT software has been
+\href{https://www.earthdata.nasa.gov/news/mrtweb-mrt-services-retired}{retired},
 and is hence no longer officially available for download through LP DAAC.
 }
 \usage{

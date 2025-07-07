@@ -18,7 +18,8 @@
 #'   methods, it is suggested to stick with the default settings (see Details).
 #' @param resamplingType Defaults to `"NN"` (Nearest Neighbor). MRT and GDAL 
 #'   both support `c('NN', 'CC', 'BIL')`. GDAL additionally supports all 
-#'   resampling methods listed under <https://gdal.org/programs/gdalwarp.html>.
+#'   resampling methods listed under 
+#'   <https://gdal.org/en/stable/programs/gdalwarp.html>.
 #' @param dataFormat `character`, defaults to `"GTiff"`. See
 #'   `sf::st_drivers(what = "raster")` for available options.
 #' @param gdalPath `character`. Path to GDAL binary executable, used to relate 

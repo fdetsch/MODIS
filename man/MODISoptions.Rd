@@ -45,7 +45,8 @@ methods, it is suggested to stick with the default settings (see Details).}
 
 \item{resamplingType}{Defaults to \code{"NN"} (Nearest Neighbor). MRT and GDAL
 both support \code{c('NN', 'CC', 'BIL')}. GDAL additionally supports all
-resampling methods listed under \url{https://gdal.org/programs/gdalwarp.html}.}
+resampling methods listed under
+\url{https://gdal.org/en/stable/programs/gdalwarp.html}.}
 
 \item{dataFormat}{\code{character}, defaults to \code{"GTiff"}. See
 \code{sf::st_drivers(what = "raster")} for available options.}

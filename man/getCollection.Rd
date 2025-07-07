@@ -20,7 +20,8 @@ collections, see \code{\link[=getProduct]{getProduct()}}.}
 \item{collection}{\code{character} or \code{integer}. If provided, the function only
 checks if the specified collection exists and returns the collection number
 formatted based on the 'as' parameter or \code{FALSE} if it doesn't exists. The
-check is performed on \href{https://lpdaac.usgs.gov/}{LP DAAC} as the exclusive
+check is performed on
+\href{https://www.earthdata.nasa.gov/centers/lp-daac}{LP DAAC} as the exclusive
 source for several products or, for snow cover (MOD/MYD10) and sea ice
 extent (MOD/MYD29), \href{https://nsidc.org/home}{NSIDC}.}
 

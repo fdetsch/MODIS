@@ -8,7 +8,8 @@
 #' @param collection `character` or `integer`. If provided, the function only 
 #'   checks if the specified collection exists and returns the collection number
 #'   formatted based on the 'as' parameter or `FALSE` if it doesn't exists. The 
-#'   check is performed on [LP DAAC](https://lpdaac.usgs.gov/) as the exclusive 
+#'   check is performed on 
+#'   [LP DAAC](https://www.earthdata.nasa.gov/centers/lp-daac) as the exclusive 
 #'   source for several products or, for snow cover (MOD/MYD10) and sea ice 
 #'   extent (MOD/MYD29), [NSIDC](https://nsidc.org/home).
 #' @param newest `logical`. If `TRUE` (default), return only the newest 

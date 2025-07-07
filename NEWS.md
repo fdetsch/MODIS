@@ -6,6 +6,8 @@
 
 #### 💬 documentation etc
 
+  * README points to similar packages providing comparable functionality (#138)
+
 #### 🍬 miscellaneous
 
 

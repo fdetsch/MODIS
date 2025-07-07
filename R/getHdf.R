@@ -37,7 +37,7 @@ if ( !isGeneric("getHdf") ) {
 #' @references 
 #' MODIS data is currently available from the online data pools at
 #' * NASA Land Processes Distributed Active Archive Center 
-#'   ([LP DAAC](https://lpdaac.usgs.gov/)),
+#'   ([LP DAAC](https://www.earthdata.nasa.gov/centers/lp-daac)),
 #' * Level-1 and Atmosphere Archive & Distribution System 
 #'   ([LAADS](https://ladsweb.modaps.eosdis.nasa.gov/)), and
 #' * National Snow & Ice Data Center ([NSIDC](https://nsidc.org/home)).

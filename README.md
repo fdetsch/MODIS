@@ -13,7 +13,7 @@ downloading, mosaicking, and processing MODIS satellite data, users may also
 find value in the following actively maintained alternatives—especially for 
 workflows requiring compatibility with newer versions of R:
 
-### [`MODISTools`](https://github.com/seantuck12/MODISTools)
+### [`MODISTools`](https://github.com/sntck/MODISTools)
 - **Focus:** Efficient access to MODIS subsets via the ORNL DAAC web service 
   (MODIS Subsets API).
 - **Highlights:** Streamlined for point-based time series extraction (e.g., 

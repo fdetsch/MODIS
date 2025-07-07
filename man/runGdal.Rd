@@ -50,8 +50,8 @@ overwrite existing SDS output files.}
 values with each value corresponding to a single band in 'SDSstring'. This
 can include \code{"None"} to ignore intrinsic no-data settings on the source
 data set. See also
-\url{https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata} for
-details.}
+\url{https://gdal.org/en/stable/programs/gdalwarp.html#cmdoption-gdalwarp-srcnodata}
+for details.}
 
 \item{...}{Additional arguments passed to \code{\link[=MODISoptions]{MODISoptions()}}, e.g. 'wait'.
 Permanent settings for these arguments are temporarily overridden.}
@@ -71,9 +71,10 @@ Downloads MODIS grid files from archive (HTTP or local) and processes them.
 See \code{\link[=MODISoptions]{MODISoptions()}}.
 \item \code{blockSize}: integer. If \code{NULL} (default), the stripe size is set by GDAL.
 Basically it is the \verb{-co BLOCKYSIZE=} parameter. See
-\url{https://gdal.org/frmt_gtiff.html}.
+\url{https://gdal.org/en/stable/drivers/raster/gtiff.html}.
 \item \code{compression} logical. If \code{TRUE} (default), compress data with the lossless
-LZW compression with \code{predictor=2}. See \url{https://gdal.org/frmt_gtiff.html}.
+LZW compression with \code{predictor=2}. See
+\url{https://gdal.org/en/stable/drivers/raster/gtiff.html}.
 }
 
 \code{\link[=runGdal]{runGdal()}} uses numerous \strong{MODIS} functions under the hood, see the linked

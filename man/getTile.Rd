@@ -84,13 +84,13 @@ to a single ESRI shapefile (.shp) or an image readable by
 \tab Spatial extent, resolution, and projection of the specified \verb{Raster*}
 are determined automatically. This information is used by \code{\link[=runGdal]{runGdal()}} to
 create perfectly matching files. If the \verb{Raster*} comes with no valid CRS,
-\href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} is assumed.\cr
+\href{https://spatialreference.org/ref/epsg/4326/}{EPSG:4326} is assumed.\cr
 \cr
 \code{Extent}, \code{bbox}:\cr
 \tab Boundary coordinates from \code{Extent} objects are generally assumed to be
-in \href{https://spatialreference.org/ref/epsg/wgs-84/}{EPSG:4326} as such
-objects have no projection information attached. The same applies for
-\code{bbox} objects lacking CRS information.\cr
+in \href{https://spatialreference.org/ref/epsg/4326/}{EPSG:4326} as such objects
+have no projection information attached. The same applies for \code{bbox}
+objects lacking CRS information.\cr
 \cr
 \code{sf}, \code{sfc}, \code{Spatial}:\cr
 \tab Except for resolution, same as for \verb{Raster*}.\cr

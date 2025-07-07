@@ -86,7 +86,8 @@
 #' [MODISoptions()], [runGdal()].
 #' 
 #' @source 
-#' The MRT software has been [retired](https://lpdaac.usgs.gov/news/downloadable-modis-reprojection-tool-mrt-and-mrtswath-tool-have-been-retired), 
+#' The MRT software has been 
+#' [retired](https://www.earthdata.nasa.gov/news/mrtweb-mrt-services-retired), 
 #' and is hence no longer officially available for download through LP DAAC.
 #' 
 #' @references 

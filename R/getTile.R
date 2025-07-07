@@ -63,13 +63,13 @@ if (!isGeneric("getTile")) {
 #'   \tab Spatial extent, resolution, and projection of the specified `Raster*` 
 #'   are determined automatically. This information is used by [runGdal()] to 
 #'   create perfectly matching files. If the `Raster*` comes with no valid CRS, 
-#'   [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84/) is assumed.\cr
+#'   [EPSG:4326](https://spatialreference.org/ref/epsg/4326/) is assumed.\cr
 #'   \cr
 #'   `Extent`, `bbox`:\cr
 #'   \tab Boundary coordinates from `Extent` objects are generally assumed to be
-#'   in [EPSG:4326](https://spatialreference.org/ref/epsg/wgs-84/) as such 
-#'   objects have no projection information attached. The same applies for 
-#'   `bbox` objects lacking CRS information.\cr
+#'   in [EPSG:4326](https://spatialreference.org/ref/epsg/4326/) as such objects
+#'   have no projection information attached. The same applies for `bbox` 
+#'   objects lacking CRS information.\cr
 #'   \cr
 #'   `sf`, `sfc`, `Spatial`:\cr
 #'   \tab Except for resolution, same as for `Raster*`.\cr

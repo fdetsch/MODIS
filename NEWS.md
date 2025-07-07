@@ -1,14 +1,8 @@
-# MODIS 1.2.12.9001 (2025-07-07)
-
-#### ✨ features and improvements
-
-#### 🐛 bug fixes
+# MODIS 1.2.13 (2025-07-07)
 
 #### 💬 documentation etc
 
   * README points to similar packages providing comparable functionality (#138)
-
-#### 🍬 miscellaneous
 
 
 # MODIS 1.2.12 (2025-05-02)

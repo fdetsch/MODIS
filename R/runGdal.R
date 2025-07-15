@@ -292,8 +292,19 @@ runGdal <- function(product, collection=NULL,
             # silently remove empty or invalid files from list
             if (checkIntegrity) files <- files[checkIntegrity(files)]
 
-            if(length(files)>0)
-            {
+            # early exit: no leftover files
+            if (length(files) == 0L) {
+              warning(
+                paste(
+                  "No file found for date:"
+                  , avDates[l]
+                )
+                , call. = FALSE
+              )
+              
+              next
+            }
+
               SDS = lapply(
                 files
                 , getSds
@@ -441,10 +452,6 @@ runGdal <- function(product, collection=NULL,
               }
               
               lst_ofile[[l]] <- ofiles
-            } else {
-              warning(paste0("No file found for date: ",avDates[l]))
-              lst_ofile[[l]] <- NA
-            }
           }
           
           names(lst_ofile) <- avDates

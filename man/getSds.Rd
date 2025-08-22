@@ -30,13 +30,13 @@ hdf = system.file(
   , package = "MODIS"
 )
 
-getSds(
-  hdf
-)
+## list all sds
+getSds(hdf)
 
+## list selected sds
 getSds(
   hdf
-  , SDSstring = 1
+  , SDSstring = "1"
 )
 
 }

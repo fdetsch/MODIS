@@ -24,17 +24,16 @@
 #'   , package = "MODIS"
 #' )
 #' 
+#' ## list all sds
+#' getSds(hdf)
+#' 
+#' ## list selected sds
 #' getSds(
 #'   hdf
+#'   , SDSstring = "1"
 #' )
 #' 
-#' getSds(
-#'   hdf
-#'   , SDSstring = 1
-#' )
-#' 
-#' @export getSds
-#' @name getSds
+#' @export
 getSds = function(
   HdfName
   , SDSstring = NULL

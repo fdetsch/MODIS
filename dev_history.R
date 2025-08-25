@@ -439,3 +439,50 @@ plot(
 )
 
 ## --> resample/reproject afterwards
+
+
+# 2025-07-15 ====
+
+fl = system.file(
+  "external/MOD13A2.A2016145.h18v04.006.2016166145124.hdf"
+  , package = "MODIS"
+)
+
+isHDF = function(x) {
+  file.exists(x) & 
+    grepl(
+      # https://darktarget.gsfc.nasa.gov/content/how-are-modis-files-named
+      "^[A-Z0-9_]+\\.A\\d{7}\\.h\\d{2}v\\d{2}\\.\\d{3}\\.\\d{13}\\.hdf$"
+      , basename(x)
+    )
+}
+
+tinytest::expect_true(
+  isHDF(fl)
+  , info = "Local MODIS `.hdf` file is identified as such."
+)
+
+## `getTile()` based on `.hdf` input
+bn = basename(fl)
+
+tiles = regmatches(
+  bn
+  , m = regexpr(
+    pattern = "\\.h\\d{2}v\\d{2}\\."
+    , text = bn
+  )
+)
+
+selected = substring(
+  tiles
+  , first = c(3L, 6L)
+  , last = c(4L, 7L)
+)
+
+MODIS::getTile(
+  tileH = selected[1L]
+  , tileV = selected[2L]
+)
+
+## `runGdal()` based on `.hdf` input -> fails (#143)
+# MODIS::runGdal(fl)

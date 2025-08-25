@@ -109,9 +109,33 @@ runGdal <- function(product, collection=NULL,
     
     # absolutely needed
     product <- getProduct(product, quiet=TRUE, collection = collection)
-    
-    # optional and if missing it is added here:
-    tLimits     <- transDate(begin=begin,end=end)
+    is_modfile = inherits(product, what = "MODISfile")
+  
+    if (is_modfile) {
+      
+      # early exit: 2+ local files
+      if (length(product@request) > 1L) {
+        stop(
+          "Processing of 2+ local `.hdf` files not supported, yet."
+          , call. = FALSE
+        )
+      }
+
+      # TODO: raise `warning()` in case of specified 'begin', 'end', 'tileH', 'tileV'
+      begin = end = as.Date(
+        product@DATE
+        , format = "A%Y%j"
+      )
+
+      tile = substring(
+        product@TILE
+        , first = c(2L, 5L)
+        , last = c(3L, 6L)
+      )
+
+      tileH = tile[1L]
+      tileV = tile[2L]
+    }
     
     dataFormat <- toupper(opts$dataFormat) 
 
@@ -142,6 +166,11 @@ runGdal <- function(product, collection=NULL,
     args = args[names(args) %in% c("extent", "tileH", "tileV")]
     names(args)[names(args) == "extent"] = "x"
     
+    if (is_modfile) {
+      args$tileH = tileH
+      args$tileV = tileV
+    }
+  
     if (missing(extent) || !inherits(extent, "MODISextent")) {
       extent = if (product@TYPE[1] == "Tile" || 
                    (product@TYPE[1] == "CMG" && 
@@ -174,9 +203,18 @@ runGdal <- function(product, collection=NULL,
     
     ### PRODUCT PROCESSING ====
     
+    # optional and if missing it is added here:
+    tLimits = transDate(
+      begin = begin
+      , end = end
+    )
+    
     lst_product <- vector("list", length(product@PRODUCT))
     for (z in seq_along(product@PRODUCT)) {
-      # z=1
+
+      # # debug:
+      # z = 1L
+
       todo <- paste(product@PRODUCT[[z]], product@CCC[[product@PRODUCT[z]]], sep = ".")
       
       if(z==1)
@@ -196,104 +234,129 @@ runGdal <- function(product, collection=NULL,
       
       lst_todo <- vector("list", length(todo))
       for (u in seq_along(todo)) {
-        # u=1
-        ftpdirs      <- list()
-        
-        server = product@SOURCE[[z]]
-        
-        jnk = strsplit(todo[u],"\\.")[[1]]
-        prodname = jnk[1] 
-        coll     = jnk[2]
-        
-        # cycle through available servers
-        idx = stats::na.omit(
-          match(
-            opts$MODISserverOrder
-            , server
-          )
-        )
-        
-        struc = try(
-          log("e")
-          , silent = TRUE
-        )
-        
-        n = 1L
-        for (i in server[idx]) {
-          jnk = utils::capture.output(
-            struc <- try(
-              getStruc(
-                product = prodname
-                , collection = coll
-                , begin = tLimits$begin
-                , end = tLimits$end
-                , server = i
-              )
-              , silent = TRUE
+
+        # # debug:
+        # u = 1L
+
+        if (is_modfile) {
+          avDates = begin
+          us = TRUE
+        } else {
+
+          ftpdirs      <- list()
+          
+          server = product@SOURCE[[z]]
+          
+          jnk = strsplit(todo[u],"\\.")[[1]]
+          prodname = jnk[1] 
+          coll     = jnk[2]
+          
+          # cycle through available servers
+          idx = stats::na.omit(
+            match(
+              opts$MODISserverOrder
+              , server
             )
           )
           
-          if (!inherits(struc, "try-error")) {
-            opts$MODISserverOrder = server[idx][n:length(idx)]
-            break
+          struc = try(
+            log("e")
+            , silent = TRUE
+          )
+          
+          n = 1L
+          for (i in server[idx]) {
+            jnk = utils::capture.output(
+              struc <- try(
+                getStruc(
+                  product = prodname
+                  , collection = coll
+                  , begin = tLimits$begin
+                  , end = tLimits$end
+                  , server = i
+                )
+                , silent = TRUE
+              )
+            )
+            
+            if (!inherits(struc, "try-error")) {
+              opts$MODISserverOrder = server[idx][n:length(idx)]
+              break
+            }
+            
+            n = n + 1L
           }
           
-          n = n + 1L
-        }
-        
-        if (inherits(struc, "try-error")) {
-          stop(
-            sprintf(
-              paste0(
-                "'%s.%s' is not available on %s or the server is currently not "
-                , "reachable. If applicable, try another server or collection."
+          if (inherits(struc, "try-error")) {
+            stop(
+              sprintf(
+                paste0(
+                  "'%s.%s' is not available on %s or the server is currently not "
+                  , "reachable. If applicable, try another server or collection."
+                )
+                , prodname
+                , coll
+                , paste(
+                  opts$MODISserverOrder
+                  , collapse = ", "
+                )
               )
-              , prodname
-              , coll
-              , paste(
-                opts$MODISserverOrder
-                , collapse = ", "
-              )
+              , call. = FALSE
             )
-            , call. = FALSE
+          }
+          
+          ftpdirs[[1]] = as.Date(
+            struc$dates
           )
+          
+          avDates <- ftpdirs[[1]]
+          avDates <- avDates[avDates!=FALSE]
+          avDates <- avDates[!is.na(avDates)]        
+          
+          sel     <- as.Date(avDates)
+
+          st = correctStartDate(tLimits$begin, sel, prodname, quiet = opts$quiet)
+          us = sel >= st & sel <= tLimits$end
         }
         
-        ftpdirs[[1]] = as.Date(
-          struc$dates
-        )
-        
-        avDates <- ftpdirs[[1]]
-        avDates <- avDates[avDates!=FALSE]
-        avDates <- avDates[!is.na(avDates)]        
-        
-        sel     <- as.Date(avDates)
-        
-        st = correctStartDate(tLimits$begin, sel, prodname, quiet = opts$quiet)
-        us = sel >= st & sel <= tLimits$end
         
         if (sum(us,na.rm=TRUE)>0)
         {
           avDates <- avDates[us]
           
           lst_ofile <- as.list(rep(NA, length(avDates)))
-          for (l in seq_along(avDates)) { 
-            # l=1
-            files <- unlist(
-              getHdf(product = prodname, collection = coll
-                     , begin = avDates[l], end = avDates[l]
-                     , extent = extent, checkIntegrity = checkIntegrity
-                     , stubbornness = opts$stubbornness, quiet = opts$quiet
-                     , MODISserverOrder = opts$MODISserverOrder
-                     , forceDownload = forceDownload, wait = opts$wait)
-            )
+          for (l in seq_along(avDates)) {
+            
+            files = if (is_modfile) {
+              product@request
+            } else {
+              unlist(
+                getHdf(product = prodname, collection = coll
+                  , begin = avDates[l], end = avDates[l]
+                  , extent = extent, checkIntegrity = checkIntegrity
+                  , stubbornness = opts$stubbornness, quiet = opts$quiet
+                  , MODISserverOrder = opts$MODISserverOrder
+                  , forceDownload = forceDownload, wait = opts$wait)
+                )
+            }
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()
             # silently remove empty or invalid files from list
             if (checkIntegrity) files <- files[checkIntegrity(files)]
 
-            if(length(files)>0)
-            {
+            # early exit: no leftover files
+            if (length(files) == 0L) {
+              warning(
+                paste(
+                  "No file found for date:"
+                  , avDates[l]
+                )
+                , call. = FALSE
+              )
+              
+              next
+            }
+
               SDS = lapply(
                 files
                 , getSds
@@ -329,7 +392,10 @@ runGdal <- function(product, collection=NULL,
               ofiles <- character(length(SDS[[1]]$SDSnames))
               
               for (i in seq_along(SDS[[1]]$SDSnames)) {
-                # i=1
+
+                # # debug:
+                # i = 1L
+
                 outname <- paste0(paste0(strsplit(basename(files[1]),"\\.")[[1]][1:2],collapse="."),
                    ".", gsub(SDS[[1]]$SDSnames[i],pattern=" ",replacement="_"), xtn)
                   
@@ -355,18 +421,32 @@ runGdal <- function(product, collection=NULL,
                   }
                   
                   ## create first set of gdal options required by subsequent step
-                  lst = list(dataFormat, co, rt, srcnodata)
-                  names(lst) = paste0(
+                  lst0 = list(dataFormat, co, rt, srcnodata)
+                  names(lst0) = paste0(
                     "-"
                     , c("of", "co", "r", "srcnodata")
                   )
-                  lst = Filter(Negate(is.null), lst)
+                  lst0 = Filter(Negate(is.null), lst0)
                   
+                  nms = rep(
+                    names(lst0)
+                    , times = lengths(lst0)
+                  )
+
+                  vls = unlist(
+                    lst0
+                    , use.names = FALSE
+                  )
+
                   params = character()
-                  for (j in seq(lst)) {
-                    params = c(params, names(lst)[j], lst[[j]])
+                  for (j in seq(nms)) {
+                    params = c(
+                      params
+                      , nms[j]
+                      , vls[j]
+                    )
                   }
-                  
+
                   qt = !is.null(opts$quiet) && opts$quiet
                   
                   ## if required, adjust pixel size and/or target extent
@@ -409,11 +489,11 @@ runGdal <- function(product, collection=NULL,
                   }
                   
                   ## extract layers
-                  lst = c(lst, list("-t_srs" = if (t_srs != s_srs) t_srs, "-te" = te, "-tr" = tr))
-                  lst = Filter(Negate(is.null), lst)
+                  lst1 = c(lst0, list("-t_srs" = if (t_srs != s_srs) t_srs, "-te" = te, "-tr" = tr))
+                  lst1 = Filter(Negate(is.null), lst1)
                   
-                  for (j in (j+1):length(lst)) {
-                    params = c(params, names(lst)[j], lst[[j]])
+                  for (j in (length(lst0)+1):length(lst1)) {
+                    params = c(params, names(lst1)[j], lst1[[j]])
                   }
                   
                   jnk = file.remove(ofile)
@@ -441,10 +521,6 @@ runGdal <- function(product, collection=NULL,
               }
               
               lst_ofile[[l]] <- ofiles
-            } else {
-              warning(paste0("No file found for date: ",avDates[l]))
-              lst_ofile[[l]] <- NA
-            }
           }
           
           names(lst_ofile) <- avDates

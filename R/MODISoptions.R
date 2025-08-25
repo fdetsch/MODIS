@@ -375,6 +375,7 @@ MODISoptions <- function(localArcPath, outDirPath, pixelSize, outProj,
   
   if(!missing(dataFormat))
   {
+    # TODO: compare input against 'name' (or 'long_name') from `sf::st_drivers("raster")`
     opt$dataFormat <- dataFormat
   }
   if(is.null(opt$dataFormat))

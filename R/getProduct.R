@@ -105,7 +105,10 @@ getProduct <- function(x = NULL, quiet = FALSE, ...)
                          , PRODUCT = fname$PRODUCT
                          , DATE = fname$DATE
                          , TILE = fname$TILE
-                         , CCC = fname$CCC
+                         , CCC = stats::setNames(
+                          fname$CCC
+                          , nm = fname$PRODUCT
+                         ) # imitates named 'CCC' slot when input is not a file
                          , PROCESSINGDATE = fname$PROCESSINGDATE
                          , FORMAT = fname$FORMAT
                          , SENSOR = info$SENSOR

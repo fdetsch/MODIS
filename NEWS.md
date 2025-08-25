@@ -1,8 +1,11 @@
-# MODIS 1.2.13.9000 (2025-07-15)
+# MODIS 1.2.13.9001 (2025-08-25)
 
 #### ✨ features and improvements
 
 #### 🐛 bug fixes
+
+  * Fixes "warp: options error" caused by malphrased `-co` options during 
+    `sf::gdal_warp()` (#145)
 
 #### 💬 documentation etc
 
@@ -216,7 +219,7 @@
 
 #### ✨ features and improvements
 
-  * Added remaining products from the LP DAAC MODIS Products Table (<https://lpdaac.usgs.gov/dataset_discovery/modis/modis_products_table>).
+  * Added remaining products from the LP DAAC MODIS Products Table (<https://www.earthdata.nasa.gov/centers/lp-daac/data-access-tools>).
   * Explicit specification of 'pos1','pos2' arguments passed to extractDate() and orgTime() is no longer required when dealing with standard MODIS file names.
 
 #### 🐛 bug fixes
@@ -228,7 +231,7 @@
 
 #### 🍬 miscellaneous
 
-  * Disabled use of EPSV (see <https://curl.haxx.se/libcurl/c/CURLOPT_FTP_USE_EPSV.html>) when downloading structure from LP DAAC, LAADS. The latter didn't work anymore with EPSV enabled.
+  * Disabled use of EPSV (see <https://curl.se/libcurl/c/CURLOPT_FTP_USE_EPSV.html>) when downloading structure from LP DAAC, LAADS. The latter didn't work anymore with EPSV enabled.
   * getProduct() and getCollection() are now compatible with more than one input 'product' provided using eg. c().
   * At the same time, pattern matching for a distinct set of products (see <https://github.com/fdetsch/MODIS/issues/22>) is switched off as long as a proper regular expression is omitted.
   * The MODIS package is now licensed under the MIT license (<https://www.r-project.org/Licenses/MIT>).

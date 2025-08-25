@@ -110,9 +110,6 @@ runGdal <- function(product, collection=NULL,
     # absolutely needed
     product <- getProduct(product, quiet=TRUE, collection = collection)
     
-    # optional and if missing it is added here:
-    tLimits     <- transDate(begin=begin,end=end)
-    
     dataFormat <- toupper(opts$dataFormat) 
 
     if(dataFormat == 'HDF-EOS')
@@ -174,9 +171,18 @@ runGdal <- function(product, collection=NULL,
     
     ### PRODUCT PROCESSING ====
     
+    # optional and if missing it is added here:
+    tLimits = transDate(
+      begin = begin
+      , end = end
+    )
+    
     lst_product <- vector("list", length(product@PRODUCT))
     for (z in seq_along(product@PRODUCT)) {
-      # z=1
+
+      # # debug:
+      # z = 1L
+
       todo <- paste(product@PRODUCT[[z]], product@CCC[[product@PRODUCT[z]]], sep = ".")
       
       if(z==1)
@@ -196,7 +202,10 @@ runGdal <- function(product, collection=NULL,
       
       lst_todo <- vector("list", length(todo))
       for (u in seq_along(todo)) {
-        # u=1
+
+        # # debug:
+        # u = 1L
+
         ftpdirs      <- list()
         
         server = product@SOURCE[[z]]
@@ -340,7 +349,10 @@ runGdal <- function(product, collection=NULL,
               ofiles <- character(length(SDS[[1]]$SDSnames))
               
               for (i in seq_along(SDS[[1]]$SDSnames)) {
-                # i=1
+
+                # # debug:
+                # i = 1L
+
                 outname <- paste0(paste0(strsplit(basename(files[1]),"\\.")[[1]][1:2],collapse="."),
                    ".", gsub(SDS[[1]]$SDSnames[i],pattern=" ",replacement="_"), xtn)
                   
@@ -366,18 +378,32 @@ runGdal <- function(product, collection=NULL,
                   }
                   
                   ## create first set of gdal options required by subsequent step
-                  lst = list(dataFormat, co, rt, srcnodata)
-                  names(lst) = paste0(
+                  lst0 = list(dataFormat, co, rt, srcnodata)
+                  names(lst0) = paste0(
                     "-"
                     , c("of", "co", "r", "srcnodata")
                   )
-                  lst = Filter(Negate(is.null), lst)
+                  lst0 = Filter(Negate(is.null), lst0)
                   
+                  nms = rep(
+                    names(lst0)
+                    , times = lengths(lst0)
+                  )
+
+                  vls = unlist(
+                    lst0
+                    , use.names = FALSE
+                  )
+
                   params = character()
-                  for (j in seq(lst)) {
-                    params = c(params, names(lst)[j], lst[[j]])
+                  for (j in seq(nms)) {
+                    params = c(
+                      params
+                      , nms[j]
+                      , vls[j]
+                    )
                   }
-                  
+
                   qt = !is.null(opts$quiet) && opts$quiet
                   
                   ## if required, adjust pixel size and/or target extent
@@ -420,11 +446,11 @@ runGdal <- function(product, collection=NULL,
                   }
                   
                   ## extract layers
-                  lst = c(lst, list("-t_srs" = if (t_srs != s_srs) t_srs, "-te" = te, "-tr" = tr))
-                  lst = Filter(Negate(is.null), lst)
+                  lst1 = c(lst0, list("-t_srs" = if (t_srs != s_srs) t_srs, "-te" = te, "-tr" = tr))
+                  lst1 = Filter(Negate(is.null), lst1)
                   
-                  for (j in (j+1):length(lst)) {
-                    params = c(params, names(lst)[j], lst[[j]])
+                  for (j in (length(lst0)+1):length(lst1)) {
+                    params = c(params, names(lst1)[j], lst1[[j]])
                   }
                   
                   jnk = file.remove(ofile)

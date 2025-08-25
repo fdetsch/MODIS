@@ -1,3 +1,5 @@
+## PRODUCT INPUT ====
+
 ### available ----
 
 expect_stdout(
@@ -46,4 +48,36 @@ expect_stdout(
 expect_null(
   res2
   , info = "`NULL` output is returned in case product is not available"
+)
+
+
+## FILE INPUT ====
+
+fl = system.file(
+  "external/MOD13A2.A2016145.h18v04.006.2016166145124.hdf"
+  , package = "MODIS"
+)
+
+expect_inherits(
+  res3 <- getProduct(fl)
+  , class = "MODISfile"
+  , info = "output inherits from class 'MODISfile' if request is a file"
+)
+
+nfo = strsplit(
+  basename(fl)
+  , "\\."
+)[[1L]]
+
+## investigate collection slot
+expect_equivalent(
+  res3@CCC
+  , target = nfo[4L]
+  , info = "'CCC' content is the collection of the requested file"
+)
+
+expect_identical(
+  names(res3@CCC)
+  , target = nfo[1L]
+  , info = "'CCC' content is named according to product"
 )

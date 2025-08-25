@@ -109,6 +109,33 @@ runGdal <- function(product, collection=NULL,
     
     # absolutely needed
     product <- getProduct(product, quiet=TRUE, collection = collection)
+    is_modfile = inherits(product, what = "MODISfile")
+  
+    if (is_modfile) {
+      
+      # early exit: 2+ local files
+      if (length(product@request) > 1L) {
+        stop(
+          "Processing of 2+ local `.hdf` files not supported, yet."
+          , call. = FALSE
+        )
+      }
+
+      # TODO: raise `warning()` in case of specified 'begin', 'end', 'tileH', 'tileV'
+      begin = end = as.Date(
+        product@DATE
+        , format = "A%Y%j"
+      )
+
+      tile = substring(
+        product@TILE
+        , first = c(2L, 5L)
+        , last = c(3L, 6L)
+      )
+
+      tileH = tile[1L]
+      tileV = tile[2L]
+    }
     
     dataFormat <- toupper(opts$dataFormat) 
 
@@ -139,6 +166,11 @@ runGdal <- function(product, collection=NULL,
     args = args[names(args) %in% c("extent", "tileH", "tileV")]
     names(args)[names(args) == "extent"] = "x"
     
+    if (is_modfile) {
+      args$tileH = tileH
+      args$tileV = tileV
+    }
+  
     if (missing(extent) || !inherits(extent, "MODISextent")) {
       extent = if (product@TYPE[1] == "Tile" || 
                    (product@TYPE[1] == "CMG" && 
@@ -206,96 +238,107 @@ runGdal <- function(product, collection=NULL,
         # # debug:
         # u = 1L
 
-        ftpdirs      <- list()
-        
-        server = product@SOURCE[[z]]
-        
-        jnk = strsplit(todo[u],"\\.")[[1]]
-        prodname = jnk[1] 
-        coll     = jnk[2]
-        
-        # cycle through available servers
-        idx = stats::na.omit(
-          match(
-            opts$MODISserverOrder
-            , server
-          )
-        )
-        
-        struc = try(
-          log("e")
-          , silent = TRUE
-        )
-        
-        n = 1L
-        for (i in server[idx]) {
-          jnk = utils::capture.output(
-            struc <- try(
-              getStruc(
-                product = prodname
-                , collection = coll
-                , begin = tLimits$begin
-                , end = tLimits$end
-                , server = i
-              )
-              , silent = TRUE
+        if (is_modfile) {
+          avDates = begin
+          us = TRUE
+        } else {
+
+          ftpdirs      <- list()
+          
+          server = product@SOURCE[[z]]
+          
+          jnk = strsplit(todo[u],"\\.")[[1]]
+          prodname = jnk[1] 
+          coll     = jnk[2]
+          
+          # cycle through available servers
+          idx = stats::na.omit(
+            match(
+              opts$MODISserverOrder
+              , server
             )
           )
           
-          if (!inherits(struc, "try-error")) {
-            opts$MODISserverOrder = server[idx][n:length(idx)]
-            break
+          struc = try(
+            log("e")
+            , silent = TRUE
+          )
+          
+          n = 1L
+          for (i in server[idx]) {
+            jnk = utils::capture.output(
+              struc <- try(
+                getStruc(
+                  product = prodname
+                  , collection = coll
+                  , begin = tLimits$begin
+                  , end = tLimits$end
+                  , server = i
+                )
+                , silent = TRUE
+              )
+            )
+            
+            if (!inherits(struc, "try-error")) {
+              opts$MODISserverOrder = server[idx][n:length(idx)]
+              break
+            }
+            
+            n = n + 1L
           }
           
-          n = n + 1L
-        }
-        
-        if (inherits(struc, "try-error")) {
-          stop(
-            sprintf(
-              paste0(
-                "'%s.%s' is not available on %s or the server is currently not "
-                , "reachable. If applicable, try another server or collection."
+          if (inherits(struc, "try-error")) {
+            stop(
+              sprintf(
+                paste0(
+                  "'%s.%s' is not available on %s or the server is currently not "
+                  , "reachable. If applicable, try another server or collection."
+                )
+                , prodname
+                , coll
+                , paste(
+                  opts$MODISserverOrder
+                  , collapse = ", "
+                )
               )
-              , prodname
-              , coll
-              , paste(
-                opts$MODISserverOrder
-                , collapse = ", "
-              )
+              , call. = FALSE
             )
-            , call. = FALSE
+          }
+          
+          ftpdirs[[1]] = as.Date(
+            struc$dates
           )
+          
+          avDates <- ftpdirs[[1]]
+          avDates <- avDates[avDates!=FALSE]
+          avDates <- avDates[!is.na(avDates)]        
+          
+          sel     <- as.Date(avDates)
+
+          st = correctStartDate(tLimits$begin, sel, prodname, quiet = opts$quiet)
+          us = sel >= st & sel <= tLimits$end
         }
         
-        ftpdirs[[1]] = as.Date(
-          struc$dates
-        )
-        
-        avDates <- ftpdirs[[1]]
-        avDates <- avDates[avDates!=FALSE]
-        avDates <- avDates[!is.na(avDates)]        
-        
-        sel     <- as.Date(avDates)
-        
-        st = correctStartDate(tLimits$begin, sel, prodname, quiet = opts$quiet)
-        us = sel >= st & sel <= tLimits$end
         
         if (sum(us,na.rm=TRUE)>0)
         {
           avDates <- avDates[us]
           
           lst_ofile <- as.list(rep(NA, length(avDates)))
-          for (l in seq_along(avDates)) { 
-            # l=1
-            files <- unlist(
-              getHdf(product = prodname, collection = coll
-                     , begin = avDates[l], end = avDates[l]
-                     , extent = extent, checkIntegrity = checkIntegrity
-                     , stubbornness = opts$stubbornness, quiet = opts$quiet
-                     , MODISserverOrder = opts$MODISserverOrder
-                     , forceDownload = forceDownload, wait = opts$wait)
-            )
+          for (l in seq_along(avDates)) {
+            
+            files = if (is_modfile) {
+              product@request
+            } else {
+              unlist(
+                getHdf(product = prodname, collection = coll
+                  , begin = avDates[l], end = avDates[l]
+                  , extent = extent, checkIntegrity = checkIntegrity
+                  , stubbornness = opts$stubbornness, quiet = opts$quiet
+                  , MODISserverOrder = opts$MODISserverOrder
+                  , forceDownload = forceDownload, wait = opts$wait)
+                )
+            }
             
             files <- files[basename(files)!="NA"] # is not a true NA so it need to be like that na not !is.na()
             # silently remove empty or invalid files from list
